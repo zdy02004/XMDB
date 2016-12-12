@@ -1,0 +1,721 @@
+2016-12-05 16:48:38.670462,[../../mem_block_no_manager.h,init_mem_block_no_manager() Line:00081,tid:140394250970880]: in init_mem_block_no_manager()
+2016-12-05 16:48:38.670606,[mem_table_rbtree.c,create_block() Line:00006,tid:140394250970880]: in create_block
+2016-12-05 16:48:38.670611,[mem_table_rbtree.c,create_block() Line:00010,tid:140394250970880]: create_block 1c7a360
+2016-12-05 16:48:38.670616,[../../mem_block_t.h,mem_block_config() Line:00189,tid:140394250970880]: mb->file_name is ./rbtree_table.dat,mb->block_size is 1024
+2016-12-05 16:48:38.670666,[mem_table_rbtree.c,create_block() Line:00017,tid:140394250970880]: fd = 3
+2016-12-05 16:48:38.670671,[mem_table_rbtree.c,create_mem_table_config() Line:00024,tid:140394250970880]: in create_mem_table_config
+2016-12-05 16:48:38.670674,[mem_table_rbtree.c,main() Line:00078,tid:140394250970880]: mem_config is 29835408
+2016-12-05 16:48:38.670677,[../../mem_table_ctl.h,mem_table_create() Line:01291,tid:140394250970880]: Begin to greate a mem_table.
+2016-12-05 16:48:38.670680,[../../mem_table_ctl.h,mem_table_create() Line:01293,tid:140394250970880]: mem_table_config->mem_blocks_table->file_name is ./rbtree_table.dat
+2016-12-05 16:48:38.670682,[../../mem_table_ctl.h,mem_table_create() Line:01298,tid:140394250970880]:>>>IMPORTANT_INFO Create table ,table's addr is 1c7a570 
+2016-12-05 16:48:38.670685,[../../mem_table_no_manager.h,allocate_table_no() Line:00186,tid:140394250970880]: mem_table_no_manager.cur_num is 1
+2016-12-05 16:48:38.670688,[../../mem_table_no_manager.h,set_table_no_addr() Line:00148,tid:140394250970880]: mem_table save addr is (1,1c7a570)
+2016-12-05 16:48:38.670690,[../../../util/str_num_map.h,init_str_num_map_manager() Line:00116,tid:140394250970880]: in init_str_num_map_manager()
+2016-12-05 16:48:38.670697,[../../mem_table_ctl.h,mem_table_create() Line:01312,tid:140394250970880]: (*mem_table)->config.table_name1 is ./first_table_name
+2016-12-05 16:48:38.670701,[../../mem_table_ctl.h,fill_field_info() Line:00239,tid:140394250970880]: FIELD_TYPE_INT
+2016-12-05 16:48:38.670703,[../../mem_table_ctl.h,fill_field_info() Line:00239,tid:140394250970880]: FIELD_TYPE_INT
+2016-12-05 16:48:38.670704,[../../mem_table_ctl.h,fill_table_field_size() Line:00379,tid:140394250970880]: mem_table->record_size is 136 
+2016-12-05 16:48:38.670706,[../../mem_table_ctl.h,mem_table_create() Line:01317,tid:140394250970880]: mem_table_config->mem_blocks_table block_size is 1024
+2016-12-05 16:48:38.670708,[../../mem_table_ctl.h,mem_table_create() Line:01318,tid:140394250970880]: (*mem_table)->config.table_name2 is ./first_table_name
+2016-12-05 16:48:38.670710,[../../mem_table_ctl.h,mem_table_open() Line:01233,tid:140394250970880]: Begin to open a mem_table.
+2016-12-05 16:48:38.670712,[../../mem_table_ctl.h,mem_table_open() Line:01234,tid:140394250970880]: config.mem_block_used is 1.
+2016-12-05 16:48:38.670713,[../../mem_table_ctl.h,mem_table_open() Line:01238,tid:140394250970880]: mem_block_temp->block_size is 1024
+2016-12-05 16:48:38.670715,[../../mem_table_ctl.h,mem_table_open() Line:01239,tid:140394250970880]: (mem_table)->config.table_name1 is ./first_table_name
+2016-12-05 16:48:38.670717,[../../mem_table_ctl.h,mem_table_open() Line:01255,tid:140394250970880]: mem_block_temp is 1c7a360.
+2016-12-05 16:48:38.670719,[../../mem_table_ctl.h,mem_table_open() Line:01256,tid:140394250970880]: mem_block file_name is ./rbtree_table.dat
+2016-12-05 16:48:38.670721,[../../mem_table_ctl.h,mem_table_open() Line:01257,tid:140394250970880]: mem_block_temp->block_size is 1024
+2016-12-05 16:48:38.670722,[../../mem_block_no_manager.h,allocate_block_no() Line:00187,tid:140394250970880]: mem_block_no_manager.cur_num is 1
+2016-12-05 16:48:38.670724,[../../../util/str_num_map.h,init_str_num_map_manager() Line:00116,tid:140394250970880]: in init_str_num_map_manager()
+2016-12-05 16:48:38.670734,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00241,tid:140394250970880]: mb is 1c7a360,mb->block_size is: 1024
+2016-12-05 16:48:38.670774,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00250,tid:140394250970880]: Create shared-memory: 56918027
+2016-12-05 16:48:38.670798,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00256,tid:140394250970880]: block_share_mem_addr is : 15763000
+2016-12-05 16:48:38.670801,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00262,tid:140394250970880]: mb->block_start_addr is : 15763000
+2016-12-05 16:48:38.670803,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00267,tid:140394250970880]: mb->block_end_addr is : 15763400
+2016-12-05 16:48:38.670806,[../../mem_table_ctl.h,mem_table_open() Line:01264,tid:140394250970880]: mem_block_get_mem_from_os() ok
+2016-12-05 16:48:38.671407,[../../mem_block_t.h,mem_block_mmap() Line:00334,tid:140394250970880]: p_addr = 15763000,sb.st_size = 1024
+2016-12-05 16:48:38.671432,[../../mem_block_t.h,mem_block_mmap() Line:00337,tid:140394250970880]: space_start oraginal addr is : 15762000
+2016-12-05 16:48:38.671442,[../../mem_block_t.h,mem_block_mmap() Line:00349,tid:140394250970880]: after copy,the mmap block_malloc_addr is 1c7a360
+2016-12-05 16:48:38.671445,[../../mem_block_t.h,mem_block_mmap() Line:00371,tid:140394250970880]: space_start_addr is : 15762200,space_size IS 512
+2016-12-05 16:48:38.671448,[../../mem_block_t.h,mem_block_mmap() Line:00377,tid:140394250970880]: mem_block_mmap() end
+2016-12-05 16:48:38.671450,[../../mem_table_ctl.h,mem_table_open() Line:01268,tid:140394250970880]: mem_block_mmap() ok
+2016-12-05 16:48:38.671454,[../../mem_rbtree_index.h,mem_rbtree_create() Line:00875,tid:140394250970880]: Enter mem_rbtree_create() 
+2016-12-05 16:48:38.671457,[../../mem_rbtree_index.h,mem_rbtree_create() Line:00891,tid:140394250970880]: create mem_rbtree block 411f00
+2016-12-05 16:48:38.671460,[../../mem_rbtree_index.h,mem_rbtree_create() Line:00895,tid:140394250970880]: _block_size is 2048
+2016-12-05 16:48:38.671463,[../../mem_block_t.h,mem_block_config() Line:00189,tid:140394250970880]: mb->file_name is ./first_index_name_heap.dat,mb->block_size is 2048
+2016-12-05 16:48:38.671524,[../../mem_rbtree_index.h,mem_rbtree_create() Line:00919,tid:140394250970880]:  heap_space_config->table_name is ./first_index_name_heap 
+2016-12-05 16:48:38.671529,[../../mem_table_ctl.h,mem_table_create() Line:01291,tid:140394250970880]: Begin to greate a mem_table.
+2016-12-05 16:48:38.671531,[../../mem_table_ctl.h,mem_table_create() Line:01293,tid:140394250970880]: mem_table_config->mem_blocks_table->file_name is ./first_index_name_heap.dat
+2016-12-05 16:48:38.671533,[../../mem_table_ctl.h,mem_table_create() Line:01298,tid:140394250970880]:>>>IMPORTANT_INFO Create table ,table's addr is 1c9ad80 
+2016-12-05 16:48:38.671536,[../../mem_table_no_manager.h,allocate_table_no() Line:00186,tid:140394250970880]: mem_table_no_manager.cur_num is 2
+2016-12-05 16:48:38.671538,[../../mem_table_no_manager.h,set_table_no_addr() Line:00148,tid:140394250970880]: mem_table save addr is (2,1c9ad80)
+2016-12-05 16:48:38.671554,[../../mem_table_ctl.h,mem_table_create() Line:01312,tid:140394250970880]: (*mem_table)->config.table_name1 is ./first_index_name_heap
+2016-12-05 16:48:38.671557,[../../mem_table_ctl.h,fill_field_info() Line:00247,tid:140394250970880]: FIELD_TYPE_RBTREE_ENTRY
+2016-12-05 16:48:38.671559,[../../mem_table_ctl.h,fill_table_field_size() Line:00379,tid:140394250970880]: mem_table->record_size is 256 
+2016-12-05 16:48:38.671561,[../../mem_table_ctl.h,mem_table_create() Line:01317,tid:140394250970880]: mem_table_config->mem_blocks_table block_size is 2048
+2016-12-05 16:48:38.671563,[../../mem_table_ctl.h,mem_table_create() Line:01318,tid:140394250970880]: (*mem_table)->config.table_name2 is ./first_index_name_heap
+2016-12-05 16:48:38.671565,[../../mem_table_ctl.h,mem_table_open() Line:01233,tid:140394250970880]: Begin to open a mem_table.
+2016-12-05 16:48:38.671566,[../../mem_table_ctl.h,mem_table_open() Line:01234,tid:140394250970880]: config.mem_block_used is 1.
+2016-12-05 16:48:38.671568,[../../mem_table_ctl.h,mem_table_open() Line:01238,tid:140394250970880]: mem_block_temp->block_size is 2048
+2016-12-05 16:48:38.671570,[../../mem_table_ctl.h,mem_table_open() Line:01239,tid:140394250970880]: (mem_table)->config.table_name1 is ./first_index_name_heap
+2016-12-05 16:48:38.671584,[../../mem_table_ctl.h,mem_table_open() Line:01255,tid:140394250970880]: mem_block_temp is 1c9aa10.
+2016-12-05 16:48:38.671587,[../../mem_table_ctl.h,mem_table_open() Line:01256,tid:140394250970880]: mem_block file_name is ./first_index_name_heap.dat
+2016-12-05 16:48:38.671589,[../../mem_table_ctl.h,mem_table_open() Line:01257,tid:140394250970880]: mem_block_temp->block_size is 2048
+2016-12-05 16:48:38.671591,[../../mem_block_no_manager.h,allocate_block_no() Line:00187,tid:140394250970880]: mem_block_no_manager.cur_num is 2
+2016-12-05 16:48:38.671594,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00241,tid:140394250970880]: mb is 1c9aa10,mb->block_size is: 2048
+2016-12-05 16:48:38.671619,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00250,tid:140394250970880]: Create shared-memory: 56950796
+2016-12-05 16:48:38.671631,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00256,tid:140394250970880]: block_share_mem_addr is : 15761000
+2016-12-05 16:48:38.671634,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00262,tid:140394250970880]: mb->block_start_addr is : 15761000
+2016-12-05 16:48:38.671636,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00267,tid:140394250970880]: mb->block_end_addr is : 15761800
+2016-12-05 16:48:38.671638,[../../mem_table_ctl.h,mem_table_open() Line:01264,tid:140394250970880]: mem_block_get_mem_from_os() ok
+2016-12-05 16:48:38.672027,[../../mem_block_t.h,mem_block_mmap() Line:00334,tid:140394250970880]: p_addr = 15761000,sb.st_size = 2048
+2016-12-05 16:48:38.672037,[../../mem_block_t.h,mem_block_mmap() Line:00337,tid:140394250970880]: space_start oraginal addr is : 15760000
+2016-12-05 16:48:38.672042,[../../mem_block_t.h,mem_block_mmap() Line:00349,tid:140394250970880]: after copy,the mmap block_malloc_addr is 1c9aa10
+2016-12-05 16:48:38.672044,[../../mem_block_t.h,mem_block_mmap() Line:00371,tid:140394250970880]: space_start_addr is : 15760200,space_size IS 1536
+2016-12-05 16:48:38.672046,[../../mem_block_t.h,mem_block_mmap() Line:00377,tid:140394250970880]: mem_block_mmap() end
+2016-12-05 16:48:38.672048,[../../mem_table_ctl.h,mem_table_open() Line:01268,tid:140394250970880]: mem_block_mmap() ok
+2016-12-05 16:48:38.672050,[../../mem_rbtree_index.h,mem_rbtree_create() Line:00930,tid:140394250970880]:  heap_space_temp is 1c9ad80 
+2016-12-05 16:48:38.672052,[../../mem_index_no_manager.h,allocate_index_no() Line:00196,tid:140394250970880]: mem_index_no_manager.cur_num is 1
+2016-12-05 16:48:38.672055,[mem_table_rbtree.c,main() Line:00093,tid:140394250970880]: mem_rbtree_index is 1c9b1b0
+2016-12-05 16:48:38.672059,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00178,tid:140394250970880]:  RBTREE_LOCK() 
+2016-12-05 16:48:38.672060,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00184,tid:140394250970880]: Insert Root Node: 
+2016-12-05 16:48:38.672063,[../../mem_table_ctl.h,mem_table_insert_record() Line:01089,tid:140394250970880]: Enter mem_table_insert_record();
+2016-12-05 16:48:38.672065,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00718,tid:140394250970880]:  ----- Enter mem_table_try_allocate_record() ----- 
+2016-12-05 16:48:38.672068,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00748,tid:140394250970880]: ----- try to allocate record by high level -----
+2016-12-05 16:48:38.672070,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00923,tid:140394250970880]:  ----- Allocate_record >>> 15760200 , high_level is 0 ----- 
+2016-12-05 16:48:38.672072,[../../mem_table_ctl.h,mem_table_allocate_record() Line:00975,tid:140394250970880]: mem_table_try_allocate END,record_ptr is 15760200,record_num is 0;
+2016-12-05 16:48:38.672074,[../../mem_table_ctl.h,mem_table_insert_record() Line:01092,tid:140394250970880]: mem_table allocate a record,record_ptr is 15760200 ;
+2016-12-05 16:48:38.672076,[../../mem_table_ctl.h,mem_table_insert_record() Line:01098,tid:140394250970880]: record_ptr->data is 15760280 ;
+2016-12-05 16:48:38.672078,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00198,tid:140394250970880]: Insert NIl Node: 
+2016-12-05 16:48:38.672091,[../../mem_table_ctl.h,mem_table_insert_record() Line:01089,tid:140394250970880]: Enter mem_table_insert_record();
+2016-12-05 16:48:38.672094,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00718,tid:140394250970880]:  ----- Enter mem_table_try_allocate_record() ----- 
+2016-12-05 16:48:38.672096,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00748,tid:140394250970880]: ----- try to allocate record by high level -----
+2016-12-05 16:48:38.672097,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00923,tid:140394250970880]:  ----- Allocate_record >>> 15760300 , high_level is 1 ----- 
+2016-12-05 16:48:38.672099,[../../mem_table_ctl.h,mem_table_allocate_record() Line:00975,tid:140394250970880]: mem_table_try_allocate END,record_ptr is 15760300,record_num is 1;
+2016-12-05 16:48:38.672101,[../../mem_table_ctl.h,mem_table_insert_record() Line:01092,tid:140394250970880]: mem_table allocate a record,record_ptr is 15760300 ;
+2016-12-05 16:48:38.672103,[../../mem_table_ctl.h,mem_table_insert_record() Line:01098,tid:140394250970880]: record_ptr->data is 15760380 ;
+2016-12-05 16:48:38.672105,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00218,tid:140394250970880]: nil->block_no = 2,nil->record_num = 1 
+2016-12-05 16:48:38.672107,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672109,[../../mem_rbtree_index.h,mem_rbtree_set_left() Line:00746,tid:140394250970880]: mem_rbtree_set_left,(left's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672111,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672113,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00273,tid:140394250970880]: RBTREE_UNLOCK 
+2016-12-05 16:48:38.672115,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00275,tid:140394250970880]: mem_rbtree_insert(); end
+2016-12-05 16:48:38.672116,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00178,tid:140394250970880]:  RBTREE_LOCK() 
+2016-12-05 16:48:38.672118,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00235,tid:140394250970880]: x != mem_rbtree_index->nil,x->rbtree_lkey = 1 ;
+2016-12-05 16:48:38.672120,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 1,2,1 );
+2016-12-05 16:48:38.672122,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672124,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672126,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672127,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00248,tid:140394250970880]: Insert Value Node ,Insert value is 2 ;
+2016-12-05 16:48:38.672129,[../../mem_table_ctl.h,mem_table_insert_record() Line:01089,tid:140394250970880]: Enter mem_table_insert_record();
+2016-12-05 16:48:38.672131,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00718,tid:140394250970880]:  ----- Enter mem_table_try_allocate_record() ----- 
+2016-12-05 16:48:38.672133,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00748,tid:140394250970880]: ----- try to allocate record by high level -----
+2016-12-05 16:48:38.672134,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00923,tid:140394250970880]:  ----- Allocate_record >>> 15760400 , high_level is 2 ----- 
+2016-12-05 16:48:38.672136,[../../mem_table_ctl.h,mem_table_allocate_record() Line:00975,tid:140394250970880]: mem_table_try_allocate END,record_ptr is 15760400,record_num is 2;
+2016-12-05 16:48:38.672138,[../../mem_table_ctl.h,mem_table_insert_record() Line:01092,tid:140394250970880]: mem_table allocate a record,record_ptr is 15760400 ;
+2016-12-05 16:48:38.672139,[../../mem_table_ctl.h,mem_table_insert_record() Line:01098,tid:140394250970880]: record_ptr->data is 15760480 ;
+2016-12-05 16:48:38.672147,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,0 );
+2016-12-05 16:48:38.672149,[../../mem_rbtree_index.h,mem_rbtree_set_left() Line:00746,tid:140394250970880]: mem_rbtree_set_left,(left's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672157,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672172,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 2,2 );
+2016-12-05 16:48:38.672176,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00593,tid:140394250970880]: Enter mem_rbtree_insert_fixup();
+2016-12-05 16:48:38.672178,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 2,2,0 );
+2016-12-05 16:48:38.672180,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 0 
+2016-12-05 16:48:38.672182,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672184,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760200 
+2016-12-05 16:48:38.672185,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00646,tid:140394250970880]: mem_rbtree_insert_fixup() end
+2016-12-05 16:48:38.672187,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00273,tid:140394250970880]: RBTREE_UNLOCK 
+2016-12-05 16:48:38.672189,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00275,tid:140394250970880]: mem_rbtree_insert(); end
+2016-12-05 16:48:38.672191,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00178,tid:140394250970880]:  RBTREE_LOCK() 
+2016-12-05 16:48:38.672192,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00235,tid:140394250970880]: x != mem_rbtree_index->nil,x->rbtree_lkey = 1 ;
+2016-12-05 16:48:38.672194,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 1,2,2 );
+2016-12-05 16:48:38.672196,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672198,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672200,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672202,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00235,tid:140394250970880]: x != mem_rbtree_index->nil,x->rbtree_lkey = 2 ;
+2016-12-05 16:48:38.672203,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 2,2,1 );
+2016-12-05 16:48:38.672205,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672207,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672209,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672210,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00248,tid:140394250970880]: Insert Value Node ,Insert value is 3 ;
+2016-12-05 16:48:38.672212,[../../mem_table_ctl.h,mem_table_insert_record() Line:01089,tid:140394250970880]: Enter mem_table_insert_record();
+2016-12-05 16:48:38.672214,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00718,tid:140394250970880]:  ----- Enter mem_table_try_allocate_record() ----- 
+2016-12-05 16:48:38.672216,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00748,tid:140394250970880]: ----- try to allocate record by high level -----
+2016-12-05 16:48:38.672217,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00923,tid:140394250970880]:  ----- Allocate_record >>> 15760500 , high_level is 3 ----- 
+2016-12-05 16:48:38.672242,[../../mem_table_ctl.h,mem_table_allocate_record() Line:00975,tid:140394250970880]: mem_table_try_allocate END,record_ptr is 15760500,record_num is 3;
+2016-12-05 16:48:38.672246,[../../mem_table_ctl.h,mem_table_insert_record() Line:01092,tid:140394250970880]: mem_table allocate a record,record_ptr is 15760500 ;
+2016-12-05 16:48:38.672248,[../../mem_table_ctl.h,mem_table_insert_record() Line:01098,tid:140394250970880]: record_ptr->data is 15760580 ;
+2016-12-05 16:48:38.672250,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,2 );
+2016-12-05 16:48:38.672252,[../../mem_rbtree_index.h,mem_rbtree_set_left() Line:00746,tid:140394250970880]: mem_rbtree_set_left,(left's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672254,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672255,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 2,3 );
+2016-12-05 16:48:38.672257,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00593,tid:140394250970880]: Enter mem_rbtree_insert_fixup();
+2016-12-05 16:48:38.672259,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672261,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672263,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672265,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672267,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672268,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672270,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672272,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672274,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672276,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672278,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672279,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672281,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 2,2,0 );
+2016-12-05 16:48:38.672283,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 0 
+2016-12-05 16:48:38.672285,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672287,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760200 
+2016-12-05 16:48:38.672289,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 1,2,1 );
+2016-12-05 16:48:38.672291,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672292,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672294,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672303,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00622,tid:140394250970880]: z = z->parent->parent->right
+2016-12-05 16:48:38.672305,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672307,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672309,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672311,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672313,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 2,2,0 );
+2016-12-05 16:48:38.672315,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 0 
+2016-12-05 16:48:38.672316,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672318,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760200 
+2016-12-05 16:48:38.672320,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 1,2,1 );
+2016-12-05 16:48:38.672322,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672324,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672326,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672327,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672329,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672331,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672333,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672335,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 2,2,1 );
+2016-12-05 16:48:38.672337,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672338,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672340,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672342,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00636,tid:140394250970880]: case 3 right 叔父结点为黑色,且z是右结点,z的父亲着着黑,z的祖父着红,然后左旋转z的祖父结点
+2016-12-05 16:48:38.672344,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672346,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672348,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672349,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672351,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672353,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672355,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672357,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672364,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 2,2,0 );
+2016-12-05 16:48:38.672367,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 0 
+2016-12-05 16:48:38.672373,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672377,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760200 
+2016-12-05 16:48:38.672380,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672384,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672388,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672392,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672396,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 2,2,0 );
+2016-12-05 16:48:38.672399,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 0 
+2016-12-05 16:48:38.672401,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672403,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760200 
+2016-12-05 16:48:38.672405,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00774,tid:140394250970880]: enter mem_rbtree_left_rotate() 
+2016-12-05 16:48:38.672407,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 1,2,2 );
+2016-12-05 16:48:38.672408,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672410,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672412,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672414,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00778,tid:140394250970880]: mem_rbtree_right(mem_rbtree_index,x)!=NULL 
+2016-12-05 16:48:38.672416,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 1,2,2 );
+2016-12-05 16:48:38.672418,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672420,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672422,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672423,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 2,2,1 );
+2016-12-05 16:48:38.672425,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672427,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672429,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672431,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672433,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 2,2,1 );
+2016-12-05 16:48:38.672435,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672448,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672451,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672453,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 1,2,1 );
+2016-12-05 16:48:38.672455,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672457,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672458,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672460,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672462,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 1,2,1 );
+2016-12-05 16:48:38.672464,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672466,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672468,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672469,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00791,tid:140394250970880]:  mem_rbtree_parent(mem_rbtree_index,x )== NULL 
+2016-12-05 16:48:38.672471,[../../mem_rbtree_index.h,mem_rbtree_set_left() Line:00746,tid:140394250970880]: mem_rbtree_set_left,(left's (block_no,record_num) =( 2,0 );
+2016-12-05 16:48:38.672473,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,2 );
+2016-12-05 16:48:38.672475,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00813,tid:140394250970880]: mem_rbtree_left_rotate() end
+2016-12-05 16:48:38.672477,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672478,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672480,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672482,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672484,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00646,tid:140394250970880]: mem_rbtree_insert_fixup() end
+2016-12-05 16:48:38.672486,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00273,tid:140394250970880]: RBTREE_UNLOCK 
+2016-12-05 16:48:38.672488,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00275,tid:140394250970880]: mem_rbtree_insert(); end
+2016-12-05 16:48:38.672489,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00178,tid:140394250970880]:  RBTREE_LOCK() 
+2016-12-05 16:48:38.672491,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00235,tid:140394250970880]: x != mem_rbtree_index->nil,x->rbtree_lkey = 2 ;
+2016-12-05 16:48:38.672493,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 2,2,3 );
+2016-12-05 16:48:38.672495,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.672497,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672498,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.672500,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00235,tid:140394250970880]: x != mem_rbtree_index->nil,x->rbtree_lkey = 3 ;
+2016-12-05 16:48:38.672508,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 3,2,1 );
+2016-12-05 16:48:38.672511,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672513,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672515,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672517,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00248,tid:140394250970880]: Insert Value Node ,Insert value is 5 ;
+2016-12-05 16:48:38.672519,[../../mem_table_ctl.h,mem_table_insert_record() Line:01089,tid:140394250970880]: Enter mem_table_insert_record();
+2016-12-05 16:48:38.672521,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00718,tid:140394250970880]:  ----- Enter mem_table_try_allocate_record() ----- 
+2016-12-05 16:48:38.672522,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00748,tid:140394250970880]: ----- try to allocate record by high level -----
+2016-12-05 16:48:38.672524,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00923,tid:140394250970880]:  ----- Allocate_record >>> 15760600 , high_level is 4 ----- 
+2016-12-05 16:48:38.672526,[../../mem_table_ctl.h,mem_table_allocate_record() Line:00975,tid:140394250970880]: mem_table_try_allocate END,record_ptr is 15760600,record_num is 4;
+2016-12-05 16:48:38.672528,[../../mem_table_ctl.h,mem_table_insert_record() Line:01092,tid:140394250970880]: mem_table allocate a record,record_ptr is 15760600 ;
+2016-12-05 16:48:38.672530,[../../mem_table_ctl.h,mem_table_insert_record() Line:01098,tid:140394250970880]: record_ptr->data is 15760680 ;
+2016-12-05 16:48:38.672532,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,3 );
+2016-12-05 16:48:38.672534,[../../mem_rbtree_index.h,mem_rbtree_set_left() Line:00746,tid:140394250970880]: mem_rbtree_set_left,(left's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672536,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672538,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 2,4 );
+2016-12-05 16:48:38.672540,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00593,tid:140394250970880]: Enter mem_rbtree_insert_fixup();
+2016-12-05 16:48:38.672554,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.672556,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.672557,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672559,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.672561,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.672563,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.672564,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672566,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.672568,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.672570,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.672571,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672580,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.672583,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672585,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672587,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672588,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672590,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 2,2,0 );
+2016-12-05 16:48:38.672592,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 0 
+2016-12-05 16:48:38.672594,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672596,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760200 
+2016-12-05 16:48:38.672597,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00622,tid:140394250970880]: z = z->parent->parent->right
+2016-12-05 16:48:38.672599,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.672601,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.672615,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672617,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.672618,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672620,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672622,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672624,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672625,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 2,2,0 );
+2016-12-05 16:48:38.672627,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 0 
+2016-12-05 16:48:38.672629,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672630,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760200 
+2016-12-05 16:48:38.672632,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.672634,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.672635,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672637,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.672639,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 3,2,1 );
+2016-12-05 16:48:38.672640,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672642,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672644,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672652,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00636,tid:140394250970880]: case 3 right 叔父结点为黑色,且z是右结点,z的父亲着着黑,z的祖父着红,然后左旋转z的祖父结点
+2016-12-05 16:48:38.672654,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.672656,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.672658,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672660,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.672661,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.672663,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.672665,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672667,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.672668,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672670,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672672,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672674,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672675,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.672677,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.672679,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672681,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.672682,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.672684,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.672686,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672687,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.672689,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00774,tid:140394250970880]: enter mem_rbtree_left_rotate() 
+2016-12-05 16:48:38.672691,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 2,2,3 );
+2016-12-05 16:48:38.672693,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.672694,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672696,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.672698,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00778,tid:140394250970880]: mem_rbtree_right(mem_rbtree_index,x)!=NULL 
+2016-12-05 16:48:38.672700,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 2,2,3 );
+2016-12-05 16:48:38.672701,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.672703,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672716,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.672719,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 3,2,1 );
+2016-12-05 16:48:38.672721,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672723,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672724,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672726,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672728,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 3,2,1 );
+2016-12-05 16:48:38.672730,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672731,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672733,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672735,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 2,2,1 );
+2016-12-05 16:48:38.672737,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672738,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672740,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672742,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.672744,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 2,2,1 );
+2016-12-05 16:48:38.672746,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672747,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672749,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672751,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00791,tid:140394250970880]:  mem_rbtree_parent(mem_rbtree_index,x )== NULL 
+2016-12-05 16:48:38.672752,[../../mem_rbtree_index.h,mem_rbtree_set_left() Line:00746,tid:140394250970880]: mem_rbtree_set_left,(left's (block_no,record_num) =( 2,2 );
+2016-12-05 16:48:38.672754,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,3 );
+2016-12-05 16:48:38.672756,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00813,tid:140394250970880]: mem_rbtree_left_rotate() end
+2016-12-05 16:48:38.672758,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.672759,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.672761,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672763,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.672764,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00646,tid:140394250970880]: mem_rbtree_insert_fixup() end
+2016-12-05 16:48:38.672766,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00273,tid:140394250970880]: RBTREE_UNLOCK 
+2016-12-05 16:48:38.672775,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00275,tid:140394250970880]: mem_rbtree_insert(); end
+2016-12-05 16:48:38.672777,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00178,tid:140394250970880]:  RBTREE_LOCK() 
+2016-12-05 16:48:38.672779,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00235,tid:140394250970880]: x != mem_rbtree_index->nil,x->rbtree_lkey = 3 ;
+2016-12-05 16:48:38.672781,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 3,2,4 );
+2016-12-05 16:48:38.672783,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.672784,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672786,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.672788,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00235,tid:140394250970880]: x != mem_rbtree_index->nil,x->rbtree_lkey = 5 ;
+2016-12-05 16:48:38.672790,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 5,2,1 );
+2016-12-05 16:48:38.672791,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.672793,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.672795,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.672797,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00248,tid:140394250970880]: Insert Value Node ,Insert value is 6 ;
+2016-12-05 16:48:38.672798,[../../mem_table_ctl.h,mem_table_insert_record() Line:01089,tid:140394250970880]: Enter mem_table_insert_record();
+2016-12-05 16:48:38.672800,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00718,tid:140394250970880]:  ----- Enter mem_table_try_allocate_record() ----- 
+2016-12-05 16:48:38.672802,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00806,tid:140394250970880]:  ----- Try to externd_table ----- 
+2016-12-05 16:48:38.672808,[../../mem_table_ctl.h,mem_table_extend() Line:01417,tid:140394250970880]:>>>IMPORTANT_INFO Try to extend table <./first_index_name_heap>
+2016-12-05 16:48:38.672813,[../../mem_table_ctl.h,mem_table_extend() Line:01429,tid:140394250970880]: extend_table->file_name is 
+2016-12-05 16:48:38.672815,[../../mem_block_t.h,mem_block_config() Line:00189,tid:140394250970880]: mb->file_name is ./first_index_name_heap.dat_20161205164838.672811,mb->block_size is 2048
+2016-12-05 16:48:38.672863,[../../mem_block_no_manager.h,allocate_block_no() Line:00187,tid:140394250970880]: mem_block_no_manager.cur_num is 3
+2016-12-05 16:48:38.672869,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00241,tid:140394250970880]: mb is 1c9b2c0,mb->block_size is: 2048
+2016-12-05 16:48:38.672889,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00250,tid:140394250970880]: Create shared-memory: 56983565
+2016-12-05 16:48:38.672896,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00256,tid:140394250970880]: block_share_mem_addr is : 1575f000
+2016-12-05 16:48:38.672899,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00262,tid:140394250970880]: mb->block_start_addr is : 1575f000
+2016-12-05 16:48:38.672901,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00267,tid:140394250970880]: mb->block_end_addr is : 1575f800
+2016-12-05 16:48:38.673255,[../../mem_block_t.h,mem_block_mmap() Line:00334,tid:140394250970880]: p_addr = 1575f000,sb.st_size = 2048
+2016-12-05 16:48:38.673269,[../../mem_block_t.h,mem_block_mmap() Line:00337,tid:140394250970880]: space_start oraginal addr is : 1575e000
+2016-12-05 16:48:38.673276,[../../mem_block_t.h,mem_block_mmap() Line:00349,tid:140394250970880]: after copy,the mmap block_malloc_addr is 1c9b2c0
+2016-12-05 16:48:38.673288,[../../mem_block_t.h,mem_block_mmap() Line:00371,tid:140394250970880]: space_start_addr is : 1575e200,space_size IS 1536
+2016-12-05 16:48:38.673291,[../../mem_block_t.h,mem_block_mmap() Line:00377,tid:140394250970880]: mem_block_mmap() end
+2016-12-05 16:48:38.673294,[../../mem_table_ctl.h,mem_table_extend() Line:01466,tid:140394250970880]:>>>IMPORTANT_INFO Extend table ok! mem_table has used [2] blocks.
+2016-12-05 16:48:38.673296,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00813,tid:140394250970880]: extern_mem_block->space_end_addr is 1575e800
+2016-12-05 16:48:38.673298,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00814,tid:140394250970880]: extern_mem_block->space_start_addr is 1575e200
+2016-12-05 16:48:38.673300,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00815,tid:140394250970880]: mem_table->record_size is 256
+2016-12-05 16:48:38.673302,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00817,tid:140394250970880]:>>>IMPORTANT_INFO Externd_Block OK and Try Allocate Agian!
+2016-12-05 16:48:38.673303,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00718,tid:140394250970880]:  ----- Enter mem_table_try_allocate_record() ----- 
+2016-12-05 16:48:38.673305,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00748,tid:140394250970880]: ----- try to allocate record by high level -----
+2016-12-05 16:48:38.673307,[../../mem_table_ctl.h,mem_table_try_allocate_record() Line:00923,tid:140394250970880]:  ----- Allocate_record >>> 1575e200 , high_level is 0 ----- 
+2016-12-05 16:48:38.673309,[../../mem_table_ctl.h,mem_table_allocate_record() Line:00975,tid:140394250970880]: mem_table_try_allocate END,record_ptr is 1575e200,record_num is 0;
+2016-12-05 16:48:38.673311,[../../mem_table_ctl.h,mem_table_insert_record() Line:01092,tid:140394250970880]: mem_table allocate a record,record_ptr is 1575e200 ;
+2016-12-05 16:48:38.673313,[../../mem_table_ctl.h,mem_table_insert_record() Line:01098,tid:140394250970880]: record_ptr->data is 1575e280 ;
+2016-12-05 16:48:38.673315,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,4 );
+2016-12-05 16:48:38.673317,[../../mem_rbtree_index.h,mem_rbtree_set_left() Line:00746,tid:140394250970880]: mem_rbtree_set_left,(left's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.673319,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.673321,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 3,0 );
+2016-12-05 16:48:38.673323,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00593,tid:140394250970880]: Enter mem_rbtree_insert_fixup();
+2016-12-05 16:48:38.673325,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 6,2,4 );
+2016-12-05 16:48:38.673327,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673329,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673331,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673332,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 6,2,4 );
+2016-12-05 16:48:38.673334,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673336,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673338,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673340,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 6,2,4 );
+2016-12-05 16:48:38.673349,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673352,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673354,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673356,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.673358,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.673360,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673361,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.673363,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.673365,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.673367,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673369,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.673370,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00622,tid:140394250970880]: z = z->parent->parent->right
+2016-12-05 16:48:38.673372,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 6,2,4 );
+2016-12-05 16:48:38.673374,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673376,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673378,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673379,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.673381,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.673383,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673385,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.673386,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.673388,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.673390,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673392,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.673394,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 6,2,4 );
+2016-12-05 16:48:38.673395,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673397,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673399,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673401,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 5,2,1 );
+2016-12-05 16:48:38.673403,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673410,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673413,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673415,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00636,tid:140394250970880]: case 3 right 叔父结点为黑色,且z是右结点,z的父亲着着黑,z的祖父着红,然后左旋转z的祖父结点
+2016-12-05 16:48:38.673417,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 6,2,4 );
+2016-12-05 16:48:38.673419,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673421,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673423,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673424,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 6,2,4 );
+2016-12-05 16:48:38.673426,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673428,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673430,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673432,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.673434,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.673436,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673437,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.673439,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 6,2,4 );
+2016-12-05 16:48:38.673442,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673446,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673450,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673453,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.673457,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.673460,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673464,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.673468,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00774,tid:140394250970880]: enter mem_rbtree_left_rotate() 
+2016-12-05 16:48:38.673470,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 3,2,4 );
+2016-12-05 16:48:38.673472,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673474,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673476,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673478,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00778,tid:140394250970880]: mem_rbtree_right(mem_rbtree_index,x)!=NULL 
+2016-12-05 16:48:38.673480,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 3,2,4 );
+2016-12-05 16:48:38.673490,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673493,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673495,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673497,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 5,2,1 );
+2016-12-05 16:48:38.673499,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673500,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673502,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673504,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.673506,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 5,2,1 );
+2016-12-05 16:48:38.673508,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673510,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673511,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673513,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,1 );
+2016-12-05 16:48:38.673515,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673517,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673519,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673521,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.673523,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,1 );
+2016-12-05 16:48:38.673524,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673526,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673528,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673530,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00791,tid:140394250970880]:  mem_rbtree_parent(mem_rbtree_index,x )== NULL 
+2016-12-05 16:48:38.673532,[../../mem_rbtree_index.h,mem_rbtree_set_left() Line:00746,tid:140394250970880]: mem_rbtree_set_left,(left's (block_no,record_num) =( 2,3 );
+2016-12-05 16:48:38.673534,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,4 );
+2016-12-05 16:48:38.673535,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00813,tid:140394250970880]: mem_rbtree_left_rotate() end
+2016-12-05 16:48:38.673537,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 6,2,4 );
+2016-12-05 16:48:38.673539,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673541,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673549,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673551,[../../mem_rbtree_index.h,mem_rbtree_insert_fixup() Line:00646,tid:140394250970880]: mem_rbtree_insert_fixup() end
+2016-12-05 16:48:38.673553,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00273,tid:140394250970880]: RBTREE_UNLOCK 
+2016-12-05 16:48:38.673555,[../../mem_rbtree_index.h,mem_rbtree_insert() Line:00275,tid:140394250970880]: mem_rbtree_insert(); end
+2016-12-05 16:48:38.673557,[../../mem_rbtree_index.h,mem_rbtree_search_help() Line:00307,tid:140394250970880]: it->rbtree_lkey > key,5 > 3 
+2016-12-05 16:48:38.673571,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.673573,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.673575,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673577,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.673579,[../../mem_rbtree_index.h,mem_rbtree_search_help() Line:00312,tid:140394250970880]: it->rbtree_lkey == key (3)
+2016-12-05 16:48:38.673580,[../../mem_rbtree_index.h,mem_rbtree_delete() Line:00418,tid:140394250970880]: Enter mem_rbtree_delete();
+2016-12-05 16:48:38.673582,[../../mem_rbtree_index.h,mem_rbtree_delete() Line:00419,tid:140394250970880]:  RBTREE_LOCK() 
+2016-12-05 16:48:38.673584,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.673585,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.673587,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673589,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.673591,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 3,2,1 );
+2016-12-05 16:48:38.673592,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673594,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673596,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673598,[../../mem_rbtree_index.h,mem_rbtree_delete() Line:00430,tid:140394250970880]:  Real Delete COLOR IS 0,find key is 3;
+2016-12-05 16:48:38.673599,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.673601,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.673603,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673604,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.673606,[../../mem_rbtree_index.h,mem_rbtree_delete() Line:00435,tid:140394250970880]: !(mem_rbtree_left(mem_rbtree_index,z)==mem_rbtree_index->nil);
+2016-12-05 16:48:38.673608,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 3,2,2 );
+2016-12-05 16:48:38.673610,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.673611,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673613,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.673615,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,4 );
+2016-12-05 16:48:38.673622,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673624,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673626,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673628,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,4 );
+2016-12-05 16:48:38.673630,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,4 );
+2016-12-05 16:48:38.673632,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673634,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673635,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673637,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,4 );
+2016-12-05 16:48:38.673639,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673641,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673642,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673644,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 5,2,3 );
+2016-12-05 16:48:38.673646,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 3 
+2016-12-05 16:48:38.673648,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673649,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760500 
+2016-12-05 16:48:38.673651,[../../mem_rbtree_index.h,mem_rbtree_delete() Line:00450,tid:140394250970880]: y->parent->left = x  ;
+2016-12-05 16:48:38.673653,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 3,2,4 );
+2016-12-05 16:48:38.673654,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673656,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673658,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673660,[../../mem_rbtree_index.h,mem_rbtree_set_left() Line:00746,tid:140394250970880]: mem_rbtree_set_left,(left's (block_no,record_num) =( 2,2 );
+2016-12-05 16:48:38.673662,[../../mem_rbtree_index.h,mem_rbtree_delete_fixup() Line:00486,tid:140394250970880]: ENTER mem_rbtree_delete_fixup() ;
+2016-12-05 16:48:38.673663,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 2,2,4 );
+2016-12-05 16:48:38.673665,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673667,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673669,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673670,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 5,2,2 );
+2016-12-05 16:48:38.673672,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.673681,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673683,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.673685,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 2,2,4 );
+2016-12-05 16:48:38.673687,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673689,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673691,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673692,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 5,3,0 );
+2016-12-05 16:48:38.673694,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 3,record_num is 0 
+2016-12-05 16:48:38.673696,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9b2c0,space_start_addr is 1575e200 
+2016-12-05 16:48:38.673698,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 1575e200 
+2016-12-05 16:48:38.673700,[../../mem_rbtree_index.h,mem_rbtree_delete_fixup() Line:00494,tid:140394250970880]: case 1 left 兄弟结点为红色
+2016-12-05 16:48:38.673701,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 2,2,4 );
+2016-12-05 16:48:38.673703,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673705,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673706,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673708,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 2,2,4 );
+2016-12-05 16:48:38.673710,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673712,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673713,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673715,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00774,tid:140394250970880]: enter mem_rbtree_left_rotate() 
+2016-12-05 16:48:38.673717,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 5,3,0 );
+2016-12-05 16:48:38.673719,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 3,record_num is 0 
+2016-12-05 16:48:38.673720,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9b2c0,space_start_addr is 1575e200 
+2016-12-05 16:48:38.673722,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 1575e200 
+2016-12-05 16:48:38.673724,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00778,tid:140394250970880]: mem_rbtree_right(mem_rbtree_index,x)!=NULL 
+2016-12-05 16:48:38.673725,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 5,3,0 );
+2016-12-05 16:48:38.673727,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 3,record_num is 0 
+2016-12-05 16:48:38.673729,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9b2c0,space_start_addr is 1575e200 
+2016-12-05 16:48:38.673731,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 1575e200 
+2016-12-05 16:48:38.673732,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 6,2,1 );
+2016-12-05 16:48:38.673742,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673744,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673746,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673748,[../../mem_rbtree_index.h,mem_rbtree_set_right() Line:00758,tid:140394250970880]: mem_rbtree_set_right,(right's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.673750,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 6,2,1 );
+2016-12-05 16:48:38.673752,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673753,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673755,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673757,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,1 );
+2016-12-05 16:48:38.673759,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673761,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673762,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673764,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 2,1 );
+2016-12-05 16:48:38.673766,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 5,2,1 );
+2016-12-05 16:48:38.673768,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673770,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673771,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673773,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00791,tid:140394250970880]:  mem_rbtree_parent(mem_rbtree_index,x )== NULL 
+2016-12-05 16:48:38.673775,[../../mem_rbtree_index.h,mem_rbtree_set_left() Line:00746,tid:140394250970880]: mem_rbtree_set_left,(left's (block_no,record_num) =( 2,4 );
+2016-12-05 16:48:38.673777,[../../mem_rbtree_index.h,mem_rbtree_set_parent() Line:00733,tid:140394250970880]: mem_rbtree_set_parent,(parent's (block_no,record_num) =( 3,0 );
+2016-12-05 16:48:38.673778,[../../mem_rbtree_index.h,mem_rbtree_left_rotate() Line:00813,tid:140394250970880]: mem_rbtree_left_rotate() end
+2016-12-05 16:48:38.673780,[../../mem_rbtree_index.h,mem_rbtree_parent() Line:00656,tid:140394250970880]: mem_rbtree_parent(),block_no,record_num=( 2,2,4 );
+2016-12-05 16:48:38.673782,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673784,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673785,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673787,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 5,2,1 );
+2016-12-05 16:48:38.673789,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673791,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673793,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673801,[../../mem_rbtree_index.h,mem_rbtree_delete_fixup() Line:00550,tid:140394250970880]: mem_rbtree_delete() end;
+2016-12-05 16:48:38.673804,[../../mem_table_ctl.h,get_block_by_record() Line:00415,tid:140394250970880]: record_ptr is 15760500,record_num is 3,mem_table->record_size =256 ,MEM_BLOCK_HEAD_SIZE=512
+2016-12-05 16:48:38.673806,[../../mem_table_ctl.h,get_block_by_record() Line:00419,tid:140394250970880]: space_start_addr is 15760000 
+2016-12-05 16:48:38.673808,[../../mem_table_ctl.h,mem_table_del_record() Line:00668,tid:140394250970880]: Begin mem_table_del_record, mem_block_temp is 1c9aa10,block_no = 2,record_num=3;
+2016-12-05 16:48:38.673811,[../../mem_rbtree_index.h,mem_rbtree_delete() Line:00476,tid:140394250970880]: RBTREE_UNLOCK 
+2016-12-05 16:48:38.673813,[../../mem_rbtree_index.h,mem_rbtree_delete() Line:00478,tid:140394250970880]: mem_rbtree_delete() end;
+2016-12-05 16:48:38.673815,[../../mem_rbtree_index.h,mem_rbtree_upper_bound_help() Line:00373,tid:140394250970880]: it->rbtree_lkey > key,6 > 0 
+2016-12-05 16:48:38.673817,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 6,2,4 );
+2016-12-05 16:48:38.673819,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673821,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673822,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673824,[../../mem_rbtree_index.h,mem_rbtree_upper_bound_help() Line:00373,tid:140394250970880]: it->rbtree_lkey > key,5 > 0 
+2016-12-05 16:48:38.673826,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 5,2,2 );
+2016-12-05 16:48:38.673828,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.673829,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673831,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.673833,[../../mem_rbtree_index.h,mem_rbtree_upper_bound_help() Line:00373,tid:140394250970880]: it->rbtree_lkey > key,2 > 0 
+2016-12-05 16:48:38.673835,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 2,2,0 );
+2016-12-05 16:48:38.673836,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 0 
+2016-12-05 16:48:38.673838,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673840,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760200 
+2016-12-05 16:48:38.673842,[../../mem_rbtree_index.h,mem_rbtree_upper_bound_help() Line:00373,tid:140394250970880]: it->rbtree_lkey > key,1 > 0 
+2016-12-05 16:48:38.673843,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 1,2,1 );
+2016-12-05 16:48:38.673845,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673847,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673849,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673850,[../../mem_rbtree_index.h,mem_rbtree_right() Line:00689,tid:140394250970880]: mem_rbtree_right(),block_no,record_num=( 6,2,1 );
+2016-12-05 16:48:38.673852,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 1 
+2016-12-05 16:48:38.673854,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673861,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760300 
+2016-12-05 16:48:38.673863,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 6,2,4 );
+2016-12-05 16:48:38.673865,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 4 
+2016-12-05 16:48:38.673867,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673869,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760600 
+2016-12-05 16:48:38.673871,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 5,2,2 );
+2016-12-05 16:48:38.673872,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 2 
+2016-12-05 16:48:38.673874,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673876,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760400 
+2016-12-05 16:48:38.673877,[../../mem_rbtree_index.h,mem_rbtree_left() Line:00675,tid:140394250970880]: mem_rbtree_left(),block_no,record_num=( 2,2,0 );
+2016-12-05 16:48:38.673879,[../../mem_table_ctl.h,get_record() Line:00486,tid:140394250970880]: block_no is 2,record_num is 0 
+2016-12-05 16:48:38.673881,[../../mem_table_ctl.h,get_record() Line:00488,tid:140394250970880]: mb is 1c9aa10,space_start_addr is 15760200 
+2016-12-05 16:48:38.673883,[../../mem_table_ctl.h,get_record() Line:00496,tid:140394250970880]: *record_ptr is 15760200 
+2016-12-05 16:48:38.673884,[mem_table_rbtree.c,main() Line:00183,tid:140394250970880]: (root->rbtree_lkey,root->block_no,root->record_num) = (6,6,6,0)
+2016-12-05 16:48:38.673886,[mem_table_rbtree.c,main() Line:00184,tid:140394250970880]: (left->rbtree_lkey,left->block_no,left->record_num) = (5,5,5,1)
+2016-12-05 16:48:38.673888,[mem_table_rbtree.c,main() Line:00185,tid:140394250970880]: (right->rbtree_lkey,right->block_no,right->record_num) = (-289760992,2,1,0)
+2016-12-05 16:48:38.673891,[mem_table_rbtree.c,main() Line:00187,tid:140394250970880]: (left_left->rbtree_lkey,left_left->block_no,left_left->record_num) = (2,4,4,0)
+2016-12-05 16:48:38.673892,[mem_table_rbtree.c,main() Line:00189,tid:140394250970880]: ( left_left_left->lkey,left_left_left->block_no,left_left_left->record_num) = (1,1,1,0)
+2016-12-05 16:48:38.673894,[mem_table_rbtree.c,main() Line:00191,tid:140394250970880]: ( index11->lkey,index11->block_no,index11->record_num) = (1,1,1,0)
+2016-12-05 16:48:38.673896,[../../mem_rbtree_index.h,mem_rbtree_index_close() Line:00974,tid:140394250970880]: Begin to close a mem_index：./first_index_name, addr is 1 .
+2016-12-05 16:48:38.673898,[../../mem_rbtree_index.h,mem_rbtree_index_close() Line:00975,tid:140394250970880]:  RBTREE_LOCK() 
+2016-12-05 16:48:38.673900,[../../mem_table_ctl.h,mem_table_close() Line:01351,tid:140394250970880]: Begin to close a mem_table：./first_index_name_heap.
+2016-12-05 16:48:38.673902,[../../mem_table_ctl.h,mem_table_close() Line:01357,tid:140394250970880]: mem_block_temp is 1c9aa10.
+2016-12-05 16:48:38.673904,[../../mem_block_t.h,mem_block_munmap() Line:00386,tid:140394250970880]: Begin to mem_block_munmap() 
+2016-12-05 16:48:38.673914,[../../mem_block_t.h,mem_block_munmap() Line:00400,tid:140394250970880]: mem_block_munmap() ok!
+2016-12-05 16:48:38.673918,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00281,tid:140394250970880]: Enter mem_block_put_mem_to_os() 
+2016-12-05 16:48:38.673922,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00293,tid:140394250970880]: mb->shmid = 56950796 have deleted!
+2016-12-05 16:48:38.673928,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00300,tid:140394250970880]: del_block_no_addr ok!
+2016-12-05 16:48:38.673930,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00302,tid:140394250970880]: mem_block_put_mem_to_os() ok!
+2016-12-05 16:48:38.673939,[../../mem_block_t.h,mem_block_munmap() Line:00386,tid:140394250970880]: Begin to mem_block_munmap() 
+2016-12-05 16:48:38.673946,[../../mem_block_t.h,mem_block_munmap() Line:00400,tid:140394250970880]: mem_block_munmap() ok!
+2016-12-05 16:48:38.673949,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00281,tid:140394250970880]: Enter mem_block_put_mem_to_os() 
+2016-12-05 16:48:38.673951,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00293,tid:140394250970880]: mb->shmid = 56983565 have deleted!
+2016-12-05 16:48:38.673954,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00300,tid:140394250970880]: del_block_no_addr ok!
+2016-12-05 16:48:38.673956,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00302,tid:140394250970880]: mem_block_put_mem_to_os() ok!
+2016-12-05 16:48:38.673958,[../../mem_table_ctl.h,mem_table_close() Line:01368,tid:140394250970880]: Free mem_table_ptr.
+2016-12-05 16:48:38.673961,[../../mem_table_ctl.h,mem_table_close() Line:01380,tid:140394250970880]: free (mem_table->config.fields_table)
+2016-12-05 16:48:38.673963,[../../mem_table_ctl.h,mem_table_close() Line:01388,tid:140394250970880]: free(mem_table->config.mem_blocks_table)
+2016-12-05 16:48:38.673966,[../../mem_table_ctl.h,mem_table_close() Line:01394,tid:140394250970880]: free(mem_table).
+2016-12-05 16:48:38.673967,[../../mem_table_ctl.h,mem_table_close() Line:01397,tid:140394250970880]: mem_table_close() end.
+2016-12-05 16:48:38.673969,[../../mem_rbtree_index.h,mem_rbtree_index_close() Line:00984,tid:140394250970880]: RBTREE_UNLOCK 
+2016-12-05 16:48:38.673971,[../../mem_table_ctl.h,mem_table_close() Line:01351,tid:140394250970880]: Begin to close a mem_table：./first_table_name.
+2016-12-05 16:48:38.673973,[../../mem_table_ctl.h,mem_table_close() Line:01357,tid:140394250970880]: mem_block_temp is 1c7a360.
+2016-12-05 16:48:38.673975,[../../mem_block_t.h,mem_block_munmap() Line:00386,tid:140394250970880]: Begin to mem_block_munmap() 
+2016-12-05 16:48:38.673980,[../../mem_block_t.h,mem_block_munmap() Line:00400,tid:140394250970880]: mem_block_munmap() ok!
+2016-12-05 16:48:38.673983,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00281,tid:140394250970880]: Enter mem_block_put_mem_to_os() 
+2016-12-05 16:48:38.673985,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00293,tid:140394250970880]: mb->shmid = 56918027 have deleted!
+2016-12-05 16:48:38.673988,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00300,tid:140394250970880]: del_block_no_addr ok!
+2016-12-05 16:48:38.673990,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00302,tid:140394250970880]: mem_block_put_mem_to_os() ok!
+2016-12-05 16:48:38.673991,[../../mem_table_ctl.h,mem_table_close() Line:01368,tid:140394250970880]: Free mem_table_ptr.
+2016-12-05 16:48:38.673994,[../../mem_table_ctl.h,mem_table_close() Line:01380,tid:140394250970880]: free (mem_table->config.fields_table)
+2016-12-05 16:48:38.673996,[../../mem_table_ctl.h,mem_table_close() Line:01388,tid:140394250970880]: free(mem_table->config.mem_blocks_table)
+2016-12-05 16:48:38.673998,[../../mem_table_ctl.h,mem_table_close() Line:01394,tid:140394250970880]: free(mem_table).
+2016-12-05 16:48:38.673999,[../../mem_table_ctl.h,mem_table_close() Line:01397,tid:140394250970880]: mem_table_close() end.

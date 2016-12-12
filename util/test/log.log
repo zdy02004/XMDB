@@ -1,0 +1,3 @@
+2016-12-07 00:25:25.318189,[../file_util.h,dirent_array_search_min() Line:00181,tid:139814890878720]:>>>IMPORTANT_INFO NOT_FOUND_WANTED_FILE
+2016-12-07 00:25:25.318338,[file_util_test.c,main() Line:00028,tid:139814890878720]: ret_pos = -2 
+2016-12-07 00:25:25.322353,[../../mem_date_index_ctl/mem_transaction.h,redo_file_redo_index() Line:01765 ,tid:139814890878720]:>>>>Err NO_FILE_FOUNDED
