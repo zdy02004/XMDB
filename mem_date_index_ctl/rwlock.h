@@ -2,6 +2,13 @@
 #define _RWLOCK_H_
 #define EEBUSY 1
 
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
+
 #define atomic_xadd(P, V) __sync_fetch_and_add((P), (V))
 #define cmpxchg(P, O, N) __sync_val_compare_and_swap((P), (O), (N))
 #define atomic_inc(P) __sync_add_and_fetch((P), 1)
@@ -148,4 +155,12 @@ static int ticket_lockable(ticketlock *t)
 
 //________________________________________________________________________
 //
+
+
+#ifdef __cplusplus
+
+}
+
+#endif
+
 #endif

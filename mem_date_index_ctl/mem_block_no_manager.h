@@ -1,6 +1,12 @@
 #ifndef MEM_BLOCK_NO_MANAGER_T
 #define MEM_BLOCK_NO_MANAGER_T
 
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>  
 #include "rwlock.h"
@@ -80,7 +86,7 @@ inline int init_mem_block_no_manager()
 {
 	DEBUG("in init_mem_block_no_manager()\n");
 	MEM_BLOCK_NO_LOCK_INIT(&(mem_block_no_manager.locker));
-	mem_block_no_manager.mem_block_no_table = malloc(INIT_MEM_BLOCK_NO*(sizeof(void *)));
+	mem_block_no_manager.mem_block_no_table = (void**)malloc(INIT_MEM_BLOCK_NO*(sizeof(void *)));
 	mem_block_no_manager.max_num            = INIT_MEM_BLOCK_NO;
 	mem_block_no_manager.cur_num            = 0;
 	mem_block_no_manager.extend_police      = DOUBLE_EXTEND;
@@ -114,7 +120,7 @@ inline int extend_mem_block_no_manager()
   memcpy(new_,old,mem_block_no_manager.max_num);
   mem_block_no_manager.max_num            =  2*(mem_block_no_manager.max_num);
 	mem_block_no_manager.cur_num            =  mem_block_no_manager.max_num;
-	mem_block_no_manager.mem_block_no_table =  new_;
+	mem_block_no_manager.mem_block_no_table =  (void**)new_;
   free(old);
   
   MEM_BLOCK_NO_UNLOCK(&(mem_block_no_manager.locker)); //½âËø
@@ -267,6 +273,10 @@ if(0!=(err =  get_str_num_map_addr(&block_name_manager,block_name,&addr,&addr_pr
 	return 0;
 	
 }
+#ifdef __cplusplus
 
+}
+
+#endif
 
 #endif 

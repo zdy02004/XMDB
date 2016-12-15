@@ -1,6 +1,12 @@
 ﻿#ifndef STR_NUM_MAP_T
 #define STR_NUM_MAP_T
 
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>  
 #include "../mem_date_index_ctl/rwlock.h"
@@ -115,7 +121,7 @@ inline int init_str_num_map_manager(str_num_map_t *str_num_map_manager)
 {
 	DEBUG("in init_str_num_map_manager()\n");
 	STR_NUM_MAP_LOCK_INIT(&(str_num_map_manager->locker));
-	str_num_map_manager->str_num_map_table = malloc(INIT_NO_MAP*STR_NUM_MAP_SIZE);
+	str_num_map_manager->str_num_map_table = (str_num_t**)malloc(INIT_NO_MAP*STR_NUM_MAP_SIZE);
 	str_num_map_manager->max_num            = INIT_NO_MAP;
 	str_num_map_manager->cur_num            = 0;
 	str_num_map_manager->extend_police      = DOUBLE_EXTEND;
@@ -149,7 +155,7 @@ inline int extend_str_num_map_manager(str_num_map_t *str_num_map_manager)
   memcpy(new_,old,str_num_map_manager->max_num);
   str_num_map_manager->max_num            =  2*(str_num_map_manager->max_num);
 	str_num_map_manager->cur_num            =  str_num_map_manager->max_num;
-	str_num_map_manager->str_num_map_table =  new_;
+	str_num_map_manager->str_num_map_table =  (str_num_t**)new_;
   free(old);
   
   STR_NUM_MAP_UNLOCK(&(str_num_map_manager->locker)); //解锁
@@ -291,5 +297,11 @@ inline int del_str_num_map_addr(str_num_map_t *str_num_map_manager,char * str)
 	return 0;
 	
 }
+
+#ifdef __cplusplus
+
+}
+
+#endif
 
 #endif 

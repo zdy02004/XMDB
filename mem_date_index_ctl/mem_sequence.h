@@ -1,6 +1,12 @@
 #ifndef MEM_BLOCK_NO_MANAGER_T
 #define MEM_BLOCK_NO_MANAGER_T
 
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>  
 #include <string.h>  
@@ -295,4 +301,11 @@ inline int release_seq_no(long  seq_no)
 	return 0;
 	
 }
+
+#ifdef __cplusplus
+
+}
+
+#endif
+
 #endif 

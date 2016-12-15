@@ -1,8 +1,13 @@
 #ifndef MEM_HASH_BLOCK
 #define MEM_HASH_BLOCK
 #include"mem_table_ctl.h"
+#include"mem_index_no_manager.h"
 
+#ifdef __cplusplus
 
+extern "C" {
+
+#endif
 
 /*
 使用两个 mem_table_t 来组成拉链法哈希表 mem_hash_block_t
@@ -802,6 +807,7 @@ inline int mem_hash_index_del_long(
    //找到的情况
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND:
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND:
+   	{
    DEBUG("SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND or SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND\n");
    	     //连续空间中,下一个块号不存在就直接删除
    	    if(entry->link_block_no <= 0)
@@ -844,9 +850,12 @@ inline int mem_hash_index_del_long(
    	    row_wunlock(&(next_record_ptr->row_lock));      
    	    *out_record_ptr = next_record_ptr;                                                 //解行锁
    	    break;
+   	  }
    default:
+   	{
    	    *out_record_ptr = record_ptr;                                                           //解行锁 
    	    return ret;
+   	  }
   }
     DEBUG(" mem_hash_index_del_long() end\n");                                             
 	return 0;
@@ -909,17 +918,22 @@ inline int mem_hash_index_del_str(
    {
        //连续空间内没找到
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_NOT_FOUND:
+   	{
    			*out_record_ptr = NULL;
         return SELECT_MEM_HASH_INDEX_ARRAY_SPACE_NOT_FOUND;
    	    break;
+   	}
       //链接空间内没找到
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND:
+   	{
    			*out_record_ptr = NULL;
    	    return SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND;
    	    break;
+   	}
    //找到的情况
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND:
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND:
+   	{
    	     //下一个块号不存在就直接删除
    	    if(entry->link_block_no <= 0)
    	    	{
@@ -958,10 +972,13 @@ inline int mem_hash_index_del_str(
    	    row_wunlock(&(next_record_ptr->row_lock)); 
    	    *out_record_ptr = next_record_ptr;                                                         //解行锁
    	    break;
+   	  }
    default:
+   	{
    				*out_record_ptr = NULL;    
    	     row_wunlock(&(record_ptr->row_lock));                                                             //解行锁
    	    return ret;
+   	  }
   }
   row_wunlock(&(record_ptr->row_lock));                                                                    //解行锁
 
@@ -1304,5 +1321,10 @@ inline int mem_hash_index_insert_l(
     																  mem_table_no);
     
     
-     }                         
+     }         
+     
+#ifdef __cplusplus
+}
+#endif  
+              
 #endif 

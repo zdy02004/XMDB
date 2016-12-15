@@ -1,5 +1,10 @@
 #ifndef MEM_BLOCK_T
 #define MEM_BLOCK_T
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
 
 #include <sys/types.h>
 #include <sys/ipc.h>
@@ -413,5 +418,11 @@ inline int mem_block_msync(struct  mem_block_t * mb)
      MEM_BLOCK_UNLOCK(&(mb->block_lock));
   	 return 0;
 }
+
+#ifdef __cplusplus
+
+}
+
+#endif
 
 #endif 

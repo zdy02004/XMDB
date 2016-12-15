@@ -1,6 +1,12 @@
 ﻿#ifndef FILE_ENTRY_MAP_T
 #define FILE_ENTRY_MAP_T
 
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>  
 #include "../mem_date_index_ctl/rwlock.h"
@@ -118,7 +124,7 @@ inline int init_file_entry_map_manager(file_entry_map_t *file_entry_map_manager)
 {
 	DEBUG("in init_file_entry_map_manager()\n");
 	FILE_ENTRY_MAP_LOCK_INIT(&(file_entry_map_manager->locker));
-	file_entry_map_manager->file_entry_map_table = malloc(INIT_FILE_NO_MAP*FILE_ENTRY_MAP_SIZE);
+	file_entry_map_manager->file_entry_map_table =(file_entry_t**) malloc(INIT_FILE_NO_MAP*FILE_ENTRY_MAP_SIZE);
 	file_entry_map_manager->max_num            = INIT_FILE_NO_MAP;
 	file_entry_map_manager->cur_num            = 0;
 	file_entry_map_manager->extend_police      = DOUBLE_EXTEND;
@@ -152,7 +158,7 @@ inline int extend_file_entry_map_manager(file_entry_map_t *file_entry_map_manage
   memcpy(new_,old,file_entry_map_manager->max_num);
   file_entry_map_manager->max_num            =  2*(file_entry_map_manager->max_num);
 	file_entry_map_manager->cur_num            =  file_entry_map_manager->max_num;
-	file_entry_map_manager->file_entry_map_table =  new_;
+	file_entry_map_manager->file_entry_map_table = (file_entry_t**) new_;
   free(old);
   
   FILE_ENTRY_MAP_UNLOCK(&(file_entry_map_manager->locker)); //解锁
@@ -299,5 +305,9 @@ inline int del_file_entry_map_addr(file_entry_map_t *file_entry_map_manager,char
 	return 0;
 	
 }
+#ifdef __cplusplus
 
+}
+
+#endif
 #endif 

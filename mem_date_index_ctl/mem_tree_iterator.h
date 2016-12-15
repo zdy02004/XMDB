@@ -1,6 +1,12 @@
 #ifndef _RBTREE_ITERATOR_H_
 #define _RBTREE_ITERATOR_H_
 
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
 #include"mem_rbtree_index.h"
 
 #define ITERATOR_ERR_NOT_INIT  360001
@@ -156,7 +162,11 @@ inline mem_rbtree_entry_t * rb_tree_after_iterator_next(struct rb_tree_after_ite
 
 
 
+#ifdef __cplusplus
 
+}
+
+#endif
 
 
 

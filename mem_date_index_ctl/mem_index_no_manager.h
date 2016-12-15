@@ -1,6 +1,12 @@
 #ifndef MEM_INDEX_NO_MANAGER_T
 #define MEM_INDEX_NO_MANAGER_T
 
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>  
 #include "rwlock.h"
@@ -80,7 +86,7 @@ return ret|ret2;
 inline int init_mem_index_no_manager()
 {
 	MEM_INDEX_NO_LOCK_INIT(&(mem_index_no_manager.locker));
-	mem_index_no_manager.mem_index_no_table = malloc(INIT_MEM_INDEX_NO*(sizeof(void *)));
+	mem_index_no_manager.mem_index_no_table = (void**)malloc(INIT_MEM_INDEX_NO*(sizeof(void *)));
 	mem_index_no_manager.max_num            = INIT_MEM_INDEX_NO;
 	mem_index_no_manager.cur_num            = 0;
 	mem_index_no_manager.extend_police      = DOUBLE_EXTEND;
@@ -113,7 +119,7 @@ inline int extend_mem_index_no_manager()
   memcpy(_new,old,mem_index_no_manager.max_num);
   mem_index_no_manager.max_num            =  2*(mem_index_no_manager.max_num);
 	mem_index_no_manager.cur_num            =  mem_index_no_manager.max_num;
-	mem_index_no_manager.mem_index_no_table =  _new;
+	mem_index_no_manager.mem_index_no_table =  (void**)_new;
   free(old );
   
   MEM_INDEX_NO_UNLOCK(&(mem_index_no_manager.locker)); //½âËø
@@ -260,6 +266,10 @@ if(0!=(err =  get_str_num_map_addr(&index_name_manager,index_name,&addr,&addr_pr
 	return 0;
 	
 }
+#ifdef __cplusplus
 
+}
+
+#endif
 
 #endif 

@@ -5,6 +5,12 @@
 #ifndef TABLE_CTL
 #define TABLE_CTL
 
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
 //支持大文件
 #define _FILE_OFFSET_BITS 64
 #define __USE_FILE_OFFSET64
@@ -322,5 +328,12 @@ close_ddl_file(FILE *fp )
 	//刷入磁盘,并关闭文件
 	return fclose(  fp );
 }
+
+
+#ifdef __cplusplus
+
+}
+
+#endif
 
 #endif 

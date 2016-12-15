@@ -1,5 +1,12 @@
 ﻿#ifndef TABLE_META
 #define TABLE_META
+
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
 #include "mem_hash_index.h"
 #include "mem_rbtree_index.h"
 
@@ -438,5 +445,10 @@ int index_meta_load(void * index,char *path ,int index_class)
 }
 
 
+#ifdef __cplusplus
+
+}
+
+#endif
 
 #endif 

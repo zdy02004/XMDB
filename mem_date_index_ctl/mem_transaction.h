@@ -1,5 +1,12 @@
 #ifndef TRANSACTION_H
 #define TRANSACTION_H
+
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
 #include "mem_table_ctl.h"
 #include "mem_redo_log.h"
 #include "mem_hash_index.h"
@@ -538,7 +545,7 @@ inline int extend_transaction_manager()
   }
   memcpy(_new,old,transaction_manager.transaction_table_num);
   transaction_manager.transaction_table_num =  2*(transaction_manager.transaction_table_num);
-	transaction_manager.transaction_tables    =  _new;
+	transaction_manager.transaction_tables    = (mem_transaction_t*) _new;
 	
   free(old);
   mem_transaction_t * trans;
@@ -705,7 +712,7 @@ TRANS_REF_WUNLOCK(&(trans->ref_locker));  //解锁
 // 初始化循环数组缓冲区
 inline int init_trans_data_queue(trans_data_queue_t * trans_data_queue,long max)  
 {  
-    trans_data_queue->item = malloc(max * sizeof(mem_trans_data_entry_t));  
+    trans_data_queue->item = (mem_trans_data_entry_t*)malloc(max * sizeof(mem_trans_data_entry_t));  
     trans_data_queue->max  = max;
     if(!trans_data_queue->item)  
     {  
@@ -855,7 +862,7 @@ int destroy_trans_data_queue(trans_data_queue_t * trans_data_queue_t)
 
 inline int init_trans_data_stack(trans_data_stack_t * trans_data_stack,long max)  
 {  
-    trans_data_stack->item = malloc(max * sizeof(mem_trans_data_entry_t));  
+    trans_data_stack->item = (mem_trans_data_entry_t*)malloc(max * sizeof(mem_trans_data_entry_t));  
     trans_data_stack->max  = max;
     if(!trans_data_stack->item)  
     {  
@@ -947,7 +954,7 @@ inline int extend_trans_data_stack(trans_data_stack_t * trans_data_stack)
 	
   memcpy(_new,old,trans_data_stack->max);
   trans_data_stack->max            =  2*(trans_data_stack->max);
-	mem_table_no_manager.mem_table_no_table = _new;
+	mem_table_no_manager.mem_table_no_table = (void**)_new;
   free(old);
   TRANS_QUEUE_UNLOCK(&(trans_data_stack->locker)); 
   return 0 ;
@@ -1460,7 +1467,7 @@ inline int rollback_trans( long long  trans_no)
 	  
 	   struct record_t * record_ptr2 = NULL ;
      long   block_no;
-	   err = mem_table_insert_record( mem_table ,&record_ptr2,&block_no, undo_addr_ptr);
+	   err = mem_table_insert_record( mem_table ,&record_ptr2,&block_no, (char*)undo_addr_ptr);
 	   if(err){ERROR("ROLLBACK OPT_DATA_UPDATE on insert  err is %d\n",err);return err;}
 	   	// 修改原始记录表的回滚信息
     if(NULL !=record_ptr->undo_info_ptr  )
@@ -1496,7 +1503,7 @@ inline int rollback_trans( long long  trans_no)
   	  err =  mem_table_insert_record(mem_table ,
   	 															 &record_ptr2,
   	 															 &block_no,
-  	  														 undo_addr_ptr);
+  	  														(char*) undo_addr_ptr);
 			DEBUG("Old record_ptr is %0x,new record_ptr is %0x \n",record_ptr,record_ptr2);
 
   		  // 修改原始记录表的回滚信息
@@ -1880,6 +1887,11 @@ int redo(char * path,char * start_str_in)
 	return 0;
 }
 
+#ifdef __cplusplus
+
+}
+
+#endif
 
 #endif 
 

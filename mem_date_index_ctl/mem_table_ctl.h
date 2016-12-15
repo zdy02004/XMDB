@@ -6,7 +6,11 @@
 #include "rwlock.h"
 #include "mem_table_no_manager.h"
 #include "time_type_t.h"
+#ifdef __cplusplus
 
+extern "C" {
+
+#endif
 
 // 字段类型标号
 #define FIELD_TYPE_INT        1
@@ -361,6 +365,7 @@ table_rwlock_init(&(mem_table->rwlocker ));																\
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+inline int mem_table_extend( struct mem_table_t * mem_table, struct  mem_block_t ** out_mem_block);
 
 
 //填充表里的字段信息的大小,和每个字段距离数据开始地址的距离
@@ -397,7 +402,7 @@ inline int get_record_by_field_name(
 		dff_size += mem_table->config.fields_table[i].field_size;
 	}
 	
-	record_ptr =  addr - dff_size - RECORD_HEAD_SIZE;  //记录启始地址 = 数据地址 - 前面所有字段数据占用的空间 - 记录头占用空间
+	record_ptr =  (record_t*)(addr - dff_size - RECORD_HEAD_SIZE);  //记录启始地址 = 数据地址 - 前面所有字段数据占用的空间 - 记录头占用空间
 	return 0;
 }
 
@@ -979,99 +984,99 @@ inline int mem_table_allocate_record(struct mem_table_t *mem_table ,/* out */str
 }
 
 //分配n个连续的空闲记录行，只能在一个块中分配
-inline int mem_table_try_allocate_n_record(struct mem_table_t *mem_table ,long n,/* out */struct record_t ** record_ptr,long * block_no)
-{
-	if( NULL == mem_table )  return ALLOCATE_N_RECORD_ERR_TABLE_IS_NULL;
-	if( n <= 0 ) return ALLOCATE_RECORD_ERR_NUM_IS_ZERO;
-	int i=0;
-	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
-	
-	HIGH_LEVEL_LOCK(&(mem_block_temp->high_level_lock));
-	
-  //遍历所有块,查找可以插入连续n个数据的内存块			
-	for(;i<mem_table->config.mem_block_used;++i)
-	{
-		if(mem_block_temp->space_start_addr + (n + mem_block_temp->high_level)* mem_table->record_size < mem_block_temp->space_end_addr - mem_table->record_size )break;
-			if(i!=mem_table->config.mem_block_used-1 )mem_block_temp = mem_block_temp->next;      //下一个块
-	}
-	
-	  //根据高水位线获取最新插入位置
-    
-   	  
-	// 找到可用的记录位置
-	*record_ptr = (struct record_t *) ( mem_block_temp->space_start_addr + mem_block_temp->high_level * mem_table->record_size );
-	//返回块的逻辑号
-	*block_no = mem_block_temp->block_no;
-	   
-
-       unsigned  long long  high_level_temp = mem_block_temp->high_level;
-       // 高水位线未上升过，则上升n-1行,否则上升n行
-      // if ( mem_block_temp->high_level != 0 )  
-  	  // {
-            mem_block_temp->high_level += n;
-      // } 
-      // else
-      // 	    mem_block_temp->high_level += n-1;
-      HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock));
-	
-	// 没有连续的空闲空间，就自动扩表
-	if (i == mem_table->config.mem_block_used)
-{ 
-	     	      //自动扩表
-	     	      struct  mem_block_t * extern_mem_block;
-	     	      int err;
-	     	      err =  mem_table_extend(mem_table,&extern_mem_block);
-	     	      if(0 == err)
-	     	      	{
-	     	      			//自动扩表成功,记录插入扩展块中的第一个位置
-	     	      			if ( (extern_mem_block->space_end_addr-extern_mem_block->space_end_addr)>mem_table->record_size)
-	     	      		    {
-	     	      		      *record_ptr =(struct record_t *) extern_mem_block->space_start_addr; 	
-	     	      		      //扩展块高水位线递增
-                            HIGH_LEVEL_LOCK(&(extern_mem_block->high_level_lock));
-                            high_level_temp =  extern_mem_block->high_level;
-                            extern_mem_block->high_level +=(n-1);
-                            HIGH_LEVEL_UNLOCK(&(extern_mem_block->high_level_lock));
-                            //返回块的逻辑号
-														*block_no = extern_mem_block->block_no;
-                      }
-	     	      		  else return  MEM_TABLE_EXTEND_ERR;
-	     	      	}
-	     	      else if(TRY_LOCK == err)return TRY_LOCK;
-	     	      else return  MEM_TABLE_EXTEND_ERR;
-}
-     //对连续的空间初始化
-     long j = 0;
-     struct record_t ** record_temp = record_ptr;
-     for(;j<n;++j)
-     {
-     (*record_ptr)->record_num= high_level_temp +j ;
-		 (*record_temp)->is_used =  1;
-     (*record_temp)->last_free_pos =  0;
-     (*record_temp)->scn           =  0;
-     (*record_temp)->undo_record_ptr= 0;
-     (*record_temp)->data    =  (char *)(*record_ptr) + RECORD_HEAD_SIZE;  
-     row_lock_init(&((*record_temp)->row_lock)); //行锁初始化
-     *record_temp = (struct record_t *)(((off_t) record_temp + mem_table->record_size));
-     }
-	return 0;
-}
-
-//分配一个空闲记录行
-inline int mem_table_allocate_n_record(struct mem_table_t *mem_table ,long n,/* out */struct record_t ** record_ptr,long * block_no)
-{
-	if( NULL == mem_table )  return ALLOCATE_N_RECORD_ERR_TABLE_IS_NULL;
-  int err;
-	do{
-		err= mem_table_try_allocate_n_record(mem_table , n,/* out */ record_ptr, block_no);
-		if(0!= err && TRY_LOCK != err )
-  	{
-  		return err;
-  	} 
-	}while(TRY_LOCK == err );
-	return 0;
-	
-}
+//inline int mem_table_try_allocate_n_record(struct mem_table_t *mem_table ,long n,/* out */struct record_t ** record_ptr,long * block_no)
+//{
+//	if( NULL == mem_table )  return ALLOCATE_N_RECORD_ERR_TABLE_IS_NULL;
+//	if( n <= 0 ) return ALLOCATE_RECORD_ERR_NUM_IS_ZERO;
+//	int i=0;
+//	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
+//	
+//	HIGH_LEVEL_LOCK(&(mem_block_temp->high_level_lock));
+//	
+//  //遍历所有块,查找可以插入连续n个数据的内存块			
+//	for(;i<mem_table->config.mem_block_used;++i)
+//	{
+//		if(mem_block_temp->space_start_addr + (n + mem_block_temp->high_level)* mem_table->record_size < mem_block_temp->space_end_addr - mem_table->record_size )break;
+//			if(i!=mem_table->config.mem_block_used-1 )mem_block_temp = mem_block_temp->next;      //下一个块
+//	}
+//	
+//	  //根据高水位线获取最新插入位置
+//    
+//   	  
+//	// 找到可用的记录位置
+//	*record_ptr = (struct record_t *) ( mem_block_temp->space_start_addr + mem_block_temp->high_level * mem_table->record_size );
+//	//返回块的逻辑号
+//	*block_no = mem_block_temp->block_no;
+//	   
+//
+//       unsigned  long long  high_level_temp = mem_block_temp->high_level;
+//       // 高水位线未上升过，则上升n-1行,否则上升n行
+//      // if ( mem_block_temp->high_level != 0 )  
+//  	  // {
+//            mem_block_temp->high_level += n;
+//      // } 
+//      // else
+//      // 	    mem_block_temp->high_level += n-1;
+//      HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock));
+//	
+//	// 没有连续的空闲空间，就自动扩表
+//	if (i == mem_table->config.mem_block_used)
+//{ 
+//	     	      //自动扩表
+//	     	      struct  mem_block_t * extern_mem_block;
+//	     	      int err;
+//	     	      err =  mem_table_extend(mem_table,&extern_mem_block);
+//	     	      if(0 == err)
+//	     	      	{
+//	     	      			//自动扩表成功,记录插入扩展块中的第一个位置
+//	     	      			if ( (extern_mem_block->space_end_addr-extern_mem_block->space_end_addr)>mem_table->record_size)
+//	     	      		    {
+//	     	      		      *record_ptr =(struct record_t *) extern_mem_block->space_start_addr; 	
+//	     	      		      //扩展块高水位线递增
+//                            HIGH_LEVEL_LOCK(&(extern_mem_block->high_level_lock));
+//                            high_level_temp =  extern_mem_block->high_level;
+//                            extern_mem_block->high_level +=(n-1);
+//                            HIGH_LEVEL_UNLOCK(&(extern_mem_block->high_level_lock));
+//                            //返回块的逻辑号
+//														*block_no = extern_mem_block->block_no;
+//                      }
+//	     	      		  else return  MEM_TABLE_EXTEND_ERR;
+//	     	      	}
+//	     	      else if(TRY_LOCK == err)return TRY_LOCK;
+//	     	      else return  MEM_TABLE_EXTEND_ERR;
+//}
+//     //对连续的空间初始化
+//     long j = 0;
+//     struct record_t ** record_temp = record_ptr;
+//     for(;j<n;++j)
+//     {
+//     (*record_ptr)->record_num= high_level_temp +j ;
+//		 (*record_temp)->is_used =  1;
+//     (*record_temp)->last_free_pos =  0;
+//     (*record_temp)->scn           =  0;
+//     (*record_temp)->undo_record_ptr= 0;
+//     (*record_temp)->data    =  (char *)(*record_ptr) + RECORD_HEAD_SIZE;  
+//     row_lock_init(&((*record_temp)->row_lock)); //行锁初始化
+//     *record_temp = (struct record_t *)(((off_t) record_temp + mem_table->record_size));
+//     }
+//	return 0;
+//}
+//
+////分配一个空闲记录行
+//inline int mem_table_allocate_n_record(struct mem_table_t *mem_table ,long n,/* out */struct record_t ** record_ptr,long * block_no)
+//{
+//	if( NULL == mem_table )  return ALLOCATE_N_RECORD_ERR_TABLE_IS_NULL;
+//  int err;
+//	do{
+//		err= mem_table_try_allocate_n_record(mem_table , n,/* out */ record_ptr, block_no);
+//		if(0!= err && TRY_LOCK != err )
+//  	{
+//  		return err;
+//  	} 
+//	}while(TRY_LOCK == err );
+//	return 0;
+//	
+//}
 
 //插入一个记录的数据
 inline int mem_table_insert_record(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no, /* in */char *buf)
@@ -1910,6 +1915,10 @@ int mem_table_rwunlock_by_writer(struct mem_table_t *  mem_table,  long long  tr
   ret = table_rwlock_wrlock(&(mem_table->rwlocker));
   return ret;
 }
+#ifdef __cplusplus
 
+}
+
+#endif
 
 #endif 

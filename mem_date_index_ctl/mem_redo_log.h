@@ -1,6 +1,12 @@
 #ifndef MEM_REDO_H
 #define MEM_REDO_H
 
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -256,5 +262,11 @@ inline int fflush_redo_log_manager()
 	REDO_LOG_UNLOCK(&(redo_log_manager.data_locker));//数据文件解锁	
 	return 0;
 }
+
+#ifdef __cplusplus
+
+}
+
+#endif
 
 #endif 

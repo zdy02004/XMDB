@@ -3,7 +3,11 @@
 #include "mem_transaction.h"
 #define ROLLBACK_STACK_NOT_FOUND 						  50001
 
+#ifdef __cplusplus
 
+extern "C" {
+
+#endif
 //__________________________________________________________
 //___mvcc__operations_______________________________________
 //__________________________________________________________
@@ -124,7 +128,7 @@ inline int __mem_mvcc_insert_record(struct mem_table_t *mem_table ,
   if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
   
     //保留上一次回滚栈信息
-    undo_info_ptr->next = (*record_ptr)->undo_info_ptr;
+    undo_info_ptr->next = (mem_trans_data_entry_t*)((*record_ptr)->undo_info_ptr);
      // 指向回滚信息
     (*record_ptr)->undo_info_ptr = undo_info_ptr;
   
@@ -215,7 +219,7 @@ inline int __mem_mvcc_delete_record(struct mem_table_t *mem_table ,
   
   if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
   //保留上一次回滚栈信息
-  undo_info_ptr->next = (record_ptr)->undo_info_ptr;
+  undo_info_ptr->next = (mem_trans_data_entry_t*)((record_ptr)->undo_info_ptr);
     
      // 指向回滚信息
     (record_ptr)->undo_info_ptr = undo_info_ptr;
@@ -409,7 +413,7 @@ err =  mem_hash_index_insert_l(
   if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
   
     //保留上一次回滚栈信息
-    undo_info_ptr->next = (*record_ptr)->undo_info_ptr;
+    undo_info_ptr->next = (mem_trans_data_entry_t*)((*record_ptr)->undo_info_ptr);
      // 指向回滚信息
     (*record_ptr)->undo_info_ptr = undo_info_ptr;
   
@@ -494,7 +498,7 @@ err =  mem_hash_index_del_l(
   if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
   
     //保留上一次回滚栈信息
-    undo_info_ptr->next = (*record_ptr)->undo_info_ptr;
+    undo_info_ptr->next = (mem_trans_data_entry_t*)((*record_ptr)->undo_info_ptr);
      // 指向回滚信息
     (*record_ptr)->undo_info_ptr = undo_info_ptr;
   
@@ -583,7 +587,7 @@ err =  mem_hash_index_insert_s(
   if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
   
     //保留上一次回滚栈信息
-    undo_info_ptr->next = (*record_ptr)->undo_info_ptr;
+    undo_info_ptr->next = (mem_trans_data_entry_t*)((*record_ptr)->undo_info_ptr);
      // 指向回滚信息
     (*record_ptr)->undo_info_ptr = undo_info_ptr;
   
@@ -672,7 +676,7 @@ err =  mem_hash_index_del_s(
   if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
   
     //保留上一次回滚栈信息
-    undo_info_ptr->next = (*record_ptr)->undo_info_ptr;
+    undo_info_ptr->next = (mem_trans_data_entry_t*)((*record_ptr)->undo_info_ptr);
      // 指向回滚信息
     (*record_ptr)->undo_info_ptr = undo_info_ptr;
   
@@ -958,4 +962,11 @@ inline int mem_rbtree_mvcc_delete(mem_rbtree_index_t *mem_rbtree_index,
 																1
 																);
 }
+
+#ifdef __cplusplus
+
+}
+
+#endif
+
 #endif 

@@ -1,11 +1,21 @@
 #ifndef _LOG_UTIL_
 #define _LOG_UTIL_
 
+
+
 #include <stdio.h>
-#include <time.h>
+
 #include <pthread.h>
 //#define __DEBUG__  
 
+
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
+#include <sys/time.h>
 char now_buffer[50] = { 0 };
 
 char * GetTime()
@@ -63,4 +73,10 @@ int GetTimeForNAME(char *buffer)
 
 
 #endif  
+
+#ifdef __cplusplus
+
+}
+
+#endif
 #endif  

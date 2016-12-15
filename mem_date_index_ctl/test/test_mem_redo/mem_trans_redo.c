@@ -138,7 +138,7 @@ if(0!=(err=mem_mvcc_delete_record(mem_table,record_ptr,trans_no 			  ))){ERROR("
 }
 
 
-	return;
+	return 0;
 }
 
 /*

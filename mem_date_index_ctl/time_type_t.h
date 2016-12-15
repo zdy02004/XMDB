@@ -1,5 +1,12 @@
 #ifndef MEM_TIME_T
 #define MEM_TIME_T
+
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
 #include <stdio.h>  
 #include <time.h>    
 #include <stdlib.h>    
@@ -51,4 +58,11 @@ if(0 == str)return TIME_ERR_STR_IS_NULL;
         strftime(szBuf, 64, "%Y%m%d%H%M%S", &sttm);    
 return 0;
 }
+
+#ifdef __cplusplus
+
+}
+
+#endif
+
 #endif 

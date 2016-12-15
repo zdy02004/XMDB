@@ -1,7 +1,11 @@
 //rbtree.h
 #ifndef _RBTREE_H_
 #define _RBTREE_H_
+#ifdef __cplusplus
 
+extern "C" {
+
+#endif
 #include"mem_table_ctl.h"
 #include"mem_index_no_manager.h"
 
@@ -984,5 +988,11 @@ inline	int mem_rbtree_index_close(mem_rbtree_index_t *  mem_rbtree_index)
 		RBTREE_UNLOCK(&(mem_rbtree_index->locker))
 		return err;	
 }
+
+#ifdef __cplusplus
+
+}
+
+#endif
 
 #endif

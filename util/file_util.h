@@ -1,6 +1,13 @@
 #ifndef FILE_UTIL_T
 #define FILE_UTIL_T
 
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
+
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -184,5 +191,11 @@ int dirent_array_search_min(struct dirent array[], long n, char * v,long * pos)
     *pos = right;
     return 0;  
 }  
+
+#ifdef __cplusplus
+
+}
+
+#endif
 
 #endif 
