@@ -31,21 +31,21 @@ extern "C" {
 #define NOT_FOUND_TRANSACTION_ENTRY       45016
 #define TRANS_ERR_NO_FILE_FOUNDED					45017
 
-//ÖØÊÔÈë¶ÓÁĞµÈ´ıÊ±¼ä
+//é‡è¯•å…¥é˜Ÿåˆ—ç­‰å¾…æ—¶é—´
 #define EN_TRANS_DATA_QUEUE_TIME   1000000
 
 
-// À©Õ¹²ßÂÔ
+// æ‰©å±•ç­–ç•¥
 #define    DOUBLE_EXTEND      1
-/* ÊÂÎïµÄÉè¼Æ
-*  ÊÂÎïÏà¹ØÊı¾İ´æ´¢µ½2¸öµØ·½£¬ÆäÖĞÒ»²¿·ÖÊÇÄ¿Â¼²¿·Ö°üÀ¨£º redoÄ¿Â¼£¬undo Ä¿Â¼
-*  redoÄ¿Â¼£¬undo Ä¿Â¼Í³³Æ transaction_action £¬Ö÷Òª¼ÇÂ¼ÊÂÎïµÄÀàĞÍºÍÏà¹Ø²Ù×÷£¬²»¼ÇÂ¼¾ßÌåµÄĞŞ¸ÄÊı¾İ¡£ÕâÀï½Ğ£ºÈÕÖ¾Ä¿Â¼ÎÄ¼ş¡£
-*  ÁíÒ»²¿·ÖÊÇÊı¾İ²¿·Ö£¬´æÔÚÎÄ¼şÖĞ£¬°üº¬ redo ºÍ undoµÄÊı¾İ.ÕâÀï½Ğ£ºÈÕÖ¾Êı¾İÎÄ¼ş
-*  undoµÄÊı¾İ »¹±£´æÒ»·İµ½ÓÉµ±Ç°ÊÂÎï¹ÜÀíµÄ»Ø¹ö»º³åÇøÖĞ£¬ÓÃÓÚ¿ìËÙ»Ø¹ö¡£
-*	 ·ÖÅäÊÂÎñÊ±´´½¨»Ø¹ö»º³åÇø£¬ÊÂÎñcommit Ê±£¬ÊÍ·Å»Ø¹ö»º³åÇø¡£
+/* äº‹ç‰©çš„è®¾è®¡
+*  äº‹ç‰©ç›¸å…³æ•°æ®å­˜å‚¨åˆ°2ä¸ªåœ°æ–¹ï¼Œå…¶ä¸­ä¸€éƒ¨åˆ†æ˜¯ç›®å½•éƒ¨åˆ†åŒ…æ‹¬ï¼š redoç›®å½•ï¼Œundo ç›®å½•
+*  redoç›®å½•ï¼Œundo ç›®å½•ç»Ÿç§° transaction_action ï¼Œä¸»è¦è®°å½•äº‹ç‰©çš„ç±»å‹å’Œç›¸å…³æ“ä½œï¼Œä¸è®°å½•å…·ä½“çš„ä¿®æ”¹æ•°æ®ã€‚è¿™é‡Œå«ï¼šæ—¥å¿—ç›®å½•æ–‡ä»¶ã€‚
+*  å¦ä¸€éƒ¨åˆ†æ˜¯æ•°æ®éƒ¨åˆ†ï¼Œå­˜åœ¨æ–‡ä»¶ä¸­ï¼ŒåŒ…å« redo å’Œ undoçš„æ•°æ®.è¿™é‡Œå«ï¼šæ—¥å¿—æ•°æ®æ–‡ä»¶
+*  undoçš„æ•°æ® è¿˜ä¿å­˜ä¸€ä»½åˆ°ç”±å½“å‰äº‹ç‰©ç®¡ç†çš„å›æ»šç¼“å†²åŒºä¸­ï¼Œç”¨äºå¿«é€Ÿå›æ»šã€‚
+*	 åˆ†é…äº‹åŠ¡æ—¶åˆ›å»ºå›æ»šç¼“å†²åŒºï¼Œäº‹åŠ¡commit æ—¶ï¼Œé‡Šæ”¾å›æ»šç¼“å†²åŒºã€‚
 */
 
-//ÔİÊ±ÓÃ»¥³âËø±íÊ¾ÊÂÎïËø
+//æš‚æ—¶ç”¨äº’æ–¥é”è¡¨ç¤ºäº‹ç‰©é”
 #define MEM_TRANSACTION_LOCK_T        pthread_mutex_t
 #define MEM_TRANSACTION_LOCK(x)       pthread_mutex_lock(x)
 #define MEM_TRANSACTION_UNLOCK(x)     pthread_mutex_unlock(x)   
@@ -53,13 +53,13 @@ extern "C" {
 #define MEM_TRANSACTION_LOCK_DEST(x)  pthread_mutex_destroy(x)   
 
 
-//ÔİÊ±ÓÃ×ÔĞıËø±íÊ¾ÊÂÎïËø
+//æš‚æ—¶ç”¨è‡ªæ—‹é”è¡¨ç¤ºäº‹ç‰©é”
 #define TRANS_QUEUE_LOCK_T        pthread_spinlock_t
 #define TRANS_QUEUE_LOCK(x)       pthread_spin_lock(x)
 #define TRANS_QUEUE_UNLOCK(x)     pthread_spin_unlock(x)   
 #define TRANS_QUEUE_LOCK_INIT(x)  pthread_spin_init(x,0)
 
-//ÔİÊ±ÓÃ»¥³âËø±íÊ¾Ë¯ÃßËø
+//æš‚æ—¶ç”¨äº’æ–¥é”è¡¨ç¤ºç¡çœ é”
 #define TRANS_QUEUE_SLEEP_LOCK_T        pthread_mutex_t
 #define TRANS_QUEUE_SLEEP_LOCK(x)       pthread_mutex_lock(x)
 #define TRANS_QUEUE_SLEEP_UNLOCK(x)     pthread_mutex_unlock(x)   
@@ -67,7 +67,7 @@ extern "C" {
 #define TRANS_QUEUE_SLEEP_LOCK_DEST(x)  pthread_mutex_destroy(x)   
 
 
-//ÔİÊ±ÓÃ»¥³âËøÌõ¼ş±äÁ¿
+//æš‚æ—¶ç”¨äº’æ–¥é”æ¡ä»¶å˜é‡
 #define TRANS_QUEUE_SLEEP_COND_T        pthread_cond_t  
 #define TRANS_QUEUE_SLEEP_COND_INIT(x)  pthread_cond_init(x, NULL)
 #define TRANS_QUEUE_SLEEP_COND_DEST(x)  pthread_cond_destroy(x)
@@ -75,13 +75,13 @@ extern "C" {
 #define TRANS_QUEUE_SLEEP_COND_SIGN(x)  pthread_cond_signal(x)
 
 
-//ÔİÊ±ÓÃ»¥³âËø±íÊ¾ÊÂÎïËø
+//æš‚æ—¶ç”¨äº’æ–¥é”è¡¨ç¤ºäº‹ç‰©é”
 #define TRANS_WRITER_LOCK_T        pthread_spinlock_t
 #define TRANS_WRITER_LOCK(x)       pthread_spin_lock(x)
 #define TRANS_WRITER_UNLOCK(x)     pthread_spin_unlock(x)   
 #define TRANS_WRITER_LOCK_INIT(x)  pthread_spin_init(x,0)
 
-//ÊÂÎïµÄÒıÓÃ¼ÆÊı
+//äº‹ç‰©çš„å¼•ç”¨è®¡æ•°
 #define TRANS_REF_LOCK_T            rwlock_t
 #define TRANS_REF_RLOCK(x)   		    rwlock_rlock((x));
 #define TRANS_REF_RUNLOCK(x)        rwlock_runlock((x));
@@ -89,7 +89,7 @@ extern "C" {
 #define TRANS_REF_WUNLOCK(x)        rwlock_wunlock((x));
 #define TRANS_REF_LOCK_INIT(x)      rwlock_init((x));
 
-//ÊÂÎñ¹ÜÀíÆ÷scn Ëø
+//äº‹åŠ¡ç®¡ç†å™¨scn é”
 #define SYS_SCN_LOCK_T            rwlock_t
 #define SYS_SCN_RLOCK(x)   		    rwlock_rlock((x));
 #define SYS_SCN_RUNLOCK(x)        rwlock_runlock((x));
@@ -98,87 +98,87 @@ extern "C" {
 #define SYS_SCN_LOCK_INIT(x)      rwlock_init((x));
 
 
-// redo ºÍ undo µÄ²Ù×÷ÀàĞÍ
+// redo å’Œ undo çš„æ“ä½œç±»å‹
 
-// ÊÂÎï¿ªÊ¼
+// äº‹ç‰©å¼€å§‹
 #define OPT_START_TRANS  1
-// ÊÂÎï½áÊø
+// äº‹ç‰©ç»“æŸ
 #define OPT_STOP_TRANS   2
-// ±í²åÈëÊı¾İ
+// è¡¨æ’å…¥æ•°æ®
 #define OPT_DATA_INSERT  3
-// ±í update Êı¾İ
+// è¡¨ update æ•°æ®
 #define OPT_DATA_UPDATE  4
-// ±í delete Êı¾İ
+// è¡¨ delete æ•°æ®
 #define OPT_DATA_DELETE  5
-// ±í truncat Êı¾İ
+// è¡¨ truncat æ•°æ®
 #define OPT_DATA_TRUNC   6
-// ±í rbtree insert Êı¾İ
+// è¡¨ rbtree insert æ•°æ®
 #define OPT_INDEX_RBTREE_INSERT    7
-// ±í rbtree delete Êı¾İ
+// è¡¨ rbtree delete æ•°æ®
 #define OPT_INDEX_RBTREE_DELETE    8
-// ±í hash insert  Êı¾İ
+// è¡¨ hash insert  æ•°æ®
 #define OPT_INDEX_HASH_INSERT      9
-// ±í hash delete  Êı¾İ
+// è¡¨ hash delete  æ•°æ®
 #define OPT_INDEX_HASH_DELETE      10
-// ±í hash update Êı¾İ
+// è¡¨ hash update æ•°æ®
 #define OPT_INDEX_HASH_UPDATE      11
 
-// ÊÂÎï¶¯×÷£¬Ò»Ïî´ú±íÒ»¸öÊÂÎñ¶¯×÷
-//´æµ½ÁÙÊ±±íÖĞ£¬ÂúÁËÒÔºó£¬Ğ´ÈëÓ²ÅÌ£¬×÷ÎªÈÕÖ¾Êı¾İÎÄ¼ş¡£
+// äº‹ç‰©åŠ¨ä½œï¼Œä¸€é¡¹ä»£è¡¨ä¸€ä¸ªäº‹åŠ¡åŠ¨ä½œ
+//å­˜åˆ°ä¸´æ—¶è¡¨ä¸­ï¼Œæ»¡äº†ä»¥åï¼Œå†™å…¥ç¡¬ç›˜ï¼Œä½œä¸ºæ—¥å¿—æ•°æ®æ–‡ä»¶ã€‚
 typedef struct mem_transaction_entry_t
 {
-unsigned  long long         		scn;                //±¾¼ÇÂ¼µÄÂß¼­ID
-long long                   		trans_no;						//µ±Ç°ÊÂÎïºÅ
-time_t                      		create_time;        //action Ê±¼ä
-short                       		is_close;           //ÊÇ·ñÔÚĞ´Èëºó¹Ø±Õfd
-short                       		redo_type;          //redo ²Ù×÷ÀàĞÍ
-short                       		undo_type;          //undo ²Ù×÷ÀàĞÍ insert update delete truncate index_op
-long                        		object_no;          //±í»òË÷ÒıµÄ no  --- ĞèÒªÔÚÒµÎñÖĞÌî³ä ÓÃÓÚÖØ×ö
-unsigned  long              		block_no;           //¿éºÅ					 --- ĞèÒªÔÚÒµÎñÖĞÌî³ä ÓÃÓÚÖØ×ö
-unsigned  long              		record_num;			    //ĞĞºÅ           --- ĞèÒªÔÚÒµÎñÖĞÌî³ä ÓÃÓÚÖØ×ö
-char                        		name[128];          //±í»òË÷ÒıµÄÃû×Ö
-char                        		block_name[128];          //±í»òË÷ÒıµÄÃû×Ö
-char                        		log_data_file[128]; //µ±Ç°ÈÕÖ¾Êı¾İÎÄ¼şÃû
-long                        		redo_data_start;		// redo Êı¾İÔÚÎÄ¼şÖĞµÄÆğÊ¼Î»ÖÃ£¬»òÕß index_entry µÄÆğÊ¼Î»ÖÃ
-off_t                       		redo_data_length;   // redo Êı¾İ³¤¶È
-long                        		undo_data_start;		// undo Êı¾İÔÚÎÄ¼şÖĞµÄÆğÊ¼Î»ÖÃ
-off_t                       		undo_data_length;   // undo Êı¾İ³¤¶È
-void *                      		ori_data_start;     //Ô­Ê¼Êı¾İÆğÊ¼µØÖ·
-void *                      		undo_addr_ptr;      // undo ÔÚ»Ø¹ö¶ÎÄÚ´æÖĞµÄµØÖ·
-//unsigned  long long             ahead_free_pose;    // ÓÃÓÚ»Ø¹ö»ØÊÕÁ´±í
+unsigned  long long         		scn;                //æœ¬è®°å½•çš„é€»è¾‘ID
+long long                   		trans_no;						//å½“å‰äº‹ç‰©å·
+time_t                      		create_time;        //action æ—¶é—´
+short                       		is_close;           //æ˜¯å¦åœ¨å†™å…¥åå…³é—­fd
+short                       		redo_type;          //redo æ“ä½œç±»å‹
+short                       		undo_type;          //undo æ“ä½œç±»å‹ insert update delete truncate index_op
+long                        		object_no;          //è¡¨æˆ–ç´¢å¼•çš„ no  --- éœ€è¦åœ¨ä¸šåŠ¡ä¸­å¡«å…… ç”¨äºé‡åš
+unsigned  long              		block_no;           //å—å·					 --- éœ€è¦åœ¨ä¸šåŠ¡ä¸­å¡«å…… ç”¨äºé‡åš
+unsigned  long              		record_num;			    //è¡Œå·           --- éœ€è¦åœ¨ä¸šåŠ¡ä¸­å¡«å…… ç”¨äºé‡åš
+char                        		name[128];          //è¡¨æˆ–ç´¢å¼•çš„åå­—
+char                        		block_name[128];          //è¡¨æˆ–ç´¢å¼•çš„åå­—
+char                        		log_data_file[128]; //å½“å‰æ—¥å¿—æ•°æ®æ–‡ä»¶å
+long                        		redo_data_start;		// redo æ•°æ®åœ¨æ–‡ä»¶ä¸­çš„èµ·å§‹ä½ç½®ï¼Œæˆ–è€… index_entry çš„èµ·å§‹ä½ç½®
+off_t                       		redo_data_length;   // redo æ•°æ®é•¿åº¦
+long                        		undo_data_start;		// undo æ•°æ®åœ¨æ–‡ä»¶ä¸­çš„èµ·å§‹ä½ç½®
+off_t                       		undo_data_length;   // undo æ•°æ®é•¿åº¦
+void *                      		ori_data_start;     //åŸå§‹æ•°æ®èµ·å§‹åœ°å€
+void *                      		undo_addr_ptr;      // undo åœ¨å›æ»šæ®µå†…å­˜ä¸­çš„åœ°å€
+//unsigned  long long             ahead_free_pose;    // ç”¨äºå›æ»šå›æ”¶é“¾è¡¨
 }  mem_transaction_entry_t;
 
 #define TRANSACTION_ENTRY_SIZE  sizeof(mem_transaction_entry_t)
 //#define TRANSACTION_ENTRY_WRITE_SIZE  TRANSACTION_ENTRY_SIZE-2*sizeof(void *)
 
 
-// ÓÃÓÚĞ´ÈÕÖ¾µÄ Êı¾İ¿ØÖÆÏî
+// ç”¨äºå†™æ—¥å¿—çš„ æ•°æ®æ§åˆ¶é¡¹
 typedef struct mem_trans_data_entry_t
 {
-mem_transaction_entry_t trans;                // ´ÓÕâÀïÒ»ÏîÀï¶ÁĞ´µÄÊı¾İ
-FILE *                  fd  ;                  //Òª²Ù×÷µÄ ÎÄ¼ş fd
-struct mem_trans_data_entry_t * next; // ÏÂÒ»¸öundo µØÖ·
+mem_transaction_entry_t trans;                // ä»è¿™é‡Œä¸€é¡¹é‡Œè¯»å†™çš„æ•°æ®
+FILE *                  fd  ;                  //è¦æ“ä½œçš„ æ–‡ä»¶ fd
+struct mem_trans_data_entry_t * next; // ä¸‹ä¸€ä¸ªundo åœ°å€
 } __attribute__ ((packed, aligned (64))) mem_trans_data_entry_t;
 
 #define TRANS_DATA_ENTRY_SIZE  sizeof(mem_trans_data_entry_t)
 
-// ÓÃÀ´´æ mem_trans_data_entry_tµÄ Ñ­»·¶ÓÁĞ»º³åÇø
+// ç”¨æ¥å­˜ mem_trans_data_entry_tçš„ å¾ªç¯é˜Ÿåˆ—ç¼“å†²åŒº
 typedef struct trans_data_queue_t{  
   
     mem_trans_data_entry_t * item;  
-    long front;  
-    long tear;  
+    volatile long front;  
+    volatile long tear;  
     long max;
     TRANS_QUEUE_LOCK_T       locker;
-    TRANS_QUEUE_SLEEP_LOCK_T sleep_locker; //Ïû·ÑÕßË¯ÃßËø
-    short                    is_sleeping;  //ÊÇ·ñÔÚË¯Ãß
-    TRANS_QUEUE_SLEEP_COND_T sleep_cond;   //Ïû·ÑÕßË¯ÃßÌõ¼ş±äÁ¿
+    TRANS_QUEUE_SLEEP_LOCK_T sleep_locker; //æ¶ˆè´¹è€…ç¡çœ é”
+    short                    is_sleeping;  //æ˜¯å¦åœ¨ç¡çœ 
+    TRANS_QUEUE_SLEEP_COND_T sleep_cond;   //æ¶ˆè´¹è€…ç¡çœ æ¡ä»¶å˜é‡
 }trans_data_queue_t;  
 
-// ÏµÍ³ÓÃµÄÊı×é»º³åÇø£¬ÓÃÓÚ»º³åĞ´ÈÕÖ¾Êı¾İ
+// ç³»ç»Ÿç”¨çš„æ•°ç»„ç¼“å†²åŒºï¼Œç”¨äºç¼“å†²å†™æ—¥å¿—æ•°æ®
 static trans_data_queue_t sys_trans_data_queue;
 
-// ÓÃÀ´´æ mem_trans_data_entry_tµÄ »Ø¹öÕ»£¬ÓÃÓÚ»Ø¹öÊı¾İ
+// ç”¨æ¥å­˜ mem_trans_data_entry_tçš„ å›æ»šæ ˆï¼Œç”¨äºå›æ»šæ•°æ®
 typedef struct trans_data_stack_t{  
   
     mem_trans_data_entry_t * item;  
@@ -188,53 +188,53 @@ typedef struct trans_data_stack_t{
     struct trans_data_stack_t*       next;
 }trans_data_stack_t;  
 
-// ÊÂÎïÃèÊö·û(ÌØÖ¸Ò»¸öÊÂÎï)
-// Êı¾İ¿âÎªÃ¿Ò»¸öÊÂÎï´´½¨Ò»¸öÁÙÊ±±í tmp_table£¬ÓÃÀ´´æÈÕÖ¾¼ÇÂ¼
-// Ã¿¸öÊÂÎñ¿ªÆôÊ±£¬ÉêÇëÄÚ´æ¿é×÷Îª»Ø¹ö¿Õ¼ä
+// äº‹ç‰©æè¿°ç¬¦(ç‰¹æŒ‡ä¸€ä¸ªäº‹ç‰©)
+// æ•°æ®åº“ä¸ºæ¯ä¸€ä¸ªäº‹ç‰©åˆ›å»ºä¸€ä¸ªä¸´æ—¶è¡¨ tmp_tableï¼Œç”¨æ¥å­˜æ—¥å¿—è®°å½•
+// æ¯ä¸ªäº‹åŠ¡å¼€å¯æ—¶ï¼Œç”³è¯·å†…å­˜å—ä½œä¸ºå›æ»šç©ºé—´
 typedef struct mem_transaction_t
 {
-short                       is_used;							//ÊÇ·ñÔÚÊ¹ÓÃ
-unsigned  long long         scn;                	//±¾¼ÇÂ¼µÄÂß¼­ID
-time_t                      start_time;         	//ÊÂÎï¿ªÊ¼Ê±¼ä
-time_t                      end_time;           	//ÊÂÎï½áÊøÊ±¼ä
-MEM_TRANSACTION_LOCK_T      locker;             	//ÊÂÎïËø
-char                        log_index_file[128];  //µ±Ç° ÈÕÖ¾Ä¿Â¼ÎÄ¼şÃû
-char                        log_data_file[128];   //µ±Ç° ÈÕÖ¾Êı¾İÎÄ¼şÃû
-struct trans_data_stack_t   rollback_stack;       //»Ø¹öÕ»
-off_t                       rollback_stack_size;  //»Ø¹öÕ»´óĞ¡
-off_t                       rollback_cur_pos;     //»Ø¹öµ±Ç°Ğ´Î»ÖÃ
-long												rollback_space_num; 	//»Ø¹ö¿Õ¼ä¿é¸öÊı
-mem_block_t       *         rollback_space;     	//»Ø¹ö¿Õ¼ä¿é
-off_t                       rollback_space_size;	//»Ø¹ö¿Õ¼ä´óĞ¡
-long                        ref;                  //Èë¶ÓÁĞ ³ö¶ÓÁĞÒıÓÃ¼ÆÊı
-TRANS_REF_LOCK_T            ref_locker;           //Èë³ö¶ÓÁĞÒıÓÃ¼ÆÊıËø
+short                       is_used;							//æ˜¯å¦åœ¨ä½¿ç”¨
+unsigned  long long         scn;                	//æœ¬è®°å½•çš„é€»è¾‘ID
+time_t                      start_time;         	//äº‹ç‰©å¼€å§‹æ—¶é—´
+time_t                      end_time;           	//äº‹ç‰©ç»“æŸæ—¶é—´
+MEM_TRANSACTION_LOCK_T      locker;             	//äº‹ç‰©é”
+char                        log_index_file[128];  //å½“å‰ æ—¥å¿—ç›®å½•æ–‡ä»¶å
+char                        log_data_file[128];   //å½“å‰ æ—¥å¿—æ•°æ®æ–‡ä»¶å
+struct trans_data_stack_t   rollback_stack;       //å›æ»šæ ˆ
+off_t                       rollback_stack_size;  //å›æ»šæ ˆå¤§å°
+off_t                       rollback_cur_pos;     //å›æ»šå½“å‰å†™ä½ç½®
+long												rollback_space_num; 	//å›æ»šç©ºé—´å—ä¸ªæ•°
+mem_block_t       *         rollback_space;     	//å›æ»šç©ºé—´å—
+off_t                       rollback_space_size;	//å›æ»šç©ºé—´å¤§å°
+long                        ref;                  //å…¥é˜Ÿåˆ— å‡ºé˜Ÿåˆ—å¼•ç”¨è®¡æ•°
+TRANS_REF_LOCK_T            ref_locker;           //å…¥å‡ºé˜Ÿåˆ—å¼•ç”¨è®¡æ•°é”
 } __attribute__ ((packed, aligned (64))) mem_transaction_t;
 
 #define TRANSACTION_SIZE  sizeof(mem_transaction_t)
 
-// ÓÃÓÚÊı¾İÎÄ¼şĞ´ÈÕÖ¾ writer
+// ç”¨äºæ•°æ®æ–‡ä»¶å†™æ—¥å¿— writer
 typedef struct trans_redo_data_writer_t
 {
-pthread_t               th;                			// ´ÓÕâÀïÒ»ÏîÀï¶ÁĞ´µÄÊı¾İ
-void*( *writer_fun)(void *);                			// ¹¤×÷º¯Êı
-short                   stop;              			// Í£Ö¹±êÖ¾     
-long                    sleep_micro_seconds;    // Òª²Ù×÷µÄ ÎÄ¼ş fd
-TRANS_WRITER_LOCK_T     locker;            			// Ëø
+pthread_t               th;                			// ä»è¿™é‡Œä¸€é¡¹é‡Œè¯»å†™çš„æ•°æ®
+void*( *writer_fun)(void *);                			// å·¥ä½œå‡½æ•°
+short                   stop;              			// åœæ­¢æ ‡å¿—     
+long                    sleep_micro_seconds;    // è¦æ“ä½œçš„ æ–‡ä»¶ fd
+TRANS_WRITER_LOCK_T     locker;            			// é”
 } __attribute__ ((packed, aligned (64))) trans_redo_data_writer_t;
 
 #define TRANS_DATA_WRITER_SIZE  sizeof(trans_redo_data_writer_t)
 
 static trans_redo_data_writer_t sys_trans_redo_data_writer;
 
-// ÏµÍ³ÊÂÎï¹ÜÀíÆ÷
+// ç³»ç»Ÿäº‹ç‰©ç®¡ç†å™¨
 typedef struct sys_transaction_manager_t
 {
-unsigned  long long					scn;              				//ÓÃÓÚ·ÖÅäscnºÅµÄĞòÁĞid
-mem_transaction_t *         transaction_tables;   		//ÊÂÎï±í,Ò²¿ÉÒÔ½ĞÊÂÎñ²Û
-long                        transaction_table_num;		//ÊÂÎï±í´æ´¢ÊÂÎï¸öÊı
-MEM_TRANSACTION_LOCK_T      locker;               		//Ëø
-off_t                       rollback_space_max_size;	//»Ø¹ö¿Õ¼ä×î´óÖµ
-int                   			extend_police;            // À©Õ¹²ßÂÔ£¬Ä¬ÈÏÊ¹ÓÃ¶ş±¶À©Õ¹
+unsigned  long long					scn;              				//ç”¨äºåˆ†é…scnå·çš„åºåˆ—id
+mem_transaction_t *         transaction_tables;   		//äº‹ç‰©è¡¨,ä¹Ÿå¯ä»¥å«äº‹åŠ¡æ§½
+long                        transaction_table_num;		//äº‹ç‰©è¡¨å­˜å‚¨äº‹ç‰©ä¸ªæ•°
+MEM_TRANSACTION_LOCK_T      locker;               		//é”
+off_t                       rollback_space_max_size;	//å›æ»šç©ºé—´æœ€å¤§å€¼
+int                   			extend_police;            // æ‰©å±•ç­–ç•¥ï¼Œé»˜è®¤ä½¿ç”¨äºŒå€æ‰©å±•
 } __attribute__ ((packed, aligned (64))) sys_transaction_manager_t;
 
 #define TRANSACTION_MANAGER_SIZE  sizeof(sys_transaction_manager_t)
@@ -244,93 +244,93 @@ static sys_transaction_manager_t transaction_manager;
 
 
 //____________________________________________________________________________________
-//»Ø¹ö¶ÎÊÇ Ã¿¸öÊÂÎñĞÂ½¨Ò»¸öµ¥¶ÀµÄ
-//ÊÂÎñ´´½¨µÄÊ±ºò²úÉú£¬ÊÂÎñ½áÊøµÄÊ±ºòÏú»Ù
-//´´½¨»Ø¹ö¶ÎµÄº¯Êı
+//å›æ»šæ®µæ˜¯ æ¯ä¸ªäº‹åŠ¡æ–°å»ºä¸€ä¸ªå•ç‹¬çš„
+//äº‹åŠ¡åˆ›å»ºçš„æ—¶å€™äº§ç”Ÿï¼Œäº‹åŠ¡ç»“æŸçš„æ—¶å€™é”€æ¯
+//åˆ›å»ºå›æ»šæ®µçš„å‡½æ•°
 inline int create_rollback_block(mem_transaction_t * trans);
-//À©Õ¹»Ø¹ö¶Î
+//æ‰©å±•å›æ»šæ®µ
 inline int extern_rollback_block(mem_transaction_t * trans);
-//ÊÍ·Å»Ø¹ö¶Î
+//é‡Šæ”¾å›æ»šæ®µ
 inline int release_rollback_block(mem_transaction_t * trans);
 
-//³õÊ¼»¯ ÏµÍ³ÊÂÎï¹ÜÀíÆ÷
+//åˆå§‹åŒ– ç³»ç»Ÿäº‹ç‰©ç®¡ç†å™¨
 inline int init_sys_transaction_manager();
 
-//ÅäÖÃ transaction_managerµÄ ĞòÁĞÖµ ºÍ  »Ø¹ö¿Õ¼ä×î´óÖµ
+//é…ç½® transaction_managerçš„ åºåˆ—å€¼ å’Œ  å›æ»šç©ºé—´æœ€å¤§å€¼
 inline int config_sys_transaction_manager(unsigned  long long	scn,off_t rollback_space_max_size);
-//¹ØÓÚ scnµÄ±£´æ
+//å…³äº scnçš„ä¿å­˜
 inline int save_trans_scn(char * str_path);
-//¹ØÓÚ scnµÄ¼ÓÔØ
+//å…³äº scnçš„åŠ è½½
 inline int load_trans_scn(char * str_path);
-//Ïú»Ù transaction_managerµÄ ĞòÁĞÖµ ºÍ  »Ø¹ö¿Õ¼ä×î´óÖµ
+//é”€æ¯ transaction_managerçš„ åºåˆ—å€¼ å’Œ  å›æ»šç©ºé—´æœ€å¤§å€¼
 inline int dest_sys_transaction_manager(unsigned  long long	scn,off_t rollback_space_max_size);
-//À©Õ¹ÊÂÎñ²Û
+//æ‰©å±•äº‹åŠ¡æ§½
 inline int extend_transaction_manager();
 
-//·ÖÅäÒ»¸öÊÂÎñ²Û
+//åˆ†é…ä¸€ä¸ªäº‹åŠ¡æ§½
 inline int allocate_trans(  long long * trans_no) ;
-// ÊÍ·ÅÊÂÎñ²Û
+// é‡Šæ”¾äº‹åŠ¡æ§½
 inline int release_trans(  long long  trans_no);
-// ¿ªÊ¼Ò»¸öÊÂÎñ
+// å¼€å§‹ä¸€ä¸ªäº‹åŠ¡
 inline int start_trans(  long long  trans_no);
-// ½áÊøÒ»¸öÊÂÎñ
+// ç»“æŸä¸€ä¸ªäº‹åŠ¡
 inline int stop_trans(  long long  trans_no);
-// ÊÂÎñĞÂ²úÉúÒ»¸ö action Ê±£¬ÒıÓÃ¼ÆÊı ++
+// äº‹åŠ¡æ–°äº§ç”Ÿä¸€ä¸ª action æ—¶ï¼Œå¼•ç”¨è®¡æ•° ++
 inline int inc_trans_ref(  long long  trans_no);
-// ÒıÓÃ¼ÆÊı --
+// å¼•ç”¨è®¡æ•° --
 inline int dec_trans_ref(  long long  trans_no);
 
-// »º³å¶ÓÁĞÊÇËùÓĞ½ø³Ì¹«ÓÃµÄ£¬Ö»ÓĞÒ»¸ö
-// ³õÊ¼»¯Ñ­»·Êı×é»º³åÇø,ÔÚ³õÊ¼»¯ÊÂÎñ¹ÜÀíÆ÷Ê±µ÷ÓÃ
+// ç¼“å†²é˜Ÿåˆ—æ˜¯æ‰€æœ‰è¿›ç¨‹å…¬ç”¨çš„ï¼Œåªæœ‰ä¸€ä¸ª
+// åˆå§‹åŒ–å¾ªç¯æ•°ç»„ç¼“å†²åŒº,åœ¨åˆå§‹åŒ–äº‹åŠ¡ç®¡ç†å™¨æ—¶è°ƒç”¨
 inline int init_trans_data_queue(trans_data_queue_t * trans_data_queue,long max);
-// Í£ÈÕÖ¾ºó,ÖØ½¨ »º³åÇø
+// åœæ—¥å¿—å,é‡å»º ç¼“å†²åŒº
 inline int reinit_trans_data_queue(trans_data_queue_t * trans_data_queue,long max); 
-// Èë¶ÓÁĞ
+// å…¥é˜Ÿåˆ—
 inline int en_trans_data_queue(trans_data_queue_t * trans_data_queue, mem_trans_data_entry_t* item);
-// ³ö¶ÓÁĞ
+// å‡ºé˜Ÿåˆ—
 inline int de_trans_data_queue(trans_data_queue_t * trans_data_queue, mem_trans_data_entry_t * item);
-//Çå³ıÈÕÖ¾»º³å¶ÓÁĞ
+//æ¸…é™¤æ—¥å¿—ç¼“å†²é˜Ÿåˆ—
 int destroy_trans_data_queue(trans_data_queue_t * trans_data_queue_t);
 
-//»Ø¹öÕ»ÊÇÃ¿¸öÊÂÎñÓĞÒ»¸ö£¬ÊÂÎñ´´½¨µÄÊ±ºò²úÉú£¬ÊÂÎñ½áÊøµÄÊ±ºòÏú»Ù
-// ³õÊ¼»¯»Ø¹öÕ»
+//å›æ»šæ ˆæ˜¯æ¯ä¸ªäº‹åŠ¡æœ‰ä¸€ä¸ªï¼Œäº‹åŠ¡åˆ›å»ºçš„æ—¶å€™äº§ç”Ÿï¼Œäº‹åŠ¡ç»“æŸçš„æ—¶å€™é”€æ¯
+// åˆå§‹åŒ–å›æ»šæ ˆ
 inline int init_trans_data_stack(trans_data_stack_t * trans_data_stack,long max);
-// ÈëÕ»
+// å…¥æ ˆ
 inline int push_trans_data_stack(trans_data_stack_t * trans_data_stack, mem_trans_data_entry_t* item,mem_trans_data_entry_t ** out); 
-// ³öÕ»
+// å‡ºæ ˆ
 inline int pop_trans_data_stack(trans_data_stack_t * trans_data_stack, mem_trans_data_entry_t * item);
-//À©Õ¹»Ø¹öÕ»
+//æ‰©å±•å›æ»šæ ˆ
 inline int extend_trans_data_stack(trans_data_stack_t * trans_data_stack);
-//Çå³ı»Ø¹öÕ»
+//æ¸…é™¤å›æ»šæ ˆ
 int destroy_trans_data_stack(trans_data_stack_t * trans_data_stack_t);
 
-// redo_entry Ğ´ÈëindexÎÄ¼ş
+// redo_entry å†™å…¥indexæ–‡ä»¶
 inline int redo_file_write_index(mem_transaction_entry_t * trans_entry,FILE * data_fd,mem_trans_data_entry_t ** out);
-// ±¾º¯ÊıÌî³ä trans_entry µÄ log_data_file£¬redo_data_start£¬undo_data_start£¬µÈĞ´ÎÄ¼şÏà¹Ø×Ö¶Î
-// ±¾º¯Êı¹¤×÷Á¿½ÏÇá£¬Ö»ÊÇ´ÓÂß¼­ÉÏ£¬·ÖÅäĞ´ÈÕÖ¾ÎÄ¼şÖĞµÄÎ»ÖÃ£¬Ö»Ğ´Ä¿Â¼ÎÄ¼ş£¬²»Ğ´Êı¾İÎÄ¼ş
+// æœ¬å‡½æ•°å¡«å…… trans_entry çš„ log_data_fileï¼Œredo_data_startï¼Œundo_data_startï¼Œç­‰å†™æ–‡ä»¶ç›¸å…³å­—æ®µ
+// æœ¬å‡½æ•°å·¥ä½œé‡è¾ƒè½»ï¼Œåªæ˜¯ä»é€»è¾‘ä¸Šï¼Œåˆ†é…å†™æ—¥å¿—æ–‡ä»¶ä¸­çš„ä½ç½®ï¼Œåªå†™ç›®å½•æ–‡ä»¶ï¼Œä¸å†™æ•°æ®æ–‡ä»¶
 inline int fill_trans_entry_to_write(mem_transaction_entry_t * trans_entry,mem_trans_data_entry_t ** out);
-// redo_data Ğ´ÈëdataÎÄ¼ş
+// redo_data å†™å…¥dataæ–‡ä»¶
 inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd);
-/* ÏÂÃæÊÇ¹ØÓÚĞ´ÈÕÖ¾writer Ïß³ÌµÄ²Ù×÷*/
+/* ä¸‹é¢æ˜¯å…³äºå†™æ—¥å¿—writer çº¿ç¨‹çš„æ“ä½œ*/
 void * redo_file_writer_fun( void *arg );
-// ³õÊ¼»¯Êı¾İÈÕÖ¾Ğ´Õß
+// åˆå§‹åŒ–æ•°æ®æ—¥å¿—å†™è€…
 inline int init_trans_redo_data_writer(trans_redo_data_writer_t * writer,long sleep_micro_seconds);
 
-// ¿ªÆô writer Ïß³ÌĞ´ÈÕÖ¾
+// å¼€å¯ writer çº¿ç¨‹å†™æ—¥å¿—
 inline int start_trans_redo_data_writer();
-// ¹Ø±Õ writer Ïß³ÌĞ´ÈÕÖ¾
+// å…³é—­ writer çº¿ç¨‹å†™æ—¥å¿—
 inline int stop_trans_redo_data_writer();
-// Ìá½»ÊÂÎñ
+// æäº¤äº‹åŠ¡
 inline int commit_trans(  long long  trans_no);
 
-// »Ø¹öÊÂÎñ
+// å›æ»šäº‹åŠ¡
 inline int rollback_trans(  long long  trans_no);
 
 
-// ÖØ×öµÄ³õ²½ÊµÏÖ
+// é‡åšçš„åˆæ­¥å®ç°
 inline int redo_recover(mem_transaction_entry_t * item);
 //____________________________________________________________________________________
-//´´½¨»Ø¹ö¿éµÄº¯Êı
+//åˆ›å»ºå›æ»šå—çš„å‡½æ•°
 
 inline int create_rollback_block(mem_transaction_t * trans)
 {
@@ -340,38 +340,38 @@ inline int create_rollback_block(mem_transaction_t * trans)
 			return ERR_TRANS_IS_NULL;
 		}
 	DEBUG("in create_rollback_block\n");
-	//´´½¨¿é
+	//åˆ›å»ºå—
 	mem_block_t *mb =(mem_block_t *) malloc(MEM_BLOCK_HEAD_SIZE);
 	DEBUG("create_block %0x\n",*mb);
   trans->rollback_space = mb;
   
   char rollback_file[128];
-  //Æ´ÈëÊÂÎñĞòÁĞºÅ
+  //æ‹¼å…¥äº‹åŠ¡åºåˆ—å·
   sprintf(rollback_file,"rollback_%ld_",trans->scn);
-  //Æ´ÈëÊ±¼ä
+  //æ‹¼å…¥æ—¶é—´
   GetTimeForNAME(rollback_file);
   
-	//ÅäÖÃ¿éÃèÊö·û
+	//é…ç½®å—æè¿°ç¬¦
 	mem_block_config( mb  ,trans->rollback_space_size , rollback_file );
 	
-		//³õÊ¼»¯¿é
+		//åˆå§‹åŒ–å—
 	INIT_MEM_BLOCK(mb)
 	DEBUG("fd = %d\n",(mb)->fd);
 	int err;
 	if(0!=(err=mem_block_get_mem_from_os(mb))){
 			ERROR("mem_block_get_mem_from_os err is %d.\n",err);
 			return err;
-			}  //·ÖÅäÄÚ´æ
+			}  //åˆ†é…å†…å­˜
 		DEBUG("trans->rollback_space_num++\n");
 		trans->rollback_space_num++;
 		DEBUG("mem_block_get_mem_from_os() ok\n");
 
-		err = mem_block_mmap(mb);  //Ó³ÉäÎÄ¼ş
+		err = mem_block_mmap(mb);  //æ˜ å°„æ–‡ä»¶
 		if(err != 0)DEBUG("mem_block_get_mem_from_os err is %d.\n",err);;
 	  DEBUG("mem_block_mmap() ok\n");
 	return 0;
 }
-//À©Õ¹»Ø¹ö¿é
+//æ‰©å±•å›æ»šå—
 inline int extern_rollback_block(mem_transaction_t * trans)
 {
 	if(NULL==trans)
@@ -379,13 +379,13 @@ inline int extern_rollback_block(mem_transaction_t * trans)
 			ERROR("ERR_TRANS_IS_NULL\n");
 			return ERR_TRANS_IS_NULL;
 		}
-	//MEM_TRANSACTION_LOCK(&(trans->locker));  // ÉÏËø
-  // ĞÂ½¨ÎïÀí¿é
+	//MEM_TRANSACTION_LOCK(&(trans->locker));  // ä¸Šé”
+  // æ–°å»ºç‰©ç†å—
   int err;
   mem_block_t *first_mb = trans->rollback_space;
   mem_block_t *last_mb = first_mb;
   
-  //ÕÒµ½»Ø¹ö¶Î¿Õ¼ä
+  //æ‰¾åˆ°å›æ»šæ®µç©ºé—´
 	long rollback_space_num = trans->rollback_space_num;
 	int j = 0;
 	DEBUG("rollback_space_num is %d\n",rollback_space_num);
@@ -399,11 +399,11 @@ inline int extern_rollback_block(mem_transaction_t * trans)
   last_mb->next = trans->rollback_space;
   trans->rollback_space = first_mb;
   DEBUG("extern_rollback_block(),rollback_space_num is %ld\n",trans->rollback_space_num);
-  //MEM_TRANSACTION_UNLOCK(&(trans->locker)); // ½âËø
+  //MEM_TRANSACTION_UNLOCK(&(trans->locker)); // è§£é”
 	return 0;
 }
 
-//ÊÍ·Å»Ø¹ö¿é
+//é‡Šæ”¾å›æ»šå—
 inline int release_rollback_block(mem_transaction_t * trans)
 {
 	if(NULL==trans)
@@ -411,7 +411,7 @@ inline int release_rollback_block(mem_transaction_t * trans)
 			ERROR("ERR_TRANS_IS_NULL\n");
 			return	ERR_TRANS_IS_NULL;
 		}
-	MEM_TRANSACTION_LOCK(&(trans->locker));// ÉÏËø
+	MEM_TRANSACTION_LOCK(&(trans->locker));// ä¸Šé”
   int err;  			  
 	long i = 0;
 	struct  mem_block_t * mem_block_temp = trans->rollback_space;
@@ -420,41 +420,41 @@ inline int release_rollback_block(mem_transaction_t * trans)
 	DEBUG("trans->rollback_space_num is %d.\n",trans->rollback_space_num);
 	for(;i<trans->rollback_space_num;++i)
 	{
-		err = mem_block_munmap       (mem_block_temp);               		 //Ó³Éä»ØÎÄ¼ş
+		err = mem_block_munmap       (mem_block_temp);               		 //æ˜ å°„å›æ–‡ä»¶
 		if(err)ERROR("rollback_space's mem_block_munmap() err: %d.\n",err);
-		err = mem_block_put_mem_to_os(mem_block_temp);               		 //ÊÍ·ÅÄÚ´æ
+		err = mem_block_put_mem_to_os(mem_block_temp);               		 //é‡Šæ”¾å†…å­˜
 		if(err)ERROR("rollback_space's mem_block_put_mem_to_os() err: %d.\n",err);
-		to_free        = mem_block_temp;													 //ÌáÇ°±£´æÒªfreeµÄ¿é
-    mem_block_temp = mem_block_temp->next;                     //ÏÂÒ»¸ö¿é
+		to_free        = mem_block_temp;													 //æå‰ä¿å­˜è¦freeçš„å—
+    mem_block_temp = mem_block_temp->next;                     //ä¸‹ä¸€ä¸ªå—
     free(to_free);
 	}
   trans->rollback_space_num = 0;
-  MEM_TRANSACTION_UNLOCK(&(trans->locker));// ½âËø
+  MEM_TRANSACTION_UNLOCK(&(trans->locker));// è§£é”
 	return 0;
 }
 
 
 //____________________________________________________________________________________
 /*
-*  ÏÂÃæÊÇ¹ØÓÚ ÏµÍ³ÊÂÎñ¹ÜÀíÆ÷µÄ²Ù×÷
+*  ä¸‹é¢æ˜¯å…³äº ç³»ç»Ÿäº‹åŠ¡ç®¡ç†å™¨çš„æ“ä½œ
 */
 
-//³õÊ¼»¯ seq_manager ±í
-// ×¢ÒâÔÚ³õÊ¼»¯ ÊÂÎñ¹ÜÀíÆ÷Ö®Ç°£¬ÒªÏÈ³õÊ¼»¯ÏµÍ³ĞòÁĞ¹ÜÀíÆ÷
+//åˆå§‹åŒ– seq_manager è¡¨
+// æ³¨æ„åœ¨åˆå§‹åŒ– äº‹åŠ¡ç®¡ç†å™¨ä¹‹å‰ï¼Œè¦å…ˆåˆå§‹åŒ–ç³»ç»Ÿåºåˆ—ç®¡ç†å™¨
 inline int init_sys_transaction_manager()
 {
-	// ³õÊ¼»¯ ÊÂÎñ¹ÜÀíÆ÷Ëø
+	// åˆå§‹åŒ– äº‹åŠ¡ç®¡ç†å™¨é”
 	MEM_TRANSACTION_LOCK_INIT(&(transaction_manager.locker));
-	//³õÊ¼»¯  scn ĞòÁĞ
+	//åˆå§‹åŒ–  scn åºåˆ—
 	//allocate_seq_no(&(transaction_manager.scn_seq_no));
-	//³õÊ¼»¯ÊÂÎñ²Û
+	//åˆå§‹åŒ–äº‹åŠ¡æ§½
 	mem_transaction_t * mem_transaction_temp = (mem_transaction_t *)malloc(DEFAULT_MAX_TRANS_NUM*TRANSACTION_SIZE);
 	transaction_manager.transaction_tables 			=  mem_transaction_temp;
 	transaction_manager.transaction_table_num 	=  DEFAULT_MAX_TRANS_NUM;
 	transaction_manager.rollback_space_max_size =  DEFAULT_ROLLBACK_SPACE_SIZE;
 	DEBUG("transaction_manager.transaction_tables is %0x\n",transaction_manager.transaction_tables);
 
-	//³õÊ¼»¯ÊÂÎñ²ÛÖĞ ÊÂÎñµÄËø ºÍ Ê¹ÓÃ±êÖ¾Îª0
+	//åˆå§‹åŒ–äº‹åŠ¡æ§½ä¸­ äº‹åŠ¡çš„é” å’Œ ä½¿ç”¨æ ‡å¿—ä¸º0
 	unsigned  long  i = 0;
 	mem_transaction_t * trans;
 	for(;i<transaction_manager.transaction_table_num;++i)
@@ -466,15 +466,15 @@ inline int init_sys_transaction_manager()
 		trans->rollback_space_size = transaction_manager.rollback_space_max_size;
 	}
 	
-	//³õÊ¼»¯ÈÕÖ¾»º³å¶ÓÁĞ
+	//åˆå§‹åŒ–æ—¥å¿—ç¼“å†²é˜Ÿåˆ—
 	int err;
-	//ºóÃæ¿¼ÂÇ ¸ÄÕâ¸ö´óĞ¡
+	//åé¢è€ƒè™‘ æ”¹è¿™ä¸ªå¤§å°
 	err = init_trans_data_queue(&sys_trans_data_queue,DEFAULT_QUEUE_MAX_SIZE);
 	if(err)return err;
 	return 0;
 }
 
-//ÅäÖÃ transaction_managerµÄ ĞòÁĞÖµ ºÍ  »Ø¹ö¿Õ¼ä×î´óÖµ
+//é…ç½® transaction_managerçš„ åºåˆ—å€¼ å’Œ  å›æ»šç©ºé—´æœ€å¤§å€¼
 inline int config_sys_transaction_manager(unsigned  long long	scn,off_t rollback_space_max_size)
 {
 	
@@ -485,17 +485,17 @@ inline int config_sys_transaction_manager(unsigned  long long	scn,off_t rollback
 	return 0;
 }
 
-//¹ØÓÚ scnµÄ±£´æ ºÍ ¼ÓÔØ
+//å…³äº scnçš„ä¿å­˜ å’Œ åŠ è½½
 inline int save_trans_scn(char * str_path)
 {
-MEM_TRANSACTION_LOCK(&(transaction_manager.locker));  //ÉÏËø
-FILE *fp;  // ¶¨ÒåÒ»¸öÎÄ¼şÖ¸Õëfp
-fp = fopen(str_path, "wt");  // ÒÔ¶ş½øÖÆ¿ÉĞ´·½Ê½´ò¿ªstu.datÎÄ¼ş
+MEM_TRANSACTION_LOCK(&(transaction_manager.locker));  //ä¸Šé”
+FILE *fp;  // å®šä¹‰ä¸€ä¸ªæ–‡ä»¶æŒ‡é’ˆfp
+fp = fopen(str_path, "wt");  // ä»¥äºŒè¿›åˆ¶å¯å†™æ–¹å¼æ‰“å¼€stu.datæ–‡ä»¶
 char buf[512];
 sprintf(buf,"%d",transaction_manager.scn);
 int ret = !(fwrite(buf, strlen(buf), 1, fp)==1);
 int ret2 =  fclose( fp );
-MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //½âËø
+MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //è§£é”
 
 return ret|ret2;
 }
@@ -505,37 +505,37 @@ inline int load_trans_scn(char * str_path)
 int ret	=-1;
 int ret2=-1;
 if(!access(str_path,0)){
-MEM_TRANSACTION_LOCK(&(transaction_manager.locker));  //ÉÏËø
-FILE *fp;  // ¶¨ÒåÒ»¸öÎÄ¼şÖ¸Õëfp
-fp = fopen(str_path, "rt");  // ÒÔ¶ş½øÖÆ¿ÉĞ´·½Ê½´ò¿ªstu.datÎÄ¼ş
+MEM_TRANSACTION_LOCK(&(transaction_manager.locker));  //ä¸Šé”
+FILE *fp;  // å®šä¹‰ä¸€ä¸ªæ–‡ä»¶æŒ‡é’ˆfp
+fp = fopen(str_path, "rt");  // ä»¥äºŒè¿›åˆ¶å¯å†™æ–¹å¼æ‰“å¼€stu.datæ–‡ä»¶
 ret = !(fscanf(fp,"%d",&(transaction_manager.scn)) == 1);
 ret2 =  fclose( fp );
-MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //½âËø
+MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //è§£é”
 }
 return ret|ret2;
 }
 
-//Ïú»Ù transaction_managerµÄ ĞòÁĞÖµ ºÍ  »Ø¹ö¿Õ¼ä×î´óÖµ
+//é”€æ¯ transaction_managerçš„ åºåˆ—å€¼ å’Œ  å›æ»šç©ºé—´æœ€å¤§å€¼
 inline int dest_sys_transaction_manager(unsigned  long long	scn,off_t rollback_space_max_size)
 {
 	int err;
-	MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //ÉÏËø
-	free(transaction_manager.transaction_tables);			    	//Çå³ıÊÂÎï²Û
-	err = destroy_trans_data_queue(&sys_trans_data_queue);	//Çå³ı»º³å¶ÓÁĞ
-	MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker)); //½âËø
+	MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //ä¸Šé”
+	free(transaction_manager.transaction_tables);			    	//æ¸…é™¤äº‹ç‰©æ§½
+	err = destroy_trans_data_queue(&sys_trans_data_queue);	//æ¸…é™¤ç¼“å†²é˜Ÿåˆ—
+	MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker)); //è§£é”
 	if(err)return err;
 	return 0;
 }
 
-//À©Õ¹ÊÂÎñ²Û
+//æ‰©å±•äº‹åŠ¡æ§½
 inline int extend_transaction_manager()
 {
-	MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //ÉÏËø
+	MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //ä¸Šé”
 	
 	void   * old =  transaction_manager.transaction_tables;
 	void   * _new;
 	
-	//¸ù¾İ²ßÂÔÖØĞÂ·ÖÅäËÙ²é±íÄÚ´æ
+	//æ ¹æ®ç­–ç•¥é‡æ–°åˆ†é…é€ŸæŸ¥è¡¨å†…å­˜
 	switch(transaction_manager.extend_police)
 	{
 		case DOUBLE_EXTEND:
@@ -558,18 +558,18 @@ inline int extend_transaction_manager()
 		trans->rollback_space_size = transaction_manager.rollback_space_max_size;
 	}
   
-	MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker)); //½âËø
+	MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker)); //è§£é”
   return 0 ;
 }
 
 //___________________________________________________________________________________
-/* ÏÂÃæÊÇ¹ØÓÚÊÂÎñµÄ²Ù×÷*/
+/* ä¸‹é¢æ˜¯å…³äºäº‹åŠ¡çš„æ“ä½œ*/
 
-//·ÖÅäÒ»¸öÊÂÎñ²Û
-//µ±ÏµÍ³¹ÒÁËÌ«¶àÎ´Ìá½»µÄÊÂÎñÊ±£¬»áÓ°Ïì·ÖÅäÊÂÎñµÄĞÔÄÜ£¬ºóÃæÔÙ¿¼ÂÇÓÅ»¯
+//åˆ†é…ä¸€ä¸ªäº‹åŠ¡æ§½
+//å½“ç³»ç»ŸæŒ‚äº†å¤ªå¤šæœªæäº¤çš„äº‹åŠ¡æ—¶ï¼Œä¼šå½±å“åˆ†é…äº‹åŠ¡çš„æ€§èƒ½ï¼Œåé¢å†è€ƒè™‘ä¼˜åŒ–
 inline int allocate_trans(  long long * trans_no) 
 {
-MEM_TRANSACTION_LOCK(&(transaction_manager.locker));  //ÉÏËø
+MEM_TRANSACTION_LOCK(&(transaction_manager.locker));  //ä¸Šé”
 	 long long i = 0;
 	 int err,err1;
 	 for(;i<transaction_manager.transaction_table_num;++i)
@@ -587,16 +587,16 @@ MEM_TRANSACTION_LOCK(&(transaction_manager.locker));  //ÉÏËø
 	if(i<transaction_manager.transaction_table_num)
 		{
 			transaction_manager.transaction_tables[i].rollback_cur_pos   = 0;
-			//¶ÔÊÂÎñ²Û·ÖÅä»Ø¹ö¿é
+			//å¯¹äº‹åŠ¡æ§½åˆ†é…å›æ»šå—
 			err = create_rollback_block(&(transaction_manager.transaction_tables[i]));
-			//·ÖÅä»Ø¹öÕ»
+			//åˆ†é…å›æ»šæ ˆ
 			err1 = init_trans_data_stack(&(transaction_manager.transaction_tables[i].rollback_stack),DEFAULT_STACK_MAX_SIZE/*transaction_manager.transaction_tables[i].rollback_stack_size*/);
 		}
-MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //½âËø
+MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //è§£é”
 
   if(err!=0)return err;
   if(err1!=0)return err1;
-  	//Èç¹ûÊÂÎñ²ÛÒÑÂú£¬ÏÈÀ©Õ¹£¬ÔÙ·µ»ØÊ§°Ü£¬Ó¦ÓÃÓ¦¸Ã try_again
+  	//å¦‚æœäº‹åŠ¡æ§½å·²æ»¡ï¼Œå…ˆæ‰©å±•ï¼Œå†è¿”å›å¤±è´¥ï¼Œåº”ç”¨åº”è¯¥ try_again
   if(i == transaction_manager.transaction_table_num){
   	err = extend_transaction_manager();
   	if(err!=0)return err;
@@ -606,29 +606,29 @@ MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //½âËø
 	return 0;
 }
 
-// ÊÍ·ÅÊÂÎñ²Û
+// é‡Šæ”¾äº‹åŠ¡æ§½
 inline int release_trans( long long  trans_no)
 {	
 	DEBUG("release_trans,trans_no is %d\n",trans_no);
-MEM_TRANSACTION_LOCK(&(transaction_manager.locker));  //ÉÏËø
+MEM_TRANSACTION_LOCK(&(transaction_manager.locker));  //ä¸Šé”
 	 transaction_manager.transaction_tables[trans_no].is_used = 0;
 	 transaction_manager.transaction_tables[trans_no].scn = 0;
 	 transaction_manager.transaction_tables[trans_no].start_time = 0;
 	 transaction_manager.transaction_tables[trans_no].end_time   = 0;
 	 
-	 //¶ÔÊÂÎñ²ÛÊÍ·Å»Ø¹öÕ»
+	 //å¯¹äº‹åŠ¡æ§½é‡Šæ”¾å›æ»šæ ˆ
 	 destroy_trans_data_stack(&(transaction_manager.transaction_tables[trans_no].rollback_stack));
-	 //¶ÔÊÂÎñ²ÛÊÍ·Å»Ø¹ö¿é
+	 //å¯¹äº‹åŠ¡æ§½é‡Šæ”¾å›æ»šå—
 	 release_rollback_block(&(transaction_manager.transaction_tables[trans_no]));
 	 
-MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //½âËø
+MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //è§£é”
 
-MEM_TRANSACTION_LOCK_DEST(&(transaction_manager.locker));//ÊÍ·ÅËø
+MEM_TRANSACTION_LOCK_DEST(&(transaction_manager.locker));//é‡Šæ”¾é”
 	return 0;
 	
 }
 
-// ¿ªÊ¼Ò»¸öÊÂÎñ
+// å¼€å§‹ä¸€ä¸ªäº‹åŠ¡
 inline int start_trans( long long  trans_no)
 {	
 	DEBUG("start_trans_no is %ld\n",trans_no);
@@ -640,20 +640,20 @@ inline int start_trans( long long  trans_no)
 		}
 	mem_transaction_t * trans = &(transaction_manager.transaction_tables[trans_no]);
 	
-MEM_TRANSACTION_LOCK(&(trans->locker));  //ÉÏËø
-// ·ÖÅäÊÂÎñµÄ scn
-MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //ÉÏËø 
+MEM_TRANSACTION_LOCK(&(trans->locker));  //ä¸Šé”
+// åˆ†é…äº‹åŠ¡çš„ scn
+MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //ä¸Šé” 
 ++transaction_manager.scn;
 trans->scn = transaction_manager.scn;
-MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //½âËø
-// ÊÂÎñ¿ªÊ¼Ê±¼ä
+MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //è§£é”
+// äº‹åŠ¡å¼€å§‹æ—¶é—´
 trans->start_time = get_systime();
 trans->ref = 0;
-MEM_TRANSACTION_UNLOCK(&(trans->locker));  //½âËø
+MEM_TRANSACTION_UNLOCK(&(trans->locker));  //è§£é”
 	return 0;
 }
 
-// ½áÊøÒ»¸öÊÂÎñ
+// ç»“æŸä¸€ä¸ªäº‹åŠ¡
 inline int stop_trans( long long  trans_no)
 {	
 	DEBUG("stop_trans_no is %ld\n",trans_no);
@@ -664,16 +664,16 @@ inline int stop_trans( long long  trans_no)
 		}
 	mem_transaction_t * trans = &(transaction_manager.transaction_tables[trans_no]);
 	
-MEM_TRANSACTION_LOCK(&(trans->locker));  //ÉÏËø
-// ÊÂÎñ½áÊøÊ±¼ä
+MEM_TRANSACTION_LOCK(&(trans->locker));  //ä¸Šé”
+// äº‹åŠ¡ç»“æŸæ—¶é—´
 trans->end_time = get_systime();
-// ÎÄ¼şË¢ÅÌÏà¹ØµÄ²Ù×÷--------------------------------------------------
+// æ–‡ä»¶åˆ·ç›˜ç›¸å…³çš„æ“ä½œ--------------------------------------------------
 
-MEM_TRANSACTION_UNLOCK(&(trans->locker));  //½âËø
+MEM_TRANSACTION_UNLOCK(&(trans->locker));  //è§£é”
 	return 0;
 }
 
-// ÊÂÎñĞÂ²úÉúÒ»¸ö action Ê±£¬ÒıÓÃ¼ÆÊı ++
+// äº‹åŠ¡æ–°äº§ç”Ÿä¸€ä¸ª action æ—¶ï¼Œå¼•ç”¨è®¡æ•° ++
 inline int inc_trans_ref( long long  trans_no)
 {	
 	if( transaction_manager.transaction_tables[trans_no].is_used == 0)
@@ -683,14 +683,14 @@ inline int inc_trans_ref( long long  trans_no)
 		}
 	mem_transaction_t * trans = &(transaction_manager.transaction_tables[trans_no]);
 	
-TRANS_REF_WLOCK(&(trans->ref_locker));  //ÉÏËø
-// ÊÂÎñ½áÊøÊ±¼ä
+TRANS_REF_WLOCK(&(trans->ref_locker));  //ä¸Šé”
+// äº‹åŠ¡ç»“æŸæ—¶é—´
 ++trans->ref;
-TRANS_REF_WUNLOCK(&(trans->ref_locker));  //½âËø
+TRANS_REF_WUNLOCK(&(trans->ref_locker));  //è§£é”
 	return 0;
 }
 
-// ÊÂÎñĞÂ²úÉúÒ»¸ö action Ê±£¬ÒıÓÃ¼ÆÊı --
+// äº‹åŠ¡æ–°äº§ç”Ÿä¸€ä¸ª action æ—¶ï¼Œå¼•ç”¨è®¡æ•° --
 inline int dec_trans_ref( long long  trans_no)
 {	
 	if( transaction_manager.transaction_tables[trans_no].is_used == 0)
@@ -700,16 +700,16 @@ inline int dec_trans_ref( long long  trans_no)
 		}
 	mem_transaction_t * trans = &(transaction_manager.transaction_tables[trans_no]);
 	
-TRANS_REF_WLOCK(&(trans->ref_locker));  //ÉÏËø
-// ÊÂÎñ½áÊøÊ±¼ä
+TRANS_REF_WLOCK(&(trans->ref_locker));  //ä¸Šé”
+// äº‹åŠ¡ç»“æŸæ—¶é—´
 --trans->ref;
-TRANS_REF_WUNLOCK(&(trans->ref_locker));  //½âËø
+TRANS_REF_WUNLOCK(&(trans->ref_locker));  //è§£é”
 	return 0;
 }
 
 //___________________________________________________________________________________
-/* ÏÂÃæÊÇ¹ØÓÚÑ­»·Êı×é»º³åÇøµÄ²Ù×÷Ïà¹ØµÄ²Ù×÷*/
-// ³õÊ¼»¯Ñ­»·Êı×é»º³åÇø
+/* ä¸‹é¢æ˜¯å…³äºå¾ªç¯æ•°ç»„ç¼“å†²åŒºçš„æ“ä½œç›¸å…³çš„æ“ä½œ*/
+// åˆå§‹åŒ–å¾ªç¯æ•°ç»„ç¼“å†²åŒº
 inline int init_trans_data_queue(trans_data_queue_t * trans_data_queue,long max)  
 {  
     trans_data_queue->item = (mem_trans_data_entry_t*)malloc(max * sizeof(mem_trans_data_entry_t));  
@@ -728,8 +728,8 @@ inline int init_trans_data_queue(trans_data_queue_t * trans_data_queue,long max)
     return 0;  
 }  
 
-/* ÏÂÃæÊÇ¹ØÓÚÑ­»·Êı×é»º³åÇøµÄ²Ù×÷Ïà¹ØµÄ²Ù×÷*/
-// Í£ÈÕÖ¾ºó,ÖØ½¨ »º³åÇø
+/* ä¸‹é¢æ˜¯å…³äºå¾ªç¯æ•°ç»„ç¼“å†²åŒºçš„æ“ä½œç›¸å…³çš„æ“ä½œ*/
+// åœæ—¥å¿—å,é‡å»º ç¼“å†²åŒº
 inline int reinit_trans_data_queue(trans_data_queue_t * trans_data_queue,long max)  
 {  
     free(trans_data_queue->item);  
@@ -737,7 +737,7 @@ inline int reinit_trans_data_queue(trans_data_queue_t * trans_data_queue,long ma
     return init_trans_data_queue(trans_data_queue, max);  
 }  
 
- // Èë¶ÓÁĞ
+ // å…¥é˜Ÿåˆ—
 inline int en_trans_data_queue(trans_data_queue_t * trans_data_queue, mem_trans_data_entry_t* item)  
 {  
 //	  DEBUG("en_trans_data_queue\n"	);
@@ -757,11 +757,11 @@ inline int en_trans_data_queue(trans_data_queue_t * trans_data_queue, mem_trans_
     memcpy(&(trans_data_queue->item[trans_data_queue->tear]),item,sizeof(mem_trans_data_entry_t));
 		    
     trans_data_queue->tear = (trans_data_queue->tear + 1) % trans_data_queue->max;  
-    //Èë¶ÓÁĞ¾ÍÔö¼ÓÊÂÎñµÄÒıÓÃ¼ÆÊı£¬±íÊ¾Î´Ğ´ÈëÈÕÖ¾µÄaction
+    //å…¥é˜Ÿåˆ—å°±å¢åŠ äº‹åŠ¡çš„å¼•ç”¨è®¡æ•°ï¼Œè¡¨ç¤ºæœªå†™å…¥æ—¥å¿—çš„action
     inc_trans_ref(item->trans.trans_no);
     TRANS_QUEUE_UNLOCK(&(trans_data_queue->locker)); 
     
-    // Èç¹ûĞ´ÕßÔÚË¯Ãß¾Í»½ĞÑËû
+    // å¦‚æœå†™è€…åœ¨ç¡çœ å°±å”¤é†’ä»–
     if( 1 == trans_data_queue->is_sleeping)
    {
     //DEBUG("en_trans TRANS_QUEUE_SLEEP_LOCK\n"	);
@@ -777,7 +777,7 @@ inline int en_trans_data_queue(trans_data_queue_t * trans_data_queue, mem_trans_
     
     return 0;  
 }  
-  // ³ö¶ÓÁĞ
+  // å‡ºé˜Ÿåˆ—
 inline int de_trans_data_queue(trans_data_queue_t * trans_data_queue, mem_trans_data_entry_t * item)  
 {  
 //	  DEBUG("de_trans_data_queue\n"	);
@@ -795,14 +795,14 @@ inline int de_trans_data_queue(trans_data_queue_t * trans_data_queue, mem_trans_
     memcpy(item,&(trans_data_queue->item[trans_data_queue->front]),sizeof(mem_trans_data_entry_t));
     //DEBUG("de trans_data_queue->front is %d, item->redo_data_start is %ld ,item->undo_data_start is %ld \n",trans_data_queue->front,item->trans->redo_data_start , item->trans->undo_data_start );
     trans_data_queue->front = (trans_data_queue->front + 1) % trans_data_queue->max;  
-    //³ö¶ÓÁĞ¾Í¼õÉÙÊÂÎñµÄÒıÓÃ¼ÆÊı£¬±íÊ¾ÒÑĞ´ÈëÈÕÖ¾µÄaction
+    //å‡ºé˜Ÿåˆ—å°±å‡å°‘äº‹åŠ¡çš„å¼•ç”¨è®¡æ•°ï¼Œè¡¨ç¤ºå·²å†™å…¥æ—¥å¿—çš„action
     //DEBUG("dec_trans_ref(%d)\n",item->trans.trans_no	);
     dec_trans_ref(item->trans.trans_no);
     TRANS_QUEUE_UNLOCK(&(trans_data_queue->locker)); 
     return 0;  
 }  
 
- // Èë¶ÓÁĞ_unsafe
+ // å…¥é˜Ÿåˆ—_unsafe
 inline int en_trans_data_queue_unsafe(trans_data_queue_t * trans_data_queue, mem_trans_data_entry_t* item )  
 {  
 	  DEBUG("en_trans_data_queue_unsafe\n"	);
@@ -821,11 +821,11 @@ inline int en_trans_data_queue_unsafe(trans_data_queue_t * trans_data_queue, mem
     //for(;k<trans_data_queue->tear;++k)DEBUG("K en trans_data_queue->tear is %d,trans->redo_data_start is %ld ,trans->undo_data_start is %ld \n",k,trans_data_queue->item[k].trans.redo_data_start , trans_data_queue->item[k].trans.undo_data_start );
     
     trans_data_queue->tear = (trans_data_queue->tear + 1) % trans_data_queue->max;  
-    //Èë¶ÓÁĞ¾ÍÔö¼ÓÊÂÎñµÄÒıÓÃ¼ÆÊı£¬±íÊ¾Î´Ğ´ÈëÈÕÖ¾µÄaction
+    //å…¥é˜Ÿåˆ—å°±å¢åŠ äº‹åŠ¡çš„å¼•ç”¨è®¡æ•°ï¼Œè¡¨ç¤ºæœªå†™å…¥æ—¥å¿—çš„action
     inc_trans_ref(item->trans.trans_no);
     return 0;  
 }  
-  // ³ö¶ÓÁĞ_unsafe
+  // å‡ºé˜Ÿåˆ—_unsafe
 inline int de_trans_data_queue_unsafe(trans_data_queue_t * trans_data_queue, mem_trans_data_entry_t * item)  
 {  
 	  DEBUG("de_trans_data_queue_unsafe\n"	);
@@ -839,7 +839,7 @@ inline int de_trans_data_queue_unsafe(trans_data_queue_t * trans_data_queue, mem
     memcpy(item,&(trans_data_queue->item[trans_data_queue->front]),sizeof(mem_trans_data_entry_t));
     //DEBUG("de trans_data_queue->front is %d, item->redo_data_start is %ld ,item->undo_data_start is %ld \n",trans_data_queue->front,item->trans->redo_data_start , item->trans->undo_data_start );
     trans_data_queue->front = (trans_data_queue->front + 1) % trans_data_queue->max;  
-    //³ö¶ÓÁĞ¾Í¼õÉÙÊÂÎñµÄÒıÓÃ¼ÆÊı£¬±íÊ¾ÒÑĞ´ÈëÈÕÖ¾µÄaction
+    //å‡ºé˜Ÿåˆ—å°±å‡å°‘äº‹åŠ¡çš„å¼•ç”¨è®¡æ•°ï¼Œè¡¨ç¤ºå·²å†™å…¥æ—¥å¿—çš„action
     DEBUG("dec_trans_ref(%d)\n",item->trans.trans_no	);
     dec_trans_ref(item->trans.trans_no);
     return 0;  
@@ -847,7 +847,7 @@ inline int de_trans_data_queue_unsafe(trans_data_queue_t * trans_data_queue, mem
 
 
 
-  //Çå³ıÈÕÖ¾»º³å¶ÓÁĞ
+  //æ¸…é™¤æ—¥å¿—ç¼“å†²é˜Ÿåˆ—
 int destroy_trans_data_queue(trans_data_queue_t * trans_data_queue_t)  
 {  
 	  TRANS_QUEUE_SLEEP_COND_DEST(&(trans_data_queue_t->sleep_cond));
@@ -857,8 +857,8 @@ int destroy_trans_data_queue(trans_data_queue_t * trans_data_queue_t)
 }  
   
   //___________________________________________________________________________________
-/* ÏÂÃæÊÇ¹ØÓÚ»Ø¹öÕ»µÄÏà¹Ø²Ù×÷*/
-// ³õÊ¼»¯»Ø¹öÕ»
+/* ä¸‹é¢æ˜¯å…³äºå›æ»šæ ˆçš„ç›¸å…³æ“ä½œ*/
+// åˆå§‹åŒ–å›æ»šæ ˆ
 
 inline int init_trans_data_stack(trans_data_stack_t * trans_data_stack,long max)  
 {  
@@ -874,7 +874,7 @@ inline int init_trans_data_stack(trans_data_stack_t * trans_data_stack,long max)
   
     return 0;  
 }  
- // ÈëÕ» stack
+ // å…¥æ ˆ stack
 inline int push_trans_data_stack(trans_data_stack_t * trans_data_stack, mem_trans_data_entry_t* item,mem_trans_data_entry_t ** out)  
 {  
     TRANS_QUEUE_LOCK(&(trans_data_stack->locker));
@@ -892,7 +892,7 @@ inline int push_trans_data_stack(trans_data_stack_t * trans_data_stack, mem_tran
     TRANS_QUEUE_UNLOCK(&(trans_data_stack->locker)); 
     return 0;  
 }  
- // ÈëÕ»
+ // å…¥æ ˆ
 inline int push_trans_data_stack_unsafe(trans_data_stack_t * trans_data_stack, mem_trans_data_entry_t* item,mem_trans_data_entry_t ** out)  
 {  
     //DEBUG("trans_data_stack end is %d,item->trans.undo_addr_ptr is %d,item is %0x\n",trans_data_stack->end,trans_data_stack->max,item->trans.undo_addr_ptr);
@@ -907,7 +907,7 @@ inline int push_trans_data_stack_unsafe(trans_data_stack_t * trans_data_stack, m
     ++trans_data_stack->end;  
     return 0;  
 }
-  // ³öÕ»
+  // å‡ºæ ˆ
 inline int pop_trans_data_stack(trans_data_stack_t * trans_data_stack, mem_trans_data_entry_t * item)  
 {  
 	
@@ -925,7 +925,7 @@ inline int pop_trans_data_stack(trans_data_stack_t * trans_data_stack, mem_trans
     TRANS_QUEUE_UNLOCK(&(trans_data_stack->locker)); 
     return 0;  
 }  
-  // ³öÕ»
+  // å‡ºæ ˆ
 inline int pop_trans_data_stack_unsafe(trans_data_stack_t * trans_data_stack, mem_trans_data_entry_t * item)  
 {  
 	
@@ -941,7 +941,7 @@ inline int pop_trans_data_stack_unsafe(trans_data_stack_t * trans_data_stack, me
     return 0;  
 }  
 
-//À©Õ¹»Ø¹öÕ»
+//æ‰©å±•å›æ»šæ ˆ
 inline int extend_trans_data_stack(trans_data_stack_t * trans_data_stack)
 {
 	TRANS_QUEUE_LOCK(&(trans_data_stack->locker));
@@ -949,7 +949,7 @@ inline int extend_trans_data_stack(trans_data_stack_t * trans_data_stack)
 	void   * old =  trans_data_stack->item;
 	void   * _new;
 	
-	//Ä¬ÈÏÀ©2±¶
+	//é»˜è®¤æ‰©2å€
 	_new =  malloc( 2*(trans_data_stack->max)*(sizeof(mem_trans_data_entry_t)));
 	
   memcpy(_new,old,trans_data_stack->max);
@@ -961,20 +961,20 @@ inline int extend_trans_data_stack(trans_data_stack_t * trans_data_stack)
 }
 
 
-  //Çå³ı»Ø¹öÕ»
+  //æ¸…é™¤å›æ»šæ ˆ
 int destroy_trans_data_stack(trans_data_stack_t * trans_data_stack_t)  
 {  
     free(trans_data_stack_t->item);  
 }    
   
 //___________________________________________________________________________________
-/* ÏÂÃæÊÇ¹ØÓÚĞ´ÈÕÖ¾Ïà¹ØµÄ²Ù×÷*/
-// ÏÈĞ´Ò»¸ö  sys_redo_log_manager À´´¦ÀíĞ´ÈÕÖ¾ÎÄ¼ş
+/* ä¸‹é¢æ˜¯å…³äºå†™æ—¥å¿—ç›¸å…³çš„æ“ä½œ*/
+// å…ˆå†™ä¸€ä¸ª  sys_redo_log_manager æ¥å¤„ç†å†™æ—¥å¿—æ–‡ä»¶
 
-// redo_entry Ğ´ÈëindexÎÄ¼ş
+// redo_entry å†™å…¥indexæ–‡ä»¶
 inline int redo_file_write_index(mem_transaction_entry_t * trans_entry,FILE * data_fd,mem_trans_data_entry_t ** out)
 {
-	// Èç¹ûĞèÒªÇĞ»»ÎÄ¼ş£¬ÓÃÕâ¸ö fd À´Ôİ´æ
+	// å¦‚æœéœ€è¦åˆ‡æ¢æ–‡ä»¶ï¼Œç”¨è¿™ä¸ª fd æ¥æš‚å­˜
 	FILE * to_close_fd = NULL;
 	
 	REDO_LOG_LOCK(&(redo_log_manager.index_locker));
@@ -983,15 +983,15 @@ inline int redo_file_write_index(mem_transaction_entry_t * trans_entry,FILE * da
   //DEBUG("trans_entry->name is [%s]\n",trans_entry->name);
 
 	fwrite((void*)trans_entry,TRANSACTION_ENTRY_SIZE,1,write_fd);
-	// ÕâÀï²åÈëÁ´±í
+	// è¿™é‡Œæ’å…¥é“¾è¡¨
 	
-	//¸üĞÂÎÄ¼ş´óĞ¡
-  SIZE_LOCK(&(redo_log_manager.index_size_locker));// Ä¿Â¼ÎÄ¼ş´óĞ¡ÉÏËø
+	//æ›´æ–°æ–‡ä»¶å¤§å°
+  SIZE_LOCK(&(redo_log_manager.index_size_locker));// ç›®å½•æ–‡ä»¶å¤§å°ä¸Šé”
 	redo_log_manager.cur_index_size += TRANSACTION_ENTRY_SIZE;
-	SIZE_UNLOCK(&(redo_log_manager.index_size_locker));// Ä¿Â¼ÎÄ¼ş´óĞ¡½âËø
+	SIZE_UNLOCK(&(redo_log_manager.index_size_locker));// ç›®å½•æ–‡ä»¶å¤§å°è§£é”
 	
 	
-	// Èç¹ûÎÄ¼ş´óĞ¡³¬ÁË£¬¹Ø±ÕÏÖÔÚµÄÄ¿Â¼ÎÄ¼ş£¬Éú³ÉĞÂµÄÄ¿Â¼ÎÄ¼ş£¬²¢¸ü¸ÄÊÂÎñ¹ÜÀíÆ÷
+	// å¦‚æœæ–‡ä»¶å¤§å°è¶…äº†ï¼Œå…³é—­ç°åœ¨çš„ç›®å½•æ–‡ä»¶ï¼Œç”Ÿæˆæ–°çš„ç›®å½•æ–‡ä»¶ï¼Œå¹¶æ›´æ”¹äº‹åŠ¡ç®¡ç†å™¨
 	if(redo_log_manager.cur_index_size >=redo_log_manager.index_max_size)
 	{
 		DEBUG("Switch redo_log index file,redo_log_manager.cur_index_size is %ld\n",redo_log_manager.cur_index_size);
@@ -1004,7 +1004,7 @@ inline int redo_file_write_index(mem_transaction_entry_t * trans_entry,FILE * da
     GetTimeForNAME(redo_log_manager.index_path);
     
     DEBUG("New redo_log_manager.index_path is %s\n",redo_log_manager.index_path);
-    //ÖØĞÂ´ò¿ªĞÂÎÄ¼ş
+    //é‡æ–°æ‰“å¼€æ–°æ–‡ä»¶
     
      //DEBUG("old_fd is %d\n",redo_log_manager.index_fd );
      redo_log_manager.index_fd = fopen(redo_log_manager.index_path,"wb+");
@@ -1012,27 +1012,27 @@ inline int redo_file_write_index(mem_transaction_entry_t * trans_entry,FILE * da
     
     regist_opened_file(redo_log_manager.index_path ,redo_log_manager.index_fd);
     
-    //¸üĞÂÄ¿Â¼ÎÄ¼ş´óĞ¡=0;
-    SIZE_LOCK(&(redo_log_manager.index_size_locker));// Ä¿Â¼ÎÄ¼ş´óĞ¡ÉÏËø
+    //æ›´æ–°ç›®å½•æ–‡ä»¶å¤§å°=0;
+    SIZE_LOCK(&(redo_log_manager.index_size_locker));// ç›®å½•æ–‡ä»¶å¤§å°ä¸Šé”
 		redo_log_manager.cur_index_size = 0;
-		SIZE_UNLOCK(&(redo_log_manager.index_size_locker));//Ä¿Â¼ÎÄ¼ş´óĞ¡½âËø
+		SIZE_UNLOCK(&(redo_log_manager.index_size_locker));//ç›®å½•æ–‡ä»¶å¤§å°è§£é”
 
 	}
-	//²åÈë¶ÓÁĞ£¬Òì²½Ğ´Êı¾İÎÄ¼ş
+	//æ’å…¥é˜Ÿåˆ—ï¼Œå¼‚æ­¥å†™æ•°æ®æ–‡ä»¶
 	mem_trans_data_entry_t val;
 	//val.trans = trans_entry;
 	memcpy(&(val.trans),trans_entry,TRANSACTION_ENTRY_SIZE);
 	val.fd    = data_fd;
 	
-	// Èë¶ÓÁĞÊ§°Ü¾ÍÖØÊÔ
+	// å…¥é˜Ÿåˆ—å¤±è´¥å°±é‡è¯•
 	while(en_trans_data_queue(&sys_trans_data_queue,  &val))
 	{
 		usleep(EN_TRANS_DATA_QUEUE_TIME);
   };
   ///////////////////////////////////////////////////////////////////////////////////
- //ÕâÀï´¦ÀíÒ»ÏÂ»Ø¹ö¶Î
+ //è¿™é‡Œå¤„ç†ä¸€ä¸‹å›æ»šæ®µ
 	mem_block_t *mb = transaction_manager.transaction_tables[trans_entry->trans_no].rollback_space;
-	//ÕÒµ½»Ø¹ö¶Î¿Õ¼ä
+	//æ‰¾åˆ°å›æ»šæ®µç©ºé—´
 	long rollback_space_num = transaction_manager.transaction_tables[trans_entry->trans_no].rollback_space_num;
 	int j = 0;
 	//DEBUG("rollback_space_num is %d\n",rollback_space_num);
@@ -1045,8 +1045,8 @@ inline int redo_file_write_index(mem_transaction_entry_t * trans_entry,FILE * da
 	//DEBUG("transaction_manager.transaction_tables[trans_entry->trans_no] is %0x\n",(char *)(transaction_manager.transaction_tables)+(trans_entry->trans_no)*TRANSACTION_SIZE );
   //DEBUG("transaction_manager.transaction_tables[trans_entry->trans_no].rollback_cur_pos is %ld\n",transaction_manager.transaction_tables[trans_entry->trans_no].rollback_cur_pos);
   
-  MEM_TRANSACTION_LOCK(&(transaction_manager.transaction_tables[trans_entry->trans_no].locker));  // ÉÏËø
-	//Èç¹û»Ø¹ö¶Î²»¹»¾ÍÀ©³äºóÔÙĞ´Èë
+  MEM_TRANSACTION_LOCK(&(transaction_manager.transaction_tables[trans_entry->trans_no].locker));  // ä¸Šé”
+	//å¦‚æœå›æ»šæ®µä¸å¤Ÿå°±æ‰©å……åå†å†™å…¥
 	if(
 		//((mem_transaction_t *)((char *)(transaction_manager.transaction_tables)+(trans_entry->trans_no)*TRANSACTION_SIZE ))
 		//->rollback_cur_pos+
@@ -1064,17 +1064,17 @@ inline int redo_file_write_index(mem_transaction_entry_t * trans_entry,FILE * da
 		transaction_manager.transaction_tables[trans_entry->trans_no].rollback_cur_pos = 0;
 	  mb = mb->next;
 	}
-		MEM_TRANSACTION_UNLOCK(&(transaction_manager.transaction_tables[trans_entry->trans_no].locker)); // ½âËø
+		MEM_TRANSACTION_UNLOCK(&(transaction_manager.transaction_tables[trans_entry->trans_no].locker)); // è§£é”
 		
-		//»¹ÒªÅĞ¶ÏÒ»´Î´óĞ¡,À©±íºó»¹·Å²»ÏÂ»Ø¹öÊı¾İµÄ»°¾Í±¨´í
+		//è¿˜è¦åˆ¤æ–­ä¸€æ¬¡å¤§å°,æ‰©è¡¨åè¿˜æ”¾ä¸ä¸‹å›æ»šæ•°æ®çš„è¯å°±æŠ¥é”™
 		if(transaction_manager.transaction_tables[trans_entry->trans_no].rollback_cur_pos+trans_entry->undo_data_length > mb->space_size )
 	  {
-	  REDO_LOG_UNLOCK(&(redo_log_manager.index_locker));//½âËø
+	  REDO_LOG_UNLOCK(&(redo_log_manager.index_locker));//è§£é”
 	  ERROR("ROLLBACK_SPACE_ERR_TRANS_TOO_BIG\n");
 	  return ROLLBACK_SPACE_ERR_TRANS_TOO_BIG;
    }
 	
-	//¿½±´Êı¾İµ½»Ø¹ö¶Î
+	//æ‹·è´æ•°æ®åˆ°å›æ»šæ®µ
 	memcpy(mb->space_start_addr+transaction_manager.transaction_tables[trans_entry->trans_no].rollback_cur_pos
 				,trans_entry->ori_data_start
 				,trans_entry->undo_data_length
@@ -1086,7 +1086,7 @@ inline int redo_file_write_index(mem_transaction_entry_t * trans_entry,FILE * da
   DEBUG("trans_entry->undo_addr_ptr is %0x\n", val.trans.undo_addr_ptr);
 	transaction_manager.transaction_tables[trans_entry->trans_no].rollback_cur_pos += trans_entry->undo_data_length;
   /////////////////////////////////////////////////////////////////////////////////// 
-  	// Èë»Ø¹öÕ»Ê§°Ü¾ÍÖØÊÔ
+  	// å…¥å›æ»šæ ˆå¤±è´¥å°±é‡è¯•
 	while(
 	push_trans_data_stack(&(transaction_manager.transaction_tables[trans_entry->trans_no].rollback_stack),
 	 &val, 
@@ -1097,9 +1097,9 @@ inline int redo_file_write_index(mem_transaction_entry_t * trans_entry,FILE * da
   };
 	
 	
-	REDO_LOG_UNLOCK(&(redo_log_manager.index_locker));//½âËø
+	REDO_LOG_UNLOCK(&(redo_log_manager.index_locker));//è§£é”
   
-  //³öËøÒÔºóÔÙ close Ìá¸ß²¢·¢ĞÔÄÜ
+  //å‡ºé”ä»¥åå† close æé«˜å¹¶å‘æ€§èƒ½
 	if(NULL!=to_close_fd)
 		{
 			fclose(to_close_fd);
@@ -1109,54 +1109,54 @@ inline int redo_file_write_index(mem_transaction_entry_t * trans_entry,FILE * da
 	return 0;
 }
 
-// È±ÉÙ¶Ô undo µÄÖ§³Ö
+// ç¼ºå°‘å¯¹ undo çš„æ”¯æŒ
 
-// trans_entry µÄscn create_time redo_type undo_type redo_data_length undo_data_length 
-// ÓÉÊÂÎñÌî³ä
-// ±¾º¯ÊıÌî³ä trans_entry µÄ log_data_file£¬redo_data_start£¬undo_data_start£¬µÈ×Ö¶Î
-// ±¾º¯Êı¹¤×÷Á¿½ÏÇá£¬Ö»ÊÇ´ÓÂß¼­ÉÏ£¬·ÖÅäĞ´ÈÕÖ¾ÎÄ¼şÖĞµÄÎ»ÖÃ£¬Ö»Ğ´Ä¿Â¼ÎÄ¼ş£¬²»Ğ´Êı¾İÎÄ¼ş
+// trans_entry çš„scn create_time redo_type undo_type redo_data_length undo_data_length 
+// ç”±äº‹åŠ¡å¡«å……
+// æœ¬å‡½æ•°å¡«å…… trans_entry çš„ log_data_fileï¼Œredo_data_startï¼Œundo_data_startï¼Œç­‰å­—æ®µ
+// æœ¬å‡½æ•°å·¥ä½œé‡è¾ƒè½»ï¼Œåªæ˜¯ä»é€»è¾‘ä¸Šï¼Œåˆ†é…å†™æ—¥å¿—æ–‡ä»¶ä¸­çš„ä½ç½®ï¼Œåªå†™ç›®å½•æ–‡ä»¶ï¼Œä¸å†™æ•°æ®æ–‡ä»¶
 inline int fill_trans_entry_to_write(mem_transaction_entry_t * trans_entry,mem_trans_data_entry_t ** out)
 {
-	REDO_LOG_LOCK(&(redo_log_manager.data_locker));//Êı¾İÎÄ¼şÉÏËø
+	REDO_LOG_LOCK(&(redo_log_manager.data_locker));//æ•°æ®æ–‡ä»¶ä¸Šé”
 
-	//¿ìËÙÉêÇëÊı¾İ¿Õ¼ä,²¢À©Õ¹ÎÄ¼ş´óĞ¡
+	//å¿«é€Ÿç”³è¯·æ•°æ®ç©ºé—´,å¹¶æ‰©å±•æ–‡ä»¶å¤§å°
 	
-	//»ñÈ¡redo µÄ¿ªÊ¼Î»ÖÃ£¬²¢ÒÆ¶¯ÎÄ¼ş´óĞ¡
+	//è·å–redo çš„å¼€å§‹ä½ç½®ï¼Œå¹¶ç§»åŠ¨æ–‡ä»¶å¤§å°
 	//trans_entry->redo_data_start=ftell(redo_log_manager.data_fd);
 	//fseek(redo_log_manager.data_fd,trans_entry->redo_data_length-1,SEEK_END);
 	//fwrite("0",1,1,redo_log_manager.data_fd);
-	////»ñÈ¡undo µÄ¿ªÊ¼Î»ÖÃ£¬²¢ÒÆ¶¯ÎÄ¼ş´óĞ¡
+	////è·å–undo çš„å¼€å§‹ä½ç½®ï¼Œå¹¶ç§»åŠ¨æ–‡ä»¶å¤§å°
 	//trans_entry->undo_data_start=ftell(redo_log_manager.data_fd);
 	//fseek(redo_log_manager.data_fd,trans_entry->undo_data_length-1,SEEK_END);
 	//fwrite("0",1,1,redo_log_manager.data_fd);
 	
-	SIZE_LOCK(&(redo_log_manager.data_size_locker));// Êı¾İÎÄ¼ş´óĞ¡ÉÏËø
+	SIZE_LOCK(&(redo_log_manager.data_size_locker));// æ•°æ®æ–‡ä»¶å¤§å°ä¸Šé”
 //	DEBUG("redo_log_manager.cur_data_size is %d\n",redo_log_manager.cur_data_size);
 	trans_entry->create_time = get_systime();
-	//  trans_entry->scn = ÊÂÎñ²ÛÀï¶ÔÓ¦µÄ scn
+	//  trans_entry->scn = äº‹åŠ¡æ§½é‡Œå¯¹åº”çš„ scn
 	trans_entry->scn = transaction_manager.transaction_tables[trans_entry->trans_no].scn;
 	trans_entry->redo_data_start = redo_log_manager.cur_data_size;
 	trans_entry->undo_data_start = redo_log_manager.cur_data_size + trans_entry->redo_data_length;  
 
 //  DEBUG("fill trans_entry->object_no is %d\n",trans_entry->object_no);
-  //¸üĞÂÎÄ¼ş´óĞ¡
+  //æ›´æ–°æ–‡ä»¶å¤§å°
 	redo_log_manager.cur_data_size += trans_entry->redo_data_length + trans_entry->undo_data_length;
-	SIZE_UNLOCK(&(redo_log_manager.data_size_locker));// Êı¾İÎÄ¼ş´óĞ¡½âËø
+	SIZE_UNLOCK(&(redo_log_manager.data_size_locker));// æ•°æ®æ–‡ä»¶å¤§å°è§£é”
 	
 	//DEBUG("redo_log_manager.cur_data_size is %ld\n",redo_log_manager.cur_data_size);
 
 	int err = 0;
-	//Ìî³ä entryµÄÎÄ¼şÃû
+	//å¡«å…… entryçš„æ–‡ä»¶å
 	strcpy(trans_entry->log_data_file,redo_log_manager.redo_path);
 	trans_entry->is_close = 0;
 	
-	// Èç¹ûÎÄ¼ş´óĞ¡³¬ÁË£¬¹Ø±ÕÏÖÔÚµÄÊı¾İÎÄ¼ş£¬Éú³ÉĞÂµÄÊı¾İÎÄ¼ş£¬²¢¸ü¸ÄÊÂÎñ¹ÜÀíÆ÷
+	// å¦‚æœæ–‡ä»¶å¤§å°è¶…äº†ï¼Œå…³é—­ç°åœ¨çš„æ•°æ®æ–‡ä»¶ï¼Œç”Ÿæˆæ–°çš„æ•°æ®æ–‡ä»¶ï¼Œå¹¶æ›´æ”¹äº‹åŠ¡ç®¡ç†å™¨
 	if(redo_log_manager.cur_data_size >=redo_log_manager.data_max_size)
 	{
 		IMPORTANT_INFO("Create new redo_date file,trans_entry is %0x\n",trans_entry);
 	  IMPORTANT_INFO("Redo_log_manager.cur_data_size is %ld\n",redo_log_manager.cur_data_size);
 
-		// ÑÓ³Ùµ½ºóÃæµÄ²Ù×÷¹Ø±ÕÎÄ¼ş
+		// å»¶è¿Ÿåˆ°åé¢çš„æ“ä½œå…³é—­æ–‡ä»¶
 		trans_entry->is_close = 1;
 		unregist_opened_file(redo_log_manager.redo_path);
 
@@ -1171,16 +1171,16 @@ inline int fill_trans_entry_to_write(mem_transaction_entry_t * trans_entry,mem_t
     DEBUG("Old_redo_date file_fd is %ld\n",redo_log_manager.data_fd);
     
 
-    //ÖØĞÂ´ò¿ªĞÂÎÄ¼ş
+    //é‡æ–°æ‰“å¼€æ–°æ–‡ä»¶
     redo_log_manager.data_fd = fopen(redo_log_manager.redo_path,"wb+");
     IMPORTANT_INFO("New_redo_date file_fd is %ld\n",redo_log_manager.data_fd);
     
     regist_opened_file(redo_log_manager.redo_path ,redo_log_manager.data_fd);
     
-    //¸üĞÂÊı¾İÎÄ¼ş´óĞ¡=0;
-    SIZE_LOCK(&(redo_log_manager.data_size_locker));// Êı¾İÎÄ¼ş´óĞ¡ÉÏËø
+    //æ›´æ–°æ•°æ®æ–‡ä»¶å¤§å°=0;
+    SIZE_LOCK(&(redo_log_manager.data_size_locker));// æ•°æ®æ–‡ä»¶å¤§å°ä¸Šé”
 		redo_log_manager.cur_data_size = 0;
-		SIZE_UNLOCK(&(redo_log_manager.data_size_locker));// Êı¾İÎÄ¼ş´óĞ¡½âËø
+		SIZE_UNLOCK(&(redo_log_manager.data_size_locker));// æ•°æ®æ–‡ä»¶å¤§å°è§£é”
 		
 	}
 	//
@@ -1189,14 +1189,14 @@ inline int fill_trans_entry_to_write(mem_transaction_entry_t * trans_entry,mem_t
 	err = redo_file_write_index(trans_entry,redo_log_manager.data_fd,out);
 
   }
-	REDO_LOG_UNLOCK(&(redo_log_manager.data_locker));//Êı¾İÎÄ¼ş½âËø	
+	REDO_LOG_UNLOCK(&(redo_log_manager.data_locker));//æ•°æ®æ–‡ä»¶è§£é”	
 	
 	if(err!=0)return err;
 	return 0;
 }
 
-// redo_data Ğ´ÈëdataÎÄ¼ş
-// ÕâÀï»¹ÒªÏ¸»¯¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
+// redo_data å†™å…¥dataæ–‡ä»¶
+// è¿™é‡Œè¿˜è¦ç»†åŒ–â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
 inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 {
 	//DEBUG("redo_file_write_data\n");
@@ -1220,10 +1220,10 @@ inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 			ERROR("trans_entry->redo_type not found,trans_entry->redo_type is %d\n",trans_entry->redo_type);
 
 	}
-	//¶ÔÓÚundo ±í UPDATEµÄ·´²Ù×÷ÊÇupdate
-	//DELETE µÄ·´²Ù×÷ÊÇ insert
-	//INSERT µÄ·´²Ù×÷ÊÇ delete
-	//¶ÔÓÚundo Ë÷Òı UPDATEµÄ·´²Ù×÷ÊÇupdate
+	//å¯¹äºundo è¡¨ UPDATEçš„åæ“ä½œæ˜¯update
+	//DELETE çš„åæ“ä½œæ˜¯ insert
+	//INSERT çš„åæ“ä½œæ˜¯ delete
+	//å¯¹äºundo ç´¢å¼• UPDATEçš„åæ“ä½œæ˜¯update
 	switch(trans_entry->undo_type)
 	{
 	case OPT_DATA_UPDATE:
@@ -1240,9 +1240,9 @@ inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 	fseek(fd,trans_entry->undo_data_start,SEEK_SET);
 	fwrite(trans_entry->ori_data_start,1,trans_entry->undo_data_length,fd);
 	
- ///ÕâÀï´¦ÀíÒ»ÏÂ»Ø¹ö¶Î
+ ///è¿™é‡Œå¤„ç†ä¸€ä¸‹å›æ»šæ®µ
 	//mem_block_t *mb = transaction_manager.transaction_tables[trans_entry->trans_no].rollback_space;
-	////ÕÒµ½»Ø¹ö¶Î¿Õ¼ä
+	////æ‰¾åˆ°å›æ»šæ®µç©ºé—´
 	//long rollback_space_num = transaction_manager.transaction_tables[trans_entry->trans_no].rollback_space_num;
 	//int j = 0;
 	//DEBUG("rollback_space_num is %d\n",rollback_space_num);
@@ -1254,7 +1254,7 @@ inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 	//DEBUG("mb is %0x\n",mb);
 	//DEBUG("trans_entry->trans_action is %0x\n",transaction_manager.transaction_tables);
 	//DEBUG("transaction_manager.transaction_tables[trans_entry->trans_no] is %0x\n",(char *)(transaction_manager.transaction_tables)+(trans_entry->trans_no)*TRANSACTION_SIZE );
-	////Èç¹û»Ø¹ö¶Î²»¹»¾ÍÀ©³äºóÔÙĞ´Èë
+	////å¦‚æœå›æ»šæ®µä¸å¤Ÿå°±æ‰©å……åå†å†™å…¥
 	//if(
 	//	//((mem_transaction_t *)((char *)(transaction_manager.transaction_tables)+(trans_entry->trans_no)*TRANSACTION_SIZE ))
 	//	//->rollback_cur_pos+
@@ -1267,11 +1267,11 @@ inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 	//	transaction_manager.transaction_tables[trans_entry->trans_no].rollback_cur_pos = 0;
 	//  mb = mb->next;
 	//}
-	//	//»¹ÒªÅĞ¶ÏÒ»´Î´óĞ¡,À©±íºó»¹·Å²»ÏÂ»Ø¹öÊı¾İµÄ»°¾Í±¨´í
+	//	//è¿˜è¦åˆ¤æ–­ä¸€æ¬¡å¤§å°,æ‰©è¡¨åè¿˜æ”¾ä¸ä¸‹å›æ»šæ•°æ®çš„è¯å°±æŠ¥é”™
 	//	if(transaction_manager.transaction_tables[trans_entry->trans_no].rollback_cur_pos+trans_entry->undo_data_length > mb->space_size )
 	//  return ROLLBACK_SPACE_ERR_TRANS_TOO_BIG;
 	//
-	////¿½±´Êı¾İµ½»Ø¹ö¶Î
+	////æ‹·è´æ•°æ®åˆ°å›æ»šæ®µ
 	//memcpy(mb->space_start_addr+transaction_manager.transaction_tables[trans_entry->trans_no].rollback_cur_pos
 	//			,trans_entry->ori_data_start
 	//			,trans_entry->undo_data_length
@@ -1286,7 +1286,7 @@ inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 }
 	if( 1 == trans_entry->is_close ) 
 		{
-			IMPORTANT_INFO("trans_entry->redo_data_start  = %ld £¬fclose(fd),fd = %ld\n",trans_entry->redo_data_start ,fd);
+			IMPORTANT_INFO("trans_entry->redo_data_start  = %ld ï¼Œfclose(fd),fd = %ld\n",trans_entry->redo_data_start ,fd);
 			fclose(fd);
 			
 		}
@@ -1295,13 +1295,13 @@ inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 
   
 //_______________________sys_trans_redo_data_writer____________________________________________________________
-/* ÏÂÃæÊÇ¹ØÓÚĞ´ÈÕÖ¾writer Ïß³ÌµÄ²Ù×÷*/
+/* ä¸‹é¢æ˜¯å…³äºå†™æ—¥å¿—writer çº¿ç¨‹çš„æ“ä½œ*/
 void * redo_file_writer_fun( void *arg )
 {
 	mem_trans_data_entry_t val;
 	long sleep = sys_trans_redo_data_writer.sleep_micro_seconds;
 	while(!sys_trans_redo_data_writer.stop){
-	// Ñ­»·´Ó¶ÓÁĞÖĞÈ¡Êı¾İ£¬Ğ´ÈëÎÄ¼ş
+	// å¾ªç¯ä»é˜Ÿåˆ—ä¸­å–æ•°æ®ï¼Œå†™å…¥æ–‡ä»¶
 		//DEBUG("redo_file_writer_fun cycle\n");
 
 	if(sys_trans_data_queue.front != sys_trans_data_queue.tear)sleep = sys_trans_redo_data_writer.sleep_micro_seconds;
@@ -1312,7 +1312,7 @@ void * redo_file_writer_fun( void *arg )
 	redo_file_write_data(&(val.trans),val.fd);
   }
    //usleep(sleep);
-   // ·ÇË¯Ãß¶ÌÑÓ³Ù
+   // éç¡çœ çŸ­å»¶è¿Ÿ
    if(sleep <1000)
    	{
    		volatile static int itime = 0;
@@ -1320,7 +1320,7 @@ void * redo_file_writer_fun( void *arg )
    		sleep<<=1;
    		//DEBUG("sleep<<1,sleep is %d\n",sleep);
    	}
-  else //Èç¹ûÑÓ³Ù>1 s
+  else //å¦‚æœå»¶è¿Ÿ>1 s
   {
    //DEBUG("TRANS_QUEUE_SLEEP_LOCK\n");
   TRANS_QUEUE_SLEEP_LOCK(&(sys_trans_data_queue.sleep_locker));
@@ -1338,7 +1338,7 @@ void * redo_file_writer_fun( void *arg )
 }
 }
 
-// ³õÊ¼»¯Êı¾İÈÕÖ¾Ğ´Õß
+// åˆå§‹åŒ–æ•°æ®æ—¥å¿—å†™è€…
 inline int init_trans_redo_data_writer(trans_redo_data_writer_t * writer,long sleep_micro_seconds)
 {
 	writer->writer_fun 					= redo_file_writer_fun;
@@ -1348,7 +1348,7 @@ inline int init_trans_redo_data_writer(trans_redo_data_writer_t * writer,long sl
 	return 0;
 }
 
-// ¿ªÆôwriterÏß³ÌĞ´ÈÕÖ¾
+// å¼€å¯writerçº¿ç¨‹å†™æ—¥å¿—
 inline int start_trans_redo_data_writer()
 {
 	  int ret;  
@@ -1372,8 +1372,8 @@ inline int stop_trans_redo_data_writer()
 }
 
 
-//¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
-// Ìá½»ÊÂÎñ
+//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
+// æäº¤äº‹åŠ¡
 inline int commit_trans( long long  trans_no)
 {
 	IMPORTANT_INFO("commit_trans_no is %ld\n",trans_no);
@@ -1383,25 +1383,25 @@ inline int commit_trans( long long  trans_no)
 			return ERR_TRANS_ISUSED_ZERO;
 		}
 	mem_transaction_t * trans = &(transaction_manager.transaction_tables[trans_no]);
-  // ÊÂÎñµÄÒıÓÃ¼ÆÊı= 0 £¬ËµÃ÷È«²¿Ğ´Íê
+  // äº‹åŠ¡çš„å¼•ç”¨è®¡æ•°= 0 ï¼Œè¯´æ˜å…¨éƒ¨å†™å®Œ
 	while(trans->ref != 0)
 	{
 	 usleep(sys_trans_redo_data_writer.sleep_micro_seconds);
   }
-  // ½«µ±Ç°Î´Ë¢ÅÌµÄ fwrite »º³åÇø£¬Ë¢ÅÌ
+  // å°†å½“å‰æœªåˆ·ç›˜çš„ fwrite ç¼“å†²åŒºï¼Œåˆ·ç›˜
  fflush_redo_log_manager();
- // Í¬²½Êı¾İ
+ // åŒæ­¥æ•°æ®
  int err;
-// ½áÊøÒ»¸öÊÂÎñ
+// ç»“æŸä¸€ä¸ªäº‹åŠ¡
 if(0!=(err=stop_trans(trans_no)))ERROR("stop_trans failed,trans_no is %d\n",err);  
 if(err)return err;
-// ÊÍ·ÅÊÂÎñ²Û
+// é‡Šæ”¾äº‹åŠ¡æ§½
 if(0!=(err=release_trans(trans_no)))ERROR("release_trans failed,trans_no is %d\n",err); 
  if(err)return err;
   return 0;
 }
-//¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
-// »Ø¹öÊÂÎñ
+//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
+// å›æ»šäº‹åŠ¡
 inline int rollback_trans( long long  trans_no)
 {
 	IMPORTANT_INFO(" ---------- Begin rollback_trans and wait for Starting , trans_no is %ld ----------\n",trans_no);
@@ -1415,8 +1415,8 @@ inline int rollback_trans( long long  trans_no)
 	
 	mem_transaction_t * trans = &(transaction_manager.transaction_tables[trans_no]);
  
-  struct trans_data_stack_t   rollback_stack = trans->rollback_stack;       //»Ø¹öÕ»
-  off_t                  rollback_stack_size = trans->rollback_stack_size;  //»Ø¹öÕ»´óĞ¡
+  struct trans_data_stack_t   rollback_stack = trans->rollback_stack;       //å›æ»šæ ˆ
+  off_t                  rollback_stack_size = trans->rollback_stack_size;  //å›æ»šæ ˆå¤§å°
   while(trans->ref != 0)
 	{
 	 DEBUG("trans->ref is %ld \n",trans->ref);
@@ -1425,18 +1425,18 @@ inline int rollback_trans( long long  trans_no)
   
   int k = 0;
   mem_trans_data_entry_t  item;
-  //³öÕ»»Ø¹ö
+  //å‡ºæ ˆå›æ»š
   while( TRANS_ERR_STACK_EMPTY != pop_trans_data_stack(&(transaction_manager.transaction_tables[trans_no].rollback_stack)
            , &item)  )
   {
    //DEBUG("pop_trans_data_stack\n");
-  	void *                      undo_addr_ptr    = item.trans.undo_addr_ptr   ;   // undo ÔÚ»Ø¹ö¶ÎÄÚ´æÖĞµÄµØÖ·
-    off_t                       undo_data_length = item.trans.undo_data_length;   // undo Êı¾İ³¤¶È
+  	void *                      undo_addr_ptr    = item.trans.undo_addr_ptr   ;   // undo åœ¨å›æ»šæ®µå†…å­˜ä¸­çš„åœ°å€
+    off_t                       undo_data_length = item.trans.undo_data_length;   // undo æ•°æ®é•¿åº¦
   	short                       undo_type        = item.trans.undo_type       ;
-  	void *                      ori_data_start   = item.trans.ori_data_start ;     //Ô­Ê¼Êı¾İÆğÊ¼µØÖ·
+  	void *                      ori_data_start   = item.trans.ori_data_start ;     //åŸå§‹æ•°æ®èµ·å§‹åœ°å€
     long                        object_no        = item.trans.object_no ; 
     
-    // »ñµÃmem_table Ö¸Õë
+    // è·å¾—mem_table æŒ‡é’ˆ
     //DEBUG("object_no is %d\n",object_no);
     mem_table_t *               mem_table;
     get_table_no_addr(object_no,(void **)(&mem_table));
@@ -1445,10 +1445,10 @@ inline int rollback_trans( long long  trans_no)
     //if(k>2697860)IMPORTANT_INFO("mem_table is %0x, k is %d\n",mem_table,k);	
     //IMPORTANT_INFO("mem_table's name %s\n",((mem_table_t *)mem_table)->config.table_name);
     
-  //¶ÔÓÚundo ±í UPDATEµÄ·´²Ù×÷ÊÇupdate
-	//DELETE µÄ·´²Ù×÷ÊÇ insert
-	//INSERT µÄ·´²Ù×÷ÊÇ delete
-	//¶ÔÓÚundo Ë÷Òı UPDATEµÄ·´²Ù×÷ÊÇupdate
+  //å¯¹äºundo è¡¨ UPDATEçš„åæ“ä½œæ˜¯update
+	//DELETE çš„åæ“ä½œæ˜¯ insert
+	//INSERT çš„åæ“ä½œæ˜¯ delete
+	//å¯¹äºundo ç´¢å¼• UPDATEçš„åæ“ä½œæ˜¯update
 	switch(undo_type)
 	{
 	case OPT_DATA_UPDATE:
@@ -1459,7 +1459,7 @@ inline int rollback_trans( long long  trans_no)
 	      err = mem_table_del_record(mem_table ,record_ptr);
 	//    err = mem_table_update_record(mem_table , record_ptr,undo_addr_ptr);
 	  if(err){ERROR("ROLLBACK OPT_DATA_UPDATE on delete err is %d\n",err);return err;}	  
-	  // ĞŞ¸ÄÔ­Ê¼¼ÇÂ¼±íµÄ»Ø¹öĞÅÏ¢
+	  // ä¿®æ”¹åŸå§‹è®°å½•è¡¨çš„å›æ»šä¿¡æ¯
   	  if(NULL !=record_ptr->undo_info_ptr  )
   	  {
   	  record_ptr->undo_info_ptr = (void *)(((mem_trans_data_entry_t *)(record_ptr->undo_info_ptr))->next);
@@ -1469,7 +1469,7 @@ inline int rollback_trans( long long  trans_no)
      long   block_no;
 	   err = mem_table_insert_record( mem_table ,&record_ptr2,&block_no, (char*)undo_addr_ptr);
 	   if(err){ERROR("ROLLBACK OPT_DATA_UPDATE on insert  err is %d\n",err);return err;}
-	   	// ĞŞ¸ÄÔ­Ê¼¼ÇÂ¼±íµÄ»Ø¹öĞÅÏ¢
+	   	// ä¿®æ”¹åŸå§‹è®°å½•è¡¨çš„å›æ»šä¿¡æ¯
     if(NULL !=record_ptr->undo_info_ptr  )
     {
     record_ptr->undo_info_ptr = (void *)(((mem_trans_data_entry_t *)(record_ptr->undo_info_ptr))->next);
@@ -1506,7 +1506,7 @@ inline int rollback_trans( long long  trans_no)
   	  														(char*) undo_addr_ptr);
 			DEBUG("Old record_ptr is %0x,new record_ptr is %0x \n",record_ptr,record_ptr2);
 
-  		  // ĞŞ¸ÄÔ­Ê¼¼ÇÂ¼±íµÄ»Ø¹öĞÅÏ¢
+  		  // ä¿®æ”¹åŸå§‹è®°å½•è¡¨çš„å›æ»šä¿¡æ¯
   	      if(NULL !=record_ptr->undo_info_ptr)
   	     {
   	     	DEBUG("record_ptr->undo_info_ptr = record_ptr->undo_info_ptr->next\n",record_ptr,record_ptr2,err);
@@ -1537,7 +1537,7 @@ inline int rollback_trans( long long  trans_no)
 
       err = mem_table_del_record(mem_table ,record_ptr);
       if(err){ERROR("ROLLBACK OPT_DATA_INSERT,record_ptr is %0x, err is %d\n",record_ptr,err);}//return err;}
-      // ĞŞ¸ÄÔ­Ê¼¼ÇÂ¼±íµÄ»Ø¹öĞÅÏ¢
+      // ä¿®æ”¹åŸå§‹è®°å½•è¡¨çš„å›æ»šä¿¡æ¯
       if(NULL !=record_ptr->undo_info_ptr)
      {
     	  record_ptr->undo_info_ptr = (void *)(((mem_trans_data_entry_t *)(record_ptr->undo_info_ptr))->next);
@@ -1545,7 +1545,7 @@ inline int rollback_trans( long long  trans_no)
     
     
    // LIST_LOCK  (  &(mem_block_temp->mem_free_list.list_lock)    );  
-   // //²¢Èë»ØÊÕÁ´±í
+   // //å¹¶å…¥å›æ”¶é“¾è¡¨
    //record_ptr->is_used = 0;
    //record_ptr->scn = 0;
    //
@@ -1564,9 +1564,9 @@ inline int rollback_trans( long long  trans_no)
 	}
 	case OPT_INDEX_HASH_INSERT:
 		{
-		struct mem_hash_index_input_long * input =(struct mem_hash_index_input_long *)(item.trans.undo_addr_ptr); // undo_addr_ptr ¶ÔÓ¦ input
+		struct mem_hash_index_input_long * input =(struct mem_hash_index_input_long *)(item.trans.undo_addr_ptr); // undo_addr_ptr å¯¹åº” input
 		struct    record_t   **  out_record_ptr;																					
-		struct mem_hash_index_t * mem_hash_index = (struct mem_hash_index_t *)ori_data_start;											// ori_data_start ¶ÔÓ¦ mem_hash_index_t
+		struct mem_hash_index_t * mem_hash_index = (struct mem_hash_index_t *)ori_data_start;											// ori_data_start å¯¹åº” mem_hash_index_t
 		long  mem_table_no;
 		long  block_no;
 		err = mem_hash_index_del_l(
@@ -1581,9 +1581,9 @@ inline int rollback_trans( long long  trans_no)
   }
   case OPT_INDEX_HASH_DELETE:
 		{
-		struct mem_hash_index_input_long * input =(struct mem_hash_index_input_long *)(item.trans.undo_addr_ptr); // undo_addr_ptr ¶ÔÓ¦ input
+		struct mem_hash_index_input_long * input =(struct mem_hash_index_input_long *)(item.trans.undo_addr_ptr); // undo_addr_ptr å¯¹åº” input
 		struct    record_t   **  out_record_ptr;																					
-		struct mem_hash_index_t * mem_hash_index = (struct mem_hash_index_t *)ori_data_start;											// ori_data_start ¶ÔÓ¦ mem_hash_index_t
+		struct mem_hash_index_t * mem_hash_index = (struct mem_hash_index_t *)ori_data_start;											// ori_data_start å¯¹åº” mem_hash_index_t
 		long  mem_table_no;
 		long block_no;
 		err = mem_hash_index_insert_l(
@@ -1598,9 +1598,9 @@ inline int rollback_trans( long long  trans_no)
   }
     case OPT_INDEX_RBTREE_INSERT:
 		{
-		mem_rbtree_entry_t * input =(mem_rbtree_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr ¶ÔÓ¦ mem_rbtree_entry_t
+		mem_rbtree_entry_t * input =(mem_rbtree_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr å¯¹åº” mem_rbtree_entry_t
 		struct    record_t   **  out_record_ptr;																					
-		mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start ¶ÔÓ¦ mem_rbtree_index_t
+		mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start å¯¹åº” mem_rbtree_index_t
 		err = mem_rbtree_delete(
                         /* in */ mem_rbtree_index,
                         				 mem_rbtree_index->root,
@@ -1611,9 +1611,9 @@ inline int rollback_trans( long long  trans_no)
   }
     case OPT_INDEX_RBTREE_DELETE:
 		{
-		mem_rbtree_entry_t * input =(mem_rbtree_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr ¶ÔÓ¦ mem_rbtree_entry_t
+		mem_rbtree_entry_t * input =(mem_rbtree_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr å¯¹åº” mem_rbtree_entry_t
 		struct    record_t   **  out_record_ptr;																					
-		mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start ¶ÔÓ¦ mem_rbtree_index_t
+		mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start å¯¹åº” mem_rbtree_index_t
 		err = mem_rbtree_insert(
                         /* in */ mem_rbtree_index,
                         				 mem_rbtree_index->root,
@@ -1625,14 +1625,14 @@ inline int rollback_trans( long long  trans_no)
 }
   
  } 
-  // ½«µ±Ç°Î´Ë¢ÅÌµÄ fwrite »º³åÇø£¬Ë¢ÅÌ
+  // å°†å½“å‰æœªåˆ·ç›˜çš„ fwrite ç¼“å†²åŒºï¼Œåˆ·ç›˜
  fflush_redo_log_manager();
 
- // Í¬²½Êı¾İ
-// ½áÊøÒ»¸öÊÂÎñ
+ // åŒæ­¥æ•°æ®
+// ç»“æŸä¸€ä¸ªäº‹åŠ¡
 if(0!=(err=stop_trans(trans_no)))ERROR("stop_trans failed,trans_no is %d\n",err);  
 if(err)return err;
-// ÊÍ·ÅÊÂÎñ²Û
+// é‡Šæ”¾äº‹åŠ¡æ§½
 if(0!=(err=release_trans(trans_no)))ERROR("release_trans failed,trans_no is %d\n",err); 
 if(err)return err;
 IMPORTANT_INFO(" ---------- Stop rollback_trans , trans_no is %ld ----------\n",trans_no);
@@ -1641,7 +1641,7 @@ return 0;
 
 
 }
-// Õë¶Ô ÈÕÖ¾ index ÖĞµÄÒ»¸öÌõÄ¿ ½øĞĞÖØ×ö
+// é’ˆå¯¹ æ—¥å¿— index ä¸­çš„ä¸€ä¸ªæ¡ç›® è¿›è¡Œé‡åš
 inline int redo_recover(mem_transaction_entry_t * item)
 {
 	if(NULL == item)
@@ -1651,36 +1651,36 @@ inline int redo_recover(mem_transaction_entry_t * item)
 		}
 int err;
 
-unsigned  long long       scn           = item->scn;                //±¾¼ÇÂ¼µÄÂß¼­ID
-long long                 trans_no			= item->trans_no;						//µ±Ç°ÊÂÎïºÅ
-time_t                    create_time		= item->create_time;        //action Ê±¼ä
-short                     is_close			= item->is_close;           //ÊÇ·ñÔÚĞ´Èëºó¹Ø±Õfd
-short                     redo_type			= item->redo_type;          //redo ²Ù×÷ÀàĞÍ
-long                      object_no			= item->object_no;          //±í»òË÷ÒıµÄ no  --- ĞèÒªÔÚÒµÎñÖĞÌî³ä ÓÃÓÚÖØ×ö
-unsigned   long           block_no			= item->block_no;           //¿éºÅ					 --- ĞèÒªÔÚÒµÎñÖĞÌî³ä ÓÃÓÚÖØ×ö
-unsigned   long           record_num		= item->record_num;			    //ĞĞºÅ           --- ĞèÒªÔÚÒµÎñÖĞÌî³ä ÓÃÓÚÖØ×ö
-char                      name[256];														    //±í»òË÷ÒıµÄÃû×Ö
+unsigned  long long       scn           = item->scn;                //æœ¬è®°å½•çš„é€»è¾‘ID
+long long                 trans_no			= item->trans_no;						//å½“å‰äº‹ç‰©å·
+time_t                    create_time		= item->create_time;        //action æ—¶é—´
+short                     is_close			= item->is_close;           //æ˜¯å¦åœ¨å†™å…¥åå…³é—­fd
+short                     redo_type			= item->redo_type;          //redo æ“ä½œç±»å‹
+long                      object_no			= item->object_no;          //è¡¨æˆ–ç´¢å¼•çš„ no  --- éœ€è¦åœ¨ä¸šåŠ¡ä¸­å¡«å…… ç”¨äºé‡åš
+unsigned   long           block_no			= item->block_no;           //å—å·					 --- éœ€è¦åœ¨ä¸šåŠ¡ä¸­å¡«å…… ç”¨äºé‡åš
+unsigned   long           record_num		= item->record_num;			    //è¡Œå·           --- éœ€è¦åœ¨ä¸šåŠ¡ä¸­å¡«å…… ç”¨äºé‡åš
+char                      name[256];														    //è¡¨æˆ–ç´¢å¼•çš„åå­—
 strcpy(name,item->name);
-char                      block_name[256];														    //¿éµÄÃû×Ö
+char                      block_name[256];														    //å—çš„åå­—
 strcpy(block_name,item->block_name);
 
-char                      log_data_file[256];												//µ±Ç°ÈÕÖ¾Êı¾İÎÄ¼şÃû
+char                      log_data_file[256];												//å½“å‰æ—¥å¿—æ•°æ®æ–‡ä»¶å
 strcpy(log_data_file,item->log_data_file);
-long                      redo_data_start	 = item->redo_data_start;	// redo Êı¾İÔÚÎÄ¼şÖĞµÄÆğÊ¼Î»ÖÃ£¬»òÕß index_entry µÄÆğÊ¼Î»ÖÃ
-off_t                     redo_data_length = item->redo_data_length;// redo Êı¾İ³¤¶È
+long                      redo_data_start	 = item->redo_data_start;	// redo æ•°æ®åœ¨æ–‡ä»¶ä¸­çš„èµ·å§‹ä½ç½®ï¼Œæˆ–è€… index_entry çš„èµ·å§‹ä½ç½®
+off_t                     redo_data_length = item->redo_data_length;// redo æ•°æ®é•¿åº¦
 
-//ÉùÃ÷ĞèÒªÍÆµ¼µÄÔªÊı¾İ
+//å£°æ˜éœ€è¦æ¨å¯¼çš„å…ƒæ•°æ®
 FILE 								* fd;
 mem_table_t         * mem_table;
 struct mem_block_t  * mb;
 struct record_t   	* record_ptr;
 
-char recover_buf[redo_data_length]; // ÖØ×öÊı¾İ
+char recover_buf[redo_data_length]; // é‡åšæ•°æ®
     
-// 0 »ñÈ¡»Ø¹öÊı¾İ    
+// 0 è·å–å›æ»šæ•°æ®    
 err = search_opened_file(log_data_file,&fd);
 DEBUG("Search_opened_file %s return  %d\n",log_data_file,err);
-//1 Ã»ÕÒµ½fd ÔòÊÔÍ¼´ò¿ªÎÄ¼ş
+//1 æ²¡æ‰¾åˆ°fd åˆ™è¯•å›¾æ‰“å¼€æ–‡ä»¶
 	if(err)
 	{
 		IMPORTANT_INFO("NOT FOUND and OPEN IT\n");
@@ -1701,14 +1701,14 @@ DEBUG("Search_opened_file %s return  %d\n",log_data_file,err);
 	}
 	DEBUG("fseek fd: %ld . start is %ld\n",fd,redo_data_start);
 
-	//ÕÒµ½ÎÄ¼ş ÊÔÍ¼»ñµÃ »Ø¹öÊı¾İ
+	//æ‰¾åˆ°æ–‡ä»¶ è¯•å›¾è·å¾— å›æ»šæ•°æ®
 	fseek(fd,redo_data_start,SEEK_SET);
   DEBUG("fseek  end \n");
 
   size_t ret = fread ( recover_buf, 1, redo_data_length, fd) ;
   if(ret < 0)
   {
-  	//»ñµÃ»Ø¹öÊı¾İÊ§°Ü
+  	//è·å¾—å›æ»šæ•°æ®å¤±è´¥
   	ERROR("Read Redo File Failed on pose [%ld,%ld] \n",redo_data_start,redo_data_start+redo_data_length);
   	return ret;
   }
@@ -1734,7 +1734,7 @@ DEBUG("Search_opened_file %s return  %d\n",log_data_file,err);
   	 search_block_name(block_name,&real_block_no);
 
   
-    //2 ¸ù¾İ3¸öno»ñµÃ ĞĞÖ¸Õë
+    //2 æ ¹æ®3ä¸ªnoè·å¾— è¡ŒæŒ‡é’ˆ
      err = get_record_by_3NO(table_no,real_block_no,record_num,&record_ptr);
      	DEBUG("----- recover a record ! -----\n");
 			memcpy(record_ptr,recover_buf,redo_data_length);
@@ -1748,15 +1748,15 @@ DEBUG("Search_opened_file %s return  %d\n",log_data_file,err);
 
   if(err)
   {
-  	//»ñµÃ»Ø¹öÊı¾İÊ§°Ü
+  	//è·å¾—å›æ»šæ•°æ®å¤±è´¥
   	ERROR("Get record by 3NO failed!,err is %d \n",err);
   	return ret;
   }
 	return 0;
 }
 
-//ÊäÈëÒ»¸öÎÄ¼şµÄÂ·¾¶,ºÍÎÄ¼şÃû
-//¶Ô¸ÃÎÄ¼şÃû½øĞĞ redo
+//è¾“å…¥ä¸€ä¸ªæ–‡ä»¶çš„è·¯å¾„,å’Œæ–‡ä»¶å
+//å¯¹è¯¥æ–‡ä»¶åè¿›è¡Œ redo
 inline int redo_file_redo_index(char * path,char * filename)
 {
 	if(NULL == path)
@@ -1787,14 +1787,14 @@ inline int redo_file_redo_index(char * path,char * filename)
   
   if(ret < 0)
   {
-  	//¶ÁÈ¡ÖØ×öÊı¾İÊ§°Ü
+  	//è¯»å–é‡åšæ•°æ®å¤±è´¥
   	ERROR("Read Redo File Failed! \n");
   	fclose(work_fd);
   	return ret;
   }
   
   struct stat sb; 
-	/* È¡µÃÎÄ¼ş´óĞ¡ */
+	/* å–å¾—æ–‡ä»¶å¤§å° */
 	stat(filename, &sb); 
 	long long n = sb.st_size/TRANSACTION_ENTRY_SIZE;
 	if(sb.st_size%TRANSACTION_ENTRY_SIZE)++n;
@@ -1805,7 +1805,7 @@ inline int redo_file_redo_index(char * path,char * filename)
   //  
 	// if(trans_entry.create_time < recover_time)
 	// {		
-	// 	// Ê¹ÓÃÕÛ°ë²éÕÒÎÄ¼şÖĞµÄÊ±¼ä
+	// 	// ä½¿ç”¨æŠ˜åŠæŸ¥æ‰¾æ–‡ä»¶ä¸­çš„æ—¶é—´
   //  while (left + 1 != right)  
   //  {  
   //      middle = left + (right - left) / 2;  
@@ -1845,9 +1845,9 @@ inline int redo_file_redo_index(char * path,char * filename)
 return err;
 }
 
-// redo ÖØ×öº¯Êı
-// path ÖØ×öÈÕÖ¾Ä¿Â¼
-// start_str_in ÖØ×ö¿ªÊ¼Ê±¼ä×Ö·û´®ÀıÈç "20161206221236" 
+// redo é‡åšå‡½æ•°
+// path é‡åšæ—¥å¿—ç›®å½•
+// start_str_in é‡åšå¼€å§‹æ—¶é—´å­—ç¬¦ä¸²ä¾‹å¦‚ "20161206221236" 
 int redo(char * path,char * start_str_in)  
 {  
 	IMPORTANT_INFO("redo data in %s,start_str_in %s\n",path,start_str_in);	
@@ -1875,7 +1875,7 @@ int redo(char * path,char * start_str_in)
 	strcat(start_str,start_str_in);
 	strcat(start_str,".000000");
 	dirent_array_search_min(dirent_array, file_count, start_str,&ret_pos);
-  //ÓÉÓÚ»Ö¸´µÄÊ±¼ä¿ÉÄÜÎ»ÓÚÉÏÒ»¸öÎÄ¼şµÄÎ²²¿£¬ËùÒÔ ret_pos Òª¼õÒ»
+  //ç”±äºæ¢å¤çš„æ—¶é—´å¯èƒ½ä½äºä¸Šä¸€ä¸ªæ–‡ä»¶çš„å°¾éƒ¨ï¼Œæ‰€ä»¥ ret_pos è¦å‡ä¸€
 	if(ret_pos>0)--ret_pos;
 	
 	DEBUG("ret_pos = %d \n",ret_pos);
