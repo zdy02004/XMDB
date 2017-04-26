@@ -16,7 +16,9 @@ extern "C" {
 #define atomic_add(P, V) __sync_add_and_fetch((P), (V))
 #define atomic_set_bit(P, V) __sync_or_and_fetch((P), 1<<(V))
 #define atomic_clear_bit(P, V) __sync_and_and_fetch((P), ~(1<<(V)))
+#define CAS                    __sync_bool_compare_and_swap          
 
+    
 typedef struct rwlock {
     int write;
     int read;
@@ -108,7 +110,7 @@ static inline char atomic_bitsetandtest(void *ptr, int x)
     return out;
 }
 //________________________________________________________________________
-// ×ÔÐýËø ÓÃÓÚÌæ»» spinlock
+// Ã—Ã”ÃÃ½Ã‹Ã¸ Ã“ÃƒÃ“ÃšÃŒÃ¦Â»Â» spinlock
 typedef union ticketlock ticketlock;
 
 typedef union ticketlock
