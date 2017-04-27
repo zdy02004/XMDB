@@ -1622,6 +1622,10 @@ if(0!=(err=release_trans(trans_no)))ERROR("release_trans failed,trans_no is %d\n
 }
 //————————————————————————————————————————————————————————————————————
 // 回滚事务
+// 针对 回滚栈中的某一个事务进行回滚
+// 对于  data 或index 的重做就是逐个出栈
+// 执行出栈操作的逻辑反操作
+
 inline int rollback_trans( long long  trans_no)
 {
 	IMPORTANT_INFO(" ---------- Begin rollback_trans and wait for Starting , trans_no is %ld ----------\n",trans_no);
@@ -1896,6 +1900,8 @@ return 0;
 
 }
 // 针对 日志 index 中的一个条目 进行重做
+// 对于基本 data 的重做就是找到原对应行，物理的重新执行一下插入或删除函数
+// 对应 index 的重做就是找到对应 index 对象，按逻辑重新执行一下插入或删除函数
 inline int redo_recover(mem_transaction_entry_t * item)
 {
 	if(NULL == item)
@@ -1981,8 +1987,23 @@ DEBUG("Search_opened_file %s return  %d\n",log_data_file,err);
 	  
 	switch(redo_type)
 {
-	case OPT_DATA_UPDATE:
+	//case OPT_DATA_UPDATE:
   case OPT_DATA_DELETE:
+  		{
+		 long long table_no ;
+  	 search_table_name(name,&table_no);
+  	 long long real_block_no ;
+  	 search_block_name(block_name,&real_block_no);
+
+  
+    //2 根据3个no获得 行指针
+     err = get_record_by_3NO(table_no,real_block_no,record_num,&record_ptr);
+     	DEBUG("----- recover a record ! -----\n");
+			//memcpy(record_ptr,recover_buf,redo_data_length);
+			return mem_table_del_record(mem_table , record_ptr);
+
+     break;
+		}
 	case OPT_DATA_INSERT:
 		{
 		 long long table_no ;
@@ -1994,9 +2015,12 @@ DEBUG("Search_opened_file %s return  %d\n",log_data_file,err);
     //2 根据3个no获得 行指针
      err = get_record_by_3NO(table_no,real_block_no,record_num,&record_ptr);
      	DEBUG("----- recover a record ! -----\n");
-			memcpy(record_ptr,recover_buf,redo_data_length);
+			//memcpy(record_ptr,recover_buf,redo_data_length);
+			return mem_table_insert_record(mem_table ,&record_ptr,&block_no, recover_buf);
+
      break;
 		}
+	
 	case OPT_INDEX_HASH_INSERT:
 		{
     struct mem_hash_index_input_long * input =(struct mem_hash_index_input_long *)(recover_buf); // undo_addr_ptr 对应 input
