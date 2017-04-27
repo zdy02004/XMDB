@@ -719,8 +719,23 @@ inline int  __mem_rbtree_mvcc_insert(mem_rbtree_index_t *mem_rbtree_index,
 	 if(NULL == mem_rbtree_index  )  return RBTREE_INDEX_ERR_NULL_INDEX_PRT;
    if(NULL == key               )  return RBTREE_INDEX_ERR_NULL_KEY_PRT;
    
+   //构造一个事务
+  mem_transaction_entry_t  trans_entry ;
+  mem_trans_data_entry_t * undo_info_ptr;
+  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.redo_type             = OPT_INDEX_RBTREE_INSERT;				//redo 操作类型
+  trans_entry.undo_type						  = OPT_INDEX_RBTREE_INSERT;				//undo 操作类型 insert update delete truncate index_op
+  trans_entry.ori_data_start        = (void *)((char *)(key));                    ;	//原始数据起始地址
+  trans_entry.redo_data_length      = FIELD_RBTREE_ENTRY_SIZE; // redo 数据长度
+  trans_entry.undo_data_length      = FIELD_RBTREE_ENTRY_SIZE; // undo 数据长度	
+  
+  DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
+  int err;
+  if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
+  
+   
    char buf[MEM_RBTREE_ENTRY_SIZE];
-   int err;
+   
    
    //DEBUG("Enter mem_rbtree_insert(),insert value is %ld ;\n",key->rbtree_lkey);
 
@@ -876,6 +891,23 @@ inline int __mem_rbtree_mvcc_delete(mem_rbtree_index_t *mem_rbtree_index,
 {
 	  if(NULL == mem_rbtree_index  )  return RBTREE_INDEX_ERR_NULL_INDEX_PRT;
 	  if( z==mem_rbtree_index->nil  || z==NULL )return MEM_RBTREE_DELETE_NULL;
+	  int err;
+	  
+  
+  //构造一个事务
+  mem_transaction_entry_t  trans_entry ;
+  mem_trans_data_entry_t * undo_info_ptr;
+  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.redo_type             = OPT_INDEX_RBTREE_DELETE;				//redo 操作类型
+  trans_entry.undo_type						  = OPT_INDEX_RBTREE_DELETE;				//undo 操作类型 insert update delete truncate index_op
+  trans_entry.ori_data_start        = (void *)((char *)(z));                    ;	//原始数据起始地址
+  trans_entry.redo_data_length      = FIELD_RBTREE_ENTRY_SIZE; // redo 数据长度
+  trans_entry.undo_data_length      = FIELD_RBTREE_ENTRY_SIZE; // undo 数据长度	
+  
+  DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
+  
+  if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
+  
 	  	
 	  DEBUG("Enter mem_rbtree_delete();\n");	
 	  if(is_lock)RBTREE_LOCK(&(mem_rbtree_index->locker));
@@ -933,7 +965,7 @@ inline int __mem_rbtree_mvcc_delete(mem_rbtree_index_t *mem_rbtree_index,
 	 }
 	
 	struct record_t * record_ptr =(struct record_t *)((size_t)y - RECORD_HEAD_SIZE);
-	int err;
+	
 	
 	err = mem_mvcc_delete_record(mem_rbtree_index->heap_space,
 																				record_ptr,
@@ -1177,9 +1209,27 @@ int __mem_skiplist_mvcc_insert(mem_skiplist_index_t *mem_skiplist_index,
  												short is_lock
  												)
 {
+	
+	
+  //构造一个事务
+  mem_transaction_entry_t  trans_entry ;
+   mem_trans_data_entry_t * undo_info_ptr;
+   
+  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.redo_type             = OPT_INDEX_SKIPLIST_INSERT;				//redo 操作类型
+  trans_entry.undo_type						  = OPT_INDEX_SKIPLIST_INSERT;				//undo 操作类型 insert update delete truncate index_op
+  trans_entry.ori_data_start        = (void *)((char *)(in));                    ;	//原始数据起始地址
+  trans_entry.redo_data_length      = FIELD_SKIPLIST_ENTRY_SIZE; // redo 数据长度
+  trans_entry.undo_data_length      = FIELD_SKIPLIST_ENTRY_SIZE; // undo 数据长度	
+  
+  DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
+  int err = 0;
+  if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
+  
+  
 	int maxLevel = mem_skiplist_index->config.max_level;
 	//int level    = mem_random_next(&(mem_skiplist_index->config.random) );
-	int err = 0;
+	
 	do{
 	err = mem_skiplist_mvcc_insert_help(mem_skiplist_index,
 																	NULL,	mem_skiplist_randlevel(mem_skiplist_index) ,
@@ -1378,7 +1428,22 @@ inline int mem_skiplist_mvcc_delete_help(mem_skiplist_index_t *mem_skiplist_inde
 
 inline int __mem_skiplist_mvcc_delete(mem_skiplist_index_t *mem_skiplist_index ,mem_skiplist_entry_t *in,unsigned long long Tn,short is_lock )
 {
-	int err = 0;
+	//构造一个事务
+  mem_transaction_entry_t  trans_entry ;
+  mem_trans_data_entry_t * undo_info_ptr;
+  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.redo_type             = OPT_INDEX_SKIPLIST_DELETE;				//redo 操作类型
+  trans_entry.undo_type						  = OPT_INDEX_SKIPLIST_DELETE;				//undo 操作类型 insert update delete truncate index_op
+  trans_entry.ori_data_start        = (void *)((char *)(in) );                   ;	//原始数据起始地址
+  trans_entry.redo_data_length      = FIELD_SKIPLIST_ENTRY_SIZE; // redo 数据长度
+  trans_entry.undo_data_length      = FIELD_SKIPLIST_ENTRY_SIZE; // undo 数据长度	
+  
+  DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
+  int err = 0;
+  if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
+  
+	
+	
 	do{
 	err = mem_skiplist_mvcc_delete_help( mem_skiplist_index,NULL,0,in,Tn,is_lock	);
 	}while(err == SKIPLIST_INDEX_ERR_GETDOWN_FAILED || err == SKIPLIST_INDEX_ERR_GETGE_FAILED );
@@ -1390,7 +1455,7 @@ inline int mem_skiplist_mvcc_delete(mem_skiplist_index_t *mem_skiplist_index ,
 															 unsigned long long Tn
 															 )
 {
-	return __mem_skiplist_delete(mem_skiplist_index ,
+	return __mem_skiplist_mvcc_delete(mem_skiplist_index ,
 															 in,
 															 Tn,
 															 1
