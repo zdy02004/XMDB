@@ -139,6 +139,12 @@ extern "C" {
 #define OPT_INDEX_HASH_DELETE      10
 // 表 hash update 数据
 #define OPT_INDEX_HASH_UPDATE      11
+// 表 skiplist insert  数据
+#define OPT_INDEX_SKIPLIST_INSERT      12
+// 表 skiplist delete  数据
+#define OPT_INDEX_SKIPLIST_DELETE      13
+// 表 skiplist update 数据
+#define OPT_INDEX_SKIPLIST_UPDATE      14
 
 // 事物动作，一项代表一个事务动作
 //存到临时表中，满了以后，写入硬盘，作为日志数据文件。
@@ -1654,6 +1660,15 @@ inline int rollback_trans( long long  trans_no)
     //DEBUG("object_no is %d\n",object_no);
     mem_table_t *               mem_table;
     get_table_no_addr(object_no,(void **)(&mem_table));
+    mem_rbtree_index_t      * mem_rbtree_index;
+    mem_skiplist_index_t    * mem_skiplist_index;
+    mem_hash_index_t * mem_hash_index ;
+    get_index_no_addr(object_no,(void **)(&mem_rbtree_index));
+    get_index_no_addr(object_no,(void **)(&mem_skiplist_index));
+    get_index_no_addr(object_no,(void **)(&mem_hash_index));
+    
+    
+    
     ++k;
     //if(0 == k || ( k>2007860  ) )IMPORTANT_INFO("pop item is %d\n",k);
     //if(k>2697860)IMPORTANT_INFO("mem_table is %0x, k is %d\n",mem_table,k);	
@@ -1780,7 +1795,7 @@ inline int rollback_trans( long long  trans_no)
 		{
 		struct mem_hash_index_input_long * input =(struct mem_hash_index_input_long *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 input
 		struct    record_t   **  out_record_ptr;																					
-		struct mem_hash_index_t * mem_hash_index = (struct mem_hash_index_t *)ori_data_start;											// ori_data_start 对应 mem_hash_index_t
+		//struct mem_hash_index_t * mem_hash_index = (struct mem_hash_index_t *)ori_data_start;											// ori_data_start 对应 mem_hash_index_t
 		long  mem_table_no;
 		long  block_no;
 		err = mem_hash_index_del_l(
@@ -1797,7 +1812,7 @@ inline int rollback_trans( long long  trans_no)
 		{
 		struct mem_hash_index_input_long * input =(struct mem_hash_index_input_long *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 input
 		struct    record_t   **  out_record_ptr;																					
-		struct mem_hash_index_t * mem_hash_index = (struct mem_hash_index_t *)ori_data_start;											// ori_data_start 对应 mem_hash_index_t
+		//struct mem_hash_index_t * mem_hash_index = (struct mem_hash_index_t *)ori_data_start;											// ori_data_start 对应 mem_hash_index_t
 		long  mem_table_no;
 		long block_no;
 		err = mem_hash_index_insert_l(
@@ -1814,7 +1829,7 @@ inline int rollback_trans( long long  trans_no)
 		{
 		mem_rbtree_entry_t * input =(mem_rbtree_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 mem_rbtree_entry_t
 		struct    record_t   **  out_record_ptr;																					
-		mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
+		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
 		err = mem_rbtree_delete(
                         /* in */ mem_rbtree_index,
                         				 mem_rbtree_index->root,
@@ -1827,13 +1842,38 @@ inline int rollback_trans( long long  trans_no)
 		{
 		mem_rbtree_entry_t * input =(mem_rbtree_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 mem_rbtree_entry_t
 		struct    record_t   **  out_record_ptr;																					
-		mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
+		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
 		err = mem_rbtree_insert(
                         /* in */ mem_rbtree_index,
                         				 mem_rbtree_index->root,
                         /* out */input
                         );
     if(err){ERROR("OPT_INDEX_HASH_DELETE err is %d\n",err);return err;}
+		break;
+  }
+  case OPT_INDEX_SKIPLIST_INSERT:
+		{
+		mem_skiplist_entry_t * input =(mem_skiplist_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 mem_rbtree_entry_t
+		struct    record_t   **  out_record_ptr;																					
+		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
+		err = mem_skiplist_delete(
+                        /* in */ mem_skiplist_index,
+                        /* out */input
+                        );
+    if(err){ERROR("OPT_INDEX_SKIPLIST_INSERT err is %d\n",err);return err;}
+		break;
+  }
+    case OPT_INDEX_SKIPLIST_DELETE:
+		{
+		mem_skiplist_entry_t * input =(mem_skiplist_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 mem_rbtree_entry_t
+		struct    record_t   **  out_record_ptr;																					
+		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
+		err = mem_skiplist_insert(
+                        /* in */ mem_skiplist_index,
+                        /* out */input,
+                        out_record_ptr
+                        );
+    if(err){ERROR("OPT_INDEX_SKIPLIST_DELETE err is %d\n",err);return err;}
 		break;
   }
 }
@@ -1929,7 +1969,14 @@ DEBUG("Search_opened_file %s return  %d\n",log_data_file,err);
    
   DEBUG("Get redo data ok\n");
   
-	   
+    get_table_no_addr(object_no,(void **)(&mem_table));
+    mem_rbtree_index_t      * mem_rbtree_index;
+    mem_skiplist_index_t    * mem_skiplist_index;
+    mem_hash_index_t * mem_hash_index ;
+    get_index_no_addr(object_no,(void **)(&mem_rbtree_index));
+    get_index_no_addr(object_no,(void **)(&mem_skiplist_index));
+    get_index_no_addr(object_no,(void **)(&mem_hash_index));
+    
 
 	  
 	switch(redo_type)
@@ -1937,10 +1984,6 @@ DEBUG("Search_opened_file %s return  %d\n",log_data_file,err);
 	case OPT_DATA_UPDATE:
   case OPT_DATA_DELETE:
 	case OPT_DATA_INSERT:
-	case OPT_INDEX_RBTREE_INSERT:
-  case OPT_INDEX_RBTREE_DELETE:
-  case OPT_INDEX_HASH_INSERT:
-  case OPT_INDEX_HASH_DELETE:
 		{
 		 long long table_no ;
   	 search_table_name(name,&table_no);
@@ -1954,6 +1997,92 @@ DEBUG("Search_opened_file %s return  %d\n",log_data_file,err);
 			memcpy(record_ptr,recover_buf,redo_data_length);
      break;
 		}
+	case OPT_INDEX_HASH_INSERT:
+		{
+    struct mem_hash_index_input_long * input =(struct mem_hash_index_input_long *)(recover_buf); // undo_addr_ptr 对应 input
+		struct    record_t   **  out_record_ptr;																					
+		//struct mem_hash_index_t * mem_hash_index = (struct mem_hash_index_t *)ori_data_start;											// ori_data_start 对应 mem_hash_index_t
+		long  mem_table_no;
+		long block_no;
+		err = mem_hash_index_insert_l(
+                        /* in */ mem_hash_index,
+                        				 input,
+                        /* out */out_record_ptr,
+                        /* out */&block_no,
+                        &mem_table_no
+                        );                   
+
+    if(err){ERROR("OPT_INDEX_HASH_INSERT err is %d\n",err);return err;}
+		break;
+  }
+  case OPT_INDEX_HASH_DELETE:
+		{
+		struct mem_hash_index_input_long * input =(struct mem_hash_index_input_long *)(recover_buf); // undo_addr_ptr 对应 input
+		struct    record_t   **  out_record_ptr;																					
+		//struct mem_hash_index_t * mem_hash_index = (struct mem_hash_index_t *)ori_data_start;											// ori_data_start 对应 mem_hash_index_t
+		long  mem_table_no;
+		long  block_no;
+		err = mem_hash_index_del_l(
+                        /* in */ mem_hash_index,
+                        				 input,
+                        /* out */out_record_ptr,
+                        /* out */&block_no,
+                        &mem_table_no
+                        );
+    if(err){ERROR("OPT_INDEX_HASH_DELET err is %d\n",err);return err;}
+		break;
+  }
+    case OPT_INDEX_RBTREE_INSERT:
+		{
+		mem_rbtree_entry_t * input =(mem_rbtree_entry_t *)(recover_buf); // undo_addr_ptr 对应 mem_rbtree_entry_t
+		struct    record_t   **  out_record_ptr;																					
+		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
+		err = mem_rbtree_insert(
+                        /* in */ mem_rbtree_index,
+                        				 mem_rbtree_index->root,
+                        /* out */input
+                        );
+    if(err){ERROR("OPT_INDEX_RBTREE_INSERT err is %d\n",err);return err;}
+		break;
+  }
+    case OPT_INDEX_RBTREE_DELETE:
+		{
+    mem_rbtree_entry_t * input =(mem_rbtree_entry_t *)(recover_buf); // undo_addr_ptr 对应 mem_rbtree_entry_t
+		struct    record_t   **  out_record_ptr;																					
+		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
+		err = mem_rbtree_delete(
+                        /* in */ mem_rbtree_index,
+                        				 mem_rbtree_index->root,
+                        /* out */input
+                        );
+    if(err){ERROR("OPT_INDEX_HASH_DELETE err is %d\n",err);return err;}
+		break;
+  }
+  case OPT_INDEX_SKIPLIST_INSERT:
+		{
+		mem_skiplist_entry_t * input =(mem_skiplist_entry_t *)(recover_buf); // undo_addr_ptr 对应 mem_rbtree_entry_t
+		struct    record_t   **  out_record_ptr;																					
+		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
+		err = mem_skiplist_insert(
+                        /* in */ mem_skiplist_index,
+                        /* out */input,
+                        out_record_ptr
+                        );
+    if(err){ERROR("OPT_INDEX_SKIPLIST_INSERT err is %d\n",err);return err;}
+		break;
+  }
+    case OPT_INDEX_SKIPLIST_DELETE:
+	{
+    mem_skiplist_entry_t * input =(mem_skiplist_entry_t *)(recover_buf); // undo_addr_ptr 对应 mem_rbtree_entry_t
+		struct    record_t   **  out_record_ptr;																					
+		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
+		err = mem_skiplist_delete(
+                        /* in */ mem_skiplist_index,
+                        /* out */input
+                        );
+    if(err){ERROR("OPT_INDEX_SKIPLIST_DELETE err is %d\n",err);return err;}
+		break;
+  }
 
   default:
  			ERROR("Unkonw redo_type [%d]\n",redo_type);
