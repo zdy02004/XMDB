@@ -1623,7 +1623,7 @@ if(0!=(err=release_trans(trans_no)))ERROR("release_trans failed,trans_no is %d\n
 //————————————————————————————————————————————————————————————————————
 // 回滚事务
 // 针对 回滚栈中的某一个事务进行回滚
-// 对于  data 或index 的重做就是逐个出栈
+// 对于  data 或index 的回滚就是逐个出栈
 // 执行出栈操作的逻辑反操作
 
 inline int rollback_trans( long long  trans_no)
