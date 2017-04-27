@@ -1377,11 +1377,13 @@ inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 	case OPT_DATA_UPDATE:
 	case OPT_DATA_INSERT:
 	case OPT_DATA_DELETE:
-	//case OPT_INDEX_RBTREE_INSERT:
-	//case OPT_INDEX_RBTREE_DELETE:
-	//case OPT_INDEX_HASH_INSERT:
-	//case OPT_INDEX_HASH_DELETE:		
-	//case OPT_INDEX_HASH_UPDATE:
+	case OPT_INDEX_RBTREE_INSERT:
+	case OPT_INDEX_RBTREE_DELETE:
+	case OPT_INDEX_HASH_INSERT:
+	case OPT_INDEX_HASH_DELETE:		
+	case OPT_INDEX_HASH_UPDATE:
+	case OPT_INDEX_SKIPLIST_INSERT:
+	case OPT_INDEX_SKIPLIST_DELETE:
 	
 	//DEBUG("redo_write:pos is %ld,len is %ld,fd is %ld,ori is %0x\n",trans_entry->redo_data_start,trans_entry->redo_data_length,fd,trans_entry->ori_data_start);
 	fseek(fd,trans_entry->redo_data_start,SEEK_SET);
@@ -1400,11 +1402,13 @@ inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 	case OPT_DATA_UPDATE:
 	case OPT_DATA_DELETE:
   case OPT_DATA_INSERT:
-	//case OPT_INDEX_RBTREE_INSERT:
-	//case OPT_INDEX_RBTREE_DELETE:
-	//case OPT_INDEX_HASH_INSERT:
-	//case OPT_INDEX_HASH_DELETE:
-	//case OPT_INDEX_HASH_UPDATE:
+	case OPT_INDEX_RBTREE_INSERT:
+	case OPT_INDEX_RBTREE_DELETE:
+	case OPT_INDEX_HASH_INSERT:
+	case OPT_INDEX_HASH_DELETE:
+	case OPT_INDEX_HASH_UPDATE:
+	case OPT_INDEX_SKIPLIST_INSERT:
+	case OPT_INDEX_SKIPLIST_DELETE:
 	
 	//DEBUG("undo_write:pos is %ld,len is %ld,fd is %ld,ori is %0x\n",trans_entry->undo_data_start,trans_entry->undo_data_length,fd,trans_entry->ori_data_start);
 
