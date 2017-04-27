@@ -728,7 +728,8 @@ inline int  __mem_rbtree_mvcc_insert(mem_rbtree_index_t *mem_rbtree_index,
   trans_entry.ori_data_start        = (void *)((char *)(key));                    ;	//原始数据起始地址
   trans_entry.redo_data_length      = FIELD_RBTREE_ENTRY_SIZE; // redo 数据长度
   trans_entry.undo_data_length      = FIELD_RBTREE_ENTRY_SIZE; // undo 数据长度	
-  
+  trans_entry.object_no 						= mem_rbtree_index->config.index_no;//联系空间或连接空间的 no      							
+
   DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
   int err;
   if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
@@ -903,6 +904,7 @@ inline int __mem_rbtree_mvcc_delete(mem_rbtree_index_t *mem_rbtree_index,
   trans_entry.ori_data_start        = (void *)((char *)(z));                    ;	//原始数据起始地址
   trans_entry.redo_data_length      = FIELD_RBTREE_ENTRY_SIZE; // redo 数据长度
   trans_entry.undo_data_length      = FIELD_RBTREE_ENTRY_SIZE; // undo 数据长度	
+  trans_entry.object_no 						= mem_rbtree_index->config.index_no;//联系空间或连接空间的 no      							
   
   DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
   
@@ -1221,6 +1223,8 @@ int __mem_skiplist_mvcc_insert(mem_skiplist_index_t *mem_skiplist_index,
   trans_entry.ori_data_start        = (void *)((char *)(in));                    ;	//原始数据起始地址
   trans_entry.redo_data_length      = FIELD_SKIPLIST_ENTRY_SIZE; // redo 数据长度
   trans_entry.undo_data_length      = FIELD_SKIPLIST_ENTRY_SIZE; // undo 数据长度	
+  trans_entry.object_no 					  = mem_skiplist_index->config.index_no;//联系空间或连接空间的 no      							
+
   
   DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
   int err = 0;
@@ -1437,7 +1441,8 @@ inline int __mem_skiplist_mvcc_delete(mem_skiplist_index_t *mem_skiplist_index ,
   trans_entry.ori_data_start        = (void *)((char *)(in) );                   ;	//原始数据起始地址
   trans_entry.redo_data_length      = FIELD_SKIPLIST_ENTRY_SIZE; // redo 数据长度
   trans_entry.undo_data_length      = FIELD_SKIPLIST_ENTRY_SIZE; // undo 数据长度	
-  
+  trans_entry.object_no 					= mem_skiplist_index->config.index_no;//联系空间或连接空间的 no      							
+
   DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
   int err = 0;
   if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
