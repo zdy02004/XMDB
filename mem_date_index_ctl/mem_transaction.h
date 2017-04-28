@@ -1666,15 +1666,14 @@ inline int rollback_trans( long long  trans_no)
     
     // 获得mem_table 指针
     //DEBUG("object_no is %d\n",object_no);
-    mem_table_t *               mem_table;
-    get_table_no_addr(object_no,(void **)(&mem_table));
-    mem_rbtree_index_t      * mem_rbtree_index;
-    mem_skiplist_index_t    * mem_skiplist_index;
-    mem_hash_index_t * mem_hash_index ;
-    get_index_no_addr(object_no,(void **)(&mem_rbtree_index));
-    get_index_no_addr(object_no,(void **)(&mem_skiplist_index));
-    get_index_no_addr(object_no,(void **)(&mem_hash_index));
-    
+    //mem_table_t *               mem_table;
+    //get_table_no_addr(object_no,(void **)(&mem_table));
+    //mem_hash_index_t * mem_hash_index ;
+    //get_index_no_addr(object_no,(void **)(&mem_hash_index));
+    //mem_rbtree_index_t      * mem_rbtree_index;
+    //get_index_no_addr(object_no,(void **)(&mem_rbtree_index));
+    //mem_skiplist_index_t    * mem_skiplist_index;
+    //get_index_no_addr(object_no,(void **)(&mem_skiplist_index));
     
     
     ++k;
@@ -1692,6 +1691,9 @@ inline int rollback_trans( long long  trans_no)
 		{
 		DEBUG("OPT_DATA_UPDATE\n");
 		DEBUG("ori_data_start is %0x,undo_addr_ptr is %0x\n",ori_data_start,undo_addr_ptr);
+	  mem_table_t *               mem_table;
+    get_table_no_addr(object_no,(void **)(&mem_table));
+	  
 	  record_t * record_ptr = (struct record_t *)((char *)ori_data_start-RECORD_HEAD_SIZE);
 	      err = mem_table_del_record(mem_table ,record_ptr);
 	//    err = mem_table_update_record(mem_table , record_ptr,undo_addr_ptr);
@@ -1734,6 +1736,8 @@ inline int rollback_trans( long long  trans_no)
 			 //  break;
 	     //}
 	    DEBUG("OPT_DATA_DELETE___________\n");
+	    mem_table_t *               mem_table;
+      get_table_no_addr(object_no,(void **)(&mem_table)); 
 	    record_t * record_ptr = (struct record_t *)((char *)ori_data_start- RECORD_HEAD_SIZE);
 	    struct record_t * record_ptr2 = NULL; 
 	    long  block_no;
@@ -1767,7 +1771,9 @@ inline int rollback_trans( long long  trans_no)
 
 			//if(0 == k || ( k>2007860  ) )IMPORTANT_INFO("OPT_DATA_INSERT\n");
      	//mem_block_t * mem_block_temp;
-
+			 mem_table_t *               mem_table;
+       get_table_no_addr(object_no,(void **)(&mem_table));
+     	
      	DEBUG("ori_data_start is %0x \n",ori_data_start);
 
   	 	record_t * record_ptr = (struct record_t *)((char *)ori_data_start- RECORD_HEAD_SIZE);
@@ -1803,7 +1809,10 @@ inline int rollback_trans( long long  trans_no)
 		{
 		struct mem_hash_index_input_long * input =(struct mem_hash_index_input_long *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 input
 		struct    record_t   **  out_record_ptr;																					
-		//struct mem_hash_index_t * mem_hash_index = (struct mem_hash_index_t *)ori_data_start;											// ori_data_start 对应 mem_hash_index_t
+	  
+	  mem_hash_index_t * mem_hash_index ;
+    get_index_no_addr(object_no,(void **)(&mem_hash_index));
+		
 		long  mem_table_no;
 		long  block_no;
 		err = mem_hash_index_del_l(
@@ -1820,8 +1829,9 @@ inline int rollback_trans( long long  trans_no)
 		{
 		struct mem_hash_index_input_long * input =(struct mem_hash_index_input_long *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 input
 		struct    record_t   **  out_record_ptr;																					
-		//struct mem_hash_index_t * mem_hash_index = (struct mem_hash_index_t *)ori_data_start;											// ori_data_start 对应 mem_hash_index_t
-		long  mem_table_no;
+    mem_hash_index_t * mem_hash_index ;
+    get_index_no_addr(object_no,(void **)(&mem_hash_index));
+  	long  mem_table_no;
 		long block_no;
 		err = mem_hash_index_insert_l(
                         /* in */ mem_hash_index,
@@ -1837,8 +1847,9 @@ inline int rollback_trans( long long  trans_no)
 		{
 		mem_rbtree_entry_t * input =(mem_rbtree_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 mem_rbtree_entry_t
 		struct    record_t   **  out_record_ptr;																					
-		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
-		err = mem_rbtree_delete(
+    mem_rbtree_index_t      * mem_rbtree_index;
+    get_index_no_addr(object_no,(void **)(&mem_rbtree_index));
+ 		err = mem_rbtree_delete(
                         /* in */ mem_rbtree_index,
                         				 mem_rbtree_index->root,
                         /* out */input
@@ -1850,8 +1861,9 @@ inline int rollback_trans( long long  trans_no)
 		{
 		mem_rbtree_entry_t * input =(mem_rbtree_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 mem_rbtree_entry_t
 		struct    record_t   **  out_record_ptr;																					
-		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
-		err = mem_rbtree_insert(
+    mem_rbtree_index_t      * mem_rbtree_index;
+    get_index_no_addr(object_no,(void **)(&mem_rbtree_index));
+ 		err = mem_rbtree_insert(
                         /* in */ mem_rbtree_index,
                         				 mem_rbtree_index->root,
                         /* out */input
@@ -1863,8 +1875,9 @@ inline int rollback_trans( long long  trans_no)
 		{
 		mem_skiplist_entry_t * input =(mem_skiplist_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 mem_rbtree_entry_t
 		struct    record_t   **  out_record_ptr;																					
-		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
-		err = mem_skiplist_delete(
+    mem_skiplist_index_t    * mem_skiplist_index;
+    get_index_no_addr(object_no,(void **)(&mem_skiplist_index));
+ 		err = mem_skiplist_delete(
                         /* in */ mem_skiplist_index,
                         /* out */input
                         );
@@ -1875,8 +1888,9 @@ inline int rollback_trans( long long  trans_no)
 		{
 		mem_skiplist_entry_t * input =(mem_skiplist_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 mem_rbtree_entry_t
 		struct    record_t   **  out_record_ptr;																					
-		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
-		err = mem_skiplist_insert(
+    mem_skiplist_index_t    * mem_skiplist_index;
+    get_index_no_addr(object_no,(void **)(&mem_skiplist_index));
+    err = mem_skiplist_insert(
                         /* in */ mem_skiplist_index,
                         /* out */input,
                         out_record_ptr
