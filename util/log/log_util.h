@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <pthread.h>
-
+#include <string.h>
 
 #define TICK \
    struct timeval __tv1;\
