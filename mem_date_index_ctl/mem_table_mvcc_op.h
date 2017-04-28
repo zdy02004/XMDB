@@ -110,7 +110,7 @@ inline int __mem_mvcc_insert_record(struct mem_table_t *mem_table ,
   trans_entry.redo_type             = OPT_DATA_INSERT;				//redo 操作类型
   trans_entry.undo_type						  = OPT_DATA_INSERT;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(*record_ptr) + RECORD_HEAD_SIZE)                    ;	//原始数据起始地址
-  trans_entry.redo_data_length      = mem_table->record_size; // redo 数据长度
+  trans_entry.redo_data_length      = mem_table->record_size - RECORD_HEAD_SIZE; // redo 数据长度
   trans_entry.undo_data_length      = mem_table->record_size - RECORD_HEAD_SIZE; // undo 数据长度	
   trans_entry.block_no              = *block_no;
   trans_entry.record_num            = (*record_ptr)->record_num; 
@@ -206,7 +206,7 @@ inline int __mem_mvcc_delete_record(struct mem_table_t *mem_table ,
   trans_entry.redo_type             = OPT_DATA_DELETE;				//redo 操作类型
   trans_entry.undo_type						  = OPT_DATA_DELETE;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void*)((char *)(record_ptr)   + RECORD_HEAD_SIZE);	//原始数据起始地址
-  trans_entry.redo_data_length      = mem_table->record_size; // redo 数据长度
+  trans_entry.redo_data_length      = mem_table->record_size - RECORD_HEAD_SIZE; // redo 数据长度
   trans_entry.undo_data_length      = mem_table->record_size - RECORD_HEAD_SIZE; // undo 数据长度	
   trans_entry.block_no              = block_no;
   trans_entry.record_num            = (record_ptr)->record_num; 
@@ -398,7 +398,7 @@ err =  mem_hash_index_insert_l(
   trans_entry.undo_data_length      = MEM_HASH_ENTRY_SIZE; // undo 数据长度	
   trans_entry.block_no              = block_no;
   trans_entry.record_num            = (*record_ptr)->record_num; 
-  trans_entry.object_no 						= mem_table_no;//联系空间或连接空间的 no      							
+  trans_entry.object_no 						=  mem_hash_index->config.index_no;//联系空间或连接空间的 no      							
   
   mem_table_t * mem_table;
   get_table_no_addr(mem_table_no,(void ** )(&mem_table));
@@ -483,7 +483,7 @@ err =  mem_hash_index_del_l(
   trans_entry.undo_data_length      = MEM_HASH_ENTRY_SIZE; // undo 数据长度	
   trans_entry.block_no              = block_no;
   trans_entry.record_num            = (*record_ptr)->record_num; 
-  trans_entry.object_no 						= mem_table_no;//联系空间或连接空间的 no      							
+  trans_entry.object_no 						= mem_hash_index->config.index_no;//联系空间或连接空间的 no      							
   
   mem_table_t * mem_table;
   get_table_no_addr(mem_table_no,(void **)(&mem_table));
@@ -571,7 +571,7 @@ err =  mem_hash_index_insert_s(
   trans_entry.undo_data_length      = MEM_HASH_ENTRY_SIZE; // undo 数据长度	
   trans_entry.block_no              = block_no;
   trans_entry.record_num            = (*record_ptr)->record_num; 
-  trans_entry.object_no 						= mem_table_no;//联系空间或连接空间的 no      							
+  trans_entry.object_no 						= mem_hash_index->config.index_no;;//联系空间或连接空间的 no      							
   
   mem_table_t * mem_table;
   get_table_no_addr(mem_table_no,(void **)(&mem_table));
@@ -660,7 +660,7 @@ err =  mem_hash_index_del_s(
   trans_entry.undo_data_length      = MEM_HASH_ENTRY_SIZE; // undo 数据长度	
   trans_entry.block_no              = block_no;
   trans_entry.record_num            = (*record_ptr)->record_num; 
-  trans_entry.object_no 						= mem_table_no;//联系空间或连接空间的 no      							
+  trans_entry.object_no 						= mem_hash_index->config.index_no;//联系空间或连接空间的 no      							
   
   mem_table_t * mem_table;
   get_table_no_addr(mem_table_no,(void **)(&mem_table));
