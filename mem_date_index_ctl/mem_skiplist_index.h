@@ -26,7 +26,7 @@ extern "C" {
 #define SKIPLIST_INDEX_ERR_GETDOWN_FAILED        38013
 #define SKIPLIST_INDEX_ERR_GETGE_FAILED          38014
 
-//ÔİÊ±ÓÃĞ´ËøËøÀ´ÊµÏÖÌø±íË÷ÒıËø
+//æš‚æ—¶ç”¨å†™é”é”æ¥å®ç°è·³è¡¨ç´¢å¼•é”
 #define SKIPLIST_LOCK_T             rwlock_t
 
 //#define SKIPLIST_TRYLOCK(x)         pthread_spin_trylock(x) 
@@ -38,41 +38,41 @@ extern "C" {
 
 
 
-//ÄÚ´æ rbtree Ë÷ÒıÃèÊö·û_ÊÊÓÃÓÚ·¶Î§¿ìËÙË÷Òı
+//å†…å­˜ rbtree ç´¢å¼•æè¿°ç¬¦_é€‚ç”¨äºèŒƒå›´å¿«é€Ÿç´¢å¼•
 typedef struct  mem_skiplist_index_config_t
 {
-long                        index_no;                     //Ë÷ÒıºÅ
-long                        owner_table_no;               //ËùÊô±íºÅ
-int               *         field_order;                  //ÁªºÏË÷ÒıµÄË³ĞòºÅ
-int                         field_num;                    //ÁªºÏË÷Òı¹ØÁª×Ö¶ÎµÄµÄ¸öÊı
-char                        index_name[128];              //Ë÷ÒıÃû
-long                        owner_id;                     //¸ÃË÷ÒıËùÊôÓÃ»§µÄID
-unsigned  long              heap_block_size;              //Á¬Ğø¿Õ¼ä¿éÅäÖÃ´óĞ¡
-int                         max_level;                    //×î´ó²ãÊı //×¢Òâ ±¾´úÂë level ÊÇ´Ó 1 ¿ªÊ¼µÄ
+long                        index_no;                     //ç´¢å¼•å·
+long                        owner_table_no;               //æ‰€å±è¡¨å·
+int               *         field_order;                  //è”åˆç´¢å¼•çš„é¡ºåºå·
+int                         field_num;                    //è”åˆç´¢å¼•å…³è”å­—æ®µçš„çš„ä¸ªæ•°
+char                        index_name[128];              //ç´¢å¼•å
+long                        owner_id;                     //è¯¥ç´¢å¼•æ‰€å±ç”¨æˆ·çš„ID
+unsigned  long              heap_block_size;              //è¿ç»­ç©ºé—´å—é…ç½®å¤§å°
+int                         max_level;                    //æœ€å¤§å±‚æ•° //æ³¨æ„ æœ¬ä»£ç  level æ˜¯ä» 1 å¼€å§‹çš„
 struct mem_random_t         random;
 } __attribute__ ((packed, aligned (64))) mem_skiplist_index_config_t;
 
 #define MEM_SKIPLIST_CONFIG_SIZE  sizeof(mem_skiplist_index_config_t)
 
 
-//ÄÚ´æskiplistË÷ÒıÃèÊö·û_ÊÊÓÃÓÚ·¶Î§Ë÷Òı
+//å†…å­˜skiplistç´¢å¼•æè¿°ç¬¦_é€‚ç”¨äºèŒƒå›´ç´¢å¼•
 typedef struct  mem_skiplist_index_t
 {
-struct mem_skiplist_index_config_t   config;                       //hash ÅäÖÃ
-struct mem_table_t                   *heap_space;                	 //¶Ñ¿Õ¼ä
-mem_skiplist_entry_t                 *root;                        //¸ù½Úµã
-SKIPLIST_LOCK_T                      locker;                       //Ëø
-struct  mem_skiplist_entry_t				 * nil;                         //¿Õ½Úµã
+struct mem_skiplist_index_config_t   config;                       //hash é…ç½®
+struct mem_table_t                   *heap_space;                	 //å †ç©ºé—´
+mem_skiplist_entry_t                 *root;                        //æ ¹èŠ‚ç‚¹
+SKIPLIST_LOCK_T                      locker;                       //é”
+struct  mem_skiplist_entry_t				 * nil;                         //ç©ºèŠ‚ç‚¹
 } __attribute__ ((packed, aligned (64))) mem_skiplist_index_t;
 
 
 #define MEM_SKIPLIST_INDEX_SIZE (sizeof(struct mem_skiplist_index_t))
 
 
-//½¨SKIPLISTË÷Òı
+//å»ºSKIPLISTç´¢å¼•
 inline int mem_skiplist_create(
 														 mem_skiplist_index_t         **  mem_skiplist_index,	
-                             struct mem_table_t           *  mem_table,// Ô­±í
+                             struct mem_table_t           *  mem_table,// åŸè¡¨
                              struct mem_skiplist_index_config_t  *  mem_index_config
                              )
  {
@@ -85,11 +85,11 @@ inline int mem_skiplist_create(
   DEBUG("Enter mem_skiplist_create() \n");
   DEBUG("Max level is %d \n",mem_index_config->max_level);
   	
-  		//1.¹¹Ôì heap_space µÄ block
+  		//1.æ„é€  heap_space çš„ block
      int i=0;
 	   struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
 
-        //Éú³É¿éÃèÊö·û
+        //ç”Ÿæˆå—æè¿°ç¬¦
        mem_block_t *mb = (mem_block_t *) malloc(MEM_BLOCK_HEAD_SIZE);
 	     DEBUG("create mem_skiplist block %0x\n",*mb);
 	 
@@ -100,27 +100,27 @@ inline int mem_skiplist_create(
        
 			 mem_block_config( mb  ,mem_index_config->heap_block_size , tem_buf );
 			 
-			 //2. ¹¹Ôì fields_table
+			 //2. æ„é€  fields_table
 			 struct field_t *_fields_table   = (struct field_t *) malloc(FIELD_SIZE);
 		   _fields_table[0].field_type     = FIELD_TYPE_SKIPLIST_ENTRY;
 
-			 // 3.¹¹Ôì mem_table_config_t
+			 // 3.æ„é€  mem_table_config_t
 		  struct mem_table_config_t * heap_space_config = (struct mem_table_config_t *)malloc(MEM_TABLE_CONFIG_SIZE); 
 		  //array_space_config->mem_table_no             = allocat_mem_table_no();
       //array_space_config->owner_id                   = mem_table->owner_id;
       heap_space_config->fields_table               = _fields_table;
       heap_space_config->field_used_num             = 1;
       heap_space_config->mem_block_used             = 1;
-      heap_space_config->auto_extend                = 1; //ÔÊĞí×Ô¶¯À©Õ¹
+      heap_space_config->auto_extend                = 1; //å…è®¸è‡ªåŠ¨æ‰©å±•
       heap_space_config->mem_blocks_table           = mb;
       heap_space_config->mem_blocks_table->next     = 0;
       strcpy(heap_space_config->table_name,mem_index_config->index_name);
       strcat(heap_space_config->table_name,"_skip\0");
       DEBUG(" skip_space_config->table_name is %s \n",heap_space_config->table_name);
 
-		  heap_space_config->extend_block_size   = mem_index_config->heap_block_size; //×Ô¶¯À©Õ¹´óĞ¡
+		  heap_space_config->extend_block_size   = mem_index_config->heap_block_size; //è‡ªåŠ¨æ‰©å±•å¤§å°
 
-			//4.¹¹Ôì mem_table_t
+			//4.æ„é€  mem_table_t
 			struct mem_table_t      *heap_space_temp ;  		
 			int err=0;
       err = mem_table_create(
@@ -130,7 +130,7 @@ inline int mem_skiplist_create(
       DEBUG(" heap_space_temp is %0x \n",heap_space_temp);
 
                     
-       //5 ÉèÖÃ  mem_skiplist_index              
+       //5 è®¾ç½®  mem_skiplist_index              
       (*mem_skiplist_index) = (mem_skiplist_index_t  *)malloc(MEM_SKIPLIST_INDEX_SIZE);
 
       allocate_index_no(&((*mem_skiplist_index) -> config.index_no ));
@@ -142,7 +142,7 @@ inline int mem_skiplist_create(
       (*mem_skiplist_index) -> config.heap_block_size  =  heap_space_config->mem_blocks_table->block_size;
       (*mem_skiplist_index) -> config.max_level        =  mem_index_config->max_level;
       strcpy((*mem_skiplist_index) -> config.index_name,mem_index_config->index_name);
-      //ÉèÖÃ¶ÑÄÚ´æ
+      //è®¾ç½®å †å†…å­˜
        (*mem_skiplist_index)->heap_space = heap_space_temp;
         SKIPLIST_LOCK_INIT(&((*mem_skiplist_index)->locker))
        (*mem_skiplist_index)->root      = NULL;                                       
@@ -153,7 +153,7 @@ inline int mem_skiplist_create(
                              	
                    
 
-//´ò¿ªË÷Òı                             
+//æ‰“å¼€ç´¢å¼•                             
 inline int mem_skiplist_index_open  (mem_skiplist_index_t *  mem_skiplist_index)
 {
 	
@@ -165,12 +165,12 @@ inline int mem_skiplist_index_open  (mem_skiplist_index_t *  mem_skiplist_index)
 	
 	
 }
-//¹ØË÷Òı
+//å…³ç´¢å¼•
 inline	int mem_skiplist_index_close(mem_skiplist_index_t *  mem_skiplist_index)
 {
 	
 		if(NULL == mem_skiplist_index    )  return CLOSE_MEM_SKIPLIST_INDEX_ERR_NULL_PTR;
-	  DEBUG("Begin to close a mem_index£º%s, addr is %0x .\n",(mem_skiplist_index)->config.index_name,(mem_skiplist_index)->config);
+	  DEBUG("Begin to close a mem_indexï¼š%s, addr is %0x .\n",(mem_skiplist_index)->config.index_name,(mem_skiplist_index)->config);
     SKIPLIST_LOCK(&(mem_skiplist_index->locker))
 	  int err = 0;
 	 //struct mem_table_t *heap_space_temp = mem_skiplist_index->heap_space;
@@ -185,22 +185,22 @@ inline	int mem_skiplist_index_close(mem_skiplist_index_t *  mem_skiplist_index)
 }
 
 
-/*³õÊ¼»¯*/
+/*åˆå§‹åŒ–*/
 inline int  mem_skiplist_init(mem_skiplist_index_t *mem_skiplist_index)
 {
 	DEBUG("Enter mem_skiplist_inint() \n");
 	 if(NULL == mem_skiplist_index  )  return SKIPLIST_INDEX_ERR_NULL_INDEX_PRT;   
    
-   // ³õÊ¼»¯Ëæ»úÊı
+   // åˆå§‹åŒ–éšæœºæ•°
    mem_random_init(&(mem_skiplist_index->config.random),0xdeadbeef);
    int err;
-   //ÏÈÍ¨¹ınilÊÇ·ñÊÇµÚÒ»¿éµÄµÚÒ»ĞĞÀ´ÅĞ¶ÏÊÇ·ñÊÇµÚÒ»´ÎÆô¶¯
+   //å…ˆé€šè¿‡nilæ˜¯å¦æ˜¯ç¬¬ä¸€å—çš„ç¬¬ä¸€è¡Œæ¥åˆ¤æ–­æ˜¯å¦æ˜¯ç¬¬ä¸€æ¬¡å¯åŠ¨
    struct record_t * record_ptr;
    
    get_record_by_record_num(mem_skiplist_index->heap_space,
    													mem_skiplist_index->heap_space->config.mem_blocks_table, 
    													0,&record_ptr);
-   // nil ·Ç¿Õ£¬Ôò²»ÔÙĞèÒª³õÊ¼»¯
+   // nil éç©ºï¼Œåˆ™ä¸å†éœ€è¦åˆå§‹åŒ–
    if(record_ptr->is_used)return;
    
    
@@ -208,13 +208,13 @@ inline int  mem_skiplist_init(mem_skiplist_index_t *mem_skiplist_index)
        char buf[FIELD_SKIPLIST_ENTRY_SIZE];
        
 			 long  block_no;
-			 // µÚÒ»ĞĞÎª nil
+			 // ç¬¬ä¸€è¡Œä¸º nil
 			 err = mem_table_insert_record(mem_skiplist_index->heap_space ,&record_ptr,&block_no,buf);
        mem_skiplist_index->nil = (mem_skiplist_entry_t *)((char *)(record_ptr) + RECORD_HEAD_SIZE);
-			 // ºó max_level ĞĞÎª ¸÷level Í·½Úµã
+			 // å max_level è¡Œä¸º å„level å¤´èŠ‚ç‚¹
 			 int i = 1;
 			 //struct  record_t* prev_record_ptr;
-			 // ¹¹Ôì ¸÷ level Í·½Úµã
+			 // æ„é€  å„ level å¤´èŠ‚ç‚¹
 			 for( ;i<mem_skiplist_index->config.max_level+1;++i  )
 			 {
 			 	DEBUG("Insert level Head Node: %d \n",i);
@@ -244,7 +244,7 @@ inline int  mem_skiplist_init(mem_skiplist_index_t *mem_skiplist_index)
         return 0;
 }
 
-// »ñµÃÁ´±íÍ·
+// è·å¾—é“¾è¡¨å¤´
 inline mem_skiplist_entry_t *  mem_skiplist_getlevel_head(mem_skiplist_index_t *mem_skiplist_index,int head_num)
 {
 
@@ -271,7 +271,7 @@ inline mem_skiplist_entry_t *  mem_skiplist_getlevel_head(mem_skiplist_index_t *
 	 return (mem_skiplist_entry_t *)( (char *)level_head_ptr + RECORD_HEAD_SIZE );
 }
 
-// Éú³ÉËæ»úlevel
+// ç”Ÿæˆéšæœºlevel
 int mem_skiplist_randlevel__(mem_skiplist_index_t *mem_skiplist_index) 
 {
 	// Increase height with probability 1 in kBranching
@@ -312,28 +312,28 @@ int mem_skiplist_insert(mem_skiplist_index_t *mem_skiplist_index,
 	return err;
 } 												
 
-// ²åÈë
+// æ’å…¥
 int mem_skiplist_insert_help__(mem_skiplist_index_t *mem_skiplist_index, 
  												mem_skiplist_entry_t *prev, int level,
  												mem_skiplist_entry_t *in,
- 												struct  record_t ** last_insert_skiplist_entry 
+ 												struct  record_t ** last_insert_skiplist_record 
  											 )
  {
-	// 1²åÈë×î¸ß²ã£¬ÎŞÇ°¼Ì½Úµã¼ÓËÙ
+	// 1æ’å…¥æœ€é«˜å±‚ï¼Œæ— å‰ç»§èŠ‚ç‚¹åŠ é€Ÿ
 	mem_skiplist_entry_t * prev_entry;
 	
 	if(NULL == prev)
 	{
 	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index,level );
 	}
-	else //ÓĞÉÏ²ã½Úµã¼ÓËÙ
+	else //æœ‰ä¸Šå±‚èŠ‚ç‚¹åŠ é€Ÿ
 	  prev_entry = prev;
 	
 	DEBUG("prev_entry is %0x\n",prev_entry);	
 	//DEBUG("prev_entry->down_record_num is %d ,prev_entry->down_block_no is %d \n ",prev_entry->down_record_num,prev_entry->down_block_no);
 
 		
-	//2 ´Óµ±²ã£¬»ñµÃÏÂÒ»¸ö entry
+	//2 ä»å½“å±‚ï¼Œè·å¾—ä¸‹ä¸€ä¸ª entry
 	 record_t * right_record;
 	 mem_skiplist_entry_t * right_entry;
 	 unsigned  long   right_record_num ;
@@ -348,7 +348,7 @@ int mem_skiplist_insert_help__(mem_skiplist_index_t *mem_skiplist_index,
 	 int err = 0 ;
 	 do{
 	 is_countinue = 0;
-	 // ²éÕÒµ±²ã >= key µÄ½Úµã
+	 // æŸ¥æ‰¾å½“å±‚ >= key çš„èŠ‚ç‚¹
 	
 
 	 do{
@@ -369,7 +369,7 @@ int mem_skiplist_insert_help__(mem_skiplist_index_t *mem_skiplist_index,
 	 if ( right_entry == mem_skiplist_index->nil || right_entry->lkey > in->lkey) 
 	 	{
 	 		 DEBUG("level is %d \n",level);
-	 		//·Çµ×²ã³ıÁË²åÈëÁ´±í£¬»¹±ØĞë´¦Àí down ½Úµã
+	 		//éåº•å±‚é™¤äº†æ’å…¥é“¾è¡¨ï¼Œè¿˜å¿…é¡»å¤„ç† down èŠ‚ç‚¹
 	 	if( level > 1 )
 	 		{
 	 		struct  record_t * down_ptr = NULL;
@@ -380,8 +380,8 @@ int mem_skiplist_insert_help__(mem_skiplist_index_t *mem_skiplist_index,
 	    get_record_by_3NO(mem_table_no,down_block_no, down_record_num,&down_ptr);
 	    mem_skiplist_entry_t * down_entry = (mem_skiplist_entry_t *)( (char *)down_ptr +  RECORD_HEAD_SIZE);
 	    
-	    //µİ¹é²åÈëÏÂÒ»²ã
-	    if ( 0 == have_insert_next_level) // ·ÀÖ¹ÖØ¸´²åÈëÏÂÒ»²ã
+	    //é€’å½’æ’å…¥ä¸‹ä¸€å±‚
+	    if ( 0 == have_insert_next_level) // é˜²æ­¢é‡å¤æ’å…¥ä¸‹ä¸€å±‚
 	    {
 	    	err = mem_skiplist_insert_help( mem_skiplist_index, down_entry, level - 1, in , &down_ptr);
 	      have_insert_next_level = 1;
@@ -391,37 +391,37 @@ int mem_skiplist_insert_help__(mem_skiplist_index_t *mem_skiplist_index,
 	 				{
 	 					DEBUG("Back from mem_skiplist_insert(),now level is %d \n",level);
 	 					
-				  	//Èç¹û±»ĞŞ¸Ä¹ı£¬ÔòÖØĞÂÑ­»·
+				  	//å¦‚æœè¢«ä¿®æ”¹è¿‡ï¼Œåˆ™é‡æ–°å¾ªç¯
 	 			    if( mem_skiplist_index->nil != right_entry &&  right_entry->lkey < in->lkey ) 
 	 			    	{
 	 			    		DEBUG("is_continue =1");
 	 			    		is_countinue = 1;
 	 			    		continue;
 	 			    	}
-	 			    // ĞŞ¸Ä prev_entry Á´±í	
+	 			    // ä¿®æ”¹ prev_entry é“¾è¡¨	
 	 			    	struct record_t * new_record_ptr;
 	 			    	long block_no;
 	 			    	
 	 			    	prev_ptr = (struct  record_t *)((char *)prev_entry - RECORD_HEAD_SIZE );
 	 			    	
-	 			    	//1. ĞÂ½ÚµãµÄright Ö¸Ïò prev_entry µÄºó¼Ì½Úµã	 			    	
+	 			    	//1. æ–°èŠ‚ç‚¹çš„right æŒ‡å‘ prev_entry çš„åç»§èŠ‚ç‚¹	 			    	
 	 			    	in->right_record_num = prev_entry->right_record_num;
 	 			    	in->right_block_no   = prev_entry->right_block_no;
-	 			    	// ´¦Àí down Ö¸Õë
+	 			    	// å¤„ç† down æŒ‡é’ˆ
 	 			    	in->down_record_num  = down_ptr->record_num;
 	 			    	
 	 			    	struct  mem_block_t * down_block;
 	 			    	get_block_by_record(mem_skiplist_index->heap_space ,down_ptr,&down_block);
 	 			    	in->down_block_no   = down_block->block_no;
 	 			    	
-	 			    	//2. ²åÈëĞÂ½Úµã
+	 			    	//2. æ’å…¥æ–°èŠ‚ç‚¹
 	 			    	mem_table_insert_record( mem_skiplist_index->heap_space ,
                           &new_record_ptr,
                           &block_no, /* in */
                           (char *)in
                           );
                           
-	 			    	//3. prev_entry µÄºó¼Ì Ö¸Ïò ĞÂ½Úµã
+	 			    	//3. prev_entry çš„åç»§ æŒ‡å‘ æ–°èŠ‚ç‚¹
 	 			    	
 	 			    	SKIPLIST_LOCK   (  &(prev_ptr->row_lock) );
 	 			    	prev_entry->right_record_num = new_record_ptr->record_num;
@@ -431,33 +431,33 @@ int mem_skiplist_insert_help__(mem_skiplist_index_t *mem_skiplist_index,
 					}
 	 		}
 	 		
-	 		//×îµ×²ã¾Í²åÈëÁ´±í
+	 		//æœ€åº•å±‚å°±æ’å…¥é“¾è¡¨
 	 		if( level == 1 )
 	 			{
-	 			    //Èç¹û±»ĞŞ¸Ä¹ı£¬ÔòÖØĞÂÑ­»·
+	 			    //å¦‚æœè¢«ä¿®æ”¹è¿‡ï¼Œåˆ™é‡æ–°å¾ªç¯
 	 			    if(right_entry->lkey < in->lkey && right_entry != mem_skiplist_index->nil )
 	 			    	{
 	 			    		DEBUG("is_countinue =1");
 	 			    		is_countinue = 1;
 	 			    		continue;
 	 			    	}
-	 			    // ĞŞ¸Ä prev_entry Á´±í	
+	 			    // ä¿®æ”¹ prev_entry é“¾è¡¨	
 	 			    
 	 			    	struct record_t * new_record_ptr;
 	 			    	long block_no;
-	 			    	//1. ĞÂ½ÚµãµÄright Ö¸Ïò prev_entry µÄºó¼Ì½Úµã	 		
+	 			    	//1. æ–°èŠ‚ç‚¹çš„right æŒ‡å‘ prev_entry çš„åç»§èŠ‚ç‚¹	 		
 	 			    	prev_ptr = (struct  record_t *)((char *)prev_entry - RECORD_HEAD_SIZE );
 	 			    	
 	 			    		 			    	
 	 			    	in->right_record_num = prev_entry->right_record_num;
 	 			    	in->right_block_no   = prev_entry->right_block_no;
-	 			    	//2. ²åÈëĞÂ½Úµã
+	 			    	//2. æ’å…¥æ–°èŠ‚ç‚¹
 	 			    	mem_table_insert_record( mem_skiplist_index->heap_space ,
                           &new_record_ptr,
                           &block_no, /* in */
                           (char *)in
                           );
-	 			    	//3. prev_entry µÄºó¼Ì Ö¸Ïò ĞÂ½Úµã
+	 			    	//3. prev_entry çš„åç»§ æŒ‡å‘ æ–°èŠ‚ç‚¹
 	 			    	SKIPLIST_LOCK   (  &(prev_ptr->row_lock) );
 	 			    	prev_entry->right_record_num = new_record_ptr->record_num;
 	 			      prev_entry->right_block_no = block_no;
@@ -469,7 +469,7 @@ int mem_skiplist_insert_help__(mem_skiplist_index_t *mem_skiplist_index,
 	  
 	}while(is_countinue);
 	
-	 *last_insert_skiplist_entry = prev_ptr;
+	 *last_insert_skiplist_record = prev_ptr;
 	 return err;
 } 
 
@@ -483,30 +483,30 @@ inline int mem_skiplist_delete(mem_skiplist_index_t *mem_skiplist_index ,mem_ski
   return err;
 }
 
-  // É¾³ıÖ¸¶¨ÔªËØ
+  // åˆ é™¤æŒ‡å®šå…ƒç´ 
   // int level = mem_skiplist_index,mem_skiplist_index->config.max_level - 1;
 
 inline int mem_skiplist_delete_help__(mem_skiplist_index_t *mem_skiplist_index, mem_skiplist_entry_t *prev, int level ,mem_skiplist_entry_t *in )
  {
  	DEBUG("Enter mem_skiplist_delete_help()\n");
-	// 1²åÈë×î¸ß²ã£¬ÎŞÇ°¼Ì½Úµã¼ÓËÙ
+	// 1æ’å…¥æœ€é«˜å±‚ï¼Œæ— å‰ç»§èŠ‚ç‚¹åŠ é€Ÿ
 	mem_skiplist_entry_t * prev_entry;
 	int level_tmp  ;
 	
 	if(NULL == prev)
 	{
-		DEBUG("NO prenode £¬ Use Max level£¡\n");	
+		DEBUG("NO prenode ï¼Œ Use Max levelï¼\n");	
 	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index,mem_skiplist_index->config.max_level );
 	  level_tmp  = mem_skiplist_index->config.max_level;
 	}
-	else //ÓĞÉÏ²ã½Úµã¼ÓËÙ
+	else //æœ‰ä¸Šå±‚èŠ‚ç‚¹åŠ é€Ÿ
 	  {
 	  	prev_entry = prev;
 	  	level_tmp = level;
 	  }
 	
 	 DEBUG("prev_entry is %0x\n",prev_entry);	
-	//2 ´Óµ±²ã£¬»ñµÃÏÂÒ»¸ö entry
+	//2 ä»å½“å±‚ï¼Œè·å¾—ä¸‹ä¸€ä¸ª entry
 	 record_t * right_record;
 	 mem_skiplist_entry_t * right_entry;
 	 unsigned  long   right_record_num ;
@@ -517,7 +517,7 @@ inline int mem_skiplist_delete_help__(mem_skiplist_index_t *mem_skiplist_index, 
 	 
 	 
 	 int is_continue ;
-	  // ²éÕÒµ±²ã >= key µÄ½Úµã
+	  // æŸ¥æ‰¾å½“å±‚ >= key çš„èŠ‚ç‚¹
 	 struct  record_t * prev_ptr;
 	 
 	 do{
@@ -533,7 +533,7 @@ inline int mem_skiplist_delete_help__(mem_skiplist_index_t *mem_skiplist_index, 
   
    right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);
 	 if( right_entry != mem_skiplist_index->nil && right_entry->lkey < in->lkey )prev_entry = right_entry;
-	 //Èç¹ûµ±Ç°²ãÕÒ²»µ½£¬¾Í×ªµ½ÏÂÒ»²ã
+	 //å¦‚æœå½“å‰å±‚æ‰¾ä¸åˆ°ï¼Œå°±è½¬åˆ°ä¸‹ä¸€å±‚
 	 if( (right_entry == mem_skiplist_index->nil || right_entry->lkey < in->lkey ) && level_tmp != 1 )	
 	 	{
 	 		struct  record_t * down_ptr = NULL;
@@ -553,17 +553,17 @@ inline int mem_skiplist_delete_help__(mem_skiplist_index_t *mem_skiplist_index, 
 	 if(right_entry == mem_skiplist_index->nil && level_tmp == 1)
 	 {
 	 	 DEBUG("SKIPLIST_INDEX_ERR_DELETE_NOT_FOUND\n");
-	 	 return SKIPLIST_INDEX_ERR_DELETE_NOT_FOUND;//Ã»ÕÒµ½
+	 	 return SKIPLIST_INDEX_ERR_DELETE_NOT_FOUND;//æ²¡æ‰¾åˆ°
 	 }
 	 
-	 //ÕÒµ½µÄÊ±ºò¾ÍÉ¾µô
+	 //æ‰¾åˆ°çš„æ—¶å€™å°±åˆ æ‰
 	 if (  right_entry->lkey == in->lkey) 
 	 	{
 	 		DEBUG("Found delete target!");
-	 		//·Çµ×²ã³ıÁË²åÈëÁ´±í£¬»¹±ØĞë´¦Àí down ½Úµã
+	 		//éåº•å±‚é™¤äº†æ’å…¥é“¾è¡¨ï¼Œè¿˜å¿…é¡»å¤„ç† down èŠ‚ç‚¹
 	 	if( level_tmp >= 1 ) 
 	 		{
-	 			// ÏÈÉ¾ÉÏ²ã
+	 			// å…ˆåˆ ä¸Šå±‚
 	 			SKIPLIST_LOCK   (  &(right_record->row_lock) );
 	 			prev_entry->right_record_num = right_entry->right_record_num;
 	 			prev_entry->right_block_no   = right_entry->right_block_no;
@@ -571,7 +571,7 @@ inline int mem_skiplist_delete_help__(mem_skiplist_index_t *mem_skiplist_index, 
 	 			mem_table_del_record(mem_skiplist_index->heap_space ,right_record);
 	 		 
 	 		
-	 					//²»ÊÇ×îºóÒ»²ã£¬ÊÇĞèÒª¼ÌĞøÉ¾³ı down ½ÚµãµÄ
+	 					//ä¸æ˜¯æœ€åä¸€å±‚ï¼Œæ˜¯éœ€è¦ç»§ç»­åˆ é™¤ down èŠ‚ç‚¹çš„
 	 					if( level_tmp > 1 )
 	 						{	
 	 						struct  record_t * down_ptr = NULL;
@@ -597,20 +597,20 @@ inline int mem_skiplist_delete_help__(mem_skiplist_index_t *mem_skiplist_index, 
 return 0;
 }
 
-// ²éÕÒ
-inline int mem_skiplist_search(mem_skiplist_index_t *mem_skiplist_index ,mem_skiplist_entry_t *in,mem_skiplist_entry_t ** out,int * level )
+// æŸ¥æ‰¾
+inline int mem_skiplist_search__(mem_skiplist_index_t *mem_skiplist_index ,mem_skiplist_entry_t *in,mem_skiplist_entry_t ** out,int * level )
  {
  	  DEBUG("Enter mem_skiplist_delete()\n");
-	  // 1²åÈë×î¸ß²ã£¬ÎŞÇ°¼Ì½Úµã¼ÓËÙ
+	  // 1æ’å…¥æœ€é«˜å±‚ï¼Œæ— å‰ç»§èŠ‚ç‚¹åŠ é€Ÿ
 	  mem_skiplist_entry_t * prev_entry;
 	  int level_tmp  =  mem_skiplist_index->config.max_level;
    
-		DEBUG("Use Max level As prev_entry £¡\n");	
+		DEBUG("Use Max level As prev_entry ï¼\n");	
 	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index, level_tmp );
 
 	
 	 DEBUG("prev_entry is %0x\n",prev_entry);	
-	//2 ´Óµ±²ã£¬»ñµÃÏÂÒ»¸ö entry
+	//2 ä»å½“å±‚ï¼Œè·å¾—ä¸‹ä¸€ä¸ª entry
 	 record_t * right_record;
 	 mem_skiplist_entry_t * right_entry;
 	 unsigned  long   right_record_num ;
@@ -621,7 +621,7 @@ inline int mem_skiplist_search(mem_skiplist_index_t *mem_skiplist_index ,mem_ski
 	 
 	 
 	 int is_continue ;
-	  // ²éÕÒµ±²ã >= key µÄ½Úµã
+	  // æŸ¥æ‰¾å½“å±‚ >= key çš„èŠ‚ç‚¹
 	 struct  record_t * prev_ptr;
 	 
 	 do{
@@ -633,7 +633,7 @@ inline int mem_skiplist_search(mem_skiplist_index_t *mem_skiplist_index ,mem_ski
 	 get_record(mem_skiplist_index->heap_space,right_block_no,right_record_num,&right_record) ;
    right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);
 	 if( right_entry != mem_skiplist_index->nil && right_entry->lkey < in->lkey )prev_entry = right_entry;
-	 //Èç¹ûµ±Ç°²ãÕÒ²»µ½£¬¾Í×ªµ½ÏÂÒ»²ã
+	 //å¦‚æœå½“å‰å±‚æ‰¾ä¸åˆ°ï¼Œå°±è½¬åˆ°ä¸‹ä¸€å±‚
 	 if( (right_entry == mem_skiplist_index->nil || right_entry->lkey < in->lkey) && level_tmp != 1)	
 	 	{
 	 		struct  record_t * down_ptr = NULL;
@@ -649,19 +649,21 @@ inline int mem_skiplist_search(mem_skiplist_index_t *mem_skiplist_index ,mem_ski
 	 SKIPLIST_RUNLOCK   (  &(prev_ptr->row_lock) );
 	 
 	}while(right_entry != mem_skiplist_index->nil && right_entry->lkey < in->lkey);
-	
-	if(right_entry == mem_skiplist_index->nil && level_tmp == 1)
-	 {
-	 	 DEBUG("SKIPLIST_INDEX_ERR_DELETE_NOT_FOUND\n");
-	 	 return SKIPLIST_INDEX_SEARCH_NOT_FOUND;//Ã»ÕÒµ½
-	 }
-	 
+
 	 if (  right_entry->lkey == in->lkey) 
 	 {
 	 	*out   = right_entry;
 	 	*level = level_tmp;
 	 	 return 0;
 	 }
+	 
+	if(right_entry == mem_skiplist_index->nil && level_tmp == 1)
+	 {
+	 	 DEBUG("SKIPLIST_INDEX_ERR_DELETE_NOT_FOUND\n");
+	 	 return SKIPLIST_INDEX_SEARCH_NOT_FOUND;//æ²¡æ‰¾åˆ°
+	 }
+	 
+	
 	 return SKIPLIST_INDEX_SEARCH_NOT_FOUND;
 	 
 	}
@@ -685,14 +687,14 @@ inline int mem_skiplist_search(mem_skiplist_index_t *mem_skiplist_index ,mem_ski
 */
 
 
-//  »ñµÃ±¾²ã == lkeyµÄÇ°¼Ì½Úµã
+//  è·å¾—æœ¬å±‚ == lkeyçš„å‰ç»§èŠ‚ç‚¹
 inline int mem_skiplist_find_EQ(mem_skiplist_index_t *mem_skiplist_index, 
  												mem_skiplist_entry_t *prev, 
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry 
  											 )
 {
-	//ÓÒÖ¸Õë ºÍ ËüµÄÊı¾İÖ¸Õë 
+	//å³æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
 	 record_t 						* right_record;
 	 mem_skiplist_entry_t * right_entry ;
 	 record_t 						* prev_record = NULL;
@@ -740,17 +742,70 @@ inline int mem_skiplist_find_EQ(mem_skiplist_index_t *mem_skiplist_index,
 	  return 0;
 }
 
+//  è·å¾—æœ¬å±‚ == lkeyçš„å½“å‰èŠ‚ç‚¹
+inline int mem_skiplist_find_EQO(mem_skiplist_index_t *mem_skiplist_index, 
+ 												mem_skiplist_entry_t *prev, 
+ 												mem_skiplist_entry_t *in,
+ 												mem_skiplist_entry_t **last_find_entry 
+ 											 )
+{
+	//å³æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
+	 record_t 						* right_record;
+	 mem_skiplist_entry_t * right_entry ;
+	 record_t 						* prev_record = NULL;
+	 mem_skiplist_entry_t * prev_entry  = prev;
+	 int err;
+	 DEBUG("Enter mem_skiplist_find_EQ(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
+	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
+	 do{
+	 				do{
+	 					  prev_record = (record_t *)((char *)prev_entry - RECORD_HEAD_SIZE);
+
+	 						SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&right_record                   );
+	 						SKIPLIST_RUNLOCK( &(prev_record->row_lock) );						
+	 												
+	 						if(err)return err;
+	 					}while( right_record->is_used == 0 );
+   
+	 right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);
+	 DEBUG(" go pass entry %ld \n ",right_entry->lkey);
+
+	 
+	 if( mem_skiplist_index->nil != right_entry && 
+	 			right_entry->lkey < in->lkey            )prev_entry = right_entry ;
+	 
+	 }while(right_entry != mem_skiplist_index->nil && right_entry->lkey < in->lkey);
+	 
+	 if(right_entry->lkey == in->lkey && right_entry != mem_skiplist_index->nil){
+	 	 *last_find_entry = right_entry;
+	 	 DEBUG(" mem_skiplist_find_EQO end,prev_entry is %0x \n ",right_entry);
+
+	 	 return 0;
+	  }
+	 	else
+	 		{
+	 		return	SKIPLIST_INDEX_SEARCH_NOT_FOUND;
+	 		}
+	 	 
+	 //IMPORTANT_INFO(" End mem_skiplist_find_GE ,prev_entry is %0x \n ",prev_entry);
+
+	  return 0;
+}
 
 
 
-//  »ñµÃ±¾²ã >= lkeyµÄÇ°¼Ì½Úµã
+//  è·å¾—æœ¬å±‚ >= lkeyçš„å‰ç»§èŠ‚ç‚¹
 inline int mem_skiplist_find_GE(mem_skiplist_index_t *mem_skiplist_index, 
  												mem_skiplist_entry_t *prev, 
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry 
  											 )
 {
-	//ÓÒÖ¸Õë ºÍ ËüµÄÊı¾İÖ¸Õë 
+	//å³æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
 	 record_t 						* right_record = NULL;
 	 mem_skiplist_entry_t * right_entry  = NULL;
 	 record_t 						* prev_record = NULL;
@@ -796,7 +851,7 @@ inline int mem_skiplist_get_down(mem_skiplist_index_t *mem_skiplist_index,
  												mem_skiplist_entry_t **last_find_entry 
  											 )
 {
-		//ÏÂÖ¸Õë ºÍ ËüµÄÊı¾İÖ¸Õë 
+		//ä¸‹æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
 	 record_t 						* down_record;
 	 mem_skiplist_entry_t * down_entry ;
 	 record_t 						* prev_record;
@@ -831,19 +886,19 @@ inline int mem_skiplist_insert_one(mem_skiplist_index_t *mem_skiplist_index,
 {	
 	DEBUG("Enter mem_skiplist_insert_one()\n");
 	//IMPORTANT_INFO("Enter mem_skiplist_insert_one()\n");
-	//Òª²åÈëµÄÇ°¼Ì½Úµã
+	//è¦æ’å…¥çš„å‰ç»§èŠ‚ç‚¹
 	struct  record_t     * insert_node  = NULL;
 	mem_skiplist_entry_t * insert_entry = NULL;
-	//ÓÒÖ¸Õë 
+	//å³æŒ‡é’ˆ 
 	record_t 						 * right_record = NULL;;
 	unsigned long          right_record_num;
-	//ĞÂ²åÈëµÄ½Úµã 
+	//æ–°æ’å…¥çš„èŠ‚ç‚¹ 
 	record_t 						 * new_record_ptr = NULL;
 	mem_skiplist_entry_t * new_entry      = NULL;
 	long                   new_block_no  ;
 	int err = 0;
 	
-	//1.ÏÈ·ÖÅäÒ»¸öĞÂ½Úµã
+	//1.å…ˆåˆ†é…ä¸€ä¸ªæ–°èŠ‚ç‚¹
 	mem_table_insert_record( mem_skiplist_index->heap_space ,
               &new_record_ptr,
               &new_block_no  , /* in */
@@ -852,7 +907,7 @@ inline int mem_skiplist_insert_one(mem_skiplist_index_t *mem_skiplist_index,
           
   new_entry = (mem_skiplist_entry_t *)((char *)(new_record_ptr) + RECORD_HEAD_SIZE);
      
-				//2.»ñµÃÒª²åÈëµÄ½Úµã,ÖØÕÒÒ»´Î£¬ÊÇÎªÁË·ÀÖ¹¸üĞÂµ×²ã½ÚµãÊ±£¬ÉÏ²ã±»¸üĞÂ
+				//2.è·å¾—è¦æ’å…¥çš„èŠ‚ç‚¹,é‡æ‰¾ä¸€æ¬¡ï¼Œæ˜¯ä¸ºäº†é˜²æ­¢æ›´æ–°åº•å±‚èŠ‚ç‚¹æ—¶ï¼Œä¸Šå±‚è¢«æ›´æ–°
 				err = mem_skiplist_find_GE( mem_skiplist_index, 
  												prev, 
  												in,
@@ -863,10 +918,10 @@ inline int mem_skiplist_insert_one(mem_skiplist_index_t *mem_skiplist_index,
  				insert_node = (struct record_t *)((char *)(insert_entry) - RECORD_HEAD_SIZE);
 			 	DEBUG("insert_node -> record_num is %ld \n",insert_node->record_num);
  				
- 				//3. ²åÈëµÄÊ±ºòËøÇ°¼Ì½Úµã£¬·ÀÖ¹ Ç°¼Ì½Úµã±»É¾³ı
+ 				//3. æ’å…¥çš„æ—¶å€™é”å‰ç»§èŠ‚ç‚¹ï¼Œé˜²æ­¢ å‰ç»§èŠ‚ç‚¹è¢«åˆ é™¤
  				//SKIPLIST_LOCK   (  &(insert_node->row_lock) ); 
 				do{ //cas
-						//3.1»ñµÃÓÒÖ¸Õë½Úµã
+						//3.1è·å¾—å³æŒ‡é’ˆèŠ‚ç‚¹
  						//do{
  						if(insert_node) SKIPLIST_UNLOCK (  &(insert_node->row_lock   ) ); 
  						SKIPLIST_LOCK   (  &(insert_node->row_lock) ); 
@@ -880,18 +935,18 @@ inline int mem_skiplist_insert_one(mem_skiplist_index_t *mem_skiplist_index,
 							  }
 						right_record_num = 	right_record->record_num;  
 						//	}while( right_record->is_used == 0 );						
- 						//3.2½«ĞÂ½ÚµãµÄÓÒ½ÚµãÖ¸Ïò×îĞÂµÄÎ»ÖÃ 			    	
+ 						//3.2å°†æ–°èŠ‚ç‚¹çš„å³èŠ‚ç‚¹æŒ‡å‘æœ€æ–°çš„ä½ç½® 			    	
 	 					new_entry->right_record_num = insert_entry->right_record_num;
 	 					new_entry->right_block_no   = insert_entry->right_block_no;
 						
-						//3.3Ç°¼Ì½Úµã¸üĞÂÓÒ½ÚµãÎªĞÂ½Úµã
+						//3.3å‰ç»§èŠ‚ç‚¹æ›´æ–°å³èŠ‚ç‚¹ä¸ºæ–°èŠ‚ç‚¹
 						//insert_entry->right_record_num = new_record_ptr->record_num;
 				
 				}while(!CAS(&(insert_entry->right_record_num),right_record_num,new_record_ptr->record_num ) );
 						   insert_entry->right_block_no   = new_block_no;
 				
 					
-				//4 ½âËø
+				//4 è§£é”
  				SKIPLIST_UNLOCK (  &(insert_node->row_lock   ) ); 
 				if(new_block_no<0) ERROR("new_block_no<0 in insert_key = %ld,new_block_no is %d \n",in->lkey,new_block_no);
 
@@ -904,18 +959,18 @@ inline int mem_skiplist_insert_one(mem_skiplist_index_t *mem_skiplist_index,
 }
 	 
 	 
- // ²åÈë
+ // æ’å…¥
 int mem_skiplist_insert_help(mem_skiplist_index_t *mem_skiplist_index, 
  												mem_skiplist_entry_t *prev, int level,
  												mem_skiplist_entry_t *in,
- 												struct  record_t ** last_insert_skiplist_entry 
+ 												struct  record_t ** last_insert_skiplist_record 
  											 )
  {
  	DEBUG("Enter mem_skiplist_insert_help(),insert level is %d\n",level);	
  	DEBUG("Enter mem_skiplist_insert_help(),insert key is %ld\n",in->lkey);	
   //IMPORTANT_INFO("Enter mem_skiplist_insert_help(),insert key is %ld,level is %ld\n",in->lkey,level);	
 	
-	//1.²åÈë×î¸ß²ã£¬ÎŞÇ°¼Ì½Úµã¼ÓËÙ
+	//1.æ’å…¥æœ€é«˜å±‚ï¼Œæ— å‰ç»§èŠ‚ç‚¹åŠ é€Ÿ
 	mem_skiplist_entry_t * prev_entry;
 	struct record_t *      prev_record;
 	int err = 0;
@@ -923,30 +978,30 @@ int mem_skiplist_insert_help(mem_skiplist_index_t *mem_skiplist_index,
 	
 	//if(NULL == prev)
 	//{
-	//	   //»ñµÃµ±²ãÍ·½Úµã
+	//	   //è·å¾—å½“å±‚å¤´èŠ‚ç‚¹
 	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index,mem_skiplist_index->config.max_level );
 	  DEBUG("prev_entry level is %d \n",level );	
 
 	//}
-	//else //ÓĞÉÏ²ã½Úµã¼ÓËÙ
+	//else //æœ‰ä¸Šå±‚èŠ‚ç‚¹åŠ é€Ÿ
 	//  prev_entry = prev;
 	
 	DEBUG("prev_entry is %0x\n",prev_entry);	
 	
-	//2. ´æ´¢ËùÓĞ²ãÉÏµÄÇ°¼Ì½ÚµãÖ¸Õë
+	//2. å­˜å‚¨æ‰€æœ‰å±‚ä¸Šçš„å‰ç»§èŠ‚ç‚¹æŒ‡é’ˆ
 	DEBUG("Prepare Insert one %ld\n",in->lkey );								 	 					
 
 
 
 
-	mem_skiplist_entry_t * pre_array[max_level+1];//´Ó1¿ªÊ¼¼ÆÊı
+	mem_skiplist_entry_t * pre_array[max_level+1];//ä»1å¼€å§‹è®¡æ•°
 	int i = max_level;
 	for(;i> 0; --i)
 	{
 	prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE);
 	DEBUG("Store Insert pre_array %d,prev_record->record_num is %ld \n",i,prev_record->record_num);	
 
-	//2.1 ½«Ã¿Ò»²ãµÄÇ°¼Ì½Úµã´æÈë pre_array
+	//2.1 å°†æ¯ä¸€å±‚çš„å‰ç»§èŠ‚ç‚¹å­˜å…¥ pre_array
 	err =	mem_skiplist_find_GE( mem_skiplist_index, 
  												  prev_entry, 
  												  in,
@@ -956,7 +1011,7 @@ int mem_skiplist_insert_help(mem_skiplist_index_t *mem_skiplist_index,
   
  
  	if(err)return err;
- 	//2.2 ½« prev_entry ¸üĞÂÎªËûµÄºó¼Ì½Úµã
+ 	//2.2 å°† prev_entry æ›´æ–°ä¸ºä»–çš„åç»§èŠ‚ç‚¹
  	if(i>1){
  		err = mem_skiplist_get_down( mem_skiplist_index, 
  												 pre_array[i], 
@@ -974,8 +1029,8 @@ int mem_skiplist_insert_help(mem_skiplist_index_t *mem_skiplist_index,
 	
 
 	
-	//3. ÔÚËùÓĞ²ãÉÏµÄÇ°¼Ì½ÚµãºóÃæ²åÈëĞÂÊı¾İ
-	//´Óµ×²ãÍùÉÏ²ã²åÈëÊı¾İ
+	//3. åœ¨æ‰€æœ‰å±‚ä¸Šçš„å‰ç»§èŠ‚ç‚¹åé¢æ’å…¥æ–°æ•°æ®
+	//ä»åº•å±‚å¾€ä¸Šå±‚æ’å…¥æ•°æ®
 	DEBUG("Begin Insert one %ld\n",in->lkey );								 	 					
  
   //IMPORTANT_INFO("Mem_skiplist_insert_help Real insert !\n");	
@@ -1000,7 +1055,7 @@ int mem_skiplist_insert_help(mem_skiplist_index_t *mem_skiplist_index,
  		if(err)return err;	
  		cur_record = (struct record_t *)( (char *)cur_insert_entry - RECORD_HEAD_SIZE);;	
 
- 		// ¸ø down ½Úµã¸³Öµ
+ 		// ç»™ down èŠ‚ç‚¹èµ‹å€¼
  		if(1 !=i )
  		{	
  		DEBUG("%ld set down_record_num is %ld\n",cur_record->record_num,pre_insert_record_num);								 	 					
@@ -1020,7 +1075,7 @@ inline int mem_skiplist_cout_to_end(mem_skiplist_index_t *mem_skiplist_index,
  												mem_skiplist_entry_t *prev
  											 )  
 {
-//ÓÒÖ¸Õë ºÍ ËüµÄÊı¾İÖ¸Õë 
+//å³æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
 	 record_t 						* right_record;
 	 mem_skiplist_entry_t * right_entry ;
 	 mem_skiplist_entry_t * prev_entry  = prev;
@@ -1071,21 +1126,21 @@ inline int mem_skiplist_delete_one(mem_skiplist_index_t *mem_skiplist_index,
 {	
 	DEBUG("===Enter mem_skiplist_delete_one()===\n");
 	//IMPORTANT_INFO("Enter mem_skiplist_insert_one()\n");
-	//ÒªÉ¾³ıµÄÇ°¼Ì½Úµã
+	//è¦åˆ é™¤çš„å‰ç»§èŠ‚ç‚¹
 	struct  record_t     * prev_delete_node  = NULL;
 	mem_skiplist_entry_t * prev_delete_entry = NULL;
 	
 
-	//ÓÒÖ¸Õë 
+	//å³æŒ‡é’ˆ 
 	record_t 						 * right_record = NULL;;
 	mem_skiplist_entry_t * right_entry;
 	unsigned long          right_record_num;
-	//ÒªÉ¾³ıµÄ½Úµã
+	//è¦åˆ é™¤çš„èŠ‚ç‚¹
 	struct  record_t     * delete_node  = NULL;
 	mem_skiplist_entry_t * delete_entry = NULL;
 	int err = 0;
 
-				//1.»ñµÃÒªÉ¾³ıµÄ½ÚµãµÄÇ°¼Ì,ÕÒ²»µ½¾Í·µ»Ø SKIPLIST_INDEX_SEARCH_NOT_FOUND
+				//1.è·å¾—è¦åˆ é™¤çš„èŠ‚ç‚¹çš„å‰ç»§,æ‰¾ä¸åˆ°å°±è¿”å› SKIPLIST_INDEX_SEARCH_NOT_FOUND
 				err = mem_skiplist_find_EQ( mem_skiplist_index, 
  												prev, 
  												in,
@@ -1100,7 +1155,7 @@ inline int mem_skiplist_delete_one(mem_skiplist_index_t *mem_skiplist_index,
  						  
  				
 				do{ //CAS
-						//2»ñµÃÓÒÖ¸Õë½Úµã
+						//2è·å¾—å³æŒ‡é’ˆèŠ‚ç‚¹
  						//do{
  						if(right_record)SKIPLIST_UNLOCK (  &(right_record->row_lock   ) ); 
 								err = get_record(mem_skiplist_index->heap_space ,
@@ -1112,21 +1167,21 @@ inline int mem_skiplist_delete_one(mem_skiplist_index_t *mem_skiplist_index,
 							  }
 							//}while( right_record->is_used == 0 );	
 						
-						//3.É¾³ıµÄÊ±ºò£¬Ëø´ıÉ¾³ı½Úµã£¬·ÀÖ¹±»ºóĞøµÄ ±í insert ĞŞ¸Ä
+						//3.åˆ é™¤çš„æ—¶å€™ï¼Œé”å¾…åˆ é™¤èŠ‚ç‚¹ï¼Œé˜²æ­¢è¢«åç»­çš„ è¡¨ insert ä¿®æ”¹
  				    SKIPLIST_LOCK   (  &(right_record->row_lock) ); 	
 							
 						right_record_num = right_record->record_num;
 						right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);			
  						   		
-						//2.2Ç°¼Ì½Úµã¸üĞÂÓÒ½ÚµãÎªºóºó½Úµã
+						//2.2å‰ç»§èŠ‚ç‚¹æ›´æ–°å³èŠ‚ç‚¹ä¸ºååèŠ‚ç‚¹
 						//prev_delete_entry->right_record_num = right_entry->right_record_num;
 					}while( !CAS(&(prev_delete_entry->right_record_num),right_record_num,right_entry->right_record_num) );
 						prev_delete_entry->right_block_no   = right_entry->right_block_no;
 						
-				//4 ½âËø
+				//4 è§£é”
  				 SKIPLIST_UNLOCK (  &(right_record->row_lock   ) ); 
  				
- 				//5 ½«ĞèÒªÉ¾³ıµÄ½ÚµãÖÃÊ§Ğ§
+ 				//5 å°†éœ€è¦åˆ é™¤çš„èŠ‚ç‚¹ç½®å¤±æ•ˆ
  				mem_table_del_record(mem_skiplist_index->heap_space ,right_record);
 	      //right_entry->right_record_num = right_record->record_num;
 	      
@@ -1145,7 +1200,7 @@ inline int mem_skiplist_delete_help(mem_skiplist_index_t *mem_skiplist_index,
  	DEBUG("Enter mem_skiplist_delete_help(),delete key is %ld\n",in->lkey);	
   //IMPORTANT_INFO("Enter mem_skiplist_delete_help(),delete key is %ld,level is %ld\n",in->lkey,level);	
 	
-	//1.²åÈë×î¸ß²ã£¬ÎŞÇ°¼Ì½Úµã¼ÓËÙ
+	//1.æ’å…¥æœ€é«˜å±‚ï¼Œæ— å‰ç»§èŠ‚ç‚¹åŠ é€Ÿ
 	mem_skiplist_entry_t * prev_entry;
 	struct record_t *      prev_record;
 	int err = 0;
@@ -1153,27 +1208,27 @@ inline int mem_skiplist_delete_help(mem_skiplist_index_t *mem_skiplist_index,
 	
 	//if(NULL == prev)
 	//{
-	//	   //»ñµÃµ±²ãÍ·½Úµã
+	//	   //è·å¾—å½“å±‚å¤´èŠ‚ç‚¹
 	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index,mem_skiplist_index->config.max_level );
 	  DEBUG("prev_entry level is %d \n",level );	
 
 	//}
-	//else //ÓĞÉÏ²ã½Úµã¼ÓËÙ
+	//else //æœ‰ä¸Šå±‚èŠ‚ç‚¹åŠ é€Ÿ
 	//  prev_entry = prev;
 	
 	DEBUG("prev_entry is %0x\n",prev_entry);	
 	
-	//2. ´æ´¢ËùÓĞ²ãÉÏµÄÇ°¼Ì½ÚµãÖ¸Õë
+	//2. å­˜å‚¨æ‰€æœ‰å±‚ä¸Šçš„å‰ç»§èŠ‚ç‚¹æŒ‡é’ˆ
 	DEBUG("Prepare delete one %ld\n",in->lkey );								 	 					
 
-	mem_skiplist_entry_t * pre_array[max_level+1];//´Ó1¿ªÊ¼¼ÆÊı
+	mem_skiplist_entry_t * pre_array[max_level+1];//ä»1å¼€å§‹è®¡æ•°
 	int i = max_level;
 	for(;i> 0; --i)
 	{
 	prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE);
 	DEBUG("Store Delete pre_array %d,prev_record->record_num is %ld \n",i,prev_record->record_num);	
 
-	//2.1 ½«Ã¿Ò»²ãµÄÇ°¼Ì½Úµã´æÈë pre_array
+	//2.1 å°†æ¯ä¸€å±‚çš„å‰ç»§èŠ‚ç‚¹å­˜å…¥ pre_array
 	err =	mem_skiplist_find_GE( mem_skiplist_index, 
  												  prev_entry, 
  												  in,
@@ -1182,7 +1237,7 @@ inline int mem_skiplist_delete_help(mem_skiplist_index_t *mem_skiplist_index,
   DEBUG("$$$$$$$$$$$ pre_array[%d],prev_record  is %ld \n",i,prev_record->record_num );	
  
  	if(err)return err;
- 	//2.2 ½« prev_entry ¸üĞÂÎªËûµÄºó¼Ì½Úµã
+ 	//2.2 å°† prev_entry æ›´æ–°ä¸ºä»–çš„åç»§èŠ‚ç‚¹
  	if(i>1){
  		err = mem_skiplist_get_down( mem_skiplist_index, 
  												 pre_array[i], 
@@ -1196,12 +1251,12 @@ inline int mem_skiplist_delete_help(mem_skiplist_index_t *mem_skiplist_index,
  	if(err)return err;								 	
 	}
 	
-	//3. ÔÚËùÓĞ²ãÉÏµÄÇ°¼Ì½ÚµãºóÃæÉ¾³ıÊı¾İ
-	//´Óµ×²ãÍùÉÏ²ã²åÈëÊı¾İ
+	//3. åœ¨æ‰€æœ‰å±‚ä¸Šçš„å‰ç»§èŠ‚ç‚¹åé¢åˆ é™¤æ•°æ®
+	//ä»åº•å±‚å¾€ä¸Šå±‚æ’å…¥æ•°æ®
 	DEBUG("Begin delete one key = %ld\n",in->lkey );								 	 					
  
   //IMPORTANT_INFO("Mem_skiplist_delete_help Real delete !\n");	
-	//´ÓÏÂÍùÉÏÉ¾
+	//ä»ä¸‹å¾€ä¸Šåˆ 
 	i = 1;
 	for(;i > max_level+1; --i)
 	{
@@ -1210,7 +1265,7 @@ inline int mem_skiplist_delete_help(mem_skiplist_index_t *mem_skiplist_index,
  															pre_array[i], 
  															in 
  											 				);
- 		// Ã»ÕÒµ½¾Í²»É¾±¾²ãµÄ½Úµã									 				
+ 		// æ²¡æ‰¾åˆ°å°±ä¸åˆ æœ¬å±‚çš„èŠ‚ç‚¹									 				
  		if(err == SKIPLIST_INDEX_SEARCH_NOT_FOUND){
  			DEBUG("SKIPLIST_INDEX_SEARCH_NOT_FOUND\n");
  			continue;
@@ -1237,6 +1292,67 @@ int mem_skiplist_update(mem_skiplist_index_t *mem_skiplist_index,
 	return err;
 } 		
 
+int mem_skiplist_search(mem_skiplist_index_t *mem_skiplist_index,
+ 												mem_skiplist_entry_t *in,
+ 												mem_skiplist_entry_t ** finded_entry 
+ 											 )
+ {
+ 	DEBUG("Enter mem_skiplist_search(),Search key is %ld\n",in->lkey);	
+	
+	//1.ä»æœ€é«˜å±‚å¼€å§‹æ‰¾
+	mem_skiplist_entry_t * prev_entry;
+	struct record_t *      prev_record;
+	int err = 0;
+	int max_level = mem_skiplist_index->config.max_level;
+
+	//	   //è·å¾—å½“å±‚å¤´èŠ‚ç‚¹
+	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index,mem_skiplist_index->config.max_level );
+	
+	//2. å­˜å‚¨æ‰€æœ‰å±‚ä¸Šçš„å‰ç»§èŠ‚ç‚¹æŒ‡é’ˆ
+	DEBUG("Prepare Serach one %ld\n",in->lkey );								 	 					
+
+	mem_skiplist_entry_t * pre_array[max_level+1];//ä»1å¼€å§‹è®¡æ•°
+	int i = max_level;
+	for(;i> 0; --i)
+	{
+	prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE);
+	DEBUG("Search pre_array %d,prev_record->record_num is %ld \n",i,prev_record->record_num);	
+
+	//2.1 å°†æ¯ä¸€å±‚çš„å‰ç»§èŠ‚ç‚¹å­˜å…¥ pre_array
+	err =	mem_skiplist_find_GE( mem_skiplist_index, 
+ 												  prev_entry, 
+ 												  in,
+ 												&(pre_array[i])  
+ 											  );
+  DEBUG("Find Search pre_array[%d],prev_record  is %ld \n",i,prev_record->record_num );	
+
+ 	if(err)return err;
+ 
+ err =	mem_skiplist_find_EQO( mem_skiplist_index, 
+ 												  prev_entry, 
+ 												  in,
+ 												 finded_entry  
+ 											  );
+ if( err == 0 )return 0;
+ 
+ 	//2.2 å°† prev_entry æ›´æ–°ä¸ºä»–çš„åç»§èŠ‚ç‚¹
+ 	if(i>1 && prev_entry->lkey != in->lkey ){
+ 		err = mem_skiplist_get_down( mem_skiplist_index, 
+ 												 pre_array[i], 
+ 												 &prev_entry 
+ 											 );	
+ 											 
+ 		prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE);									 
+   }
+
+
+}
+
+ 	if(err)return err;								 	
+	}
+
+//
+//
 #ifdef __cplusplus
 
 }
