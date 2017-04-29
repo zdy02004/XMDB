@@ -1,4 +1,4 @@
-// ÔÚÓÃgcc±àÒëµÄÊ±ºòÒª¼ÓÉÏÑ¡Ïî -march=i686
+// åœ¨ç”¨gccç¼–è¯‘çš„æ—¶å€™è¦åŠ ä¸Šé€‰é¡¹ -march=i686
 
 #ifndef TABLE_CTL
 #define TABLE_CTL
@@ -12,7 +12,7 @@ extern "C" {
 
 #endif
 
-// ×Ö¶ÎÀàĞÍ±êºÅ
+// å­—æ®µç±»å‹æ ‡å·
 #define FIELD_TYPE_INT        1
 #define FIELD_TYPE_SHORT      2
 #define FIELD_TYPE_LONG       3
@@ -21,13 +21,13 @@ extern "C" {
 #define FIELD_TYPE_DOUBLE     6
 #define FIELD_TYPE_STR        7
 #define FIELD_TYPE_ANY        8
-#define FIELD_TYPE_DATE       9    //date ÀàĞÍÎª str 16 14¸öÖµ
-#define FIELD_TYPE_HASH_ENTRY      10   //date ÀàĞÍÎª str 16 14¸öÖµ
-#define FIELD_TYPE_RBTREE_ENTRY    11   //date ÀàĞÍÎª str 16 14¸öÖµ
+#define FIELD_TYPE_DATE       9    //date ç±»å‹ä¸º str 16 14ä¸ªå€¼
+#define FIELD_TYPE_HASH_ENTRY      10   //date ç±»å‹ä¸º str 16 14ä¸ªå€¼
+#define FIELD_TYPE_RBTREE_ENTRY    11   //date ç±»å‹ä¸º str 16 14ä¸ªå€¼
 #define FIELD_TYPE_SKIPLIST_ENTRY  12
 
-// ×Ö¶ÎÀàĞÍ
- //date ÀàĞÍÎª str 16 14¸öÖµ
+// å­—æ®µç±»å‹
+ //date ç±»å‹ä¸º str 16 14ä¸ªå€¼
 #define FIELD_INT        int
 #define FIELD_SHORT      short
 #define FIELD_LONG       long
@@ -41,18 +41,18 @@ extern "C" {
 #define FIELD_RBTREE_ENTRY	 (struct  mem_rbtree_entry_t  )
 #define FIELD_SKIPLIST_ENTRY (struct  mem_skiplist_entry_t)
 
-// ×Ö¶ÎÕ¼ÓÃ¿Õ¼ä´óĞ¡
+// å­—æ®µå ç”¨ç©ºé—´å¤§å°
 #define FIELD_INT_SIZE        			sizeof(int)
 #define FIELD_SHORT_SIZE      			sizeof(short)
 #define FIELD_LONG_SIZE       			sizeof(long)
 #define FIELD_LONGLONG_SIZE   			sizeof(long long)
 #define FIELD_FLOAT_SIZE      			sizeof(float)
 #define FIELD_DOUBLE_SIZE     			sizeof(double)
-#define FIELD_DATE_SIZE       			sizeof(time_t)  //Ê¹ÓÃ linux µÄ time_t
+#define FIELD_DATE_SIZE       			sizeof(time_t)  //ä½¿ç”¨ linux çš„ time_t
 		
 
 
-//´íÎóÀàĞÍ
+//é”™è¯¯ç±»å‹
 #define READ_RECORD_ERR_TABLE_IS_NULL                32001
 #define READ_RECORD_ERR_RECORD_IS_NULL               32002
 #define READ_RECORD_ERR_BUF_IS_NULL                  32003
@@ -95,12 +95,12 @@ extern "C" {
 #define HIGH_LEVEL_TRY_LOCK										 32039
 #define UNLOCK_FAILED													 32040
 
-//×î´ó×Ö¶Î¸öÊı
-//1¸ö±í×î´óÄÚ´æ¿éÊı
+//æœ€å¤§å­—æ®µä¸ªæ•°
+//1ä¸ªè¡¨æœ€å¤§å†…å­˜å—æ•°
 #define MAX_FIELD_NUM        64
 #define MAX_BLOCK_NUM        64
 
-//¶ÀÕ¼ËøÓë¹²ÏíËø
+//ç‹¬å é”ä¸å…±äº«é”
 #define table_rwlock_t        	 pthread_rwlock_t
 #define table_rwlock_init(x)     pthread_rwlock_init(x, NULL)
 #define table_rwlock_rdlock(x)   pthread_rwlock_rdlock(x)
@@ -109,7 +109,7 @@ extern "C" {
 #define table_rwlock_destroy(x)  pthread_rwlock_destroy(x)
 
 
-//ÔİÊ±ÓÃCASÀ´ÊµÏÖĞĞ¼¶¶ÁĞ´Ëø
+//æš‚æ—¶ç”¨CASæ¥å®ç°è¡Œçº§è¯»å†™é”
 #define row_lock_t    rwlock_t
 #define row_lock_init(x)   rwlock_init((x)); 
 
@@ -125,7 +125,7 @@ rwlock_wunlock(x);  // \
 //__sync_fetch_and_add(  &(mem_table->lock_manager.row_lock_counter), 1 );
 
 
-//ÔİÊ±ÓÃ»¥³âËø±íÊ¾±í¼¶Ëø
+//æš‚æ—¶ç”¨äº’æ–¥é”è¡¨ç¤ºè¡¨çº§é”
 #define table_lock_t            pthread_mutex_t
 #define mem_table_lock_t        pthread_mutex_t
 #define mem_table_lock(x)       pthread_mutex_lock(x)
@@ -135,7 +135,7 @@ rwlock_wunlock(x);  // \
 #define mem_table_dest(x)    		pthread_mutex_destroy(x)   
 
 
-//µ¥Á´±í°æ±¾
+//å•é“¾è¡¨ç‰ˆæœ¬
 //#define MEM_TABLE_DEL_CODE																	\
 //LIST_LOCK  (  &(mem_block_temp->mem_free_list.list_lock)    );\
 //record_ptr->is_used = 0;																			\
@@ -143,7 +143,7 @@ rwlock_wunlock(x);  // \
 //mem_block_temp->mem_free_list.head = record_ptr->record_num;	\
 //LIST_UNLOCK    (  &(mem_block_temp->mem_free_list.list_lock)   );
 
-//Ë«Á´±í°æ±¾É¾³ıÓï¾ä
+//åŒé“¾è¡¨ç‰ˆæœ¬åˆ é™¤è¯­å¥
 #define MEM_TABLE_DEL_CODE																				\
 LIST_LOCK  (  &(mem_block_temp->mem_free_list.list_lock)    );		\
 record_ptr->is_used = 0;																					\
@@ -163,36 +163,36 @@ LIST_UNLOCK    (  &(mem_block_temp->mem_free_list.list_lock)   );
 
 struct  mem_hash_entry_t
 {
-unsigned  long     hash_lkey;						  //ÕûĞÍ hash   key Öµ
-long               block_no;			          //´æÊı¾İËùÔÚµÄ¿éºÅ
-unsigned  long     record_num; 					  //´æÊı¾İËùÔÚµÄĞĞºÅ
-long               link_block_no;          //³åÍ»´æ´¢Çø¿éºÅ
-unsigned  long     link_record_num;        //³åÍ»Êı¾İÔÚ³åÍ»¿éµÄĞĞºÅ
-char               hash_ckey[32];          //×Ö·û´® hash key Öµ,ÔİÊ±Ö§³Öµ½32ÕâÃ´³¤µÄ×Ö·û´®
+unsigned  long     hash_lkey;						  //æ•´å‹ hash   key å€¼
+long               block_no;			          //å­˜æ•°æ®æ‰€åœ¨çš„å—å·
+unsigned  long     record_num; 					  //å­˜æ•°æ®æ‰€åœ¨çš„è¡Œå·
+long               link_block_no;          //å†²çªå­˜å‚¨åŒºå—å·
+unsigned  long     link_record_num;        //å†²çªæ•°æ®åœ¨å†²çªå—çš„è¡Œå·
+char               hash_ckey[32];          //å­—ç¬¦ä¸² hash key å€¼,æš‚æ—¶æ”¯æŒåˆ°32è¿™ä¹ˆé•¿çš„å­—ç¬¦ä¸²
 
 } __attribute__ ((packed, aligned (64)));
 
 #define MEM_HASH_ENTRY_SIZE  sizeof(struct  mem_hash_entry_t)
 
 
-/*¶¨Òå½áµãµÄÑÕÉ«*/
+/*å®šä¹‰ç»“ç‚¹çš„é¢œè‰²*/
  typedef enum Color{
  		RED   = 1,
  		BLACK = 0
  }color_t;
 typedef struct  mem_rbtree_entry_t
 {
-unsigned  long     rbtree_lkey;						  //ÕûĞÍ rbtree   key Öµ
-long               block_no;			          //´æÊı¾İËùÔÚ±íµÄ¿éË³ĞòºÅ
-unsigned  long     record_num; 					  //´æÊı¾İËùÔÚµÄĞĞºÅ
-long               parent_block_no;			  //¸¸½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
-unsigned  long     parent_record_num; 			//¸¸½ÚµãË÷ÒıËùÔÚ±íµÄ¿éË³ĞòºÅ
-long               left_block_no;			    //×ó½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
-unsigned  long     left_record_num; 				//×ó½ÚµãË÷ÒıËùÔÚµÄĞĞºÅ
-long               right_block_no;			    //ÓÒ½ÚµãË÷ÒıËù±íµÄ¿éË³ĞòºÅ
-unsigned  long     right_record_num; 			//ÓÒ½ÚµãË÷Òı¾İËùÔÚµÄĞĞºÅ
+unsigned  long     rbtree_lkey;						  //æ•´å‹ rbtree   key å€¼
+long               block_no;			          //å­˜æ•°æ®æ‰€åœ¨è¡¨çš„å—é¡ºåºå·
+unsigned  long     record_num; 					  //å­˜æ•°æ®æ‰€åœ¨çš„è¡Œå·
+long               parent_block_no;			  //çˆ¶èŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+unsigned  long     parent_record_num; 			//çˆ¶èŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨è¡¨çš„å—é¡ºåºå·
+long               left_block_no;			    //å·¦èŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+unsigned  long     left_record_num; 				//å·¦èŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„è¡Œå·
+long               right_block_no;			    //å³èŠ‚ç‚¹ç´¢å¼•æ‰€è¡¨çš„å—é¡ºåºå·
+unsigned  long     right_record_num; 			//å³èŠ‚ç‚¹ç´¢å¼•æ®æ‰€åœ¨çš„è¡Œå·
 color_t            color;
-//char                    rbtree_ckey[32];          //×Ö·û´® hash key Öµ,ÔİÊ±Ö§³Öµ½32ÕâÃ´³¤µÄ×Ö·û´®
+//char                    rbtree_ckey[32];          //å­—ç¬¦ä¸² hash key å€¼,æš‚æ—¶æ”¯æŒåˆ°32è¿™ä¹ˆé•¿çš„å­—ç¬¦ä¸²
 
 } __attribute__ ((packed, aligned (64))) mem_rbtree_entry_t;
 
@@ -201,15 +201,15 @@ color_t            color;
 
 typedef struct  mem_skiplist_entry_t
 {
-unsigned  long     lkey;						        //ÕûĞÍ  key Öµ
-long               block_no;			          //´æÊı¾İËùÔÚ±íµÄ¿éË³ĞòºÅ
-unsigned  long     record_num; 					    //´æÊı¾İËùÔÚµÄĞĞºÅ
+unsigned  long     lkey;						        //æ•´å‹  key å€¼
+long               block_no;			          //å­˜æ•°æ®æ‰€åœ¨è¡¨çš„å—é¡ºåºå·
+unsigned  long     record_num; 					    //å­˜æ•°æ®æ‰€åœ¨çš„è¡Œå·
 
-long               down_block_no;			      //ÏÂÒ»²ã½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
-unsigned  long     down_record_num; 				//ÏÂÒ»²ã½ÚµãË÷ÒıËùÔÚµÄĞĞºÅ
-long               right_block_no;			    //ÓÒ½ÚµãË÷ÒıËù±íµÄ¿éË³ĞòºÅ
-unsigned  long     right_record_num; 			  //ÓÒ½ÚµãË÷Òı¾İËùÔÚµÄĞĞºÅ
-//char                    rbtree_ckey[32];          //×Ö·û´® hash key Öµ,ÔİÊ±Ö§³Öµ½32ÕâÃ´³¤µÄ×Ö·û´®
+long               down_block_no;			      //ä¸‹ä¸€å±‚èŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+unsigned  long     down_record_num; 				//ä¸‹ä¸€å±‚èŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„è¡Œå·
+long               right_block_no;			    //å³èŠ‚ç‚¹ç´¢å¼•æ‰€è¡¨çš„å—é¡ºåºå·
+unsigned  long     right_record_num; 			  //å³èŠ‚ç‚¹ç´¢å¼•æ®æ‰€åœ¨çš„è¡Œå·
+//char                    rbtree_ckey[32];          //å­—ç¬¦ä¸² hash key å€¼,æš‚æ—¶æ”¯æŒåˆ°32è¿™ä¹ˆé•¿çš„å­—ç¬¦ä¸²
 
 } __attribute__ ((packed, aligned (64))) mem_skiplist_entry_t;
 
@@ -218,7 +218,7 @@ unsigned  long     right_record_num; 			  //ÓÒ½ÚµãË÷Òı¾İËùÔÚµÄĞĞºÅ
 #define FIELD_HASH_ENTRY_SIZE 			sizeof(struct  mem_hash_entry_t)
 #define FIELD_SKIPLIST_ENTRY_SIZE 		sizeof(struct  mem_skiplist_entry_t)
 
-//Ö§³Ö×Ö¶ÎÖµÖ®¼äµÄ×ª»»
+//æ”¯æŒå­—æ®µå€¼ä¹‹é—´çš„è½¬æ¢
 typedef union field_value_def{
  FIELD_INT       int_val;
  FIELD_SHORT     short_val;
@@ -232,29 +232,29 @@ typedef union field_value_def{
 }field_value_t;
 
 /*
-×Ö¶Î ÄÚ´æ²¼¾Ö
+å­—æ®µ å†…å­˜å¸ƒå±€
 
 record_t ={ field_t_0,field_t_1,field_t_2,field_3....... }
 
 */
 
-//×Ö¶ÎÃèÊö·û
+//å­—æ®µæè¿°ç¬¦
 struct field_t
 {
-int                field_type;                //×Ö¶ÎÀàĞÍ
-char               field_name[32];            //×Ö¶ÎÃû
-off_t              field_size;                //Ò»¸ö×Ö¶ÎÕ¼ÓÃ¿Õ¼äµÄ´óĞ¡
-int                field_order;               //×Ö¶ÎÔÚ¼ÇÂ¼ÖĞÅÅµÚ¼¸¸ö
-off_t              field_dis;                 //¸Ã×Ö¶Î¾àÀëÊı¾İÆôÊ¼µØÖ·µÄ¾àÀë
-short              index_nr;                  //Ïà¹ØµÄË÷Òı¸öÊı£¬0 ±íÊ¾Ã»ÓĞË÷Òı£¬
-long               relate_index[8];           //Ïà¹ØµÄË÷Òıid£¬Ò»¸ö×Ö¶Î×î¶à±»8¸öË÷Òı¹ØÁª
+int                field_type;                //å­—æ®µç±»å‹
+char               field_name[32];            //å­—æ®µå
+off_t              field_size;                //ä¸€ä¸ªå­—æ®µå ç”¨ç©ºé—´çš„å¤§å°
+int                field_order;               //å­—æ®µåœ¨è®°å½•ä¸­æ’ç¬¬å‡ ä¸ª
+off_t              field_dis;                 //è¯¥å­—æ®µè·ç¦»æ•°æ®å¯å§‹åœ°å€çš„è·ç¦»
+short              index_nr;                  //ç›¸å…³çš„ç´¢å¼•ä¸ªæ•°ï¼Œ0 è¡¨ç¤ºæ²¡æœ‰ç´¢å¼•ï¼Œ
+long               relate_index[8];           //ç›¸å…³çš„ç´¢å¼•idï¼Œä¸€ä¸ªå­—æ®µæœ€å¤šè¢«8ä¸ªç´¢å¼•å…³è”
 } __attribute__ ((packed, aligned (64)));
 
 #define FIELD_SIZE  sizeof(struct  field_t)
 
 
 
-//Ìî³ä any ºÍ str ÒÔÍâµÄ¸÷ÖÖÀàĞÍµÄ field_size;
+//å¡«å…… any å’Œ str ä»¥å¤–çš„å„ç§ç±»å‹çš„ field_size;
 inline void fill_field_info (struct field_t *field)  
 {
 	switch ( field->field_type )   
@@ -269,13 +269,13 @@ inline void fill_field_info (struct field_t *field)
   case FIELD_TYPE_HASH_ENTRY:     (field)->field_size = FIELD_HASH_ENTRY_SIZE;       DEBUG("FIELD_TYPE_HASH_ENTRY\n");	break; 
   case FIELD_TYPE_RBTREE_ENTRY:   (field)->field_size = FIELD_RBTREE_ENTRY_SIZE;     DEBUG("FIELD_TYPE_RBTREE_ENTRY\n");break; 
   case FIELD_TYPE_SKIPLIST_ENTRY:   (field)->field_size = FIELD_SKIPLIST_ENTRY_SIZE;     DEBUG("FIELD_TYPE_RBTREE_ENTRY\n");break; 
-  case FIELD_TYPE_STR:                                                               DEBUG("FIELD_TYPE_STR\n");break; //×Ö·û´®ÀàĞÍĞèÒª×Ô¼ºÉèÖÃ³¤¶È
+  case FIELD_TYPE_STR:                                                               DEBUG("FIELD_TYPE_STR\n");break; //å­—ç¬¦ä¸²ç±»å‹éœ€è¦è‡ªå·±è®¾ç½®é•¿åº¦
   default :                       (field)->field_size = 0;                          DEBUG("error ZERO_TYPE\n");
 }
 }
 
 /*
-¼ÇÂ¼ ÄÚ´æ²¼¾Ö
+è®°å½• å†…å­˜å¸ƒå±€
 
 =====================
 
@@ -292,82 +292,82 @@ record_t_5
 ======================
 */
 
-//¼ÇÂ¼ÃèÊö·û£¬´ú±íÒ»ĞĞÊı¾İ
-//Ã¿ĞĞ¼ÇÂ¼µÄÄÚ´æ·Ö²¼ÊÇ record_info+Êµ¼ÊÊı¾İ£¬record_info ÊÇÃ¿ĞĞ¼ÇÂ¼µÄ¿ªÏú
+//è®°å½•æè¿°ç¬¦ï¼Œä»£è¡¨ä¸€è¡Œæ•°æ®
+//æ¯è¡Œè®°å½•çš„å†…å­˜åˆ†å¸ƒæ˜¯ record_info+å®é™…æ•°æ®ï¼Œrecord_info æ˜¯æ¯è¡Œè®°å½•çš„å¼€é”€
 typedef struct record_t
 {
-long long                   record_num;         // ¼ÇÂ¼µÄÂß¼­ID
-short                       is_used;            // ÊÇ·ñÔÚÓÃ
-row_lock_t                  row_lock;           // ĞĞËø
-unsigned long               last_free_pos;      // ÓÃÓÚÎ¬»¤¿ÕÏĞÁ´±íµÄÎ»ÖÃĞÅÏ¢
-unsigned long               next_free_pos;      // ÓÃÓÚÎ¬»¤¿ÕÏĞÁ´±íµÄÎ»ÖÃĞÅÏ¢
-long                        scn;               // Êı¾İ°æ±¾ºÅÓÃÓÚÊÂÎñ¸ôÀë»úÖÆ
-struct undo_record_t*       undo_record_ptr;   //Ö¸Ïòundo µÄÖ¸Õë // ºóĞø¿ÉÒÔ·Ïµô
-void*                       undo_info_ptr;     //Ö¸Ïòundo ĞÅÏ¢µÄÖ¸Õë
-void *                      data;               // Êı¾İÆğÊ¼µØÖ·
+long long                   record_num;         // è®°å½•çš„é€»è¾‘ID
+short                       is_used;            // æ˜¯å¦åœ¨ç”¨
+row_lock_t                  row_lock;           // è¡Œé”
+unsigned long               last_free_pos;      // ç”¨äºç»´æŠ¤ç©ºé—²é“¾è¡¨çš„ä½ç½®ä¿¡æ¯
+unsigned long               next_free_pos;      // ç”¨äºç»´æŠ¤ç©ºé—²é“¾è¡¨çš„ä½ç½®ä¿¡æ¯
+long                        scn;               // æ•°æ®ç‰ˆæœ¬å·ç”¨äºäº‹åŠ¡éš”ç¦»æœºåˆ¶
+struct undo_record_t*       undo_record_ptr;   //æŒ‡å‘undo çš„æŒ‡é’ˆ // åç»­å¯ä»¥åºŸæ‰
+void*                       undo_info_ptr;     //æŒ‡å‘undo ä¿¡æ¯çš„æŒ‡é’ˆ
+void *                      data;               // æ•°æ®èµ·å§‹åœ°å€
 } __attribute__ ((packed, aligned (64))) record_t;
 
-// ¼ÇÂ¼ÃèÊö·ûµÄ´óĞ¡
+// è®°å½•æè¿°ç¬¦çš„å¤§å°
 #define RECORD_HEAD_SIZE  sizeof(struct record_t)
 
 #define INIT_RECORD(record_ptr)																					\
 		(record_ptr)->data    =  (char *)record_ptr + RECORD_HEAD_SIZE;	\
-		 row_lock_init(&((record_ptr)->row_lock)); //ĞĞËø³õÊ¼»¯
+		 row_lock_init(&((record_ptr)->row_lock)); //è¡Œé”åˆå§‹åŒ–
 
-//±íËø¹ÜÀíÆ÷   
+//è¡¨é”ç®¡ç†å™¨   
 struct mem_lock_manager_t
 {
-int row_lock_counter;   //ĞĞËø¼ÆÊıÆ÷
+int row_lock_counter;   //è¡Œé”è®¡æ•°å™¨
 } __attribute__ ((packed, aligned (64)));
 
 
-//ÄÚ´æ±íÅäÖÃĞÅÏ¢
+//å†…å­˜è¡¨é…ç½®ä¿¡æ¯
 typedef struct mem_table_config_t
 {  
-	 long                      mem_table_no;           // ¸Ã±íµÄÂß¼­ID
-	 long                      owner_id;               // ¸Ã±íËùÊôÓÃ»§µÄID
-	 char                      table_name[128];        // ±íÃû
-   struct field_t     *      fields_table;           // ¸Ã±íÊ¹ÓÃµÄËùÓĞ×Ö¶Î
-   int                       field_used_num;         // Ê¹ÓÃ×Ö¶ÎµÄ¶àÉÙ
-   struct mem_block_t *      mem_blocks_table;       // ¸Ã±íÊ¹ÓÃµÄÊı¾İÄÚ´æ¿é--¿é±í
-   int                       mem_block_used;         // Ê¹ÓÃÊı¾İÄÚ´æ¿éµÄ¶àÉÙ
-   int                       auto_extend;            // ÊÇ·ñ×Ô¶¯À©Õ¹
-   off_t                     extend_block_size;      // ×Ô¶¯À©Õ¹¿é´óĞ¡
-// struct mem_index_t  *     mem_index_table,        // ¸Ã±íÊ¹ÓÃµÄË÷ÒıÄÚ´æ¿é¼ÇÂ¼±í
+   char                      table_name[128];        // è¡¨å
+   long                      mem_table_no;           // è¯¥è¡¨çš„é€»è¾‘ID
+   long                      owner_id;               // è¯¥è¡¨æ‰€å±ç”¨æˆ·çš„ID
+   struct field_t     *      fields_table;           // è¯¥è¡¨ä½¿ç”¨çš„æ‰€æœ‰å­—æ®µ
+   int                       field_used_num;         // ä½¿ç”¨å­—æ®µçš„å¤šå°‘
+   struct mem_block_t *      mem_blocks_table;       // è¯¥è¡¨ä½¿ç”¨çš„æ•°æ®å†…å­˜å—--å—è¡¨
+   int                       mem_block_used;         // ä½¿ç”¨æ•°æ®å†…å­˜å—çš„å¤šå°‘
+   int                       auto_extend;            // æ˜¯å¦è‡ªåŠ¨æ‰©å±•
+   off_t                     extend_block_size;      // è‡ªåŠ¨æ‰©å±•å—å¤§å°
+// struct mem_index_t  *     mem_index_table,        // è¯¥è¡¨ä½¿ç”¨çš„ç´¢å¼•å†…å­˜å—è®°å½•è¡¨
 } __attribute__ ((packed, aligned (64))) mem_table_config_t;
 
 
-// ÄÚ´æ±íÅäÖÃÃèÊö·ûµÄ´óĞ¡
+// å†…å­˜è¡¨é…ç½®æè¿°ç¬¦çš„å¤§å°
 #define MEM_TABLE_CONFIG_SIZE  sizeof(mem_table_config_t)
 
 /*
-  ÄÚ´æ±í ÄÚ´æ²¼¾Ö
+  å†…å­˜è¡¨ å†…å­˜å¸ƒå±€
   mem_block_t--->mem_block_t--->mem_block_t--->mem_block_t
 */
 
 
 
-//ÄÚ´æ±í
+//å†…å­˜è¡¨
 typedef struct mem_table_t
 {
 struct mem_table_config_t    config;
-table_lock_t                 table_locker;            // ±í¼¶Ëø  
-off_t                        record_size;             // 1¸ö¼ÇÂ¼Õ¼ÓÃ¿Õ¼äµÄ´óĞ¡
-//long long                   record_used_num;       // Ê¹ÓÃµÄ¼ÇÂ¼Êı
-//struct mem_free_list_t      mem_free_list;         // ¿ÕÏĞÁ´±í£¬ÓÃÓÚ¸´ÓÃÒÑ¾­É¾³ıÊı¾İ¼ÇÂ¼
-struct mem_lock_manager_t    lock_manager;            // Ëø¹ÜÀíÆ÷ 
-short                        is_externing;            //ÊÇ·ñÔÚÀ©±í                 
+table_lock_t                 table_locker;            // è¡¨çº§é”  
+off_t                        record_size;             // 1ä¸ªè®°å½•å ç”¨ç©ºé—´çš„å¤§å°
+//long long                   record_used_num;       // ä½¿ç”¨çš„è®°å½•æ•°
+//struct mem_free_list_t      mem_free_list;         // ç©ºé—²é“¾è¡¨ï¼Œç”¨äºå¤ç”¨å·²ç»åˆ é™¤æ•°æ®è®°å½•
+struct mem_lock_manager_t    lock_manager;            // é”ç®¡ç†å™¨ 
+short                        is_externing;            //æ˜¯å¦åœ¨æ‰©è¡¨                 
 table_rwlock_t               rwlocker;
 long long                    writer_trans_no;
 } __attribute__ ((packed, aligned (64))) mem_table_t;
 
-// ÄÚ´æ±íÃèÊö·ûµÄ´óĞ¡
+// å†…å­˜è¡¨æè¿°ç¬¦çš„å¤§å°
 #define MEM_TABLE_SIZE  sizeof(struct mem_table_t)
 
 
 
 
-//³õÊ¼»¯ÄÚ´æ±í
+//åˆå§‹åŒ–å†…å­˜è¡¨
 #define INIT_MEM_TABLE(mem_table)																					\
 //allocate_table_no(&((mem_table->config).mem_table_no));										\
 //(mem_table)->config.fields_table                 =    0;									\
@@ -388,7 +388,7 @@ table_rwlock_init(&(mem_table->rwlocker ));																\
 inline int mem_table_extend( struct mem_table_t * mem_table, struct  mem_block_t ** out_mem_block);
 
 
-//Ìî³ä±íÀïµÄ×Ö¶ÎĞÅÏ¢µÄ´óĞ¡,ºÍÃ¿¸ö×Ö¶Î¾àÀëÊı¾İ¿ªÊ¼µØÖ·µÄ¾àÀë
+//å¡«å……è¡¨é‡Œçš„å­—æ®µä¿¡æ¯çš„å¤§å°,å’Œæ¯ä¸ªå­—æ®µè·ç¦»æ•°æ®å¼€å§‹åœ°å€çš„è·ç¦»
 inline void fill_table_field_size ( struct mem_table_t *mem_table )  
 {
 	int i = 0;
@@ -397,7 +397,7 @@ inline void fill_table_field_size ( struct mem_table_t *mem_table )
   for(;i<mem_table->config.field_used_num; ++i)
   {
   	fill_field_info ( &(mem_table->config.fields_table[i]) );  
-  	mem_table->config.fields_table[i].field_dis = dis;                       //³õÊ¼»¯ field_dis
+  	mem_table->config.fields_table[i].field_dis = dis;                       //åˆå§‹åŒ– field_dis
   	mem_table->record_size += mem_table->config.fields_table[i].field_size;	
   	dis += mem_table->config.fields_table[i].field_size;	
   }
@@ -405,29 +405,29 @@ inline void fill_table_field_size ( struct mem_table_t *mem_table )
 
 }
 
-//Í¨¹ı×Ö¶ÎÃû³Æ¡¢Êı¾İµØÖ·¡¢±í À´»ñµÃ¸ÃÊı¾İµÄ recored µÄµØÖ·
+//é€šè¿‡å­—æ®µåç§°ã€æ•°æ®åœ°å€ã€è¡¨ æ¥è·å¾—è¯¥æ•°æ®çš„ recored çš„åœ°å€
 inline int get_record_by_field_name(
-                                struct mem_table_t *mem_table , //±í
-                                const char *field_name,         //×Ö¶ÎÃû
-                                void * addr,                    //×Ö¶Î´æ´¢Êı¾İÆôÊ¼µØÖ·
-                                struct record_t * record_ptr           /*¶ÔÓ¦¼ÇÂ¼ÆôÊ¼µØÖ·*/
+                                struct mem_table_t *mem_table , //è¡¨
+                                const char *field_name,         //å­—æ®µå
+                                void * addr,                    //å­—æ®µå­˜å‚¨æ•°æ®å¯å§‹åœ°å€
+                                struct record_t * record_ptr           /*å¯¹åº”è®°å½•å¯å§‹åœ°å€*/
                               )
 {
 	int i = 0;
 	off_t dff_size = 0;
-	//ÕÒµ½¶ÔÓ¦µÄ×Ö¶Î
+	//æ‰¾åˆ°å¯¹åº”çš„å­—æ®µ
   for(;i<mem_table->config.field_used_num; ++i)
 	{
 		if(strcmp( field_name,	mem_table->config.fields_table[i].field_name    ) == 0 )break;	
 		dff_size += mem_table->config.fields_table[i].field_size;
 	}
 	
-	record_ptr =  (record_t*)(addr - dff_size - RECORD_HEAD_SIZE);  //¼ÇÂ¼ÆôÊ¼µØÖ· = Êı¾İµØÖ· - Ç°ÃæËùÓĞ×Ö¶ÎÊı¾İÕ¼ÓÃµÄ¿Õ¼ä - ¼ÇÂ¼Í·Õ¼ÓÃ¿Õ¼ä
+	record_ptr =  (record_t*)(addr - dff_size - RECORD_HEAD_SIZE);  //è®°å½•å¯å§‹åœ°å€ = æ•°æ®åœ°å€ - å‰é¢æ‰€æœ‰å­—æ®µæ•°æ®å ç”¨çš„ç©ºé—´ - è®°å½•å¤´å ç”¨ç©ºé—´
 	return 0;
 }
 
 
-//Í¨¹ırecordµÄÖ¸Õë»ñµÃ mem_block_t Ö¸Õë
+//é€šè¿‡recordçš„æŒ‡é’ˆè·å¾— mem_block_t æŒ‡é’ˆ
 inline int get_block_by_record(struct mem_table_t *mem_table ,struct record_t * record_ptr,struct  mem_block_t ** mem_block)
 {
 	if( NULL == mem_table )  return READ_RECORD_ERR_TABLE_IS_NULL;
@@ -438,7 +438,7 @@ inline int get_block_by_record(struct mem_table_t *mem_table ,struct record_t * 
   if(record_num<0)return GET_BLOCK_ERR_RECORD_IS_IN_BLOCK;
   
   DEBUG("record_ptr is %0x,record_num is %ld,mem_table->record_size =%ld ,MEM_BLOCK_HEAD_SIZE=%d\n",record_ptr,record_num,mem_table->record_size,MEM_BLOCK_HEAD_SIZE);		
-  //ÓÅ»¯ĞÔÄÜ£¬´Ó O(n) µ½ O(1)£¬record_ptr Í¨¹ıÎ»ÖÃ	 record_num ºÍMEM_BLOCK_HEAD_SIZE »ñµÃ space_start_addr µØÖ·,ÓÉÓÚ¿éÍ·¿½±´µ½ÁËÕâÀï£¬°ÑËû×ö¿éÍ·Ê¹ÓÃÀ´»ñµÃ mem_block_t
+  //ä¼˜åŒ–æ€§èƒ½ï¼Œä» O(n) åˆ° O(1)ï¼Œrecord_ptr é€šè¿‡ä½ç½®	 record_num å’ŒMEM_BLOCK_HEAD_SIZE è·å¾— space_start_addr åœ°å€,ç”±äºå—å¤´æ‹·è´åˆ°äº†è¿™é‡Œï¼ŒæŠŠä»–åšå—å¤´ä½¿ç”¨æ¥è·å¾— mem_block_t
   struct  mem_block_t * space_start_addr = ((struct  mem_block_t *) ( (char *)record_ptr - (record_num*(mem_table->record_size))-MEM_BLOCK_HEAD_SIZE ));
   *mem_block = space_start_addr->block_malloc_addr;
   DEBUG("space_start_addr is %0x \n",space_start_addr);	
@@ -456,13 +456,13 @@ inline int get_block_by_record(struct mem_table_t *mem_table ,struct record_t * 
   //
   //for(;i<mem_table->config.mem_block_used;++i)
 	//{ 
-	//	//record_ptr Î»ÓÚÊı¾İ¿Õ¼äÄÚ£¬ÔòrecoredÊôÓÚ¸Ã¿é
+	//	//record_ptr ä½äºæ•°æ®ç©ºé—´å†…ï¼Œåˆ™recoredå±äºè¯¥å—
 	//	DEBUG("mem_block_temp->space_start_addr is %0x \n",mem_block_temp->space_start_addr);	
 	//	DEBUG("mem_block_temp->space_end_addr is %0x \n",mem_block_temp->space_end_addr);	
   //
 	//	if(mem_block_temp->space_start_addr  <= ptr && mem_block_temp->space_end_addr  >= ptr)
 	//	   break;
-	//	mem_block_temp = mem_block_temp->next;      //ÏÂÒ»¸ö¿é
+	//	mem_block_temp = mem_block_temp->next;      //ä¸‹ä¸€ä¸ªå—
 	//}
 	////
 	//if( i == mem_table->config.field_used_num ) return GET_BLOCK_ERR_RECORD_IS_IN_BLOCK;
@@ -471,7 +471,7 @@ inline int get_block_by_record(struct mem_table_t *mem_table ,struct record_t * 
 	return 0;
 }
 
-//Í¨¹ırecordµÄÖ¸Õë»ñµÃ mem_block_t Ö¸Õë
+//é€šè¿‡recordçš„æŒ‡é’ˆè·å¾— mem_block_t æŒ‡é’ˆ
 inline int get_record_by_record_num(struct mem_table_t *mem_table,struct  mem_block_t * mb, unsigned  long   record_num,struct record_t ** record_ptr)
 {
 	if( NULL == mem_table )  return READ_RECORD_ERR_TABLE_IS_NULL;
@@ -479,7 +479,7 @@ inline int get_record_by_record_num(struct mem_table_t *mem_table,struct  mem_bl
 	if( NULL == mb				)  return GET_BLOCK_ERR_BLOCK_IS_NULL;
   if( record_num<0      )  return GET_BLOCK_ERR_RECORD_IS_IN_BLOCK;
   	
-  //ÓÅ»¯ĞÔÄÜ£¬´Ó O(n) µ½ O(1)£¬record_ptr Í¨¹ıÎ»ÖÃ	 record_num ºÍ MEM_BLOCK_HEAD_SIZE »ñµÃ mem_block Í·µØÖ·
+  //ä¼˜åŒ–æ€§èƒ½ï¼Œä» O(n) åˆ° O(1)ï¼Œrecord_ptr é€šè¿‡ä½ç½®	 record_num å’Œ MEM_BLOCK_HEAD_SIZE è·å¾— mem_block å¤´åœ°å€
   *record_ptr = ((struct  record_t *) ( (char *)(mb->space_start_addr) +(record_num*(mem_table->record_size)) ));
   DEBUG("*record_ptr is %0x \n",*record_ptr);	
 	
@@ -489,18 +489,18 @@ inline int get_record_by_record_num(struct mem_table_t *mem_table,struct  mem_bl
 //void get_record(struct mem_table_t *mem_table_ptr, long block_no,long long record_num,record_t * record_ptr)  	
 
 //  DEBUG("get_record(),block_no,record_num=( %ld,%ld ) ;\n",block_no,record_num);										\
-//¸ù¾İ ¿éË³ĞòºÅºÍĞĞºÅ¿ìËÙ»ñµÃ ¼ÇÂ¼Ö¸Õë
+//æ ¹æ® å—é¡ºåºå·å’Œè¡Œå·å¿«é€Ÿè·å¾— è®°å½•æŒ‡é’ˆ
 //#define get_record(mem_table_ptr,block_no,record_num,record_ptr) \
 //do{  																																																	\
 //  int i = 0;																																													\
 //	struct  mem_block_t * mem_block_temp = mem_table_ptr->config.mem_blocks_table;        							\
-//	for(;i<mem_table_ptr->config.mem_block_used;++i)				/*±éÀúËùÓĞ¿é,²éÕÒ¿ÉÒÔ²åÈëÊı¾İµÄÄÚ´æ¿é	*/		\
+//	for(;i<mem_table_ptr->config.mem_block_used;++i)				/*éå†æ‰€æœ‰å—,æŸ¥æ‰¾å¯ä»¥æ’å…¥æ•°æ®çš„å†…å­˜å—	*/		\
 //	{																																																		\
 //		if(mem_block_temp->space_start_addr + mem_block_temp->high_level* mem_table_ptr->record_size < mem_block_temp->space_end_addr - mem_table_ptr->record_size )break;	\
-//			mem_block_temp = mem_block_temp->next;      /*ÏÂÒ»¸ö¿é                   */																																												\
-//		if( i == block_no)break;                     /*ÕÒµ½¶ÔÓ¦µÄ¿é                */																																												\
+//			mem_block_temp = mem_block_temp->next;      /*ä¸‹ä¸€ä¸ªå—                   */																																												\
+//		if( i == block_no)break;                     /*æ‰¾åˆ°å¯¹åº”çš„å—                */																																												\
 //	}																																																		\
-//	record_ptr=( record_t *)((char *)(mem_block_temp->space_start_addr) + (record_num)*((mem_table_ptr)->record_size));/*¸ù¾İÕÒµ½µÄ¿é£¬ÕÒµ½ recored_ptr */								\
+//	record_ptr=( record_t *)((char *)(mem_block_temp->space_start_addr) + (record_num)*((mem_table_ptr)->record_size));/*æ ¹æ®æ‰¾åˆ°çš„å—ï¼Œæ‰¾åˆ° recored_ptr */								\
 //	}while(0);
 
 inline int  get_record(mem_table_t *mem_table,long block_no,unsigned long record_num,struct record_t ** record_ptr) 
@@ -522,7 +522,7 @@ inline int  get_record(mem_table_t *mem_table,long block_no,unsigned long record
 	 return 0;
 	}
 
-// Í¨¹ı3¸ö no À´»ñµÃĞĞµØÖ·
+// é€šè¿‡3ä¸ª no æ¥è·å¾—è¡Œåœ°å€
 inline int get_record_by_3NO(long mem_table_no,long block_no,long long record_num,struct record_t ** record_ptr) 
 {  																																																	
 		int err;
@@ -554,13 +554,13 @@ inline int get_record_by_3NO(long mem_table_no,long block_no,long long record_nu
 		 return 0;
 }
 
-//Ìá½»¶ÁÈ¡Ò»¸ö¼ÇÂ¼µÄÊı¾İ
+//æäº¤è¯»å–ä¸€ä¸ªè®°å½•çš„æ•°æ®
 inline int mem_table_read_record(struct mem_table_t *mem_table ,struct record_t * record_ptr,char *buf)
 {
 	if( NULL == mem_table )  return READ_RECORD_ERR_TABLE_IS_NULL;
 	if( NULL == record_ptr)  return READ_RECORD_ERR_RECORD_IS_NULL;
 	if( NULL == buf       )  return READ_RECORD_ERR_BUF_IS_NULL;	
-	//¼ÇÂ¼Î´Ê¹ÓÃ
+	//è®°å½•æœªä½¿ç”¨
 	if( 0 == record_ptr->is_used ) return READ_RECORD_UNUSED;
 	DEBUG(" enter mem_table_read_record() \n");	
   //record_ptr->data    = (void *)( (char *)(*record_ptr) + RECORD_HEAD_SIZE);
@@ -573,13 +573,13 @@ inline int mem_table_read_record(struct mem_table_t *mem_table ,struct record_t 
 	return 0;
 }
 
-//Ôà¶ÁÈ¡Ò»¸ö¼ÇÂ¼µÄÊı¾İ
+//è„è¯»å–ä¸€ä¸ªè®°å½•çš„æ•°æ®
 inline int mem_table_force_read_record(struct mem_table_t *mem_table ,struct record_t * record_ptr,char *buf)
 {
 	if( NULL == mem_table )  return READ_RECORD_ERR_TABLE_IS_NULL;
 	if( NULL == record_ptr)  return READ_RECORD_ERR_RECORD_IS_NULL;
 	if( NULL == buf       )  return READ_RECORD_ERR_BUF_IS_NULL;	
-	//¼ÇÂ¼Î´Ê¹ÓÃ
+	//è®°å½•æœªä½¿ç”¨
 	if( 0 == record_ptr->is_used ) return READ_RECORD_UNUSED;
 		
 	memcpy(    buf,  (char *)(record_ptr) + RECORD_HEAD_SIZE, mem_table->record_size - RECORD_HEAD_SIZE  );
@@ -588,39 +588,39 @@ inline int mem_table_force_read_record(struct mem_table_t *mem_table ,struct rec
 	return 0;
 }
 
-//ĞòÁĞ»¯¶ÁÈ¡Ò»¸ö¼ÇÂ¼µÄÊı¾İ
+//åºåˆ—åŒ–è¯»å–ä¸€ä¸ªè®°å½•çš„æ•°æ®
 inline int mem_table_safe_read_record(struct mem_table_t *mem_table ,struct record_t * record_ptr,char *buf)
 {
 	if( NULL == mem_table )  return READ_RECORD_ERR_TABLE_IS_NULL;
 	if( NULL == record_ptr)  return READ_RECORD_ERR_RECORD_IS_NULL;
 	if( NULL == buf       )  return READ_RECORD_ERR_BUF_IS_NULL;	
-	//¼ÇÂ¼Î´Ê¹ÓÃ
+	//è®°å½•æœªä½¿ç”¨
 	if( 0 == record_ptr->is_used ) return READ_RECORD_UNUSED;
   DEBUG("mem_table_safe_read_record, record_ptr is %0x;\n",record_ptr);	
 
-	mem_table_lock(&(mem_table->table_locker) );         //±íËø		
+	mem_table_lock(&(mem_table->table_locker) );         //è¡¨é”		
 	memcpy     (    buf,  (char *)(record_ptr) + RECORD_HEAD_SIZE, mem_table->record_size - RECORD_HEAD_SIZE  );
-	mem_table_unlock(&(mem_table->table_locker));        //½â±íËø
+	mem_table_unlock(&(mem_table->table_locker));        //è§£è¡¨é”
 
 	return 0;
 }
 
 
-//¶ÁÈ¡Ò»¸ö×Ö¶ÎµÄÊı¾İ
-inline int mem_table_read_field(struct mem_table_t *mem_table ,     //±íÖ¸Õë
-                       const char * field_name,           //×Ö¶ÎÃû
-                       void* in_buf,                      //¼ÇÂ¼Êı¾İ
-                       void* out_buf                      //×Ö¶ÎÊı¾İ
+//è¯»å–ä¸€ä¸ªå­—æ®µçš„æ•°æ®
+inline int mem_table_read_field(struct mem_table_t *mem_table ,     //è¡¨æŒ‡é’ˆ
+                       const char * field_name,           //å­—æ®µå
+                       void* in_buf,                      //è®°å½•æ•°æ®
+                       void* out_buf                      //å­—æ®µæ•°æ®
                        )
 {
 	if( NULL == mem_table )  return READ_FIELD_ERR_TABLE_IS_NULL;
 	if( NULL == field_name)  return READ_FIELD_ERR_FIELD_NAME_IS_NULL;
 	if( NULL == in_buf    )  return READ_FIELD_ERR_IN_BUF_IS_NULL;	
 	if( NULL == out_buf   )  return READ_FIELD_ERR_OUT_BUF_IS_NULL;	
-	//¼ÇÂ¼Î´Ê¹ÓÃ
+	//è®°å½•æœªä½¿ç”¨
 	int i = 0;
 	off_t dff_size = 0;
-	//ÕÒµ½¶ÔÓ¦µÄ×Ö¶Î
+	//æ‰¾åˆ°å¯¹åº”çš„å­—æ®µ
   for(;i<mem_table->config.field_used_num; ++i)
 	{
 		if(strcmp( field_name,	mem_table->config.fields_table[i].field_name    ) == 0 )break;	
@@ -631,13 +631,13 @@ inline int mem_table_read_field(struct mem_table_t *mem_table ,     //±íÖ¸Õë
 }
 
 
-//¸üĞÂÒ»¸ö¼ÇÂ¼µÄÊı¾İ
+//æ›´æ–°ä¸€ä¸ªè®°å½•çš„æ•°æ®
 inline int mem_table_update_record(struct mem_table_t *mem_table ,struct record_t * record_ptr,char *buf)
 {
 	if( NULL == mem_table )        return READ_RECORD_ERR_TABLE_IS_NULL;
 	if( NULL == record_ptr)        return READ_RECORD_ERR_RECORD_IS_NULL;
 	if( NULL == buf       )        return READ_RECORD_ERR_BUF_IS_NULL;	
-	if( 0 == record_ptr->is_used ) return READ_RECORD_UNUSED; //¼ÇÂ¼Î´Ê¹ÓÃ
+	if( 0 == record_ptr->is_used ) return READ_RECORD_UNUSED; //è®°å½•æœªä½¿ç”¨
 	DEBUG("mem_table_update_record, record_ptr is %0x,buf = %s;\n",record_ptr,buf);	
 
 	row_wlock   (  &(record_ptr->row_lock) );
@@ -647,46 +647,46 @@ inline int mem_table_update_record(struct mem_table_t *mem_table ,struct record_
 	return 0;
 }
 
-//Ç¿ÖÆ¸üĞÂÒ»¸ö¼ÇÂ¼µÄÊı¾İ
+//å¼ºåˆ¶æ›´æ–°ä¸€ä¸ªè®°å½•çš„æ•°æ®
 inline int mem_table_force_update_record(struct mem_table_t *mem_table ,struct record_t * record_ptr,char *buf)
 {
 	if( NULL == mem_table )        return READ_RECORD_ERR_TABLE_IS_NULL;
 	if( NULL == record_ptr)        return READ_RECORD_ERR_RECORD_IS_NULL;
 	if( NULL == buf       )        return READ_RECORD_ERR_BUF_IS_NULL;	
-	if( 0 == record_ptr->is_used ) return READ_RECORD_UNUSED; //¼ÇÂ¼Î´Ê¹ÓÃ
+	if( 0 == record_ptr->is_used ) return READ_RECORD_UNUSED; //è®°å½•æœªä½¿ç”¨
 	DEBUG("mem_table_force_update_record, record_ptr is %0x,buf = %s;\n",record_ptr,buf);	
 	//redo_log		
 	memcpy(   (char *)(record_ptr) + RECORD_HEAD_SIZE,  buf, mem_table->record_size - RECORD_HEAD_SIZE );	
 	return 0;
 }
 
-//ĞòÁĞ»¯¸üĞÂÒ»¸ö¼ÇÂ¼µÄÊı¾İ
+//åºåˆ—åŒ–æ›´æ–°ä¸€ä¸ªè®°å½•çš„æ•°æ®
 inline int mem_table_safe_update_record(struct mem_table_t *mem_table ,struct record_t * record_ptr,char *buf)
 {
 	if( NULL == mem_table )        return READ_RECORD_ERR_TABLE_IS_NULL;
 	if( NULL == record_ptr)        return READ_RECORD_ERR_RECORD_IS_NULL;
 	if( NULL == buf       )        return READ_RECORD_ERR_BUF_IS_NULL;	
-	if( 0 == record_ptr->is_used ) return READ_RECORD_UNUSED; //¼ÇÂ¼Î´Ê¹ÓÃ
+	if( 0 == record_ptr->is_used ) return READ_RECORD_UNUSED; //è®°å½•æœªä½¿ç”¨
 	
 	DEBUG("mem_table_safe_update_record, record_ptr is %0x;\n",record_ptr);	
 	
 	//redo_log
-	mem_table_lock(&(mem_table->table_locker) );         //±íËø				
+	mem_table_lock(&(mem_table->table_locker) );         //è¡¨é”				
 	memcpy     (   (char *)(record_ptr) + RECORD_HEAD_SIZE,  buf, mem_table->record_size - RECORD_HEAD_SIZE );	
-	mem_table_unlock(&(mem_table->table_locker));        //½â±íËø
+	mem_table_unlock(&(mem_table->table_locker));        //è§£è¡¨é”
 	return 0;
 }
 
 
 
-//É¾³ıÒ»¸ö¼ÇÂ¼µÄÊı¾İ
+//åˆ é™¤ä¸€ä¸ªè®°å½•çš„æ•°æ®
 inline int mem_table_del_record(struct mem_table_t *mem_table ,struct record_t * record_ptr)
 {
 	if( NULL == mem_table        )   return READ_RECORD_ERR_TABLE_IS_NULL;
 	if( NULL == record_ptr       )   return READ_RECORD_ERR_RECORD_IS_NULL;
-	if( 0 == record_ptr->is_used )   return READ_RECORD_UNUSED;         //¼ÇÂ¼Î´Ê¹ÓÃ
+	if( 0 == record_ptr->is_used )   return READ_RECORD_UNUSED;         //è®°å½•æœªä½¿ç”¨
 	
-	//»ñµÃ¿é
+	//è·å¾—å—
 	struct mem_block_t * mem_block_temp;
 	int err;
   if(0!=(err=get_block_by_record(mem_table ,record_ptr,&mem_block_temp)))return err;
@@ -699,14 +699,14 @@ inline int mem_table_del_record(struct mem_table_t *mem_table ,struct record_t *
 	return 0;
 }
 
-//Ç¿ÖÆÉ¾³ıÒ»¸ö¼ÇÂ¼µÄÊı¾İ
+//å¼ºåˆ¶åˆ é™¤ä¸€ä¸ªè®°å½•çš„æ•°æ®
 inline int mem_table_force_del_record(struct mem_table_t *mem_table ,struct record_t * record_ptr)
 {
 	if( NULL == mem_table        )   return READ_RECORD_ERR_TABLE_IS_NULL;
 	if( NULL == record_ptr       )   return READ_RECORD_ERR_RECORD_IS_NULL;
-	if( 0 == record_ptr->is_used )   return READ_RECORD_UNUSED;         //¼ÇÂ¼Î´Ê¹ÓÃ
+	if( 0 == record_ptr->is_used )   return READ_RECORD_UNUSED;         //è®°å½•æœªä½¿ç”¨
 	
-	//»ñµÃ¿é
+	//è·å¾—å—
 	struct mem_block_t * mem_block_temp;
 	int err;
   if(0!=(err=get_block_by_record(mem_table ,record_ptr,&mem_block_temp)))return err;
@@ -716,41 +716,41 @@ inline int mem_table_force_del_record(struct mem_table_t *mem_table ,struct reco
 	return 0;
 }
 
-//ĞòÁĞ»¯É¾³ıÒ»¸ö¼ÇÂ¼µÄÊı¾İ
+//åºåˆ—åŒ–åˆ é™¤ä¸€ä¸ªè®°å½•çš„æ•°æ®
 inline int mem_table_safe_del_record(struct mem_table_t *mem_table ,struct record_t * record_ptr)
 {
 	if( NULL == mem_table        )   return READ_RECORD_ERR_TABLE_IS_NULL;
 	if( NULL == record_ptr       )   return READ_RECORD_ERR_RECORD_IS_NULL;
-	if( 0 == record_ptr->is_used )   return READ_RECORD_UNUSED;         //¼ÇÂ¼Î´Ê¹ÓÃ
+	if( 0 == record_ptr->is_used )   return READ_RECORD_UNUSED;         //è®°å½•æœªä½¿ç”¨
 	
-	//»ñµÃ¿é
+	//è·å¾—å—
 	struct mem_block_t * mem_block_temp;
 	int err;
   if(0!=(err=get_block_by_record(mem_table ,record_ptr,&mem_block_temp)))return err;
   DEBUG("mem_table_safe_del_record, mem_block_temp is %0x;\n",mem_block_temp);	
 
-  mem_table_lock(&(mem_table->table_locker) );         //±íËø		
+  mem_table_lock(&(mem_table->table_locker) );         //è¡¨é”		
 	MEM_TABLE_DEL_CODE
-  mem_table_unlock(&(mem_table->table_locker));        //½â±íËø
+  mem_table_unlock(&(mem_table->table_locker));        //è§£è¡¨é”
 
 	return 0;
 }
 
-//·ÖÅäÒ»¸ö¿ÕÏĞ¼ÇÂ¼ĞĞ
+//åˆ†é…ä¸€ä¸ªç©ºé—²è®°å½•è¡Œ
 inline int mem_table_try_allocate_record(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no)
 {
 	if( NULL == mem_table )  return ALLOCATE_RECORD_ERR_TABLE_IS_NULL;
 	DEBUG(" ----- Enter mem_table_try_allocate_record() ----- \n");
-  /* ±¾¶ÎÂß¼­
-	* 1. ÓÅÏÈ¸ù¾İ¸ßË®Î»Ïß,ÕÒ¿ÕÏĞrecord
-	* 2. Èç¹û¸ßË®Î»ÏßÃ»ÓĞ¿ÕÏĞ¿Õ¼ä,Ôò´Ó»ØÊÕÁ´±í»ØÊÕ¿Õ¼ä
-	* 3. »ØÊÕÁ´±íÒ²Ã»ÓĞ£¬Ôò×Ô¶¯À©±í
+  /* æœ¬æ®µé€»è¾‘
+	* 1. ä¼˜å…ˆæ ¹æ®é«˜æ°´ä½çº¿,æ‰¾ç©ºé—²record
+	* 2. å¦‚æœé«˜æ°´ä½çº¿æ²¡æœ‰ç©ºé—²ç©ºé—´,åˆ™ä»å›æ”¶é“¾è¡¨å›æ”¶ç©ºé—´
+	* 3. å›æ”¶é“¾è¡¨ä¹Ÿæ²¡æœ‰ï¼Œåˆ™è‡ªåŠ¨æ‰©è¡¨
 	*/
 	int i = 0;
 	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
   
 //  DEBUG("mem_block_temp is %0x\n",mem_block_temp);
-  //±éÀúËùÓĞ¿é,²éÕÒ¿ÉÒÔ²åÈëÊı¾İµÄÄÚ´æ¿é			
+  //éå†æ‰€æœ‰å—,æŸ¥æ‰¾å¯ä»¥æ’å…¥æ•°æ®çš„å†…å­˜å—			
   short is_need_extern = 1;
  
 		for(;i<mem_table->config.mem_block_used-1;++i)
@@ -761,7 +761,7 @@ inline int mem_table_try_allocate_record(struct mem_table_t *mem_table ,/* out *
 		if( 0!= (HIGH_LEVEL_TRYLOCK(&(mem_block_temp->high_level_lock))) )
 			{
 				//IMPORTANT_INFO("HIGH_LEVEL_TRYLOCK =0\n");
-				return HIGH_LEVEL_TRY_LOCK;  //¸ßË®Î»ÏßÉÏËø
+				return HIGH_LEVEL_TRY_LOCK;  //é«˜æ°´ä½çº¿ä¸Šé”
 			}
 		
 		
@@ -772,16 +772,16 @@ inline int mem_table_try_allocate_record(struct mem_table_t *mem_table ,/* out *
 		
 		   DEBUG("----- try to allocate record by high level -----\n");
 		
-		 //¸ù¾İ¸ßË®Î»Ïß»ñÈ¡×îĞÂ²åÈëÎ»ÖÃ    
+		 //æ ¹æ®é«˜æ°´ä½çº¿è·å–æœ€æ–°æ’å…¥ä½ç½®    
 		//   DEBUG("mem_block_temp->high_level is %ld,mem_table->record_size is %ld;\n",high_level_temp,mem_table->record_size);
 		//   DEBUG("mem_block_temp->space_start_addr is %0x \n",mem_block_temp->space_start_addr);
 		  
-			// ÕÒµ½¿ÉÓÃµÄ¼ÇÂ¼Î»ÖÃ
+			// æ‰¾åˆ°å¯ç”¨çš„è®°å½•ä½ç½®
 			(*record_ptr) = (struct record_t *) ( (char *)mem_block_temp->space_start_addr + high_level_temp * (mem_table->record_size) );
    
 //   DEBUG("allocate_record_ptr is %0x;\n",*record_ptr);
 
-	//·µ»Ø¿éµÄÂß¼­ºÅ
+	//è¿”å›å—çš„é€»è¾‘å·
 	 (*block_no) = mem_block_temp->block_no;
 //   DEBUG("allocate_record's block_no is %ld ;\n",(*block_no));
     ++(mem_block_temp->high_level);
@@ -789,29 +789,29 @@ inline int mem_table_try_allocate_record(struct mem_table_t *mem_table ,/* out *
 	}
 
 
-	//Ã»ÕÒµ½µÄÄÚ´æ¿éµØÖ· > ¿éÊı¾İÎ²µØÖ·,Ôò²éÕÒ»ØÊÕÁ´±í
+	//æ²¡æ‰¾åˆ°çš„å†…å­˜å—åœ°å€ > å—æ•°æ®å°¾åœ°å€,åˆ™æŸ¥æ‰¾å›æ”¶é“¾è¡¨
 	//  if (is_need_extern)
 	//	{
 	//		DEBUG(" ----- Try to find record in free_list -----\n");
 	//		 	i=0;
 	//    struct  mem_block_t * mem_block_temp2 = mem_table->config.mem_blocks_table;
-      //±éÀúËùÓĞ¿é,²éÕÒ¿ÉÒÔ²åÈëÊı¾İµÄÄÚ´æ¿éÖĞµÄ»ØÊÕÁ´±í			
+      //éå†æ‰€æœ‰å—,æŸ¥æ‰¾å¯ä»¥æ’å…¥æ•°æ®çš„å†…å­˜å—ä¸­çš„å›æ”¶é“¾è¡¨			
 	//    for(;i<mem_table->config.mem_block_used;++i)
 	//    {
-	//	      	//¿ÕÏĞÁ´±íÓĞÊı¾İ£¬´ÓÁ´±íÍ·È¡Ò»¸öµØÖ·²åÈë		
+	//	      	//ç©ºé—²é“¾è¡¨æœ‰æ•°æ®ï¼Œä»é“¾è¡¨å¤´å–ä¸€ä¸ªåœ°å€æ’å…¥		
  //     if( -1 != mem_block_temp2->mem_free_list.head ) 
 	//       {
-	//       	//¿ÕÏĞÁ´±íÉÏËø
+	//       	//ç©ºé—²é“¾è¡¨ä¸Šé”
 	//       	LIST_LOCK     (  &(mem_block_temp2->mem_free_list.list_lock)  );
-	//       	//È¡µÃ¿ÕÏĞÁ´±íµÄ¶ÔÓ¦recordµÄµØÖ·
+	//       	//å–å¾—ç©ºé—²é“¾è¡¨çš„å¯¹åº”recordçš„åœ°å€
 	//       	(*record_ptr) =  (struct record_t *) ( (mem_block_temp2->mem_free_list.head) * mem_table->record_size + mem_block_temp->space_start_addr );
 	//       	DEBUG("Find in Freelist, record_num %ld,record_ptr is %ld,last free pos is %ld\n",mem_block_temp->mem_free_list.head,*record_ptr,(*record_ptr)->last_free_pos);
 	//       	high_level_temp = (*record_ptr)->record_num;////////////////////
-	//       	//¿ÕÏĞÁ´±íµÄhead ÎªÉÏÒ»¸ö¿ÕÏĞÁ´±íµÄÎ»ÖÃ
+	//       	//ç©ºé—²é“¾è¡¨çš„head ä¸ºä¸Šä¸€ä¸ªç©ºé—²é“¾è¡¨çš„ä½ç½®
 	//       	mem_block_temp2->mem_free_list.head = (*record_ptr)->last_free_pos;
-	//       	//¿ÕÏĞÁ´±í½âËø
+	//       	//ç©ºé—²é“¾è¡¨è§£é”
 	//       	LIST_UNLOCK   (  &(mem_block_temp2->mem_free_list.list_lock)  );
-	//       	//·µ»Ø¿éµÄÂß¼­ºÅ
+	//       	//è¿”å›å—çš„é€»è¾‘å·
 	//       	*block_no = mem_block_temp2->block_no;
 	//       	is_need_extern = 0;
 	//       	//DEBUG("----- Free record space in free_list finded!  -----\n");
@@ -819,17 +819,17 @@ inline int mem_table_try_allocate_record(struct mem_table_t *mem_table ,/* out *
 	//       }	
 	//       if(i!=mem_table->config.mem_block_used-1 )
 	//       	{
-	//       	mem_block_temp2 = mem_block_temp2->next;      //ÏÂÒ»¸ö¿é
+	//       	mem_block_temp2 = mem_block_temp2->next;      //ä¸‹ä¸€ä¸ªå—
 	//         }
 	//    }
 	//   
 	// }
-// Ã»ÓĞ¿ÕÏĞ¿Õ¼äºÍ»ØÊÕÁ´±í£¬¾Í×Ô¶¯À©±í
+// æ²¡æœ‰ç©ºé—²ç©ºé—´å’Œå›æ”¶é“¾è¡¨ï¼Œå°±è‡ªåŠ¨æ‰©è¡¨
 	//if (i == mem_table->config.mem_block_used-1)  
 	if (is_need_extern)  
 { 
 	DEBUG(" ----- Try to externd_table ----- \n");
-	     	      //×Ô¶¯À©±í
+	     	      //è‡ªåŠ¨æ‰©è¡¨
 	     	      struct  mem_block_t * extern_mem_block;
 	     	      int err = 0;
 	     	      err =  mem_table_extend(mem_table,&extern_mem_block);
@@ -838,7 +838,7 @@ inline int mem_table_try_allocate_record(struct mem_table_t *mem_table ,/* out *
 	     	      			DEBUG("extern_mem_block->space_end_addr is %0x\n",extern_mem_block->space_end_addr);
 	     	      		  DEBUG("extern_mem_block->space_start_addr is %0x\n",extern_mem_block->space_start_addr);
 	     	      		  DEBUG("mem_table->record_size is %d\n",mem_table->record_size);
-	     	      			//×Ô¶¯À©±í³É¹¦,¼ÇÂ¼²åÈëÀ©Õ¹¿éÖĞµÄµÚÒ»¸öÎ»ÖÃ,ÖØĞÂ²åÈë
+	     	      			//è‡ªåŠ¨æ‰©è¡¨æˆåŠŸ,è®°å½•æ’å…¥æ‰©å±•å—ä¸­çš„ç¬¬ä¸€ä¸ªä½ç½®,é‡æ–°æ’å…¥
 	     	      			IMPORTANT_INFO("Externd_Block OK and Try Allocate Agian!\n");                   
          // check 
 				//{
@@ -851,7 +851,7 @@ inline int mem_table_try_allocate_record(struct mem_table_t *mem_table ,/* out *
 				//if( 0!= (err=HIGH_LEVEL_TRYLOCK(&(mem_block_temp1->high_level_lock)) ))
 	      // {
         //  IMPORTANT_INFO("Check extern high_leve failed,err is %d ,extern_mem_block is %0x .\n",err,mem_block_temp1);
-	      // 	return HIGH_LEVEL_TRY_LOCK;  //¸ßË®Î»ÏßÉÏËø
+	      // 	return HIGH_LEVEL_TRY_LOCK;  //é«˜æ°´ä½çº¿ä¸Šé”
 	      // }
         // else
         // 	{
@@ -859,18 +859,18 @@ inline int mem_table_try_allocate_record(struct mem_table_t *mem_table ,/* out *
         // 		HIGH_LEVEL_UNLOCK(&(mem_block_temp1->high_level_lock))
         // 	}
         // } 
-                    HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø 	
+                    HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é” 	
 	     	      			return TRY_LOCK;
 	     	      			//if ( (extern_mem_block->space_end_addr-extern_mem_block->space_start_addr)>mem_table->record_size)
 	     	      		  //  {
 	     	      		  //   
-	     	      		  //    //À©Õ¹¿é¸ßË®Î»ÏßµİÔö
+	     	      		  //    //æ‰©å±•å—é«˜æ°´ä½çº¿é€’å¢
                     //        HIGH_LEVEL_LOCK(&(extern_mem_block->high_level_lock));
                     //         (*record_ptr) =(struct record_t *)( extern_mem_block->space_start_addr); 	
                     //        high_level_temp =  extern_mem_block->high_level;
                     //        ++extern_mem_block->high_level;
                     //        HIGH_LEVEL_UNLOCK(&(extern_mem_block->high_level_lock));
-                    //        //·µ»Ø¿éµÄÂß¼­ºÅ
+                    //        //è¿”å›å—çš„é€»è¾‘å·
 	                  //      	*block_no = extern_mem_block->block_no;
 	                  //      	IMPORTANT_INFO("Allocate_block >>>record_ptr is %ld, high_level is %ld,block_no is %d\n",*record_ptr,high_level_temp,*block_no);
                     //
@@ -888,14 +888,14 @@ inline int mem_table_try_allocate_record(struct mem_table_t *mem_table ,/* out *
 	     	      else if(TRY_LOCK== err)
 	     	      	{
 	     	      		  DEBUG(" TRY again! \n");
-	     	      		  HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø
+	     	      		  HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é”
 	     	      			return TRY_LOCK;
 	     	      	}
 	     	      
 	     	      else 
 	     	      	{
 	     	      		ERROR("MEM_TABLE_EXTEND_ERR err is %d\n",err);
-	     	      		HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø
+	     	      		HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é”
 	     	      		return  err;
 	     	      	}
 	     	      	
@@ -909,16 +909,16 @@ inline int mem_table_try_allocate_record(struct mem_table_t *mem_table ,/* out *
      (*record_ptr)->scn           =  0;
      (*record_ptr)->undo_record_ptr= 0;
      (*record_ptr)->data    =  (char *)(*record_ptr) + RECORD_HEAD_SIZE;  
-     row_lock_init(&((*record_ptr)->row_lock)); //ĞĞËø³õÊ¼»¯
+     row_lock_init(&((*record_ptr)->row_lock)); //è¡Œé”åˆå§‹åŒ–
      
      // CHEHCK PTR
-     // ĞŞ¸´ ¶à½ø³ÌÏÂ´íÎóµÄ·ÖÅäÖ¸Õë
+     // ä¿®å¤ å¤šè¿›ç¨‹ä¸‹é”™è¯¯çš„åˆ†é…æŒ‡é’ˆ
     // { 
     // 	  struct  mem_block_t * space_start_addr = ((struct  mem_block_t *) ( (char *)(*record_ptr) - (high_level_temp*(mem_table->record_size))-MEM_BLOCK_HEAD_SIZE ));
     //    if(!space_start_addr)
     //    	{
     //    		ERROR("[check] space_start_addr [%ld] is bad \n",space_start_addr);
-    //    		HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø
+    //    		HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é”
     //    		return GET_BLOCK_ERR_BLOCK_IS_NULL;
     //    	}
     //    
@@ -937,13 +937,13 @@ inline int mem_table_try_allocate_record(struct mem_table_t *mem_table ,/* out *
     //      //(*record_ptr)->scn           =  0;
     //      //(*record_ptr)->undo_record_ptr= 0;
     //      //(*record_ptr)->data    =  (char *)(*record_ptr) + RECORD_HEAD_SIZE;  
-    //      //row_lock_init(&((*record_ptr)->row_lock)); //ĞĞËø³õÊ¼»¯
-  	//      HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø
+    //      //row_lock_init(&((*record_ptr)->row_lock)); //è¡Œé”åˆå§‹åŒ–
+  	//      HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é”
   	//      return GET_BLOCK_ERR_BLOCK_IS_NULL;
   	//     }
 	  //
     //}
-     HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø
+     HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é”
 
      DEBUG(" ----- Allocate_record >>> %0x , high_level is %ld ----- \n",*record_ptr,high_level_temp);
 	   return 0;
@@ -951,7 +951,7 @@ inline int mem_table_try_allocate_record(struct mem_table_t *mem_table ,/* out *
 }
 
 
-//·ÖÅäÒ»¸ö¿ÕÏĞ¼ÇÂ¼ĞĞ
+//åˆ†é…ä¸€ä¸ªç©ºé—²è®°å½•è¡Œ
 inline int mem_table_allocate_record(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no)
 {
 	if( NULL == mem_table )  return ALLOCATE_RECORD_ERR_TABLE_IS_NULL;
@@ -984,7 +984,7 @@ inline int mem_table_allocate_record(struct mem_table_t *mem_table ,/* out */str
 	//        if ( 0!= (err=HIGH_LEVEL_TRYLOCK(&(mem_block_temp->high_level_lock)) ))
 	//       	{
 	//       	IMPORTANT_INFO("Check extern high_leve failed,err is %d ,extern_mem_block is %0x .\n",err,mem_block_temp);
-	//       	return HIGH_LEVEL_TRY_LOCK;  //¸ßË®Î»ÏßÉÏËø
+	//       	return HIGH_LEVEL_TRY_LOCK;  //é«˜æ°´ä½çº¿ä¸Šé”
 	//       	}
  //       else 
  //       	{
@@ -1003,7 +1003,7 @@ inline int mem_table_allocate_record(struct mem_table_t *mem_table ,/* out */str
 	
 }
 
-//·ÖÅän¸öÁ¬ĞøµÄ¿ÕÏĞ¼ÇÂ¼ĞĞ£¬Ö»ÄÜÔÚÒ»¸ö¿éÖĞ·ÖÅä
+//åˆ†é…nä¸ªè¿ç»­çš„ç©ºé—²è®°å½•è¡Œï¼Œåªèƒ½åœ¨ä¸€ä¸ªå—ä¸­åˆ†é…
 //inline int mem_table_try_allocate_n_record(struct mem_table_t *mem_table ,long n,/* out */struct record_t ** record_ptr,long * block_no)
 //{
 //	if( NULL == mem_table )  return ALLOCATE_N_RECORD_ERR_TABLE_IS_NULL;
@@ -1013,24 +1013,24 @@ inline int mem_table_allocate_record(struct mem_table_t *mem_table ,/* out */str
 //	
 //	HIGH_LEVEL_LOCK(&(mem_block_temp->high_level_lock));
 //	
-//  //±éÀúËùÓĞ¿é,²éÕÒ¿ÉÒÔ²åÈëÁ¬Ğøn¸öÊı¾İµÄÄÚ´æ¿é			
+//  //éå†æ‰€æœ‰å—,æŸ¥æ‰¾å¯ä»¥æ’å…¥è¿ç»­nä¸ªæ•°æ®çš„å†…å­˜å—			
 //	for(;i<mem_table->config.mem_block_used;++i)
 //	{
 //		if(mem_block_temp->space_start_addr + (n + mem_block_temp->high_level)* mem_table->record_size < mem_block_temp->space_end_addr - mem_table->record_size )break;
-//			if(i!=mem_table->config.mem_block_used-1 )mem_block_temp = mem_block_temp->next;      //ÏÂÒ»¸ö¿é
+//			if(i!=mem_table->config.mem_block_used-1 )mem_block_temp = mem_block_temp->next;      //ä¸‹ä¸€ä¸ªå—
 //	}
 //	
-//	  //¸ù¾İ¸ßË®Î»Ïß»ñÈ¡×îĞÂ²åÈëÎ»ÖÃ
+//	  //æ ¹æ®é«˜æ°´ä½çº¿è·å–æœ€æ–°æ’å…¥ä½ç½®
 //    
 //   	  
-//	// ÕÒµ½¿ÉÓÃµÄ¼ÇÂ¼Î»ÖÃ
+//	// æ‰¾åˆ°å¯ç”¨çš„è®°å½•ä½ç½®
 //	*record_ptr = (struct record_t *) ( mem_block_temp->space_start_addr + mem_block_temp->high_level * mem_table->record_size );
-//	//·µ»Ø¿éµÄÂß¼­ºÅ
+//	//è¿”å›å—çš„é€»è¾‘å·
 //	*block_no = mem_block_temp->block_no;
 //	   
 //
 //       unsigned  long  high_level_temp = mem_block_temp->high_level;
-//       // ¸ßË®Î»ÏßÎ´ÉÏÉı¹ı£¬ÔòÉÏÉın-1ĞĞ,·ñÔòÉÏÉınĞĞ
+//       // é«˜æ°´ä½çº¿æœªä¸Šå‡è¿‡ï¼Œåˆ™ä¸Šå‡n-1è¡Œ,å¦åˆ™ä¸Šå‡nè¡Œ
 //      // if ( mem_block_temp->high_level != 0 )  
 //  	  // {
 //            mem_block_temp->high_level += n;
@@ -1039,25 +1039,25 @@ inline int mem_table_allocate_record(struct mem_table_t *mem_table ,/* out */str
 //      // 	    mem_block_temp->high_level += n-1;
 //      HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock));
 //	
-//	// Ã»ÓĞÁ¬ĞøµÄ¿ÕÏĞ¿Õ¼ä£¬¾Í×Ô¶¯À©±í
+//	// æ²¡æœ‰è¿ç»­çš„ç©ºé—²ç©ºé—´ï¼Œå°±è‡ªåŠ¨æ‰©è¡¨
 //	if (i == mem_table->config.mem_block_used)
 //{ 
-//	     	      //×Ô¶¯À©±í
+//	     	      //è‡ªåŠ¨æ‰©è¡¨
 //	     	      struct  mem_block_t * extern_mem_block;
 //	     	      int err;
 //	     	      err =  mem_table_extend(mem_table,&extern_mem_block);
 //	     	      if(0 == err)
 //	     	      	{
-//	     	      			//×Ô¶¯À©±í³É¹¦,¼ÇÂ¼²åÈëÀ©Õ¹¿éÖĞµÄµÚÒ»¸öÎ»ÖÃ
+//	     	      			//è‡ªåŠ¨æ‰©è¡¨æˆåŠŸ,è®°å½•æ’å…¥æ‰©å±•å—ä¸­çš„ç¬¬ä¸€ä¸ªä½ç½®
 //	     	      			if ( (extern_mem_block->space_end_addr-extern_mem_block->space_end_addr)>mem_table->record_size)
 //	     	      		    {
 //	     	      		      *record_ptr =(struct record_t *) extern_mem_block->space_start_addr; 	
-//	     	      		      //À©Õ¹¿é¸ßË®Î»ÏßµİÔö
+//	     	      		      //æ‰©å±•å—é«˜æ°´ä½çº¿é€’å¢
 //                            HIGH_LEVEL_LOCK(&(extern_mem_block->high_level_lock));
 //                            high_level_temp =  extern_mem_block->high_level;
 //                            extern_mem_block->high_level +=(n-1);
 //                            HIGH_LEVEL_UNLOCK(&(extern_mem_block->high_level_lock));
-//                            //·µ»Ø¿éµÄÂß¼­ºÅ
+//                            //è¿”å›å—çš„é€»è¾‘å·
 //														*block_no = extern_mem_block->block_no;
 //                      }
 //	     	      		  else return  MEM_TABLE_EXTEND_ERR;
@@ -1065,7 +1065,7 @@ inline int mem_table_allocate_record(struct mem_table_t *mem_table ,/* out */str
 //	     	      else if(TRY_LOCK == err)return TRY_LOCK;
 //	     	      else return  MEM_TABLE_EXTEND_ERR;
 //}
-//     //¶ÔÁ¬ĞøµÄ¿Õ¼ä³õÊ¼»¯
+//     //å¯¹è¿ç»­çš„ç©ºé—´åˆå§‹åŒ–
 //     long j = 0;
 //     struct record_t ** record_temp = record_ptr;
 //     for(;j<n;++j)
@@ -1076,13 +1076,13 @@ inline int mem_table_allocate_record(struct mem_table_t *mem_table ,/* out */str
 //     (*record_temp)->scn           =  0;
 //     (*record_temp)->undo_record_ptr= 0;
 //     (*record_temp)->data    =  (char *)(*record_ptr) + RECORD_HEAD_SIZE;  
-//     row_lock_init(&((*record_temp)->row_lock)); //ĞĞËø³õÊ¼»¯
+//     row_lock_init(&((*record_temp)->row_lock)); //è¡Œé”åˆå§‹åŒ–
 //     *record_temp = (struct record_t *)(((off_t) record_temp + mem_table->record_size));
 //     }
 //	return 0;
 //}
 //
-////·ÖÅäÒ»¸ö¿ÕÏĞ¼ÇÂ¼ĞĞ
+////åˆ†é…ä¸€ä¸ªç©ºé—²è®°å½•è¡Œ
 //inline int mem_table_allocate_n_record(struct mem_table_t *mem_table ,long n,/* out */struct record_t ** record_ptr,long * block_no)
 //{
 //	if( NULL == mem_table )  return ALLOCATE_N_RECORD_ERR_TABLE_IS_NULL;
@@ -1098,7 +1098,7 @@ inline int mem_table_allocate_record(struct mem_table_t *mem_table ,/* out */str
 //	
 //}
 
-//²åÈëÒ»¸ö¼ÇÂ¼µÄÊı¾İ
+//æ’å…¥ä¸€ä¸ªè®°å½•çš„æ•°æ®
 inline int mem_table_insert_record(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no, /* in */char *buf)
 {
 	if( NULL == mem_table )
@@ -1129,71 +1129,71 @@ inline int mem_table_insert_record(struct mem_table_t *mem_table ,/* out */struc
 	return 0;
 }
 
-//É¾³ıÈ«²¿Êı¾İ
-//½«È«²¿ÔÚÓÃÊı¾İÁ¬Èë»ØÊÕÁ´±í
+//åˆ é™¤å…¨éƒ¨æ•°æ®
+//å°†å…¨éƒ¨åœ¨ç”¨æ•°æ®è¿å…¥å›æ”¶é“¾è¡¨
 inline int mem_table_delete_all(struct mem_table_t *mem_table )
 {
 	if( NULL == mem_table        ) return READ_RECORD_ERR_TABLE_IS_NULL;
 	
-  mem_table_lock(&(mem_table->table_locker) ); //±íËø
-  // Ëø¹ÜÀíÆ÷
+  mem_table_lock(&(mem_table->table_locker) ); //è¡¨é”
+  // é”ç®¡ç†å™¨
  	int i=0;
  	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
- 	//±éÀúËùÓĞ¿é,²éÕÒ¿ÉÒÔ²åÈëÊı¾İµÄÄÚ´æ¿é			
+ 	//éå†æ‰€æœ‰å—,æŸ¥æ‰¾å¯ä»¥æ’å…¥æ•°æ®çš„å†…å­˜å—			
 	for(;i<mem_table->config.mem_block_used;++i)
 	{
 		int j=0;
 		struct record_t * record_temp;
-		MEM_BLOCK_LOCK     (&(mem_block_temp->block_lock) ); //¿éËø
+		MEM_BLOCK_LOCK     (&(mem_block_temp->block_lock) ); //å—é”
 		for(;j<mem_block_temp->high_level ;++j)
 		{
 			record_temp = (struct record_t *) (mem_block_temp->space_start_addr + j* mem_table->record_size );
-			row_wlock   (  &(record_temp->row_lock) );                 // ĞĞËø
+			row_wlock   (  &(record_temp->row_lock) );                 // è¡Œé”
 			if(record_temp->is_used)
 				{   
 					  record_temp->is_used = 0;
 					    
-            LIST_LOCK(&(mem_block_temp->mem_free_list.list_lock));  // »ØÊÕÁ´±íËø
-					    //Á´Èë»ØÊÕ±í	  
+            LIST_LOCK(&(mem_block_temp->mem_free_list.list_lock));  // å›æ”¶é“¾è¡¨é”
+					    //é“¾å…¥å›æ”¶è¡¨	  
 					  record_temp->last_free_pos = mem_block_temp->mem_free_list.head;
             mem_block_temp->mem_free_list.head = record_temp->record_num;
             
-            LIST_UNLOCK  (&(mem_block_temp->mem_free_list.list_lock)); // »ØÊÕÁ´±íËø
+            LIST_UNLOCK  (&(mem_block_temp->mem_free_list.list_lock)); // å›æ”¶é“¾è¡¨é”
 				}
-			row_wunlock   (  &(record_temp->row_lock) );                // ĞĞËø
+			row_wunlock   (  &(record_temp->row_lock) );                // è¡Œé”
 			
     }
-    MEM_BLOCK_UNLOCK (&(mem_block_temp->block_lock) );//¿éËø
-    mem_block_temp = mem_block_temp->next;           //ÏÂÒ»¸ö¿é
+    MEM_BLOCK_UNLOCK (&(mem_block_temp->block_lock) );//å—é”
+    mem_block_temp = mem_block_temp->next;           //ä¸‹ä¸€ä¸ªå—
 	}
 	 //redo_log
-	  mem_table_unlock(&(mem_table->table_locker));                    //±íËø
+	  mem_table_unlock(&(mem_table->table_locker));                    //è¡¨é”
 	  
 	return 0;
 }
 
-//É¾³ıÈ«²¿Êı¾İ
-//ÇåÁã»ØÊÕÁ´±í
+//åˆ é™¤å…¨éƒ¨æ•°æ®
+//æ¸…é›¶å›æ”¶é“¾è¡¨
 inline int mem_table_truncate(struct mem_table_t *mem_table )
 {
 	if( NULL == mem_table  ) return READ_RECORD_ERR_TABLE_IS_NULL;
 	
-  mem_table_lock(&(mem_table->table_locker) );         //±íËø
+  mem_table_lock(&(mem_table->table_locker) );         //è¡¨é”
 
 
-  // Ëø¹ÜÀíÆ÷
+  // é”ç®¡ç†å™¨
  	int i=0;
  	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
- 	//±éÀúËùÓĞ¿é,²éÕÒ¿ÉÒÔ²åÈëÊı¾İµÄÄÚ´æ¿é			
+ 	//éå†æ‰€æœ‰å—,æŸ¥æ‰¾å¯ä»¥æ’å…¥æ•°æ®çš„å†…å­˜å—			
 	for(;i<mem_table->config.mem_block_used;++i)
 	{
 
-		MEM_BLOCK_LOCK     (&(mem_block_temp->block_lock) ); //¿éËø
-		mem_block_temp->high_level = 0;//»ØÊÕ¸ßË®Î»Ïß
+		MEM_BLOCK_LOCK     (&(mem_block_temp->block_lock) ); //å—é”
+		mem_block_temp->high_level = 0;//å›æ”¶é«˜æ°´ä½çº¿
 		
-		LIST_LOCK(&(mem_block_temp->mem_free_list.list_lock));   // »ØÊÕÁ´±íËø
-    mem_block_temp->mem_free_list.head = 0;                  //Á´±íÇåÁã
-    LIST_UNLOCK  (&(mem_block_temp->mem_free_list.list_lock));  //»ØÊÕÁ´±íËø
+		LIST_LOCK(&(mem_block_temp->mem_free_list.list_lock));   // å›æ”¶é“¾è¡¨é”
+    mem_block_temp->mem_free_list.head = 0;                  //é“¾è¡¨æ¸…é›¶
+    LIST_UNLOCK  (&(mem_block_temp->mem_free_list.list_lock));  //å›æ”¶é“¾è¡¨é”
 
 		int j=0;
 		struct record_t * record_temp;
@@ -1208,31 +1208,31 @@ inline int mem_table_truncate(struct mem_table_t *mem_table )
 			row_wunlock   (  &(record_temp->row_lock) );
 		  }
     }    
-    MEM_BLOCK_UNLOCK (&(mem_block_temp->block_lock) ); //¿éËø
-    mem_block_temp = mem_block_temp->next;            //ÏÂÒ»¸ö¿é
+    MEM_BLOCK_UNLOCK (&(mem_block_temp->block_lock) ); //å—é”
+    mem_block_temp = mem_block_temp->next;            //ä¸‹ä¸€ä¸ªå—
 	}		 
 		//redo_log
-	  mem_table_unlock(&(mem_table->table_locker));        //±íËø
+	  mem_table_unlock(&(mem_table->table_locker));        //è¡¨é”
 	return 0;
 }
 
 
-//Ç¿ÖÆÉ¾³ıÈ«²¿Êı¾İ
+//å¼ºåˆ¶åˆ é™¤å…¨éƒ¨æ•°æ®
 inline int mem_table_force_truncate(struct mem_table_t *mem_table )
 {
 	if( NULL == mem_table  ) return READ_RECORD_ERR_TABLE_IS_NULL;
 	
 
-  // Ëø¹ÜÀíÆ÷
+  // é”ç®¡ç†å™¨
  	int i=0;
  	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
- 	//±éÀúËùÓĞ¿é,²éÕÒ¿ÉÒÔ²åÈëÊı¾İµÄÄÚ´æ¿é			
+ 	//éå†æ‰€æœ‰å—,æŸ¥æ‰¾å¯ä»¥æ’å…¥æ•°æ®çš„å†…å­˜å—			
 	for(;i<mem_table->config.mem_block_used;++i)
 	{
 
-		mem_block_temp->high_level = 0;//»ØÊÕ¸ßË®Î»Ïß
+		mem_block_temp->high_level = 0;//å›æ”¶é«˜æ°´ä½çº¿
 		
-    mem_block_temp->mem_free_list.head = 0;                  //Á´±íÇåÁã
+    mem_block_temp->mem_free_list.head = 0;                  //é“¾è¡¨æ¸…é›¶
 
 		int j=0;
 		struct record_t * record_temp;
@@ -1245,19 +1245,19 @@ inline int mem_table_force_truncate(struct mem_table_t *mem_table )
 			record_temp->is_used = 0;
 		  }
     }    
-    mem_block_temp = mem_block_temp->next;            //ÏÂÒ»¸ö¿é
+    mem_block_temp = mem_block_temp->next;            //ä¸‹ä¸€ä¸ªå—
 	}		 
 		//redo_log
 	return 0;
 }
 
-//´ò¿ª±í
+//æ‰“å¼€è¡¨
 inline int mem_table_open( struct mem_table_t * mem_table)
 {
 	if(NULL == mem_table    )  return OPEN_MEM_TABLE_ERR_NULL_TABLE_PTR;
   DEBUG("Begin to open a mem_table.\n");
   DEBUG("config.mem_block_used is %d.\n",mem_table->config.mem_block_used);
-	//¼ÓÔØ¹²ÏíÄÚ´æ
+	//åŠ è½½å…±äº«å†…å­˜
 	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
 	
   DEBUG("mem_block_temp->block_size is %d\n",mem_block_temp->block_size);
@@ -1267,8 +1267,8 @@ inline int mem_table_open( struct mem_table_t * mem_table)
 	for(;i<mem_table->config.mem_block_used;++i)
 	{				
 
-		//³õÊ¼»¯¿éÎÄ¼şÃû		
-		//¿éÃû= ±íÃû_¿éºÅ
+		//åˆå§‹åŒ–å—æ–‡ä»¶å		
+		//å—å= è¡¨å_å—å·
 		char tail_fix[256];
 	  if( 0 == strlen(mem_block_temp->file_name))
 		{
@@ -1281,18 +1281,18 @@ inline int mem_table_open( struct mem_table_t * mem_table)
 		DEBUG("mem_block file_name is %s\n",mem_block_temp->file_name);
 	  DEBUG("mem_block_temp->block_size is %d\n",mem_block_temp->block_size);
 
-		INIT_MEM_BLOCK           (mem_block_temp);   //¿éÃèÊö·û³õÊ¼»¯
+		INIT_MEM_BLOCK           (mem_block_temp);   //å—æè¿°ç¬¦åˆå§‹åŒ–
 		if(0!=(err=mem_block_get_mem_from_os(mem_block_temp))){
 			DEBUG("mem_block_get_mem_from_os err is %d.\n",err);
 			return err;
-			}  //·ÖÅäÄÚ´æ
+			}  //åˆ†é…å†…å­˜
 		DEBUG("mem_block_get_mem_from_os() ok\n");
 
-		err = mem_block_mmap           (mem_block_temp);  //Ó³ÉäÎÄ¼ş
+		err = mem_block_mmap           (mem_block_temp);  //æ˜ å°„æ–‡ä»¶
 		if(err != 0)break;
 	  DEBUG("mem_block_mmap() ok\n");
 
-		mem_block_temp = mem_block_temp->next;      //ÏÂÒ»¸ö¿é
+		mem_block_temp = mem_block_temp->next;      //ä¸‹ä¸€ä¸ªå—
 	}
 	if(err != 0)return err;
 	return 0;
@@ -1301,7 +1301,7 @@ inline int mem_table_open( struct mem_table_t * mem_table)
 
 	
 	
-//½¨±í
+//å»ºè¡¨
 inline int mem_table_create(
                              struct mem_table_t        **  mem_table,
                              struct mem_table_config_t *  mem_table_config
@@ -1317,15 +1317,15 @@ inline int mem_table_create(
   
 	DEBUG("mem_table_config->mem_blocks_table->file_name is %s\n",mem_table_config->mem_blocks_table->file_name );
   
-	//½¨±í
+	//å»ºè¡¨
 	(*mem_table) = (struct mem_table_t *)malloc(MEM_TABLE_SIZE);
 	
   IMPORTANT_INFO("Create table ,table's addr is %0x \n",*mem_table);
-	// ³õÊ¼»¯»ù±¾ĞÅÏ¢
+	// åˆå§‹åŒ–åŸºæœ¬ä¿¡æ¯
 	INIT_MEM_TABLE((*mem_table));  
 	memcpy(&((*mem_table)->config),mem_table_config,MEM_TABLE_CONFIG_SIZE);
 	strcpy((*mem_table)->config.table_name , mem_table_config->table_name );   
-	 allocate_table_no(&((*mem_table)->config.mem_table_no));//·ÖÅäÂß¼­±íºÅ
+	 allocate_table_no(&((*mem_table)->config.mem_table_no));//åˆ†é…é€»è¾‘è¡¨å·
 	 set_table_no_addr((*mem_table)->config.mem_table_no,(void *) (*mem_table)); 
 	//(*mem_table)->config.fields_table      = mem_table_config->fields_table;
 	//(*mem_table)->config.field_used_num    = mem_table_config->field_used_num;
@@ -1336,7 +1336,7 @@ inline int mem_table_create(
 	
 	DEBUG("(*mem_table)->config.table_name1 is %s\n",(*mem_table)->config.table_name );
 
-	//Ìî³ä±íÀïµÄ×Ö¶ÎĞÅÏ¢µÄ´óĞ¡
+	//å¡«å……è¡¨é‡Œçš„å­—æ®µä¿¡æ¯çš„å¤§å°
   fill_table_field_size ( *mem_table );  
   
   DEBUG("mem_table_config->mem_blocks_table block_size is %d\n",mem_table_config->mem_blocks_table->block_size );
@@ -1348,48 +1348,48 @@ inline int mem_table_create(
 
 	return err;
 }
-//Ó³Éä»ØÎÄ¼ş
+//æ˜ å°„å›æ–‡ä»¶
 inline int mem_table_msync(struct mem_table_t *  mem_table)
 {
 	if(NULL == mem_table    )  return CREATE_MEM_TABLE_ERR_NULL_TABLE_PTR;
-	mem_table_lock(&(mem_table->table_locker) );       //±íËø
+	mem_table_lock(&(mem_table->table_locker) );       //è¡¨é”
   
 	int i;
 	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
 	for(;i<mem_table->config.mem_block_used;++i)
 	{
-		MEM_BLOCK_LOCK              (&(mem_block_temp->block_lock));    //¿éËø
-    mem_block_msync        (mem_block_temp);                   //°´¿éÍ¬²½»ØÎÄ¼ş
+		MEM_BLOCK_LOCK              (&(mem_block_temp->block_lock));    //å—é”
+    mem_block_msync        (mem_block_temp);                   //æŒ‰å—åŒæ­¥å›æ–‡ä»¶
 		//redo_log....
-    MEM_BLOCK_UNLOCK        (&(mem_block_temp->block_lock));    //¿éËø
-    mem_block_temp = mem_block_temp->next;                     //ÏÂÒ»¸ö¿é
+    MEM_BLOCK_UNLOCK        (&(mem_block_temp->block_lock));    //å—é”
+    mem_block_temp = mem_block_temp->next;                     //ä¸‹ä¸€ä¸ªå—
 	}
-	  mem_table_unlock (&(mem_table->table_locker));      //±íËø
+	  mem_table_unlock (&(mem_table->table_locker));      //è¡¨é”
 		if(mem_table)free(mem_table);
 		return 0;
 	}
 
-//¹Ø±í
+//å…³è¡¨
 inline int mem_table_close(struct mem_table_t *  mem_table)
 {
 	if(NULL == mem_table    )  return CREATE_MEM_TABLE_ERR_NULL_TABLE_PTR;
-	DEBUG("Begin to close a mem_table£º%s.\n",mem_table->config.table_name);
+	DEBUG("Begin to close a mem_tableï¼š%s.\n",mem_table->config.table_name);
 
-	mem_table_lock(&(mem_table->table_locker) );       //±íËø
+	mem_table_lock(&(mem_table->table_locker) );       //è¡¨é”
   			  
 	long i = 0;
 	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
 	DEBUG("mem_block_temp is %0x.\n",mem_block_temp);
 	for(;i<mem_table->config.mem_block_used;++i)
 	{
-		mem_block_munmap       (mem_block_temp);               		 //Ó³Éä»ØÎÄ¼ş
-		mem_block_put_mem_to_os(mem_block_temp);               		 //ÊÍ·ÅÄÚ´æ
+		mem_block_munmap       (mem_block_temp);               		 //æ˜ å°„å›æ–‡ä»¶
+		mem_block_put_mem_to_os(mem_block_temp);               		 //é‡Šæ”¾å†…å­˜
 		//redo_log....
-    mem_block_temp = mem_block_temp->next;                     //ÏÂÒ»¸ö¿é
+    mem_block_temp = mem_block_temp->next;                     //ä¸‹ä¸€ä¸ªå—
 	}
 
   	del_table_no_addr(mem_table->config.mem_table_no);      ////////////////////////////    
-	  mem_table_unlock (&(mem_table->table_locker));      //±íËø
+	  mem_table_unlock (&(mem_table->table_locker));      //è¡¨é”
 	  DEBUG("Free mem_table_ptr.\n");
 
 		mem_table_dest(&(mem_table->table_locker));
@@ -1424,7 +1424,7 @@ inline int mem_table_close(struct mem_table_t *  mem_table)
 		return 0;
 	}
 
-//À©±í
+//æ‰©è¡¨
 inline int mem_table_extend( struct mem_table_t * mem_table, struct  mem_block_t ** out_mem_block)
 {
 	if(NULL == mem_table )  return OPEN_MEM_TABLE_ERR_NULL_TABLE_PTR;
@@ -1435,7 +1435,7 @@ inline int mem_table_extend( struct mem_table_t * mem_table, struct  mem_block_t
 			return MEM_TABLE_EXTEND_ERR_NAME_IS_NULL;
 		}
 	
-  if(0!=mem_table_trylock(&(mem_table->table_locker) ))  //±íËø
+  if(0!=mem_table_trylock(&(mem_table->table_locker) ))  //è¡¨é”
   {
   return TRY_LOCK;
   }
@@ -1443,30 +1443,30 @@ inline int mem_table_extend( struct mem_table_t * mem_table, struct  mem_block_t
   mem_table->is_externing = 1;
 	struct  mem_block_t * extend_table = (struct  mem_block_t *)malloc(MEM_BLOCK_HEAD_SIZE);
 
-	//Æ´ÈëÀ©Õ¹¿é¿é´óĞ¡
+	//æ‹¼å…¥æ‰©å±•å—å—å¤§å°
 	char file_name[256]="";
-	//ÏÈÆ´ÈëµÚÒ»¸öÎÄ¼şµÄÎÄ¼şÃû
+	//å…ˆæ‹¼å…¥ç¬¬ä¸€ä¸ªæ–‡ä»¶çš„æ–‡ä»¶å
 	strcpy(file_name,mem_table->config.mem_blocks_table->file_name);
 	strcat(file_name,"_");
-	//ÔÙÆ´ÈëÏµÍ³Ê±¼ä
+	//å†æ‹¼å…¥ç³»ç»Ÿæ—¶é—´
 	GetTimeForNAME(file_name)  ;
-	//»ñµÃÀ©Õ¹¿éÎÄ¼şÃû
+	//è·å¾—æ‰©å±•å—æ–‡ä»¶å
 	DEBUG("extend_table->file_name is %s\n",extend_table->file_name);
 	if(extend_table->file_name == NULL)
 		{
 			ERROR("MEM_TABLE_EXTEND_ERR_NAME_IS_NULL\n");
-			mem_table_unlock(&(mem_table->table_locker));  //½â±íËø
+			mem_table_unlock(&(mem_table->table_locker));  //è§£è¡¨é”
 			return MEM_TABLE_EXTEND_ERR_NAME_IS_NULL;
 			
 		}
 	
 	mem_block_config( extend_table ,/*long block_no ,*/ mem_table->config.extend_block_size , file_name ) ;
-	//³õÊ¼»¯À©Õ¹¿é
-	INIT_MEM_BLOCK           (extend_table);   //¿éÃèÊö·û³õÊ¼»¯
-	mem_block_get_mem_from_os(extend_table);   //·ÖÅäÄÚ´æ
-	mem_block_mmap           (extend_table);   //Ó³ÉäÎÄ¼ş
+	//åˆå§‹åŒ–æ‰©å±•å—
+	INIT_MEM_BLOCK           (extend_table);   //å—æè¿°ç¬¦åˆå§‹åŒ–
+	mem_block_get_mem_from_os(extend_table);   //åˆ†é…å†…å­˜
+	mem_block_mmap           (extend_table);   //æ˜ å°„æ–‡ä»¶
 	
-	//ÕÒµ½¿é±íÖĞ×îºóÒ»¸ö¿é
+	//æ‰¾åˆ°å—è¡¨ä¸­æœ€åä¸€ä¸ªå—
   struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
   int i = 0;
  // IMPORTANT_INFO("mem_table->config.mem_block_used is %d\n",mem_table->config.mem_block_used);
@@ -1477,17 +1477,17 @@ inline int mem_table_extend( struct mem_table_t * mem_table, struct  mem_block_t
   	 //IMPORTANT_INFO("mem_table->config.mem_block_used is %d\n",mem_table->config.mem_block_used);
   	 mem_block_temp=mem_block_temp->next; 
   }
-  //À©Õ¹¿éÁ´Èë×îºóÒ»¸ö¿é
+  //æ‰©å±•å—é“¾å…¥æœ€åä¸€ä¸ªå—
   mem_block_temp->next = extend_table;
   
 //  DEBUG("extend_table->high_level_lock is %0x\n",extend_table->high_level_lock );
   
-  //Ê¹ÓÃ¿éÊı++
+  //ä½¿ç”¨å—æ•°++
 	
 	 mem_table->is_externing = 0;
-   *out_mem_block = extend_table;                  //³ö²ÎÎªĞÂÀ©µÄ¿é
+   *out_mem_block = extend_table;                  //å‡ºå‚ä¸ºæ–°æ‰©çš„å—
    ++(mem_table->config.mem_block_used);
-   mem_table_unlock(&(mem_table->table_locker));  //½â±íËø.
+   mem_table_unlock(&(mem_table->table_locker));  //è§£è¡¨é”.
    IMPORTANT_INFO("Extend table ok! mem_table has used [%d] blocks.\n",mem_table->config.mem_block_used);
 
    //IMPORTANT_INFO("Extend table ok!,Extend table is %0x\n",extend_table);
@@ -1497,24 +1497,24 @@ inline int mem_table_extend( struct mem_table_t * mem_table, struct  mem_block_t
 }	
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª with_freelist ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
-//´Ëº¯Êı¿ÉÒÔÀûÓÃ»ØÊÕÁ´±íÖĞµÄ¿ÕÏĞ¿Õ¼ä£¬ÓÅÏÈ»ØÊÕ×îÍíÉ¾³ıµÄĞĞ
-//_____________________with_freelist ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
-//·ÖÅäÒ»¸ö¿ÕÏĞ¼ÇÂ¼ĞĞ
+//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” with_freelist â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
+//æ­¤å‡½æ•°å¯ä»¥åˆ©ç”¨å›æ”¶é“¾è¡¨ä¸­çš„ç©ºé—²ç©ºé—´ï¼Œä¼˜å…ˆå›æ”¶æœ€æ™šåˆ é™¤çš„è¡Œ
+//_____________________with_freelist â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
+//åˆ†é…ä¸€ä¸ªç©ºé—²è®°å½•è¡Œ
 inline int mem_table_try_allocate_record_with_freelist(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no,unsigned long long  Tn)
 {
 	if( NULL == mem_table )  return ALLOCATE_RECORD_ERR_TABLE_IS_NULL;
 	DEBUG(" ----- Enter mem_table_try_allocate_record() ----- \n");
-  /* ±¾¶ÎÂß¼­
-	* 1. ÓÅÏÈ¸ù¾İ¸ßË®Î»Ïß,ÕÒ¿ÕÏĞrecord
-	* 2. Èç¹û¸ßË®Î»ÏßÃ»ÓĞ¿ÕÏĞ¿Õ¼ä,Ôò´Ó»ØÊÕÁ´±í»ØÊÕ¿Õ¼ä
-	* 3. »ØÊÕÁ´±íÒ²Ã»ÓĞ£¬Ôò×Ô¶¯À©±í
+  /* æœ¬æ®µé€»è¾‘
+	* 1. ä¼˜å…ˆæ ¹æ®é«˜æ°´ä½çº¿,æ‰¾ç©ºé—²record
+	* 2. å¦‚æœé«˜æ°´ä½çº¿æ²¡æœ‰ç©ºé—²ç©ºé—´,åˆ™ä»å›æ”¶é“¾è¡¨å›æ”¶ç©ºé—´
+	* 3. å›æ”¶é“¾è¡¨ä¹Ÿæ²¡æœ‰ï¼Œåˆ™è‡ªåŠ¨æ‰©è¡¨
 	*/
 	int i = 0;
 	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
   
 //  DEBUG("mem_block_temp is %0x\n",mem_block_temp);
-  //±éÀúËùÓĞ¿é,²éÕÒ¿ÉÒÔ²åÈëÊı¾İµÄÄÚ´æ¿é			
+  //éå†æ‰€æœ‰å—,æŸ¥æ‰¾å¯ä»¥æ’å…¥æ•°æ®çš„å†…å­˜å—			
   short is_need_extern = 1;
  
 	for(;i<mem_table->config.mem_block_used-1;++i)
@@ -1525,7 +1525,7 @@ inline int mem_table_try_allocate_record_with_freelist(struct mem_table_t *mem_t
 	if( 0!= (HIGH_LEVEL_TRYLOCK(&(mem_block_temp->high_level_lock))) )
 		{
 			//IMPORTANT_INFO("HIGH_LEVEL_TRYLOCK =0\n");
-			return HIGH_LEVEL_TRY_LOCK;  //¸ßË®Î»ÏßÉÏËø
+			return HIGH_LEVEL_TRY_LOCK;  //é«˜æ°´ä½çº¿ä¸Šé”
 		}
 
 
@@ -1536,16 +1536,16 @@ inline int mem_table_try_allocate_record_with_freelist(struct mem_table_t *mem_t
 
    DEBUG("----- try to allocate record _with_freelist by high level -----\n");
 
- //¸ù¾İ¸ßË®Î»Ïß»ñÈ¡×îĞÂ²åÈëÎ»ÖÃ    
+ //æ ¹æ®é«˜æ°´ä½çº¿è·å–æœ€æ–°æ’å…¥ä½ç½®    
 //   DEBUG("mem_block_temp->high_level is %ld,mem_table->record_size is %ld;\n",high_level_temp,mem_table->record_size);
 //   DEBUG("mem_block_temp->space_start_addr is %0x \n",mem_block_temp->space_start_addr);
   
-	// ÕÒµ½¿ÉÓÃµÄ¼ÇÂ¼Î»ÖÃ
+	// æ‰¾åˆ°å¯ç”¨çš„è®°å½•ä½ç½®
 	(*record_ptr) = (struct record_t *) ( (char *)mem_block_temp->space_start_addr + high_level_temp * (mem_table->record_size) );
    
 //   DEBUG("allocate_record_ptr is %0x;\n",*record_ptr);
 
-	//·µ»Ø¿éµÄÂß¼­ºÅ
+	//è¿”å›å—çš„é€»è¾‘å·
 	 (*block_no) = mem_block_temp->block_no;
 //   DEBUG("allocate_record's block_no is %ld ;\n",(*block_no));
     ++(mem_block_temp->high_level);
@@ -1553,32 +1553,32 @@ inline int mem_table_try_allocate_record_with_freelist(struct mem_table_t *mem_t
 	}
 
 
-	//Ã»ÕÒµ½µÄÄÚ´æ¿éµØÖ· > ¿éÊı¾İÎ²µØÖ·,Ôò²éÕÒ»ØÊÕÁ´±í
+	//æ²¡æ‰¾åˆ°çš„å†…å­˜å—åœ°å€ > å—æ•°æ®å°¾åœ°å€,åˆ™æŸ¥æ‰¾å›æ”¶é“¾è¡¨
   if (is_need_extern)
 	{
 		DEBUG(" ----- Try to find record _with_freelist in free_list -----\n");
 		 	i=0;
     struct  mem_block_t * mem_block_temp2 = mem_table->config.mem_blocks_table;
-  //±éÀúËùÓĞ¿é,²éÕÒ¿ÉÒÔ²åÈëÊı¾İµÄÄÚ´æ¿éÖĞµÄ»ØÊÕÁ´±í			
+  //éå†æ‰€æœ‰å—,æŸ¥æ‰¾å¯ä»¥æ’å…¥æ•°æ®çš„å†…å­˜å—ä¸­çš„å›æ”¶é“¾è¡¨			
     for(;i<mem_table->config.mem_block_used;++i)
     {
-	      	//¿ÕÏĞÁ´±íÓĞÊı¾İ£¬´ÓÁ´±íÍ·È¡Ò»¸öµØÖ·²åÈë		
+	      	//ç©ºé—²é“¾è¡¨æœ‰æ•°æ®ï¼Œä»é“¾è¡¨å¤´å–ä¸€ä¸ªåœ°å€æ’å…¥		
     if( -1 != mem_block_temp2->mem_free_list.head ) 
        {
-       	//¿ÕÏĞÁ´±íÉÏËø
+       	//ç©ºé—²é“¾è¡¨ä¸Šé”
        	LIST_LOCK     (  &(mem_block_temp2->mem_free_list.list_lock)  );
-       	//È¡µÃ¿ÕÏĞÁ´±íµÄ¶ÔÓ¦recordµÄµØÖ·
+       	//å–å¾—ç©ºé—²é“¾è¡¨çš„å¯¹åº”recordçš„åœ°å€
        	(*record_ptr) =  (struct record_t *) ( (mem_block_temp2->mem_free_list.head) * mem_table->record_size + mem_block_temp->space_start_addr );
        	DEBUG("Find in Freelist, record_num %ld,record_ptr is %ld,last free pos is %ld\n",mem_block_temp->mem_free_list.head,*record_ptr,(*record_ptr)->last_free_pos);
        	high_level_temp = (*record_ptr)->record_num;////////////////////
-       	// ²»ÊÇ±¾ÊÂÎñĞŞ¸Ä¹ıµÄĞĞ£¬¿ÉÒÔÊ¹ÓÃ
+       	// ä¸æ˜¯æœ¬äº‹åŠ¡ä¿®æ”¹è¿‡çš„è¡Œï¼Œå¯ä»¥ä½¿ç”¨
        	if((*record_ptr)->scn < Tn)
        	{
-       	//¿ÕÏĞÁ´±íµÄhead ÎªÉÏÒ»¸ö¿ÕÏĞÁ´±íµÄÎ»ÖÃ
+       	//ç©ºé—²é“¾è¡¨çš„head ä¸ºä¸Šä¸€ä¸ªç©ºé—²é“¾è¡¨çš„ä½ç½®
        	mem_block_temp2->mem_free_list.head = (*record_ptr)->last_free_pos;
-       	//¿ÕÏĞÁ´±í½âËø
+       	//ç©ºé—²é“¾è¡¨è§£é”
        	LIST_UNLOCK   (  &(mem_block_temp2->mem_free_list.list_lock)  );
-       	//·µ»Ø¿éµÄÂß¼­ºÅ
+       	//è¿”å›å—çš„é€»è¾‘å·
        	*block_no = mem_block_temp2->block_no;
        	is_need_extern = 0;
        	//DEBUG("----- Free record space in free_list finded!  -----\n");
@@ -1588,17 +1588,17 @@ inline int mem_table_try_allocate_record_with_freelist(struct mem_table_t *mem_t
        }	
        if(i!=mem_table->config.mem_block_used-1 )
        	{
-       	mem_block_temp2 = mem_block_temp2->next;      //ÏÂÒ»¸ö¿é
+       	mem_block_temp2 = mem_block_temp2->next;      //ä¸‹ä¸€ä¸ªå—
          }
     }
    
  }
-// Ã»ÓĞ¿ÕÏĞ¿Õ¼äºÍ»ØÊÕÁ´±í£¬¾Í×Ô¶¯À©±í
+// æ²¡æœ‰ç©ºé—²ç©ºé—´å’Œå›æ”¶é“¾è¡¨ï¼Œå°±è‡ªåŠ¨æ‰©è¡¨
 	//if (i == mem_table->config.mem_block_used-1)  
 	if (is_need_extern)  
 { 
 	DEBUG(" ----- Try to externd_table _with_freelist ----- \n");
-	     	      //×Ô¶¯À©±í
+	     	      //è‡ªåŠ¨æ‰©è¡¨
 	     	      struct  mem_block_t * extern_mem_block;
 	     	      int err = 0;
 	     	      err =  mem_table_extend(mem_table,&extern_mem_block);
@@ -1607,22 +1607,22 @@ inline int mem_table_try_allocate_record_with_freelist(struct mem_table_t *mem_t
 	     	      			DEBUG("extern_mem_block->space_end_addr is %0x\n",extern_mem_block->space_end_addr);
 	     	      		  DEBUG("extern_mem_block->space_start_addr is %0x\n",extern_mem_block->space_start_addr);
 	     	      		  DEBUG("mem_table->record_size is %d\n",mem_table->record_size);
-	     	      			//×Ô¶¯À©±í³É¹¦,¼ÇÂ¼²åÈëÀ©Õ¹¿éÖĞµÄµÚÒ»¸öÎ»ÖÃ,ÖØĞÂ²åÈë
+	     	      			//è‡ªåŠ¨æ‰©è¡¨æˆåŠŸ,è®°å½•æ’å…¥æ‰©å±•å—ä¸­çš„ç¬¬ä¸€ä¸ªä½ç½®,é‡æ–°æ’å…¥
 	     	      			IMPORTANT_INFO("Externd_Block OK and Try Allocate Agian!\n");                   
-                    HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø 	
+                    HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é” 	
 	     	      			return TRY_LOCK;     	      		  	
 	     	      	}
 	     	      else if(TRY_LOCK== err)
 	     	      	{
 	     	      		  DEBUG(" TRY again! \n");
-	     	      		  HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø
+	     	      		  HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é”
 	     	      			return TRY_LOCK;
 	     	      	}
 	     	      
 	     	      else 
 	     	      	{
 	     	      		ERROR("MEM_TABLE_EXTEND_ERR err is %d\n",err);
-	     	      		HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø
+	     	      		HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é”
 	     	      		return  err;
 	     	      	}
 	     	      	
@@ -1636,8 +1636,8 @@ inline int mem_table_try_allocate_record_with_freelist(struct mem_table_t *mem_t
      (*record_ptr)->scn           =  0;
      (*record_ptr)->undo_record_ptr= 0;
      (*record_ptr)->data    =  (char *)(*record_ptr) + RECORD_HEAD_SIZE;  
-     row_lock_init(&((*record_ptr)->row_lock)); //ĞĞËø³õÊ¼»¯
-     HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø
+     row_lock_init(&((*record_ptr)->row_lock)); //è¡Œé”åˆå§‹åŒ–
+     HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é”
 
      DEBUG(" ----- Allocate_record_with_freelist >>> %0x , high_level is %ld ----- \n",*record_ptr,high_level_temp);
 	   return 0;
@@ -1645,7 +1645,7 @@ inline int mem_table_try_allocate_record_with_freelist(struct mem_table_t *mem_t
 }
 
 
-//·ÖÅäÒ»¸ö¿ÕÏĞ¼ÇÂ¼ĞĞ
+//åˆ†é…ä¸€ä¸ªç©ºé—²è®°å½•è¡Œ
 inline int mem_table_allocate_record_with_freelist(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no,unsigned long long  Tn)
 {
 	if( NULL == mem_table )  return ALLOCATE_RECORD_ERR_TABLE_IS_NULL;
@@ -1673,7 +1673,7 @@ inline int mem_table_allocate_record_with_freelist(struct mem_table_t *mem_table
 }
 
 
-//²åÈëÒ»¸ö¼ÇÂ¼µÄÊı¾İ
+//æ’å…¥ä¸€ä¸ªè®°å½•çš„æ•°æ®
 inline int mem_table_insert_record_with_freelist(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no, /* in */char *buf,unsigned long long  Tn)
 {
 	if( NULL == mem_table )  return INSERT_RECORD_ERR_TABLE_IS_NULL;
@@ -1696,24 +1696,24 @@ inline int mem_table_insert_record_with_freelist(struct mem_table_t *mem_table ,
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª with_rfreelist ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
-//´Ëº¯Êı¿ÉÒÔÀûÓÃ»ØÊÕÁ´±íÖĞµÄ¿ÕÏĞ¿Õ¼ä£¬ÓÅÏÈ»ØÊÕ×îÔçÉ¾³ıµÄĞĞ
-//_____________________with_rfreelist ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
-//·ÖÅäÒ»¸ö¿ÕÏĞ¼ÇÂ¼ĞĞ
+//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” with_rfreelist â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
+//æ­¤å‡½æ•°å¯ä»¥åˆ©ç”¨å›æ”¶é“¾è¡¨ä¸­çš„ç©ºé—²ç©ºé—´ï¼Œä¼˜å…ˆå›æ”¶æœ€æ—©åˆ é™¤çš„è¡Œ
+//_____________________with_rfreelist â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
+//åˆ†é…ä¸€ä¸ªç©ºé—²è®°å½•è¡Œ
 inline int mem_table_try_allocate_record_with_rfreelist(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no,unsigned long long  Tn)
 {
 	if( NULL == mem_table )  return ALLOCATE_RECORD_ERR_TABLE_IS_NULL;
 	DEBUG(" ----- Enter mem_table_try_allocate_record() ----- \n");
-  /* ±¾¶ÎÂß¼­
-	* 1. ÓÅÏÈ¸ù¾İ¸ßË®Î»Ïß,ÕÒ¿ÕÏĞrecord
-	* 2. Èç¹û¸ßË®Î»ÏßÃ»ÓĞ¿ÕÏĞ¿Õ¼ä,Ôò´Ó»ØÊÕÁ´±í»ØÊÕ¿Õ¼ä£¬ÓÅÏÈ»ØÊÕ×îÔçÉ¾³ıµÄĞĞ
-	* 3. »ØÊÕÁ´±íÒ²Ã»ÓĞ£¬Ôò×Ô¶¯À©±í
+  /* æœ¬æ®µé€»è¾‘
+	* 1. ä¼˜å…ˆæ ¹æ®é«˜æ°´ä½çº¿,æ‰¾ç©ºé—²record
+	* 2. å¦‚æœé«˜æ°´ä½çº¿æ²¡æœ‰ç©ºé—²ç©ºé—´,åˆ™ä»å›æ”¶é“¾è¡¨å›æ”¶ç©ºé—´ï¼Œä¼˜å…ˆå›æ”¶æœ€æ—©åˆ é™¤çš„è¡Œ
+	* 3. å›æ”¶é“¾è¡¨ä¹Ÿæ²¡æœ‰ï¼Œåˆ™è‡ªåŠ¨æ‰©è¡¨
 	*/
 	int i = 0;
 	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
   
 //  DEBUG("mem_block_temp is %0x\n",mem_block_temp);
-  //±éÀúËùÓĞ¿é,²éÕÒ¿ÉÒÔ²åÈëÊı¾İµÄÄÚ´æ¿é			
+  //éå†æ‰€æœ‰å—,æŸ¥æ‰¾å¯ä»¥æ’å…¥æ•°æ®çš„å†…å­˜å—			
   short is_need_extern = 1;
  
 		for(;i<mem_table->config.mem_block_used-1;++i)
@@ -1724,7 +1724,7 @@ inline int mem_table_try_allocate_record_with_rfreelist(struct mem_table_t *mem_
 		if( 0!= (HIGH_LEVEL_TRYLOCK(&(mem_block_temp->high_level_lock))) )
 			{
 				//IMPORTANT_INFO("HIGH_LEVEL_TRYLOCK =0\n");
-				return HIGH_LEVEL_TRY_LOCK;  //¸ßË®Î»ÏßÉÏËø
+				return HIGH_LEVEL_TRY_LOCK;  //é«˜æ°´ä½çº¿ä¸Šé”
 			}
 
 
@@ -1735,16 +1735,16 @@ inline int mem_table_try_allocate_record_with_rfreelist(struct mem_table_t *mem_
 	
 	   DEBUG("----- try to allocate record_with_rfreelist by high level -----\n");
 	
-	 //¸ù¾İ¸ßË®Î»Ïß»ñÈ¡×îĞÂ²åÈëÎ»ÖÃ    
+	 //æ ¹æ®é«˜æ°´ä½çº¿è·å–æœ€æ–°æ’å…¥ä½ç½®    
 	//   DEBUG("mem_block_temp->high_level is %ld,mem_table->record_size is %ld;\n",high_level_temp,mem_table->record_size);
 	//   DEBUG("mem_block_temp->space_start_addr is %0x \n",mem_block_temp->space_start_addr);
 	  
-		// ÕÒµ½¿ÉÓÃµÄ¼ÇÂ¼Î»ÖÃ
+		// æ‰¾åˆ°å¯ç”¨çš„è®°å½•ä½ç½®
 		(*record_ptr) = (struct record_t *) ( (char *)mem_block_temp->space_start_addr + high_level_temp * (mem_table->record_size) );
 	   
 	//   DEBUG("allocate_record_ptr is %0x;\n",*record_ptr);
 	
-		//·µ»Ø¿éµÄÂß¼­ºÅ
+		//è¿”å›å—çš„é€»è¾‘å·
 		 (*block_no) = mem_block_temp->block_no;
 	//   DEBUG("allocate_record's block_no is %ld ;\n",(*block_no));
 	    ++(mem_block_temp->high_level);
@@ -1752,21 +1752,21 @@ inline int mem_table_try_allocate_record_with_rfreelist(struct mem_table_t *mem_
 		}
 
 
-	//Ã»ÕÒµ½µÄÄÚ´æ¿éµØÖ· > ¿éÊı¾İÎ²µØÖ·,Ôò²éÕÒ»ØÊÕÁ´±í
+	//æ²¡æ‰¾åˆ°çš„å†…å­˜å—åœ°å€ > å—æ•°æ®å°¾åœ°å€,åˆ™æŸ¥æ‰¾å›æ”¶é“¾è¡¨
   if (is_need_extern)
 	{
 		DEBUG(" ----- Try to find record _with_rfreelist in free_list -----\n");
 		 	i=0;
     struct  mem_block_t * mem_block_temp2 = mem_table->config.mem_blocks_table;
-  //±éÀúËùÓĞ¿é,²éÕÒ¿ÉÒÔ²åÈëÊı¾İµÄÄÚ´æ¿éÖĞµÄ»ØÊÕÁ´±í			
+  //éå†æ‰€æœ‰å—,æŸ¥æ‰¾å¯ä»¥æ’å…¥æ•°æ®çš„å†…å­˜å—ä¸­çš„å›æ”¶é“¾è¡¨			
     for(;i<mem_table->config.mem_block_used;++i)
     {
-	      	//¿ÕÏĞÁ´±íÓĞÊı¾İ£¬´ÓÁ´±íÍ·È¡Ò»¸öµØÖ·²åÈë		
+	      	//ç©ºé—²é“¾è¡¨æœ‰æ•°æ®ï¼Œä»é“¾è¡¨å¤´å–ä¸€ä¸ªåœ°å€æ’å…¥		
     if( -1 != mem_block_temp2->mem_free_list.tail ) 
        {
-       	//¿ÕÏĞÁ´±íÉÏËø
+       	//ç©ºé—²é“¾è¡¨ä¸Šé”
        	LIST_LOCK     (  &(mem_block_temp2->mem_free_list.list_lock)  );
-       	//È¡µÃ¿ÕÏĞÁ´±íµÄ¶ÔÓ¦recordµÄµØÖ·
+       	//å–å¾—ç©ºé—²é“¾è¡¨çš„å¯¹åº”recordçš„åœ°å€
        	long long  next_free_pos = mem_block_temp2->mem_free_list.tail ;
  
        	(*record_ptr) =  (struct record_t *) ( (next_free_pos) * mem_table->record_size + mem_block_temp->space_start_addr );
@@ -1774,11 +1774,11 @@ inline int mem_table_try_allocate_record_with_rfreelist(struct mem_table_t *mem_
 				{
        	DEBUG("Find in Freelist, record_num %ld,record_ptr is %ld,last free pos is %ld\n",mem_block_temp->mem_free_list.head,*record_ptr,(*record_ptr)->last_free_pos);
        	high_level_temp = (*record_ptr)->record_num;////////////////////
-       	//¿ÕÏĞÁ´±íµÄhead ÎªÉÏÒ»¸ö¿ÕÏĞÁ´±íµÄÎ»ÖÃ
+       	//ç©ºé—²é“¾è¡¨çš„head ä¸ºä¸Šä¸€ä¸ªç©ºé—²é“¾è¡¨çš„ä½ç½®
        	mem_block_temp2->mem_free_list.tail = (*record_ptr)->next_free_pos;
-       	//¿ÕÏĞÁ´±í½âËø
+       	//ç©ºé—²é“¾è¡¨è§£é”
        	LIST_UNLOCK   (  &(mem_block_temp2->mem_free_list.list_lock)  );
-       	//·µ»Ø¿éµÄÂß¼­ºÅ
+       	//è¿”å›å—çš„é€»è¾‘å·
        	*block_no = mem_block_temp2->block_no;
 
        	is_need_extern = 0;
@@ -1791,17 +1791,17 @@ inline int mem_table_try_allocate_record_with_rfreelist(struct mem_table_t *mem_
        }	
        if(i!=mem_table->config.mem_block_used-1 )
        	{
-       	mem_block_temp2 = mem_block_temp2->next;      //ÏÂÒ»¸ö¿é
+       	mem_block_temp2 = mem_block_temp2->next;      //ä¸‹ä¸€ä¸ªå—
          }
     }
    
  }
-// Ã»ÓĞ¿ÕÏĞ¿Õ¼äºÍ»ØÊÕÁ´±í£¬¾Í×Ô¶¯À©±í
+// æ²¡æœ‰ç©ºé—²ç©ºé—´å’Œå›æ”¶é“¾è¡¨ï¼Œå°±è‡ªåŠ¨æ‰©è¡¨
 	//if (i == mem_table->config.mem_block_used-1)  
 	if (is_need_extern)  
 { 
 	DEBUG(" ----- Try to externd_table_with_rfreelist ----- \n");
-	     	      //×Ô¶¯À©±í
+	     	      //è‡ªåŠ¨æ‰©è¡¨
 	     	      struct  mem_block_t * extern_mem_block;
 	     	      int err = 0;
 	     	      err =  mem_table_extend(mem_table,&extern_mem_block);
@@ -1810,22 +1810,22 @@ inline int mem_table_try_allocate_record_with_rfreelist(struct mem_table_t *mem_
 	     	      			DEBUG("extern_mem_block->space_end_addr is %0x\n",extern_mem_block->space_end_addr);
 	     	      		  DEBUG("extern_mem_block->space_start_addr is %0x\n",extern_mem_block->space_start_addr);
 	     	      		  DEBUG("mem_table->record_size is %d\n",mem_table->record_size);
-	     	      			//×Ô¶¯À©±í³É¹¦,¼ÇÂ¼²åÈëÀ©Õ¹¿éÖĞµÄµÚÒ»¸öÎ»ÖÃ,ÖØĞÂ²åÈë
+	     	      			//è‡ªåŠ¨æ‰©è¡¨æˆåŠŸ,è®°å½•æ’å…¥æ‰©å±•å—ä¸­çš„ç¬¬ä¸€ä¸ªä½ç½®,é‡æ–°æ’å…¥
 	     	      			DEBUG("Externd_Block OK and Try Allocate Agian!\n");                   
-                    HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø 	
+                    HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é” 	
 	     	      			return TRY_LOCK;     	      		  	
 	     	      	}
 	     	      else if(TRY_LOCK== err)
 	     	      	{
 	     	      		  DEBUG(" TRY again! \n");
-	     	      		  HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø
+	     	      		  HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é”
 	     	      			return TRY_LOCK;
 	     	      	}
 	     	      
 	     	      else 
 	     	      	{
 	     	      		ERROR("MEM_TABLE_EXTEND_ERR err is %d\n",err);
-	     	      		HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø
+	     	      		HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é”
 	     	      		return  err;
 	     	      	}
 	     	      	
@@ -1839,8 +1839,8 @@ inline int mem_table_try_allocate_record_with_rfreelist(struct mem_table_t *mem_
      (*record_ptr)->scn           =  0;
      (*record_ptr)->undo_record_ptr= 0;
      (*record_ptr)->data    =  (char *)(*record_ptr) + RECORD_HEAD_SIZE;  
-     row_lock_init(&((*record_ptr)->row_lock)); //ĞĞËø³õÊ¼»¯
-     HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø
+     row_lock_init(&((*record_ptr)->row_lock)); //è¡Œé”åˆå§‹åŒ–
+     HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é”
 
      DEBUG(" ----- Allocate_record_with_rfreelist >>> %0x , high_level is [%ld] ----- \n",*record_ptr,high_level_temp);
 	   return 0;
@@ -1848,7 +1848,7 @@ inline int mem_table_try_allocate_record_with_rfreelist(struct mem_table_t *mem_
 }
 
 
-//·ÖÅäÒ»¸ö¿ÕÏĞ¼ÇÂ¼ĞĞ
+//åˆ†é…ä¸€ä¸ªç©ºé—²è®°å½•è¡Œ
 inline int mem_table_allocate_record_with_rfreelist(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no,unsigned long long  Tn)
 {
 	if( NULL == mem_table )  return ALLOCATE_RECORD_ERR_TABLE_IS_NULL;
@@ -1876,7 +1876,7 @@ inline int mem_table_allocate_record_with_rfreelist(struct mem_table_t *mem_tabl
 }
 
 
-//²åÈëÒ»¸ö¼ÇÂ¼µÄÊı¾İ
+//æ’å…¥ä¸€ä¸ªè®°å½•çš„æ•°æ®
 inline int mem_table_insert_record_with_rfreelist(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no, /* in */char *buf,unsigned long long  Tn)
 {
 	if( NULL == mem_table )  return INSERT_RECORD_ERR_TABLE_IS_NULL;
@@ -1896,21 +1896,21 @@ inline int mem_table_insert_record_with_rfreelist(struct mem_table_t *mem_table 
 }
 
 
-// ¹²ÏíËø
+// å…±äº«é”
 int mem_table_rwlock_by_reader(struct mem_table_t *  mem_table)
 {
 	if(NULL == mem_table    )  return CREATE_MEM_TABLE_ERR_NULL_TABLE_PTR;
   return table_rwlock_rdlock(&(mem_table->rwlocker));
 }
 
-//½â¹²ÏíËø
+//è§£å…±äº«é”
 int mem_table_rwunlock_by_reader(struct mem_table_t *  mem_table)
 {
 	if(NULL == mem_table    )  return CREATE_MEM_TABLE_ERR_NULL_TABLE_PTR;
   return table_rwlock_wrlock(&(mem_table->rwlocker));
 }
 
-//¶ÀÕ¼Ëø
+//ç‹¬å é”
 int mem_table_rwlock_by_writer(struct mem_table_t *  mem_table, long long  trans_no)
 {
 	if(NULL == mem_table    )  return CREATE_MEM_TABLE_ERR_NULL_TABLE_PTR;
@@ -1921,7 +1921,7 @@ int mem_table_rwlock_by_writer(struct mem_table_t *  mem_table, long long  trans
   return ret;
 }
 
-//½â¶ÀÕ¼Ëø
+//è§£ç‹¬å é”
 int mem_table_rwunlock_by_writer(struct mem_table_t *  mem_table,  long long  trans_no)
 {
 	if(NULL == mem_table    )  return CREATE_MEM_TABLE_ERR_NULL_TABLE_PTR;
