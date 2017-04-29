@@ -6,7 +6,7 @@ rm *.o
 rm *2017*
 rm redo*
 clear
-g++ mempool_test.c -O3 -g -I ../../mempool_test.h  -lpthread -o mempool_test.exe 
+gcc mempool_test.c -O3 -g -I ../../mempool_test.h  -lpthread -o mempool_test.exe 
 echo ""
 echo ""
 
