@@ -160,7 +160,7 @@ thread_pool_add_task (CThread_pool_t *pool,void *(*process) (void *arg), void *a
 int  
 thread_pool_destroy (CThread_pool_t *pool)  
 {  
-    sleep(0.1);
+    sleep(1);
     if (pool->shutdown)  
         return -1;/*防止两次调用*/  
     pool->shutdown = 1;  
