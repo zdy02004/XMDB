@@ -31,14 +31,14 @@ extern "C" {
 #define CAS             __sync_bool_compare_and_swap          
 
 
-//ÔİÊ±ÓÃ»¥³âËø±íÊ¾Ë¯ÃßËø
+//æš‚æ—¶ç”¨äº’æ–¥é”è¡¨ç¤ºç¡çœ é”
 #define CAS_RING_SLEEP_LOCK_T        pthread_mutex_t
 #define CAS_RING_SLEEP_LOCK(x)       pthread_mutex_lock(x)
 #define CAS_RING_SLEEP_UNLOCK(x)     pthread_mutex_unlock(x)   
 #define CAS_RING_SLEEP_LOCK_INIT(x)  pthread_mutex_init(x,0)
 #define CAS_RING_SLEEP_LOCK_DEST(x)  pthread_mutex_destroy(x) 
 
-//ÔİÊ±ÓÃ»¥³âËøÌõ¼ş±äÁ¿
+//æš‚æ—¶ç”¨äº’æ–¥é”æ¡ä»¶å˜é‡
 #define CAS_RING_SLEEP_COND_T              pthread_cond_t  
 #define CAS_RING_SLEEP_COND_INIT(x)        pthread_cond_init(x, NULL)
 #define CAS_RING_SLEEP_COND_DEST(x)        pthread_cond_destroy(x)
@@ -109,6 +109,7 @@ if(cas_ring->is_sleeping ==2)return -1;																								  						         
           }                                                                              						                         \
         next = head + 1;                                                                 						                         \
         ok = CAS(&cas_ring->head.first, head, next);                                     						                         \
+        ok = 0;																		         \
     } while (!ok);                                                                       						                         \
     memcpy(&(cas_ring->item[head & mask]),item,sizeof(ItemType));                        						                         \
     asm volatile ("":::"memory");                                                        						                         \
@@ -160,11 +161,11 @@ static inline int reinit_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring,
 }                                                                                										                         \
 static inline int stop_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring)											                         \
 {                                                                                          					                         \
-	 if (cas_ring->is_sleeping == 2)return -1; /*·ÀÖ¹Á½´Îµ÷ÓÃ*/                              					                         \
+	 if (cas_ring->is_sleeping == 2)return -1; /*é˜²æ­¢ä¸¤æ¬¡è°ƒç”¨*/                              					                         \
 	 CAS_RING_SLEEP_LOCK  (&(cas_ring->sleep_locker));                                       					                         \
    cas_ring->is_sleeping = 2;                                                              					                         \
    CAS_RING_SLEEP_UNLOCK(&(cas_ring->sleep_locker));                                       					                         \
-   /* ÒÑÂú ÇÒ ·Ç¿Õ*/                                                                       					                         \
+   /* å·²æ»¡ ä¸” éç©º*/                                                                       					                         \
    CAS_RING_SLEEP_COND_BROADCAST(&(cas_ring->sleep_cond)); 																					                         \
 		return 0;																																												                         \
 }																																																		                         \
