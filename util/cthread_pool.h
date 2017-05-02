@@ -160,7 +160,6 @@ thread_pool_add_task (CThread_pool_t *pool,void *(*process) (void *arg), void *a
 int  
 thread_pool_destroy (CThread_pool_t *pool)  
 {  
-    sleep(1);
     if (pool->shutdown)  
         return -1;/*防止两次调用*/  
     pool->shutdown = 1;  
@@ -342,6 +341,7 @@ inline int de_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
    		  	THREAD_TASK_QUEUE_SLEEP_COND_WAIT(&(thread_task_queue->sleep_cond),&(thread_task_queue->sleep_locker));
    	    
    	     THREAD_TASK_QUEUE_SLEEP_UNLOCK(&(thread_task_queue->sleep_locker));
+					ok = 0;
 					continue;
          }
          
@@ -395,7 +395,7 @@ int
 test_main (int argc, char **argv)  
 {  
 	CThread_pool_t  *pool = (CThread_pool_t *) malloc (sizeof (CThread_pool_t));  
-    thread_pool_init (pool,3,1024);/*线程池中最多三个活动线程*/  
+    thread_pool_init (pool,8,1024);/*线程池中最多三个活动线程*/  
       
     /*连续向池中投入10个任务*/  
     int *workingnum = (int *) malloc (sizeof (int) * 10);  
