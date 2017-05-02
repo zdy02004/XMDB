@@ -394,7 +394,7 @@ myprocess (void *arg)
 int  
 test_main (int argc, char **argv)  
 {  
-	CThread_pool_t  *pool;
+	CThread_pool_t  *pool = (CThread_pool_t *) malloc (sizeof (CThread_pool_t));  
     thread_pool_init (pool,3,1024);/*线程池中最多三个活动线程*/  
       
     /*连续向池中投入10个任务*/  
