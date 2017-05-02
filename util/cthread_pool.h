@@ -7,7 +7,7 @@
 #include <assert.h>  
 #include <emmintrin.h>
 #include <string.h>
-
+#include "log/log_util.h"
 #ifndef __CTHREAD_POOL__
 #define __CTHREAD_POOL__
 
@@ -34,14 +34,14 @@ extern "C" {
  
 #define PThread_T   pthread_t
 #define PTHREAD_CREATE(a,b,c,d)    pthread_create(a,b,c,d)
-//ÔİÊ±ÓÃ»¥³âËø±íÊ¾Ë¯ÃßËø
+//æš‚æ—¶ç”¨äº’æ–¥é”è¡¨ç¤ºç¡çœ é”
 #define THREAD_TASK_QUEUE_SLEEP_LOCK_T        pthread_mutex_t
 #define THREAD_TASK_QUEUE_SLEEP_LOCK(x)       pthread_mutex_lock(x)
 #define THREAD_TASK_QUEUE_SLEEP_UNLOCK(x)     pthread_mutex_unlock(x)   
 #define THREAD_TASK_QUEUE_SLEEP_LOCK_INIT(x)  pthread_mutex_init(x,0)
 #define THREAD_TASK_QUEUE_SLEEP_LOCK_DEST(x)  pthread_mutex_destroy(x) 
 
-//ÔİÊ±ÓÃ»¥³âËøÌõ¼ş±äÁ¿
+//æš‚æ—¶ç”¨äº’æ–¥é”æ¡ä»¶å˜é‡
 #define THREAD_TASK_QUEUE_SLEEP_COND_T              pthread_cond_t  
 #define THREAD_TASK_QUEUE_SLEEP_COND_INIT(x)        pthread_cond_init(x, NULL)
 #define THREAD_TASK_QUEUE_SLEEP_COND_DEST(x)        pthread_cond_destroy(x)
@@ -50,14 +50,14 @@ extern "C" {
 #define THREAD_TASK_QUEUE_SLEEP_COND_BROADCAST(x)   pthread_cond_broadcast(x)
   
 /* 
-*Ïß³Ì³ØÀïËùÓĞÔËĞĞºÍµÈ´ıµÄÈÎÎñ¶¼ÊÇÒ»¸öCThread_worker 
-*·ÅÔÚÑ­»·ringÖĞ 
+*çº¿ç¨‹æ± é‡Œæ‰€æœ‰è¿è¡Œå’Œç­‰å¾…çš„ä»»åŠ¡éƒ½æ˜¯ä¸€ä¸ªCThread_worker 
+*æ”¾åœ¨å¾ªç¯ringä¸­ 
 */  
 typedef struct thread_task_entry_t
 {  
-    /*»Øµ÷º¯Êı£¬ÈÎÎñÔËĞĞÊ±»áµ÷ÓÃ´Ëº¯Êı£¬×¢ÒâÒ²¿ÉÉùÃ÷³ÉÆäËüĞÎÊ½*/  
+    /*å›è°ƒå‡½æ•°ï¼Œä»»åŠ¡è¿è¡Œæ—¶ä¼šè°ƒç”¨æ­¤å‡½æ•°ï¼Œæ³¨æ„ä¹Ÿå¯å£°æ˜æˆå…¶å®ƒå½¢å¼*/  
     void *(*process) (void *arg);  
-    void *arg;/*»Øµ÷º¯ÊıµÄ²ÎÊı*/    
+    void *arg;/*å›è°ƒå‡½æ•°çš„å‚æ•°*/    
 } thread_task_entry_t;  
   
   
@@ -79,9 +79,9 @@ typedef struct thread_task_queue_t {
     char pad2[CACHE_LINE_SIZE - 4 * sizeof(uint32_t)];
     
     uint32_t max;
-    THREAD_TASK_QUEUE_SLEEP_LOCK_T  sleep_locker; //Ïû·ÑÕßË¯ÃßËø
-    int                             is_sleeping;  //ÊÇ·ñÔÚË¯Ãß
-    THREAD_TASK_QUEUE_SLEEP_COND_T  sleep_cond;   //Ïû·ÑÕßË¯ÃßÌõ¼ş±äÁ¿
+    THREAD_TASK_QUEUE_SLEEP_LOCK_T  sleep_locker; //æ¶ˆè´¹è€…ç¡çœ é”
+    int                             is_sleeping;  //æ˜¯å¦åœ¨ç¡çœ 
+    THREAD_TASK_QUEUE_SLEEP_COND_T  sleep_cond;   //æ¶ˆè´¹è€…ç¡çœ æ¡ä»¶å˜é‡
     thread_task_entry_t    * item;
 }thread_task_queue_t;
 //__________________________________________________________
@@ -94,21 +94,21 @@ int destroy_task_queue(thread_task_queue_t * thread_task_queue) ;
 
 
 //__________________________________________________________
-/*Ïß³Ì³Ø½á¹¹*/  
+/*çº¿ç¨‹æ± ç»“æ„*/  
 typedef struct  CThread_pool_t
 {  
     //pthread_mutex_t queue_lock;  
     //pthread_cond_t queue_ready;  
   
-    /*ÈÎÎñ¶ÓÁĞ*/  
+    /*ä»»åŠ¡é˜Ÿåˆ—*/  
     thread_task_queue_t *task_queue;  
   
-    /*ÊÇ·ñÏú»ÙÏß³Ì³Ø*/  
+    /*æ˜¯å¦é”€æ¯çº¿ç¨‹æ± */  
     int shutdown;  
     PThread_T *threadid;  
-    /*Ïß³Ì³ØÖĞÔÊĞíµÄ»î¶¯Ïß³ÌÊıÄ¿*/  
+    /*çº¿ç¨‹æ± ä¸­å…è®¸çš„æ´»åŠ¨çº¿ç¨‹æ•°ç›®*/  
     int max_thread_num;  
-    /*µ±Ç°µÈ´ı¶ÓÁĞµÄÈÎÎñÊıÄ¿*/  
+    /*å½“å‰ç­‰å¾…é˜Ÿåˆ—çš„ä»»åŠ¡æ•°ç›®*/  
     int cur_queue_size;  
   
 } CThread_pool_t;  
@@ -137,55 +137,55 @@ thread_pool_init (CThread_pool_t *pool,int max_thread_num,uint32_t max_task)
 }  
   
   
-/*ÏòÏß³Ì³ØÖĞ¼ÓÈëÈÎÎñ*/  
+/*å‘çº¿ç¨‹æ± ä¸­åŠ å…¥ä»»åŠ¡*/  
 int  
 thread_pool_add_task (CThread_pool_t *pool,void *(*process) (void *arg), void *arg)  
 {  
 	//printf("thread_pool_add_task %ld,%ld,%ld,%ld\n",pool,process,arg/*,pool->task_queue*/);
   //printf("pool->task_queue %ld \n",pool->task_queue);
 
-    /*¹¹ÔìÒ»¸öĞÂÈÎÎñ*/  
+    /*æ„é€ ä¸€ä¸ªæ–°ä»»åŠ¡*/  
     thread_task_entry_t item;  
     item.process = process;  
     item.arg = arg;  
   
-    /*½«ÈÎÎñ¼ÓÈëµ½µÈ´ı¶ÓÁĞÖĞ*/  
+    /*å°†ä»»åŠ¡åŠ å…¥åˆ°ç­‰å¾…é˜Ÿåˆ—ä¸­*/  
     return en_thread_task_queue(pool->task_queue, &item);  
 }  
   
   
   
-/*Ïú»ÙÏß³Ì³Ø£¬µÈ´ı¶ÓÁĞÖĞµÄÈÎÎñ²»»áÔÙ±»Ö´ĞĞ£¬µ«ÊÇÕıÔÚÔËĞĞµÄÏß³Ì»áÒ»Ö± 
-°ÑÈÎÎñÔËĞĞÍêºóÔÙÍË³ö*/  
+/*é”€æ¯çº¿ç¨‹æ± ï¼Œç­‰å¾…é˜Ÿåˆ—ä¸­çš„ä»»åŠ¡ä¸ä¼šå†è¢«æ‰§è¡Œï¼Œä½†æ˜¯æ­£åœ¨è¿è¡Œçš„çº¿ç¨‹ä¼šä¸€ç›´ 
+æŠŠä»»åŠ¡è¿è¡Œå®Œåå†é€€å‡º*/  
 int  
 thread_pool_destroy (CThread_pool_t *pool)  
 {  
     if (pool->shutdown)  
-        return -1;/*·ÀÖ¹Á½´Îµ÷ÓÃ*/  
+        return -1;/*é˜²æ­¢ä¸¤æ¬¡è°ƒç”¨*/  
     pool->shutdown = 1;  
    
    THREAD_TASK_QUEUE_SLEEP_LOCK(&(pool->task_queue->sleep_locker));
    pool->task_queue->is_sleeping = 2;
    THREAD_TASK_QUEUE_SLEEP_UNLOCK(&(pool->task_queue->sleep_locker));
   
-    /*»½ĞÑËùÓĞµÈ´ıÏß³Ì£¬Ïß³Ì³ØÒªÏú»ÙÁË*/  
+    /*å”¤é†’æ‰€æœ‰ç­‰å¾…çº¿ç¨‹ï¼Œçº¿ç¨‹æ± è¦é”€æ¯äº†*/  
     THREAD_TASK_QUEUE_SLEEP_COND_BROADCAST(&(pool->task_queue->sleep_cond));  
   
-    /*×èÈûµÈ´ıÏß³ÌÍË³ö£¬·ñÔò¾Í³É½©Ê¬ÁË*/  
+    /*é˜»å¡ç­‰å¾…çº¿ç¨‹é€€å‡ºï¼Œå¦åˆ™å°±æˆåƒµå°¸äº†*/  
     int i;  
     for (i = 0; i < pool->max_thread_num; i++)  
         pthread_join (pool->threadid[i], NULL);  
     free (pool->threadid);  
   
-    /*Ïú»ÙµÈ´ı¶ÓÁĞ*/  
+    /*é”€æ¯ç­‰å¾…é˜Ÿåˆ—*/  
     destroy_task_queue(pool->task_queue);
     
-    /*Ìõ¼ş±äÁ¿ºÍ»¥³âÁ¿Ò²±ğÍüÁËÏú»Ù*/  
+    /*æ¡ä»¶å˜é‡å’Œäº’æ–¥é‡ä¹Ÿåˆ«å¿˜äº†é”€æ¯*/  
     //pthread_mutex_destroy(&(pool->queue_lock));  
     //pthread_cond_destroy(&(pool->queue_ready));  
     free (pool->task_queue);
     free (pool);  
-    /*Ïú»ÙºóÖ¸ÕëÖÃ¿ÕÊÇ¸öºÃÏ°¹ß*/  
+    /*é”€æ¯åæŒ‡é’ˆç½®ç©ºæ˜¯ä¸ªå¥½ä¹ æƒ¯*/  
     pool=NULL;  
     return 0;  
 }  
@@ -200,18 +200,18 @@ void* thread_routine (void *pool)
     while (1)  
     {  
        //THREAD_TASK_QUEUE_SLEEP_LOCK_T (&(pool->queue_lock));  
-       ///*Èç¹ûµÈ´ı¶ÓÁĞÎª0²¢ÇÒ²»Ïú»ÙÏß³Ì³Ø£¬Ôò´¦ÓÚ×èÈû×´Ì¬; ×¢Òâ 
-       //pthread_cond_waitÊÇÒ»¸öÔ­×Ó²Ù×÷£¬µÈ´ıÇ°»á½âËø£¬»½ĞÑºó»á¼ÓËø*/  
+       ///*å¦‚æœç­‰å¾…é˜Ÿåˆ—ä¸º0å¹¶ä¸”ä¸é”€æ¯çº¿ç¨‹æ± ï¼Œåˆ™å¤„äºé˜»å¡çŠ¶æ€; æ³¨æ„ 
+       //pthread_cond_waitæ˜¯ä¸€ä¸ªåŸå­æ“ä½œï¼Œç­‰å¾…å‰ä¼šè§£é”ï¼Œå”¤é†’åä¼šåŠ é”*/  
        //while (pool->cur_queue_size == 0 && !pool->shutdown)  
        //{  
        //    printf ("thread 0x%x is waiting\n", pthread_self ());  
        //    pthread_cond_wait (&(pool->queue_ready), &(pool->queue_lock));  
        //}  
   
-        /*Ïß³Ì³ØÒªÏú»ÙÁË*/  
+        /*çº¿ç¨‹æ± è¦é”€æ¯äº†*/  
        // if (((CThread_pool_t *)pool)->shutdown)  
         //{  
-            /*Óöµ½break,continue,returnµÈÌø×ªÓï¾ä£¬Ç§Íò²»ÒªÍü¼ÇÏÈ½âËø*/  
+            /*é‡åˆ°break,continue,returnç­‰è·³è½¬è¯­å¥ï¼Œåƒä¸‡ä¸è¦å¿˜è®°å…ˆè§£é”*/  
        //     pthread_mutex_unlock (&(pool->queue_lock));  
             //DEBUG ("thread 0x%x will exit\n", pthread_self ());  
           //  return (void*)0;
@@ -219,16 +219,16 @@ void* thread_routine (void *pool)
   
         //printf ("thread 0x%x is starting to work\n", pthread_self ());  
   
-        /*assertÊÇµ÷ÊÔµÄºÃ°ïÊÖ*/  
+        /*assertæ˜¯è°ƒè¯•çš„å¥½å¸®æ‰‹*/  
        // assert (pool->cur_queue_size != 0);  
        // assert (pool->queue_head != NULL);  
           
-        /*µÈ´ı¶ÓÁĞ³¤¶È¼õÈ¥1£¬²¢È¡³öÁ´±íÖĞµÄÍ·ÔªËØ*/  
+        /*ç­‰å¾…é˜Ÿåˆ—é•¿åº¦å‡å»1ï¼Œå¹¶å–å‡ºé“¾è¡¨ä¸­çš„å¤´å…ƒç´ */  
         //pool->cur_queue_size--; 
        
         ret = de_thread_task_queue(((CThread_pool_t *)pool)->task_queue, &item) ;
         if(1 == ret)return (void*)0;
-        /*µ÷ÓÃ»Øµ÷º¯Êı£¬Ö´ĞĞÈÎÎñ*/  
+        /*è°ƒç”¨å›è°ƒå‡½æ•°ï¼Œæ‰§è¡Œä»»åŠ¡*/  
         //if(!(item.process)){
         //	//int* i = (((struct param *)(item.arg))->i);
         //	printf("bad item is %ld\n",1);
@@ -236,7 +236,7 @@ void* thread_routine (void *pool)
         //	}
         (*(item.process)) (item.arg);  
     }  
-    /*ÕâÒ»¾äÓ¦¸ÃÊÇ²»¿É´ïµÄ*/  
+    /*è¿™ä¸€å¥åº”è¯¥æ˜¯ä¸å¯è¾¾çš„*/  
    return (void*)0;  
 }  
  
@@ -261,7 +261,7 @@ inline int init_thread_task_queue(thread_task_queue_t * thread_task_queue,uint32
     thread_task_queue->head.mask = thread_task_queue->tail.mask = max-1;
     return 0;  
 }  
- // Èë¶ÓÁĞ
+ // å…¥é˜Ÿåˆ—
 inline int en_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_task_entry_t* item)  
 {  
 	  DEBUG("en_thread_task_queue\n"	);
@@ -273,7 +273,7 @@ inline int en_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
     do {
         head = thread_task_queue->head.first;
         tail = thread_task_queue->tail.second;
-        // ÒÑÂú ÇÒ ·Ç¿Õ
+        // å·²æ»¡ ä¸” éç©º
         if (((head - tail) > mask) && (!((tail == head) || (tail > head && (head - tail) > mask))))
         	{
         		DEBUG("%ld %s,head=%ld,tail=%ld\n",__LINE__,"The thread_task_queue_t is full",head,tail);
@@ -293,7 +293,7 @@ inline int en_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
     thread_task_queue->head.second = next;
     
     
-    // Èç¹ûĞ´ÕßÔÚË¯Ãß¾Í»½ĞÑËû
+    // å¦‚æœå†™è€…åœ¨ç¡çœ å°±å”¤é†’ä»–
   // if( 1 == thread_task_queue->is_sleeping)
   //{
   // //DEBUG("en_trans TRANS_QUEUE_SLEEP_LOCK\n"	);
@@ -309,7 +309,7 @@ inline int en_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
     
     return 0;  
 }  
-  // ³ö¶ÓÁĞ
+  // å‡ºé˜Ÿåˆ—
 inline int de_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_task_entry_t * item)  
 {     
     uint32_t tail, head, mask, next;
@@ -326,7 +326,7 @@ inline int de_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
         if ((tail == head) || (tail > head && (head - tail) > mask))
         {
         
-        //Îª¿Õ¾ÍË¯Ãß
+        //ä¸ºç©ºå°±ç¡çœ 
         THREAD_TASK_QUEUE_SLEEP_LOCK(&(thread_task_queue->sleep_locker));
         if( 0 == thread_task_queue->is_sleeping)
    		  {
@@ -360,8 +360,8 @@ inline int de_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
     thread_task_queue->tail.second = next;
     return 0;
 }  
-/* ÏÂÃæÊÇ¹ØÓÚÑ­»·Êı×é»º³åÇøµÄ²Ù×÷Ïà¹ØµÄ²Ù×÷*/
-// Í£ÈÕÖ¾ºó,ÖØ½¨ »º³åÇø
+/* ä¸‹é¢æ˜¯å…³äºå¾ªç¯æ•°ç»„ç¼“å†²åŒºçš„æ“ä½œç›¸å…³çš„æ“ä½œ*/
+// åœæ—¥å¿—å,é‡å»º ç¼“å†²åŒº
 inline int reinit_thread_task_queue(thread_task_queue_t * thread_task_queue,uint32_t max)  
 {  
     free(thread_task_queue->item);  
@@ -369,7 +369,7 @@ inline int reinit_thread_task_queue(thread_task_queue_t * thread_task_queue,uint
     return init_thread_task_queue(thread_task_queue, max);  
 } 
 
-  //Çå³ıÈÕÖ¾»º³å¶ÓÁĞ
+  //æ¸…é™¤æ—¥å¿—ç¼“å†²é˜Ÿåˆ—
 int destroy_task_queue(thread_task_queue_t * thread_task_queue)  
 {  
 	  THREAD_TASK_QUEUE_SLEEP_COND_DEST(&(thread_task_queue->sleep_cond));
@@ -380,13 +380,13 @@ int destroy_task_queue(thread_task_queue_t * thread_task_queue)
 //_________________________________________________________ 
  
  
-//    ÏÂÃæÊÇ²âÊÔ´úÂë  
+//    ä¸‹é¢æ˜¯æµ‹è¯•ä»£ç   
   
 void *  
 myprocess (void *arg)  
 {  
     printf ("threadid is 0x%x, working on task %d\n", pthread_self (),*(int *) arg);  
-    sleep (1);/*ĞİÏ¢Ò»Ãë£¬ÑÓ³¤ÈÎÎñµÄÖ´ĞĞÊ±¼ä*/  
+    sleep (1);/*ä¼‘æ¯ä¸€ç§’ï¼Œå»¶é•¿ä»»åŠ¡çš„æ‰§è¡Œæ—¶é—´*/  
     return NULL;  
 }  
   
@@ -394,9 +394,9 @@ int
 test_main (int argc, char **argv)  
 {  
 	CThread_pool_t  *pool;
-    thread_pool_init (pool,3,1024);/*Ïß³Ì³ØÖĞ×î¶àÈı¸ö»î¶¯Ïß³Ì*/  
+    thread_pool_init (pool,3,1024);/*çº¿ç¨‹æ± ä¸­æœ€å¤šä¸‰ä¸ªæ´»åŠ¨çº¿ç¨‹*/  
       
-    /*Á¬ĞøÏò³ØÖĞÍ¶Èë10¸öÈÎÎñ*/  
+    /*è¿ç»­å‘æ± ä¸­æŠ•å…¥10ä¸ªä»»åŠ¡*/  
     int *workingnum = (int *) malloc (sizeof (int) * 10);  
     int i;  
     for (i = 0; i < 10; i++)  
@@ -404,9 +404,9 @@ test_main (int argc, char **argv)
         workingnum[i] = i;  
         thread_pool_add_task (pool,myprocess, &workingnum[i]);  
     }  
-    /*µÈ´ıËùÓĞÈÎÎñÍê³É*/  
+    /*ç­‰å¾…æ‰€æœ‰ä»»åŠ¡å®Œæˆ*/  
     sleep (5);  
-    /*Ïú»ÙÏß³Ì³Ø*/  
+    /*é”€æ¯çº¿ç¨‹æ± */  
     thread_pool_destroy (pool);  
   
     free (workingnum);  
