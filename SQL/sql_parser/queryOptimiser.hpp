@@ -538,17 +538,17 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 //  or 重写
 
 
-//  去除多余括号
-//  常量传递 a = b and b = 5 ==> a = 5 and b =5
-//  消除 常量运算
-//  常量表达式运算            1
-//  bool表达式 化简
-//  重复条件消除
-//  having 并入 where         1
+//  去除多余括号              从解析器来消除
+//  常量传递 a = b and b = 5 ==> a = 5 and b =5 暂不打算支持（靠人来消除）
+//  消除 常量运算             只支持简单的四则运算
+//  常量表达式运算            OK
+//  bool表达式化简           暂不打算支持	
+//  重复条件消除             暂不打算支持（靠人来消除）
+//  having 并入 where        OK
 
 
 // 选择、投影操作下推 ，（不打算支持 非等 连接和下推）,选择操作扩张（关联）
-// order by 的索引利用技术 排序消除 distinct 消除
+
 // 聚合下推
 
 
@@ -556,11 +556,10 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 // 物化器的物理查询优化
 
 // 尽量使用 where 上的索引 ，索引可以启发使用 merge join
-
+// 排序时 distinct 消除
 // order by，group by，distinct，count(*),min,max 中 使用索引
 
 // 数据量较少时 不适用索引
-
 // 索引的泛化，关联表的关联条件是索引的，可以分别进行索引扫描。
 };
 
