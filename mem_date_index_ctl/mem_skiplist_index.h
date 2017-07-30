@@ -67,7 +67,17 @@ struct  mem_skiplist_entry_t				 * nil;                         //空节点
 
 
 #define MEM_SKIPLIST_INDEX_SIZE (sizeof(struct mem_skiplist_index_t))
-
+	
+int mem_skiplist_insert_help(mem_skiplist_index_t *mem_skiplist_index, 
+ 			     mem_skiplist_entry_t *prev, int level,
+ 			     mem_skiplist_entry_t *in,
+ 			     struct  record_t ** last_insert_skiplist_record 
+ 			    );
+ 											 
+inline int mem_skiplist_delete_help(mem_skiplist_index_t *mem_skiplist_index, 
+							mem_skiplist_entry_t *prev, 
+							int level ,
+							mem_skiplist_entry_t *in );
 
 //建SKIPLIST索引
 inline int mem_skiplist_create(
@@ -201,7 +211,7 @@ inline int  mem_skiplist_init(mem_skiplist_index_t *mem_skiplist_index)
    													mem_skiplist_index->heap_space->config.mem_blocks_table, 
    													0,&record_ptr);
    // nil 非空，则不再需要初始化
-   if(record_ptr->is_used)return;
+   if(record_ptr->is_used)return 0;
    
    
    //DEBUG("Enter mem_skiplist_insert(),insert value is %ld ;\n",key->skiplist_lkey);
@@ -827,10 +837,10 @@ inline void mem_skiplist_print_each_level(mem_skiplist_index_t *mem_skiplist_ind
   for(;i< mem_skiplist_index->config.max_level+1 ;++i){
   int count = 0;
   mem_skiplist_entry_t * prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index,i );  
-  TICK 
+  //TICK 
   count =  mem_skiplist_cout_to_end(mem_skiplist_index,prev_entry); 
   printf("Levle [%d]'s count is %d , used ",i,count);
-  TOCK
+  //TOCK
   
   }
 } 		
