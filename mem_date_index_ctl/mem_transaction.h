@@ -1931,11 +1931,11 @@ int err;
 
 unsigned  long long       scn           = item->scn;                //本记录的逻辑ID
 long long                 trans_no			= item->trans_no;						//当前事物号
-time_t                    create_time		= item->create_time;        //action 时间
+time_t                    create_time		        = item->create_time;        //action 时间
 short                     is_close			= item->is_close;           //是否在写入后关闭fd
 short                     redo_type			= item->redo_type;          //redo 操作类型
 long                      object_no			= item->object_no;          //表或索引的 no  --- 需要在业务中填充 用于重做
-unsigned   long           block_no			= item->block_no;           //块号					 --- 需要在业务中填充 用于重做
+           long           block_no			= item->block_no;           //块号					 --- 需要在业务中填充 用于重做
 unsigned   long           record_num		= item->record_num;			    //行号           --- 需要在业务中填充 用于重做
 char                      name[256];														    //表或索引的名字
 strcpy(name,item->name);
