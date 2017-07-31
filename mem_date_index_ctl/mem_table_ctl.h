@@ -209,7 +209,7 @@ long               down_block_no;			      //下一层节点索引所在的块号
 unsigned  long     down_record_num; 				//下一层节点索引所在的行号
 long               right_block_no;			    //右节点索引所表的块顺序号
 unsigned  long     right_record_num; 			  //右节点索引据所在的行号
-//char                    rbtree_ckey[32];          //字符串 hash key 值,暂时支持到32这么长的字符串
+char               ckey[32];                              //字符串 hash key 值,暂时支持到32这么长的字符串
 
 } __attribute__ ((packed, aligned (64))) mem_skiplist_entry_t;
 
