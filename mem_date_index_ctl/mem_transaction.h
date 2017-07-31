@@ -145,6 +145,10 @@ extern "C" {
 #define OPT_INDEX_SKIPLIST_DELETE      13
 // 表 skiplist update 数据
 #define OPT_INDEX_SKIPLIST_UPDATE      14
+// 表 skiplist str delete  数据
+#define OPT_INDEX_SKIPLIST_DELETE_STR   15
+// 表 skiplist str update 数据
+#define OPT_INDEX_SKIPLIST_UPDATE_STR   16
 
 // 事物动作，一项代表一个事务动作
 //存到临时表中，满了以后，写入硬盘，作为日志数据文件。
