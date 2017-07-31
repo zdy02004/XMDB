@@ -2131,6 +2131,44 @@ DEBUG("Search_opened_file %s return  %d\n",log_data_file,err);
     if(err){ERROR("OPT_INDEX_SKIPLIST_DELETE err is %d\n",err);return err;}
 		break;
   }
+case OPT_INDEX_RBTREE_DELETE_STR:
+		{
+    mem_rbtree_entry_t * input =(mem_rbtree_entry_t *)(recover_buf); // undo_addr_ptr 对应 mem_rbtree_entry_t
+		struct    record_t   **  out_record_ptr;																					
+		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
+		err = mem_rbtree_delete_str(
+                        /* in */ mem_rbtree_index,
+                        				 mem_rbtree_index->root,
+                        /* out */input
+                        );
+    if(err){ERROR("OPT_INDEX_HASH_DELETE err is %d\n",err);return err;}
+		break;
+  }
+  case OPT_INDEX_SKIPLIST_INSERT_STR:
+		{
+		mem_skiplist_entry_t * input =(mem_skiplist_entry_t *)(recover_buf); // undo_addr_ptr 对应 mem_rbtree_entry_t
+		struct    record_t   **  out_record_ptr;																					
+		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
+		err = mem_skiplist_insert_str(
+                        /* in */ mem_skiplist_index,
+                        /* out */input,
+                        out_record_ptr
+                        );
+    if(err){ERROR("OPT_INDEX_SKIPLIST_INSERT err is %d\n",err);return err;}
+		break;
+  }
+  case OPT_INDEX_SKIPLIST_DELETE_STR:
+	{
+    mem_skiplist_entry_t * input =(mem_skiplist_entry_t *)(recover_buf); // undo_addr_ptr 对应 mem_rbtree_entry_t
+		struct    record_t   **  out_record_ptr;																					
+		//mem_rbtree_index_t *mem_rbtree_index = (mem_rbtree_index_t *)ori_data_start;	// ori_data_start 对应 mem_rbtree_index_t
+		err = mem_skiplist_delete_str(
+                        /* in */ mem_skiplist_index,
+                        /* out */input
+                        );
+    if(err){ERROR("OPT_INDEX_SKIPLIST_DELETE err is %d\n",err);return err;}
+		break;
+  }
 
   default:
  			ERROR("Unkonw redo_type [%d]\n",redo_type);
