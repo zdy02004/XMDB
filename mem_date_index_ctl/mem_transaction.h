@@ -1863,20 +1863,7 @@ inline int rollback_trans( long long  trans_no)
     if(err){ERROR("OPT_INDEX_RBTREE_INSERT err is %d\n",err);return err;}
 		break;
   }
-    case OPT_INDEX_RBTREE_DELETE:
-		{
-		mem_rbtree_entry_t * input =(mem_rbtree_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 mem_rbtree_entry_t
-		struct    record_t   **  out_record_ptr;																					
-    mem_rbtree_index_t      * mem_rbtree_index;
-    get_index_no_addr(object_no,(void **)(&mem_rbtree_index));
- 		err = mem_rbtree_insert(
-                        /* in */ mem_rbtree_index,
-                        				 mem_rbtree_index->root,
-                        /* out */input
-                        );
-    if(err){ERROR("OPT_INDEX_HASH_DELETE err is %d\n",err);return err;}
-		break;
-  }
+   
   case OPT_INDEX_SKIPLIST_INSERT:
 		{
 		mem_skiplist_entry_t * input =(mem_skiplist_entry_t *)(item.trans.undo_addr_ptr); // undo_addr_ptr 对应 mem_rbtree_entry_t
