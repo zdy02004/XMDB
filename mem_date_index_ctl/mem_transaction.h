@@ -137,20 +137,24 @@ extern "C" {
 #define OPT_INDEX_HASH_INSERT      9
 // 表 hash delete  数据
 #define OPT_INDEX_HASH_DELETE      10
+// 表 hash insert  数据
+#define OPT_INDEX_HASH_INSERT_STR  11
+// 表 hash delete  数据
+#define OPT_INDEX_HASH_DELETE_STR  12
 // 表 hash update 数据
-#define OPT_INDEX_HASH_UPDATE      11
+#define OPT_INDEX_HASH_UPDATE      13
 // 表 skiplist insert  数据
-#define OPT_INDEX_SKIPLIST_INSERT      12
+#define OPT_INDEX_SKIPLIST_INSERT      14
 // 表 skiplist delete  数据
-#define OPT_INDEX_SKIPLIST_DELETE      13
+#define OPT_INDEX_SKIPLIST_DELETE      15
 // 表 skiplist update 数据
-#define OPT_INDEX_SKIPLIST_UPDATE      14
+#define OPT_INDEX_SKIPLIST_UPDATE      16
 // 表 skiplist str delete  数据
-#define OPT_INDEX_SKIPLIST_DELETE_STR   15
+#define OPT_INDEX_SKIPLIST_DELETE_STR   17
 // 表 skiplist str update 数据
-#define OPT_INDEX_SKIPLIST_UPDATE_STR   16
+#define OPT_INDEX_SKIPLIST_UPDATE_STR   18
 // 表 skiplist str insert  数据
-#define OPT_INDEX_SKIPLIST_INSERT_STR   17
+#define OPT_INDEX_SKIPLIST_INSERT_STR      19
 
 // 事物动作，一项代表一个事务动作
 //存到临时表中，满了以后，写入硬盘，作为日志数据文件。
@@ -1386,7 +1390,9 @@ inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 	case OPT_INDEX_RBTREE_INSERT:
 	case OPT_INDEX_RBTREE_DELETE:
 	case OPT_INDEX_HASH_INSERT:
-	case OPT_INDEX_HASH_DELETE:		
+	case OPT_INDEX_HASH_DELETE:
+	case OPT_INDEX_HASH_INSERT_STR:
+	case OPT_INDEX_HASH_DELETE_STR:	
 	case OPT_INDEX_HASH_UPDATE:
 	case OPT_INDEX_SKIPLIST_INSERT:
 	case OPT_INDEX_SKIPLIST_DELETE:
@@ -1414,6 +1420,8 @@ inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 	case OPT_INDEX_RBTREE_DELETE:
 	case OPT_INDEX_HASH_INSERT:
 	case OPT_INDEX_HASH_DELETE:
+	case OPT_INDEX_HASH_INSERT_STR:
+	case OPT_INDEX_HASH_DELETE_STR:	
 	case OPT_INDEX_HASH_UPDATE:
 	case OPT_INDEX_SKIPLIST_INSERT:
 	case OPT_INDEX_SKIPLIST_DELETE:
