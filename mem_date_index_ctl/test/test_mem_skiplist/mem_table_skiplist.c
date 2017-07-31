@@ -157,6 +157,7 @@ mem_skiplist_entry_t index6;
 index6.lkey = 6;
 index6.block_no =6;
 index6.record_num = 6;
+strcpy(index6.ckey,"abcdefg6");
 
 struct  record_t * last_insert_skiplist_entry;
 
@@ -167,7 +168,7 @@ if(0!=(mem_skiplist_insert(mem_skiplist_index,&index1, &last_insert_skiplist_ent
 if(0!=(mem_skiplist_insert(mem_skiplist_index, &index2, &last_insert_skiplist_entry))){ERROR("mem_skiplist_insert err2 is %d\n",err);return err;}
 if(0!=(mem_skiplist_insert(mem_skiplist_index, &index3, &last_insert_skiplist_entry))){ERROR("mem_skiplist_insert err3 is %d\n",err);return err;}
 //if(0!=(mem_skiplist_insert(mem_skiplist_index, &index5, &last_insert_skiplist_entry))){ERROR("mem_skiplist_insert err4 is %d\n",err);return err;}
-//if(0!=(mem_skiplist_insert(mem_skiplist_index, &index6, &last_insert_skiplist_entry))){ERROR("mem_skiplist_insert err5 is %d\n",err);return err;}
+if(0!=(mem_skiplist_insert_str(mem_skiplist_index, &index6, &last_insert_skiplist_entry))){ERROR("mem_skiplist_insert err5 is %d\n",err);return err;}
 
 
 
