@@ -67,12 +67,12 @@ struct  mem_skiplist_entry_t				 * nil;                         //空节点
 
 
 #define MEM_SKIPLIST_INDEX_SIZE (sizeof(struct mem_skiplist_index_t))
-	
+
 int mem_skiplist_insert_help(mem_skiplist_index_t *mem_skiplist_index, 
- 			     mem_skiplist_entry_t *prev, int level,
- 			     mem_skiplist_entry_t *in,
- 			     struct  record_t ** last_insert_skiplist_record 
- 			    );
+ 												mem_skiplist_entry_t *prev, int level,
+ 												mem_skiplist_entry_t *in,
+ 												struct  record_t ** last_insert_skiplist_record 
+ 											 );
  											 
 inline int mem_skiplist_delete_help(mem_skiplist_index_t *mem_skiplist_index, 
 							mem_skiplist_entry_t *prev, 
@@ -1076,7 +1076,640 @@ int mem_skiplist_search(mem_skiplist_index_t *mem_skiplist_index,
  	if(err)return err;								 	
 	}
 
+///////////////////////////////str/////////////////////////////////
+int mem_skiplist_insert_help_str(mem_skiplist_index_t *mem_skiplist_index, 
+ 												mem_skiplist_entry_t *prev, int level,
+ 												mem_skiplist_entry_t *in,
+ 												struct  record_t ** last_insert_skiplist_record 
+ 											 );
+ 											 
+inline int mem_skiplist_delete_help_str(mem_skiplist_index_t *mem_skiplist_index, 
+							mem_skiplist_entry_t *prev, 
+							int level ,
+							mem_skiplist_entry_t *in );
+
+
+int mem_skiplist_insert_str(mem_skiplist_index_t *mem_skiplist_index, 
+												mem_skiplist_entry_t *in,
+ 												struct  record_t **  inserted
+ 												)
+{
+	int maxLevel = mem_skiplist_index->config.max_level;
+	//int level    = mem_random_next(&(mem_skiplist_index->config.random) );
+	int err = 0;
+	do{
+	err = mem_skiplist_insert_help_str(mem_skiplist_index,
+																	NULL,	mem_skiplist_randlevel(mem_skiplist_index) ,
+																	in,
+																	inserted);
+	if(err == SKIPLIST_INDEX_ERR_GETDOWN_FAILED)ERROR("SKIPLIST_INDEX_ERR_GETDOWN_FAILED\n");	
+	if(err == SKIPLIST_INDEX_ERR_GETGE_FAILED  )ERROR("SKIPLIST_INDEX_ERR_GETGE_FAILED\n");	
+															
+	}while(err == SKIPLIST_INDEX_ERR_GETDOWN_FAILED || err == SKIPLIST_INDEX_ERR_GETGE_FAILED );
+	return err;
+} 												
+
+
+inline int mem_skiplist_delete_str(mem_skiplist_index_t *mem_skiplist_index ,mem_skiplist_entry_t *in )
+{
+	int err = 0;
+	do{
+	err = mem_skiplist_delete_help_str( mem_skiplist_index,NULL,0,in	);
+	}while(err == SKIPLIST_INDEX_ERR_GETDOWN_FAILED || err == SKIPLIST_INDEX_ERR_GETGE_FAILED );
+  return err;
+}
+
+  // 删除指定元素
+  // int level = mem_skiplist_index,mem_skiplist_index->config.max_level - 1;
+
+
+//  获得本层 == ckey 的前继节点
+inline int mem_skiplist_find_EQ_str(mem_skiplist_index_t *mem_skiplist_index, 
+ 												mem_skiplist_entry_t *prev, 
+ 												mem_skiplist_entry_t *in,
+ 												mem_skiplist_entry_t **last_find_entry 
+ 											 )
+{
+	//右指针 和 它的数据指针 
+	 record_t 						* right_record;
+	 mem_skiplist_entry_t * right_entry ;
+	 record_t 						* prev_record = NULL;
+	 mem_skiplist_entry_t * prev_entry  = prev;
+	 int err;
+	 DEBUG("Enter mem_skiplist_find_EQ_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
+	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE_str(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->ckey);
+	 do{
+	 				do{
+	 					  prev_record = (record_t *)((char *)prev_entry - RECORD_HEAD_SIZE);
+
+	 						SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&right_record                   );
+	 						SKIPLIST_RUNLOCK( &(prev_record->row_lock) );						
+	 												
+	 						if(err)return err;
+	 					}while( right_record->is_used == 0 );
+   
+	 right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);
+	 DEBUG(" go pass entry %s \n ",right_entry->ckey);
+
+	 
+	 if( mem_skiplist_index->nil != right_entry && 
+	 			strcmp( right_entry->ckey , in->ckey) < 0            )prev_entry = right_entry ;
+	 
+	 }while(right_entry != mem_skiplist_index->nil && strcmp( right_entry->ckey , in->ckey) < 0     );
+	 
+	 if( strcmp( right_entry->ckey , in->ckey ) == 0 && right_entry != mem_skiplist_index->nil){
+	 	 *last_find_entry = prev_entry;
+	 	 DEBUG(" mem_skiplist_find_EQ_str end,prev_entry is %0x \n ",prev_entry);
+
+	 	 return 0;
+	  }
+	 	else
+	 		{
+	 		return	SKIPLIST_INDEX_SEARCH_NOT_FOUND;
+	 		}
+	
+	 	 
+	 //IMPORTANT_INFO(" End mem_skiplist_find_GE_str ,prev_entry is %0x \n ",prev_entry);
+
+	  return 0;
+}
+
+//  获得本层 == ckey的当前节点
+inline int mem_skiplist_find_EQO_str(mem_skiplist_index_t *mem_skiplist_index, 
+ 												mem_skiplist_entry_t *prev, 
+ 												mem_skiplist_entry_t *in,
+ 												mem_skiplist_entry_t **last_find_entry 
+ 											 )
+{
+	//右指针 和 它的数据指针 
+	 record_t 						* right_record;
+	 mem_skiplist_entry_t * right_entry ;
+	 record_t 						* prev_record = NULL;
+	 mem_skiplist_entry_t * prev_entry  = prev;
+	 int err;
+	 DEBUG("Enter mem_skiplist_find_EQ_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
+	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
+	 do{
+	 				do{
+	 					  prev_record = (record_t *)((char *)prev_entry - RECORD_HEAD_SIZE);
+
+	 						SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&right_record                   );
+	 						SKIPLIST_RUNLOCK( &(prev_record->row_lock) );						
+	 												
+	 						if(err)return err;
+	 					}while( right_record->is_used == 0 );
+   
+	 right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);
+	 DEBUG(" go pass entry %s \n ",right_entry->ckey);
+
+	 
+	 if( mem_skiplist_index->nil != right_entry && 
+	 			strcmp( right_entry->ckey , in->ckey ) < 0  )prev_entry = right_entry ;
+	 
+	 }while(right_entry != mem_skiplist_index->nil && strcmp( right_entry->ckey , in->ckey ) < 0 );
+	 
+	 if( strcmp (right_entry->ckey , in->ckey ) == 0 && right_entry != mem_skiplist_index->nil){
+	 	 *last_find_entry = right_entry;
+	 	 DEBUG(" mem_skiplist_find_EQO_str end,prev_entry is %0x \n ",right_entry);
+
+	 	 return 0;
+	  }
+	 	else
+	 		{
+	 		return	SKIPLIST_INDEX_SEARCH_NOT_FOUND;
+	 		}
+	 	 
+	 //IMPORTANT_INFO(" End mem_skiplist_find_GE_str ,prev_entry is %0x \n ",prev_entry);
+
+	  return 0;
+}
+
+
+
+//  获得本层 >= ckey的前继节点
+inline int mem_skiplist_find_GE_str(mem_skiplist_index_t *mem_skiplist_index, 
+ 												mem_skiplist_entry_t *prev, 
+ 												mem_skiplist_entry_t *in,
+ 												mem_skiplist_entry_t **last_find_entry 
+ 											 )
+{
+	//右指针 和 它的数据指针 
+	 record_t 						* right_record = NULL;
+	 mem_skiplist_entry_t * right_entry  = NULL;
+	 record_t 						* prev_record = NULL;
+	 mem_skiplist_entry_t * prev_entry  = prev;
+	 int err;
+	 DEBUG("Enter mem_skiplist_find_GE_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
+	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
+	 do{
+	 			//	do{
+	 					  if( right_record &&right_record->is_used == 0)printf("right_record->is_used == 0 \n");
+	 						prev_record = (record_t *)((char *)prev_entry - RECORD_HEAD_SIZE);
+	 						
+	 						SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&right_record                   );
+	 						SKIPLIST_RUNLOCK( &(prev_record->row_lock) );
+	 						if( right_record->is_used == 0 )return SKIPLIST_INDEX_ERR_GETGE_FAILED;
+
+	 						if(err)return err;
+	 			//	}while( right_record->is_used == 0 );
+   
+	 right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);
+	 DEBUG(" go pass entry %s \n ",right_entry->ckey);
+
+	 
+	 if( mem_skiplist_index->nil != right_entry && 
+	 			strcmp( right_entry->ckey , in->ckey ) < 0   )prev_entry = right_entry ;
+	 
+	 }while(right_entry != mem_skiplist_index->nil && strcmp( right_entry->ckey , in->ckey ) < 0 );
+	 
+	 *last_find_entry = prev_entry;
+	 	 
+	 DEBUG(" mem_skiplist_find_GE_str end,prev_record is %0x \n ",right_record->record_num );
+	 //IMPORTANT_INFO(" End mem_skiplist_find_GE_str ,prev_record is %ld \n ",prev_entry);
+
+	  return 0;
+}
+
 //
+inline int mem_skiplist_insert_one_str(mem_skiplist_index_t *mem_skiplist_index, 
+ 																	mem_skiplist_entry_t  *prev, 
+ 																	mem_skiplist_entry_t  *in  ,
+ 																	mem_skiplist_entry_t **last_insert_entry ,
+ 																	long              *last_insert_block_no
+ 											 						)
+{	
+	DEBUG("Enter mem_skiplist_insert_one_str()\n");
+	//IMPORTANT_INFO("Enter mem_skiplist_insert_one_str()\n");
+	//要插入的前继节点
+	struct  record_t     * insert_node  = NULL;
+	mem_skiplist_entry_t * insert_entry = NULL;
+	//右指针 
+	record_t 						 * right_record = NULL;;
+	unsigned long          right_record_num;
+	//新插入的节点 
+	record_t 						 * new_record_ptr = NULL;
+	mem_skiplist_entry_t * new_entry      = NULL;
+	long                   new_block_no  ;
+	int err = 0;
+	
+	//1.先分配一个新节点
+	mem_table_insert_record( mem_skiplist_index->heap_space ,
+              &new_record_ptr,
+              &new_block_no  , /* in */
+              (char *)in
+              );
+          
+  new_entry = (mem_skiplist_entry_t *)((char *)(new_record_ptr) + RECORD_HEAD_SIZE);
+     
+				//2.获得要插入的节点,重找一次，是为了防止更新底层节点时，上层被更新
+				err = mem_skiplist_find_GE_str( mem_skiplist_index, 
+ 												prev, 
+ 												in,
+ 												&insert_entry
+ 											 );
+   
+ 				if(err)return err;							 
+ 				insert_node = (struct record_t *)((char *)(insert_entry) - RECORD_HEAD_SIZE);
+			 	DEBUG("insert_node -> record_num is %ld \n",insert_node->record_num);
+ 				
+ 				//3. 插入的时候锁前继节点，防止 前继节点被删除
+ 				//SKIPLIST_LOCK   (  &(insert_node->row_lock) ); 
+				do{ //cas
+						//3.1获得右指针节点
+ 						//do{
+ 						if(insert_node) SKIPLIST_UNLOCK (  &(insert_node->row_lock   ) ); 
+ 						SKIPLIST_LOCK   (  &(insert_node->row_lock) ); 
+								err = get_record(mem_skiplist_index->heap_space ,
+														insert_entry->right_block_no,
+														insert_entry->right_record_num,
+														&right_record                  );
+							  if(err){
+							  	//SKIPLIST_UNLOCK (  &(insert_node->row_lock   ) ); 
+							  	return err;
+							  }
+						right_record_num = 	right_record->record_num;  
+						//	}while( right_record->is_used == 0 );						
+ 						//3.2将新节点的右节点指向最新的位置 			    	
+	 					new_entry->right_record_num = insert_entry->right_record_num;
+	 					new_entry->right_block_no   = insert_entry->right_block_no;
+						
+						//3.3前继节点更新右节点为新节点
+						//insert_entry->right_record_num = new_record_ptr->record_num;
+				
+				}while(!CAS(&(insert_entry->right_record_num),right_record_num,new_record_ptr->record_num ) );
+						   insert_entry->right_block_no   = new_block_no;
+				
+					
+				//4 解锁
+ 				SKIPLIST_UNLOCK (  &(insert_node->row_lock   ) ); 
+				if(new_block_no<0) ERROR("new_block_no<0 in insert_key = %s,new_block_no is %d \n",in->ckey,new_block_no);
+
+ 	
+ 	*last_insert_entry    = new_entry;
+ 	*last_insert_block_no = new_block_no;
+ 	DEBUG("Enter mem_skiplist_insert_one_str end\n");
+ 	//IMPORTANT_INFO("End mem_skiplist_insert_one_str()\n");
+ 	return 0;
+}
+	 
+	 
+ // 插入
+int mem_skiplist_insert_help_str(mem_skiplist_index_t *mem_skiplist_index, 
+ 												mem_skiplist_entry_t *prev, int level,
+ 												mem_skiplist_entry_t *in,
+ 												struct  record_t ** last_insert_skiplist_record 
+ 											 )
+ {
+ 	DEBUG("Enter mem_skiplist_insert_help_str(),insert level is %d\n",level);	
+ 	DEBUG("Enter mem_skiplist_insert_help_str(),insert key is %s \n",in->ckey);	
+  //IMPORTANT_INFO("Enter mem_skiplist_insert_help_str(),insert key is %s,level is %ld\n",in->ckey,level);	
+	
+	//1.插入最高层，无前继节点加速
+	mem_skiplist_entry_t * prev_entry;
+	struct record_t *      prev_record;
+	int err = 0;
+	int max_level = mem_skiplist_index->config.max_level;
+	
+	//if(NULL == prev)
+	//{
+	//	   //获得当层头节点
+	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index,mem_skiplist_index->config.max_level );
+	  DEBUG("prev_entry level is %d \n",level );	
+
+	//}
+	//else //有上层节点加速
+	//  prev_entry = prev;
+	
+	DEBUG("prev_entry is %0x\n",prev_entry);	
+	
+	//2. 存储所有层上的前继节点指针
+	DEBUG("Prepare Insert one %s\n",in->ckey );								 	 					
+
+
+
+
+	mem_skiplist_entry_t * pre_array[max_level+1];//从1开始计数
+	int i = max_level;
+	for(;i> 0; --i)
+	{
+	prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE);
+	DEBUG("Store Insert pre_array %d,prev_record->record_num is %ld \n",i,prev_record->record_num);	
+
+	//2.1 将每一层的前继节点存入 pre_array
+	err =	mem_skiplist_find_GE_str( mem_skiplist_index, 
+ 												  prev_entry, 
+ 												  in,
+ 												&(pre_array[i])  
+ 											  );
+  DEBUG("$$$$$$$$$$$ pre_array[%d],prev_record  is %ld \n",i,prev_record->record_num );	
+  
+ 
+ 	if(err)return err;
+ 	//2.2 将 prev_entry 更新为他的后继节点
+ 	if(i>1){
+ 		err = mem_skiplist_get_down( mem_skiplist_index, 
+ 												 pre_array[i], 
+ 												 &prev_entry 
+ 											 );	
+ 											 
+ 		prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE);									 
+ 	  DEBUG("$$$$$$$$$$$ pre_array[%d],down_record  is %ld \n",i,prev_record->record_num );	
+   }
+   
+
+   
+ 	if(err)return err;								 	
+	}
+	
+
+	
+	//3. 在所有层上的前继节点后面插入新数据
+	//从底层往上层插入数据
+	DEBUG("Begin Insert one %s \n",in->ckey );								 	 					
+ 
+  //IMPORTANT_INFO("Mem_skiplist_insert_help Real insert !\n");	
+
+ 
+	mem_skiplist_entry_t 		*cur_insert_entry;
+	struct record_t 				*cur_record      ;
+	mem_skiplist_entry_t 		*pre_insert_entry;
+	long    pre_insert_block_no;
+	long  long            pre_insert_record_num;
+	
+	i = 1;
+	for(;i< level+1; ++i)
+	{
+		DEBUG("Begin Insert one level %d\n",i );		
+	  err = mem_skiplist_insert_one_str( mem_skiplist_index, 
+ 															pre_array[i], 
+ 															in   ,
+ 															&cur_insert_entry,
+ 															&pre_insert_block_no
+ 											 				);
+ 		if(err)return err;	
+ 		cur_record = (struct record_t *)( (char *)cur_insert_entry - RECORD_HEAD_SIZE);;	
+
+ 		// 给 down 节点赋值
+ 		if(1 !=i )
+ 		{	
+ 		DEBUG("%ld set down_record_num is %ld\n",cur_record->record_num,pre_insert_record_num);								 	 					
+ 		cur_insert_entry->down_record_num = pre_insert_record_num;
+ 		cur_insert_entry->down_block_no   = pre_insert_block_no;
+ 	  }
+ 	  pre_insert_record_num = cur_record->record_num;
+
+	}
+	 	DEBUG("Enter mem_skiplist_insert_help_str end\n");	
+    //IMPORTANT_INFO("Enter mem_skiplist_insert_help_str end\n");	
+	return 0;
+}
+
+
+
+inline int mem_skiplist_delete_one_str(mem_skiplist_index_t *mem_skiplist_index, 
+ 																	mem_skiplist_entry_t  *prev, 
+ 																	mem_skiplist_entry_t  *in  )
+{	
+	DEBUG("===Enter mem_skiplist_delete_one_str()===\n");
+	//IMPORTANT_INFO("Enter mem_skiplist_insert_one_str()\n");
+	//要删除的前继节点
+	struct  record_t     * prev_delete_node  = NULL;
+	mem_skiplist_entry_t * prev_delete_entry = NULL;
+	
+
+	//右指针 
+	record_t 						 * right_record = NULL;;
+	mem_skiplist_entry_t * right_entry;
+	unsigned long          right_record_num;
+	//要删除的节点
+	struct  record_t     * delete_node  = NULL;
+	mem_skiplist_entry_t * delete_entry = NULL;
+	int err = 0;
+
+				//1.获得要删除的节点的前继,找不到就返回 SKIPLIST_INDEX_SEARCH_NOT_FOUND
+				err = mem_skiplist_find_EQ_str( mem_skiplist_index, 
+ 												prev, 
+ 												in,
+ 												&prev_delete_entry
+ 											 );
+   
+ 				if(err)return err;							 
+ 				prev_delete_node = (struct record_t *)((char *)(prev_delete_entry) - RECORD_HEAD_SIZE);
+			 	DEBUG("Finded delete_preve_node -> record_num is %ld \n",prev_delete_node->record_num);
+ 				
+				
+ 						  
+ 				
+				do{ //CAS
+						//2获得右指针节点
+ 						//do{
+ 						if(right_record)SKIPLIST_UNLOCK (  &(right_record->row_lock   ) ); 
+								err = get_record(mem_skiplist_index->heap_space ,
+														prev_delete_entry->right_block_no,
+														prev_delete_entry->right_record_num,
+														&right_record                  );
+							  if(err){
+							  	return err;
+							  }
+							//}while( right_record->is_used == 0 );	
+						
+						//3.删除的时候，锁待删除节点，防止被后续的 表 insert 修改
+ 				    SKIPLIST_LOCK   (  &(right_record->row_lock) ); 	
+							
+						right_record_num = right_record->record_num;
+						right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);			
+ 						   		
+						//2.2前继节点更新右节点为后后节点
+						//prev_delete_entry->right_record_num = right_entry->right_record_num;
+					}while( !CAS(&(prev_delete_entry->right_record_num),right_record_num,right_entry->right_record_num) );
+						prev_delete_entry->right_block_no   = right_entry->right_block_no;
+						
+				//4 解锁
+ 				 SKIPLIST_UNLOCK (  &(right_record->row_lock   ) ); 
+ 				
+ 				//5 将需要删除的节点置失效
+ 				mem_table_del_record(mem_skiplist_index->heap_space ,right_record);
+	      //right_entry->right_record_num = right_record->record_num;
+	      
+ 	DEBUG("===End mem_skiplist_delete_one_str()=== \n");
+ 	//IMPORTANT_INFO("End mem_skiplist_insert_one_str()\n");
+ 	return 0;
+}
+
+
+inline int mem_skiplist_delete_help_str(mem_skiplist_index_t *mem_skiplist_index, 
+																			mem_skiplist_entry_t *prev, 
+																			int level ,
+																			mem_skiplist_entry_t *in )
+ {
+ 	DEBUG("Enter mem_skiplist_delete_help_str(),delete level is %d\n",level);	
+ 	DEBUG("Enter mem_skiplist_delete_help_str(),delete key is %s \n",in->ckey);	
+  //IMPORTANT_INFO("Enter mem_skiplist_delete_help_str(),delete key is %s ,level is %ld\n",in->ckey,level);	
+	
+	//1.插入最高层，无前继节点加速
+	mem_skiplist_entry_t * prev_entry;
+	struct record_t *      prev_record;
+	int err = 0;
+	int max_level = mem_skiplist_index->config.max_level;
+	
+	//if(NULL == prev)
+	//{
+	//	   //获得当层头节点
+	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index,mem_skiplist_index->config.max_level );
+	  DEBUG("prev_entry level is %d \n",level );	
+
+	//}
+	//else //有上层节点加速
+	//  prev_entry = prev;
+	
+	DEBUG("prev_entry is %0x\n",prev_entry);	
+	
+	//2. 存储所有层上的前继节点指针
+	DEBUG("Prepare delete one %s \n",in->ckey );								 	 					
+
+	mem_skiplist_entry_t * pre_array[max_level+1];//从1开始计数
+	int i = max_level;
+	for(;i> 0; --i)
+	{
+	prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE);
+	DEBUG("Store Delete pre_array %d,prev_record->record_num is %ld \n",i,prev_record->record_num);	
+
+	//2.1 将每一层的前继节点存入 pre_array
+	err =	mem_skiplist_find_GE_str( mem_skiplist_index, 
+ 												  prev_entry, 
+ 												  in,
+ 												&(pre_array[i])  
+ 											  );
+  DEBUG("$$$$$$$$$$$ pre_array[%d],prev_record  is %ld \n",i,prev_record->record_num );	
+ 
+ 	if(err)return err;
+ 	//2.2 将 prev_entry 更新为他的后继节点
+ 	if(i>1){
+ 		err = mem_skiplist_get_down( mem_skiplist_index, 
+ 												 pre_array[i], 
+ 												 &prev_entry 
+ 											 );	
+ 											 
+ 		prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE);									 
+ 	  DEBUG("$$$$$$$$$$$ pre_array[%d],down_record  is %ld \n",i,prev_record->record_num );	
+   }
+
+ 	if(err)return err;								 	
+	}
+	
+	//3. 在所有层上的前继节点后面删除数据
+	//从底层往上层插入数据
+	DEBUG("Begin delete one key = %s\n",in->ckey );								 	 					
+ 
+  //IMPORTANT_INFO("Mem_skiplist_delete_help Real delete !\n");	
+	//从下往上删
+	i = 1;
+	for(;i > max_level+1; --i)
+	{
+		DEBUG("Begin delete one level %d\n",i );		
+	  err = mem_skiplist_delete_one_str( mem_skiplist_index, 
+ 															pre_array[i], 
+ 															in 
+ 											 				);
+ 		// 没找到就不删本层的节点									 				
+ 		if(err == SKIPLIST_INDEX_SEARCH_NOT_FOUND){
+ 			DEBUG("SKIPLIST_INDEX_SEARCH_NOT_FOUND\n");
+ 			continue;
+ 		}
+ 		if(err)return err;	
+	}
+	 	DEBUG("End mem_skiplist_delete_help_str()\n");	
+    //IMPORTANT_INFO("Enter mem_skiplist_delete_help_str end\n");	
+	return 0;
+}
+
+int mem_skiplist_update_str(mem_skiplist_index_t *mem_skiplist_index, 
+												mem_skiplist_entry_t *in,
+ 												struct  record_t **  inserted
+ 												)
+{
+  int err = 0;
+  if( 0 != (err = mem_skiplist_delete_str(mem_skiplist_index ,in ))){	
+	err = mem_skiplist_insert_str(mem_skiplist_index, 
+												  in,
+ 												  inserted
+ 												);
+ 	}	
+	return err;
+} 		
+
+int mem_skiplist_search_str(mem_skiplist_index_t *mem_skiplist_index,
+ 												mem_skiplist_entry_t *in,
+ 												mem_skiplist_entry_t ** finded_entry 
+ 											 )
+ {
+ 	DEBUG("Enter mem_skiplist_search_str(),Search key is %s\n",in->ckey);	
+	
+	//1.从最高层开始找
+	mem_skiplist_entry_t * prev_entry;
+	struct record_t *      prev_record;
+	int err = 0;
+	int max_level = mem_skiplist_index->config.max_level;
+
+	//	   //获得当层头节点
+	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index,mem_skiplist_index->config.max_level );
+	
+	//2. 存储所有层上的前继节点指针
+	DEBUG("Prepare Serach one %s\n",in->ckey );								 	 					
+
+	mem_skiplist_entry_t * pre_array[max_level+1];//从1开始计数
+	int i = max_level;
+	for(;i> 0; --i)
+	{
+	prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE);
+	DEBUG("Search pre_array %d,prev_record->record_num is %ld \n",i,prev_record->record_num);	
+
+	//2.1 将每一层的前继节点存入 pre_array
+	err =	mem_skiplist_find_GE_str( mem_skiplist_index, 
+ 												  prev_entry, 
+ 												  in,
+ 												&(pre_array[i])  
+ 											  );
+  DEBUG("Find Search pre_array[%d],prev_record  is %ld \n",i,prev_record->record_num );	
+
+ 	if(err)return err;
+ 
+ err =	mem_skiplist_find_EQO_str( mem_skiplist_index, 
+ 												  prev_entry, 
+ 												  in,
+ 												 finded_entry  
+ 											  );
+ if( err == 0 )return 0;
+ 
+ 	//2.2 将 prev_entry 更新为他的后继节点
+ 	if(i>1 && strcmp ( prev_entry->ckey , in->ckey ) != 0 ){
+ 		err = mem_skiplist_get_down( mem_skiplist_index, 
+ 												 pre_array[i], 
+ 												 &prev_entry 
+ 											 );	
+ 											 
+ 		prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE);									 
+   }
+
+
+}
+
+ 	if(err)return err;								 	
+	}
+
+
 //
 #ifdef __cplusplus
 
