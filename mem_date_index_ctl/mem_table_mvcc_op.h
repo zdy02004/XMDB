@@ -564,8 +564,8 @@ err =  mem_hash_index_insert_s(
   mem_transaction_entry_t  trans_entry ;
   
   trans_entry.trans_no       			 = Tn;       							//当前事物号
-  trans_entry.redo_type             = OPT_INDEX_HASH_INSERT;				//redo 操作类型
-  trans_entry.undo_type						  = OPT_INDEX_HASH_INSERT;				//undo 操作类型 insert update delete truncate index_op
+  trans_entry.redo_type             = OPT_INDEX_HASH_INSERT_STR;				//redo 操作类型
+  trans_entry.undo_type		    = OPT_INDEX_HASH_INSERT_STR;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(*record_ptr) + RECORD_HEAD_SIZE)                    ;	//原始数据起始地址
   trans_entry.redo_data_length      = MEM_HASH_ENTRY_SIZE; // redo 数据长度
   trans_entry.undo_data_length      = MEM_HASH_ENTRY_SIZE; // undo 数据长度	
@@ -653,8 +653,8 @@ err =  mem_hash_index_del_s(
   mem_transaction_entry_t  trans_entry ;
   
   trans_entry.trans_no       			 = Tn;       							//当前事物号
-  trans_entry.redo_type             = OPT_INDEX_HASH_DELETE;				//redo 操作类型
-  trans_entry.undo_type						  = OPT_INDEX_HASH_DELETE;				//undo 操作类型 insert update delete truncate index_op
+  trans_entry.redo_type             = OPT_INDEX_HASH_DELETE_STR;				//redo 操作类型
+  trans_entry.undo_type		    = OPT_INDEX_HASH_DELETE_STR;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(*record_ptr) + RECORD_HEAD_SIZE)                    ;	//原始数据起始地址
   trans_entry.redo_data_length      = MEM_HASH_ENTRY_SIZE; // redo 数据长度
   trans_entry.undo_data_length      = MEM_HASH_ENTRY_SIZE; // undo 数据长度	
