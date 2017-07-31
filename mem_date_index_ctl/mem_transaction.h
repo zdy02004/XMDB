@@ -2419,7 +2419,6 @@ int redo(char * path,char * start_str_in)
 }
 
 #ifdef __cplusplus
-
 }
 
 #endif
