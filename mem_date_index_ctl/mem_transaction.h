@@ -412,7 +412,7 @@ inline int create_rollback_block(mem_transaction_t * trans)
 	DEBUG("in create_rollback_block\n");
 	//创建块
 	mem_block_t *mb =(mem_block_t *) malloc(MEM_BLOCK_HEAD_SIZE);
-	DEBUG("create_block %0x\n",*mb);
+	DEBUG("create_block %0x\n",mb);
   trans->rollback_space = mb;
   
   char rollback_file[128];
