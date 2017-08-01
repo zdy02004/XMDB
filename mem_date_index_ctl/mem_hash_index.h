@@ -1166,7 +1166,7 @@ inline int mem_hash_index_create(
 //___________________________________________________________________________________
       //生成块描述符
        mem_block_t *mb2 = (mem_block_t *) malloc(MEM_BLOCK_HEAD_SIZE);
-	     DEBUG("create mem_link_hash block %0x\n",*mb2);
+	     DEBUG("create mem_link_hash block %0x\n",mb2);
        off_t link_space_size;
       //取 link 块大小
 	    link_space_size = _block_size/mem_index_config->div;
