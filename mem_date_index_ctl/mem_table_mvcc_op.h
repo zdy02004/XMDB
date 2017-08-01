@@ -462,6 +462,9 @@ err =  mem_hash_index_del_l(
                         ) ;  
 //get_hash_block_no_by_record_ptr(*record_ptr,block_no);
 
+if(err == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND || err == SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND )
+	{
+
  	if(is_lock)row_wlock   (  &((*record_ptr)->row_lock) );
 	 		//事务未释放
 	if( Tn< (*record_ptr)->scn )
@@ -504,7 +507,7 @@ err =  mem_hash_index_del_l(
   
   //修改为本次的事务ID
   (*record_ptr)->scn = Tn;
-
+}
 	return 0;
 	
 	
@@ -638,7 +641,8 @@ err =  mem_hash_index_del_s(
                         &mem_table_no
                         ) ;  
 //get_hash_block_no_by_record_ptr(*record_ptr,block_no);
-
+if(err == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND || err == SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND )
+{
  	if(is_lock)row_wlock   (  &((*record_ptr)->row_lock) );
 	 		//事务未释放
 	if( Tn< (*record_ptr)->scn )
@@ -682,7 +686,7 @@ err =  mem_hash_index_del_s(
   
   //修改为本次的事务ID
   (*record_ptr)->scn = Tn;
-
+}
 	return 0;
 	
 	
