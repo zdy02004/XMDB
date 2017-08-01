@@ -419,7 +419,7 @@ err =  mem_hash_index_insert_l(
   
   //修改为本次的事务ID
   (*record_ptr)->scn = Tn;
-
+  if(is_lock)row_wunlock   (  &((*record_ptr)->row_lock) );
 	return 0;
 }
 //支持事务的mvcc插入一个记录的数据
@@ -507,6 +507,7 @@ if(err == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND || err == SELECT_MEM_HASH_INDE
   
   //修改为本次的事务ID
   (*record_ptr)->scn = Tn;
+  if(is_lock)row_wunlock   (  &((*record_ptr)->row_lock) );
 }
 	return 0;
 	
@@ -596,6 +597,7 @@ err =  mem_hash_index_insert_s(
   
   //修改为本次的事务ID
   (*record_ptr)->scn = Tn;
+  if(is_lock)row_wunlock   (  &((*record_ptr)->row_lock) );
 
 	return 0;
 }
@@ -686,6 +688,8 @@ if(err == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND || err == SELECT_MEM_HASH_INDE
   
   //修改为本次的事务ID
   (*record_ptr)->scn = Tn;
+    if(is_lock)row_wunlock   (  &((*record_ptr)->row_lock) );
+
 }
 	return 0;
 	
