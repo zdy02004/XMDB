@@ -420,7 +420,6 @@ inline int mem_hash_index_insert_long(
    struct  mem_hash_entry_t * entry = (struct  mem_hash_entry_t *)((char *)(record_ptr) + RECORD_HEAD_SIZE);         
    int err;      
    DEBUG("switch(ret)\n");
-    
    switch(ret)
    {
    //连续空间内没找到，就覆盖到连续空间,entry 此时指向对应连续空间的位置
@@ -473,6 +472,8 @@ inline int mem_hash_index_insert_long(
    	    row_wunlock(&(new_record_ptr->row_lock));                    //解行锁
    	    row_wunlock(&(record_ptr->row_lock));                        //解行锁
    	    *out_record_ptr = new_record_ptr;
+   	    *block_no_temp = new_block_no;   	   
+   	     DEBUG("Block_no_temp is %d\n",*block_no_temp);
    	    break;
    	  }
    //链接空间内没找到，就插入到连续空间后面,array_space_entry 此时指向对应连续空间的位置
@@ -504,6 +505,8 @@ inline int mem_hash_index_insert_long(
    	    row_wunlock(&(record_ptr->row_lock));                     //解行锁
    	    *out_record_ptr = new_record_ptr;
  				*block_no_temp = new_block_no;   	   
+   	     DEBUG("Block_no_temp is %d\n",*block_no_temp);
+
    	    break;
    	  }
    default:
@@ -707,7 +710,9 @@ inline int mem_hash_index_insert_str(
    	    ((struct  mem_hash_entry_t *)(((char *)(record_ptr) + RECORD_HEAD_SIZE)))->link_record_num     =  new_record_ptr->record_num;
    	    row_wunlock(&(new_record_ptr->row_lock));                                                        //解行锁
    	    row_wunlock(&(record_ptr->row_lock));    
-   	    *out_record_ptr = new_record_ptr;                                                       //解行锁
+   	    *out_record_ptr = new_record_ptr;
+   	    *block_no_temp = new_block_no;   	   
+   	     DEBUG("Block_no_temp is %d\n",*block_no_temp);                                                       //解行锁
    	    break;
    	  }
    //链接空间内没找到，就插入到连续空间后面,array_space_entry 此时指向对应连续空间的位置
@@ -826,7 +831,7 @@ inline int mem_hash_index_del_long(
    	    		 err = mem_table_del_record(mem_hash_index->array_space , record_ptr);
    	    		 entry->link_block_no 	= 0;
    	    		 entry->link_record_num = 0;
-   	    		 *out_record_ptr = record_ptr;                                                       //解行锁 
+   	    		 *out_record_ptr = record_ptr; 
    	    		 return 0;
    	    	}
    	    //找 entry 的下一个连接所在的块号
@@ -845,6 +850,8 @@ inline int mem_hash_index_del_long(
    	    	*out_record_ptr = record_ptr;
    	    	 return MEM_HASH_ERR_BLOCK_NO_NOT_EXIST;
    	    }
+   	    
+   	    
    	    DEBUG("找到块号,将下一个entry copy到这个entry,然后将下一个entry从链表中删除\n");
    	    struct record_t * next_record_ptr = (struct record_t *)(mem_block_temp->space_start_addr + entry->link_record_num* (MEM_HASH_ENTRY_SIZE+RECORD_HEAD_SIZE));
    	    DEBUG("Next_record_num's %d\n",entry->link_record_num);
