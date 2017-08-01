@@ -10,12 +10,12 @@ extern "C" {
 #endif
 
 /*
-Ê¹ÓÃÁ½¸ö mem_table_t À´×é³ÉÀ­Á´·¨¹şÏ£±í mem_hash_block_t
+ä½¿ç”¨ä¸¤ä¸ª mem_table_t æ¥ç»„æˆæ‹‰é“¾æ³•å“ˆå¸Œè¡¨ mem_hash_block_t
  
-1¸ömem_table_t ·ÖÅä Ë®Î»ÏßÓë mem_table_t µÈ¸ßµÄÁ¬Ğø¿Õ¼ä array_space
-1¸ömem_table_t ·ÖÅä Ë®Î»Ïß mem_table_t  1/3¸ßµÄÁ¬Ğø¿Õ¼ä linked_space
-array_space  ×÷Îªhash±íÁ¬Ğø¿Õ¼ä
-linked_space ×÷Îªhash±í³åÍ»¿Õ¼äµÄÁ´±í
+1ä¸ªmem_table_t åˆ†é… æ°´ä½çº¿ä¸ mem_table_t ç­‰é«˜çš„è¿ç»­ç©ºé—´ array_space
+1ä¸ªmem_table_t åˆ†é… æ°´ä½çº¿ mem_table_t  1/3é«˜çš„è¿ç»­ç©ºé—´ linked_space
+array_space  ä½œä¸ºhashè¡¨è¿ç»­ç©ºé—´
+linked_space ä½œä¸ºhashè¡¨å†²çªç©ºé—´çš„é“¾è¡¨
 */
 
 #define CREATE_HASH_INDEX_ERR_TABLE_PTR              33001
@@ -54,30 +54,30 @@ linked_space ×÷Îªhash±í³åÍ»¿Õ¼äµÄÁ´±í
 #define SELECT_MEM_HASH_INDEX_LINKED_SPACE_IS_NULL   33034
 
 #define MAX_INDEXT_NO 8
-//ÄÚ´æhashË÷ÒıÃèÊö·û_ÊÊÓÃÓÚµ¥Ìõ¿ìËÙË÷Òı
+//å†…å­˜hashç´¢å¼•æè¿°ç¬¦_é€‚ç”¨äºå•æ¡å¿«é€Ÿç´¢å¼•
 typedef struct  mem_hash_index_config_t
 {
-long                        index_no;                     //Ë÷ÒıºÅ
-long                        owner_table_no;               //ËùÊô±íºÅ
-int               *         field_order;                  //ÁªºÏË÷ÒıµÄË³ĞòºÅ
-int                         field_num;                    //ÁªºÏË÷Òı¹ØÁª×Ö¶ÎµÄµÄ¸öÊı
-char                        index_name[128];              //Ë÷ÒıÃû
-long                        owner_id;                     //¸ÃË÷ÒıËùÊôÓÃ»§µÄID
-unsigned  long              array_block_size;             //Á¬Ğø¿Õ¼ä¿éÅäÖÃ´óĞ¡
-unsigned  long              link_block_size;              //³åÍ»¿Õ¼ä¿éÅäÖÃ´óĞ¡
-int                         div;                          //link¿Õ¼äÊÇarray¿Õ¼äµÄdiv·ÖÖ®Ò»
+long                        index_no;                     //ç´¢å¼•å·
+long                        owner_table_no;               //æ‰€å±è¡¨å·
+int               *         field_order;                  //è”åˆç´¢å¼•çš„é¡ºåºå·
+int                         field_num;                    //è”åˆç´¢å¼•å…³è”å­—æ®µçš„çš„ä¸ªæ•°
+char                        index_name[128];              //ç´¢å¼•å
+long                        owner_id;                     //è¯¥ç´¢å¼•æ‰€å±ç”¨æˆ·çš„ID
+unsigned  long              array_block_size;             //è¿ç»­ç©ºé—´å—é…ç½®å¤§å°
+unsigned  long              link_block_size;              //å†²çªç©ºé—´å—é…ç½®å¤§å°
+int                         div;                          //linkç©ºé—´æ˜¯arrayç©ºé—´çš„divåˆ†ä¹‹ä¸€
 } __attribute__ ((packed, aligned (64))) mem_hash_index_config_t;
 
 #define MEM_HASH_CONFIG_SIZE  sizeof(struct  mem_hash_index_config_t)
 
 
-//ÄÚ´æhashË÷ÒıÃèÊö·û_ÊÊÓÃÓÚµ¥Ìõ¿ìËÙË÷Òı
+//å†…å­˜hashç´¢å¼•æè¿°ç¬¦_é€‚ç”¨äºå•æ¡å¿«é€Ÿç´¢å¼•
 typedef struct  mem_hash_index_t
 {
-struct mem_hash_index_config_t     config;               //hash ÅäÖÃ
-struct mem_table_t       *    array_space;               //Ë®Î»ÏßÓë mem_table_t µÈ¸ßµÄÁ¬Ğø¿Õ¼ä£¬array_space
-struct mem_table_t       *    linked_space;              //Ë®Î»Ïß mem_table_t  1/3¸ßµÄÁ¬Ğø¿Õ¼ä linked_space
-// redo_log  ÈÕÖ¾£¬ÔİÎ´ÏëºÃÈçºÎÊµÏÖ
+struct mem_hash_index_config_t     config;               //hash é…ç½®
+struct mem_table_t       *    array_space;               //æ°´ä½çº¿ä¸ mem_table_t ç­‰é«˜çš„è¿ç»­ç©ºé—´ï¼Œarray_space
+struct mem_table_t       *    linked_space;              //æ°´ä½çº¿ mem_table_t  1/3é«˜çš„è¿ç»­ç©ºé—´ linked_space
+// redo_log  æ—¥å¿—ï¼Œæš‚æœªæƒ³å¥½å¦‚ä½•å®ç°
 } __attribute__ ((packed, aligned (64))) mem_hash_index_t;
 
 
@@ -87,18 +87,18 @@ struct mem_table_t       *    linked_space;              //Ë®Î»Ïß mem_table_t  1
 typedef struct mem_hash_index_input_long
 {
 unsigned  long          key              ;
-long                    block_no         ;/*²åÈëÊı¾İÔ­±íËùÔÚµÄ¿éºÅ*/
-unsigned  long          record_num       ;/*²åÈëÊı¾İÔ­±íµÄ¿éµÄĞĞºÅ*/
-int (*hash_fun)(unsigned  long      ,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/struct  mem_block_t *,unsigned  long      *);
+long                    block_no         ;/*æ’å…¥æ•°æ®åŸè¡¨æ‰€åœ¨çš„å—å·*/
+unsigned  long          record_num       ;/*æ’å…¥æ•°æ®åŸè¡¨çš„å—çš„è¡Œå·*/
+int (*hash_fun)(unsigned  long      ,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/struct  mem_block_t *,unsigned  long      *);
 } mem_hash_index_input_long;
 
    
 typedef struct mem_hash_index_input_str
 {
 char                    key[32]    ;
-long                    block_no         ;/*²åÈëÊı¾İÔ­±íËùÔÚµÄ¿éºÅ*/
-unsigned  long          record_num       ;/*²åÈëÊı¾İÔ­±íµÄ¿éµÄĞĞºÅ*/
-int (*hash_fun)(char * key,/*Á¬Ğø¿Õ¼ä¿é*/struct  mem_block_t * array_block,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      * record_num);
+long                    block_no         ;/*æ’å…¥æ•°æ®åŸè¡¨æ‰€åœ¨çš„å—å·*/
+unsigned  long          record_num       ;/*æ’å…¥æ•°æ®åŸè¡¨çš„å—çš„è¡Œå·*/
+int (*hash_fun)(char * key,/*è¿ç»­ç©ºé—´å—*/struct  mem_block_t * array_block,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      * record_num);
 } mem_hash_index_input_str;
                         
 
@@ -109,23 +109,23 @@ struct  mem_block_t * mem_block = ((struct  mem_block_t *) ( (char *)(record_ptr
 (_block_no) = mem_block->block_no; 																											\
 }while(0);			
 
-//hash Ë÷Òı
+//hash ç´¢å¼•
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 inline int mem_hash_index_select_long(
                         /* in */struct mem_hash_index_t  * mem_hash_index ,
                         /* in */unsigned  long             key,
-                        /* in */int (*hash_fun)(unsigned  long      key,/*Á¬Ğø¿Õ¼ä¿é*/struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      *),
-                       /* out */long                     * block_no,    //Êä³öÕÒµ½µÄ¿éËùÔÚ¿éºÅ
-                       /* out */unsigned  long           * record_num,  //Êä³öÕÒµ½µÄ¿éËùÔÚĞĞºÅ
-                       /* out */struct  record_t        ** record_ptr, /* IF FOUND ,RETURN FOUNDED RECORD  Êä³öÕÒµ½µÄ¿éËùÔÚ¼ÇÂ¼µÄÖ¸Õë */
-                       /* out */struct  mem_hash_entry_t** array_space_entry, //Êä³ö¶ÔÓ¦ Á¬Ğø¿Õ¼äµÄ hash ÏîË÷Òı
+                        /* in */int (*hash_fun)(unsigned  long      key,/*è¿ç»­ç©ºé—´å—*/struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      *),
+                       /* out */long                     * block_no,    //è¾“å‡ºæ‰¾åˆ°çš„å—æ‰€åœ¨å—å·
+                       /* out */unsigned  long           * record_num,  //è¾“å‡ºæ‰¾åˆ°çš„å—æ‰€åœ¨è¡Œå·
+                       /* out */struct  record_t        ** record_ptr, /* IF FOUND ,RETURN FOUNDED RECORD  è¾“å‡ºæ‰¾åˆ°çš„å—æ‰€åœ¨è®°å½•çš„æŒ‡é’ˆ */
+                       /* out */struct  mem_hash_entry_t** array_space_entry, //è¾“å‡ºå¯¹åº” è¿ç»­ç©ºé—´çš„ hash é¡¹ç´¢å¼•
                        /* out */long * mem_table_no );
                         
 inline int mem_hash_index_select_str(
                         /* in */struct mem_hash_index_t * mem_hash_index ,
                         /* in */char                    * key,
-                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      *),
+                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      *),
                        /* out */long                    * block_no,
                        /* out */unsigned  long          * record_num,
                        /* out */struct  record_t        **record_ptr, /* IF FOUND ,RETURN FOUNDED RECORD   */
@@ -135,9 +135,9 @@ inline int mem_hash_index_select_str(
 inline int mem_hash_index_insert_long(
                         /* in */struct mem_hash_index_t * mem_hash_index ,
                         /* in */unsigned  long          key              ,
-                        /* in */long                    block_no         ,/*²åÈëÊı¾İËùÔÚµÄ¿éºÅ*/
-                        /* in */unsigned  long          record_num       ,/*²åÈëÊı¾İµÄ¿éµÄĞĞºÅ*/
-                        /* in */int (*hash_fun)(unsigned  long      ,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/struct  mem_block_t *,unsigned  long      *),
+                        /* in */long                    block_no         ,/*æ’å…¥æ•°æ®æ‰€åœ¨çš„å—å·*/
+                        /* in */unsigned  long          record_num       ,/*æ’å…¥æ•°æ®çš„å—çš„è¡Œå·*/
+                        /* in */int (*hash_fun)(unsigned  long      ,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/struct  mem_block_t *,unsigned  long      *),
                         /* out */struct    record_t   **  out_record_ptr,
                         /* out */long *  out_block_no,
                         /* out */long                 *   mem_table_no
@@ -146,9 +146,9 @@ inline int mem_hash_index_insert_long(
 inline int mem_hash_index_insert_str(
                         /* in */struct mem_hash_index_t * mem_hash_index ,
                         /* in */char                    * key,
-                        /* in */long                      block_no,   /*²åÈëÊı¾İµÄ ¿éºÅ*/
-                        /* in */unsigned  long            record_num ,/*²åÈëÊı¾İµÄ¿éµÄĞĞºÅ*/
-                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      * ),
+                        /* in */long                      block_no,   /*æ’å…¥æ•°æ®çš„ å—å·*/
+                        /* in */unsigned  long            record_num ,/*æ’å…¥æ•°æ®çš„å—çš„è¡Œå·*/
+                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      * ),
                         /* out */struct    record_t  **  out_record_ptr,
                         /* out */long *  out_block_no,
                         /* out */long * mem_table_no);
@@ -159,7 +159,7 @@ inline int mem_hash_index_insert_str(
                         /* in */unsigned  long            key,
                         /* in */long                      block_no_to_del,
                         /* in */unsigned  long            record_num_to_del,
-                        /* in */int (*hash_fun)(unsigned  long      ,struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      *),
+                        /* in */int (*hash_fun)(unsigned  long      ,struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      *),
                         /*out*/struct    record_t  **  out_record_ptr,
                         /* out */long *  out_block_no,
                         /* out */long * mem_table_no);
@@ -169,45 +169,45 @@ inline int mem_hash_index_del_str(
                         /* in */char                    * key,
                         /* in */long                      block_no_to_del,
                         /* in */unsigned  long            record_num_to_del,
-                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long *),
+                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long *),
                         /*out*/struct    record_t  **  out_record_ptr,
                         /* out */long *  out_block_no,
                         /* out */long * mem_table_no);
                         
- // Ìæ»»hash Ë÷Òı,ÏÈÉ¾ÔÙ²åÈë
+ // æ›¿æ¢hash ç´¢å¼•,å…ˆåˆ å†æ’å…¥
  inline int mem_hash_index_update_long (
                         /* in */struct mem_hash_index_t *  mem_hash_index ,
                         /* in */unsigned  long             key,
-                        /* in */int (*hash_fun)(unsigned  long      key,/*Á¬Ğø¿Õ¼ä¿é*/struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      *),
-                        /* in */long                       block_no, /*²åÈëÊı¾İµÄ¿éºÅ*/
-                        /* in */unsigned  long             record_num ,/*²åÈëÊı¾İµÄ¿éµÄĞĞºÅ*/
-                       /* out */struct  record_t         ** record_ptr, /* IF FOUND ,RETURN FOUNDED RECORD  Êä³öÕÒµ½µÄ¿éËùÔÚ¼ÇÂ¼µÄÖ¸Õë */
+                        /* in */int (*hash_fun)(unsigned  long      key,/*è¿ç»­ç©ºé—´å—*/struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      *),
+                        /* in */long                       block_no, /*æ’å…¥æ•°æ®çš„å—å·*/
+                        /* in */unsigned  long             record_num ,/*æ’å…¥æ•°æ®çš„å—çš„è¡Œå·*/
+                       /* out */struct  record_t         ** record_ptr, /* IF FOUND ,RETURN FOUNDED RECORD  è¾“å‡ºæ‰¾åˆ°çš„å—æ‰€åœ¨è®°å½•çš„æŒ‡é’ˆ */
                        /* out */long *  out_block_no,
-                       /* out */struct  mem_hash_entry_t ** array_space_entry,  //Êä³ö¶ÔÓ¦ Á¬Ğø¿Õ¼äµÄ hash ÏîË÷Òı                       );
+                       /* out */struct  mem_hash_entry_t ** array_space_entry,  //è¾“å‡ºå¯¹åº” è¿ç»­ç©ºé—´çš„ hash é¡¹ç´¢å¼•                       );
                        /* out */long * mem_table_no);
                        
-// Ìæ»»hash Ë÷Òı,ÏÈÉ¾ÔÙ²åÈë
+// æ›¿æ¢hash ç´¢å¼•,å…ˆåˆ å†æ’å…¥
 inline int mem_hash_index_update_str (
                                 struct mem_hash_index_t *  mem_hash_index ,
                         /* in */char                    *  key,
-                        /* in */int (*hash_fun)(char    *  key,/*Á¬Ğø¿Õ¼ä¿é*/struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      *),
-                        /* in */long                       block_no, /*²åÈëÊı¾İµÄ¿éºÅ*/
-                        /* in */unsigned  long             record_num ,/*²åÈëÊı¾İµÄ¿éµÄĞĞºÅ*/
-                       /* out */struct  record_t         ** record_ptr, /* IF FOUND ,RETURN FOUNDED RECORD  Êä³öÕÒµ½µÄ¿éËùÔÚ¼ÇÂ¼µÄÖ¸Õë */
+                        /* in */int (*hash_fun)(char    *  key,/*è¿ç»­ç©ºé—´å—*/struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      *),
+                        /* in */long                       block_no, /*æ’å…¥æ•°æ®çš„å—å·*/
+                        /* in */unsigned  long             record_num ,/*æ’å…¥æ•°æ®çš„å—çš„è¡Œå·*/
+                       /* out */struct  record_t         ** record_ptr, /* IF FOUND ,RETURN FOUNDED RECORD  è¾“å‡ºæ‰¾åˆ°çš„å—æ‰€åœ¨è®°å½•çš„æŒ‡é’ˆ */
                        /* out */long *  out_block_no,
-                       /* out */struct  mem_hash_entry_t ** array_space_entry, //Êä³ö¶ÔÓ¦ Á¬Ğø¿Õ¼äµÄ hash ÏîË÷Òı
+                       /* out */struct  mem_hash_entry_t ** array_space_entry, //è¾“å‡ºå¯¹åº” è¿ç»­ç©ºé—´çš„ hash é¡¹ç´¢å¼•
                        /* out */long * mem_table_no
                       );
-//½¨HASHË÷Òı
+//å»ºHASHç´¢å¼•
 inline int mem_hash_index_create(
 														 struct mem_hash_index_t   **  mem_hash_index,
                              struct mem_table_t         *  mem_table,
                              struct mem_hash_index_config_t  *  mem_index_config
                              );
 
-//´ò¿ªË÷Òı                             
+//æ‰“å¼€ç´¢å¼•                             
 inline int mem_hash_index_open(struct mem_hash_index_t *  mem_hash_index);
-//¹ØË÷Òı
+//å…³ç´¢å¼•
 inline	int mem_hash_index_close(struct mem_hash_index_t *  mem_hash_index);	
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -229,15 +229,15 @@ inline unsigned  long      hash64shift(unsigned  long      key)
   return key; 
 }
 
-//ÔİÊ±È¡Ä£Ëã hash
-//ÕûĞÍ hash º¯Êı
-inline int integer_hash_fun(unsigned  long      key,/*Á¬Ğø¿Õ¼ä¿é*/struct  mem_block_t * array_block,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      * record_num)
+//æš‚æ—¶å–æ¨¡ç®— hash
+//æ•´å‹ hash å‡½æ•°
+inline int integer_hash_fun(unsigned  long      key,/*è¿ç»­ç©ºé—´å—*/struct  mem_block_t * array_block,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      * record_num)
 {
 	if( NULL == array_block)return INTEGER_HASH_FUN_ERR_ARRAY_BLOCK_IS_NULL;
 	//if( NULL == record_num )return INTEGER_HASH_FUN_ERR_RECORD_NUM_IS_NULL;
 
-	DEBUG("Enter integer_hash_fun(),key = %ld£¬total_row_num =%ld\n",key,array_block->space_size/ MEM_HASH_ENTRY_SIZE);
-	//ÏÈÆ½¾ù·Ö²¼£¬ÔÙÈ¡ÓàÊı
+	DEBUG("Enter integer_hash_fun(),key = %ldï¼Œtotal_row_num =%ld\n",key,array_block->space_size/ MEM_HASH_ENTRY_SIZE);
+	//å…ˆå¹³å‡åˆ†å¸ƒï¼Œå†å–ä½™æ•°
 	//unsigned long long num = hash64shift(key)%( array_block->block_size - MEM_BLOCK_HEAD_SIZE ) ;
 	unsigned        long num = hash64shift(key)%( array_block->space_size / MEM_HASH_ENTRY_SIZE ) ;
 	*record_num            =  num;
@@ -259,14 +259,15 @@ inline unsigned int BKDRHash(char *str)
     return (hash & 0x7FFFFFFF);
 }
 
-//×Ö·û´® hash º¯Êı
-inline int str_hash_fun(char * key,/*Á¬Ğø¿Õ¼ä¿é*/struct  mem_block_t * array_block,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      * record_num)
+//å­—ç¬¦ä¸² hash å‡½æ•°
+inline int str_hash_fun(char * key,/*è¿ç»­ç©ºé—´å—*/struct  mem_block_t * array_block,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      * record_num)
 {
 	if( NULL == array_block)return STR_HASH_FUN_ERR_ARRAY_BLOCK_IS_NULL;
 	if( NULL == record_num )return STR_HASH_FUN_ERR_RECORD_NUM_IS_NULL;
 	if( NULL == key        )return STR_HASH_FUN_ERR_KEY_IS_NULL;
+  DEBUG("str_hash_fun() start,key = %ld\n",*key);
 
-	//ÏÈÆ½¾ù·Ö²¼£¬ÔÙÈ¡ÓàÊı	
+	//å…ˆå¹³å‡åˆ†å¸ƒï¼Œå†å–ä½™æ•°	
 	unsigned long      num = BKDRHash(key) % ( array_block->space_size / MEM_HASH_ENTRY_SIZE ) ;
 	*record_num            =  num;
 	DEBUG("str_hash_fun() END,record_num = %ld\n",num);
@@ -275,40 +276,42 @@ inline int str_hash_fun(char * key,/*Á¬Ğø¿Õ¼ä¿é*/struct  mem_block_t * array_blo
 }
 
 
-//²éÕÒÒ»¸öÕûĞÍË÷Òı
+//æŸ¥æ‰¾ä¸€ä¸ªæ•´å‹ç´¢å¼•
 inline int mem_hash_index_select_long(
                         /* in */struct mem_hash_index_t  * mem_hash_index ,
                         /* in */unsigned  long             key,
-                        /* in */int (*hash_fun)(unsigned  long      key,/*Á¬Ğø¿Õ¼ä¿é*/struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      *),
-                       /* out */long                     * block_no,    //Êä³öÕÒµ½µÄ¿éËùÔÚ¿éºÅ
-                       /* out */unsigned  long           * record_num,  //Êä³öÕÒµ½µÄ¿éËùÔÚĞĞºÅ
-                       /* out */struct  record_t         ** record_ptr,  /* IF FOUND ,RETURN FOUNDED RECORD  Êä³öÕÒµ½µÄ¿éËùÔÚ¼ÇÂ¼µÄÖ¸Õë */
-                       /* out */struct  mem_hash_entry_t ** array_space_entry, //Êä³ö¶ÔÓ¦ Á¬Ğø¿Õ¼äµÄ hash ÏîË÷Òı
+                        /* in */int (*hash_fun)(unsigned  long      key,/*è¿ç»­ç©ºé—´å—*/struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      *),
+                       /* out */long                     * block_no,    //è¾“å‡ºæ‰¾åˆ°çš„å—æ‰€åœ¨å—å·
+                       /* out */unsigned  long           * record_num,  //è¾“å‡ºæ‰¾åˆ°çš„å—æ‰€åœ¨è¡Œå·
+                       /* out */struct  record_t         ** record_ptr,  /* IF FOUND ,RETURN FOUNDED RECORD  è¾“å‡ºæ‰¾åˆ°çš„å—æ‰€åœ¨è®°å½•çš„æŒ‡é’ˆ */
+                       /* out */struct  mem_hash_entry_t ** array_space_entry, //è¾“å‡ºå¯¹åº” è¿ç»­ç©ºé—´çš„ hash é¡¹ç´¢å¼•
                        /* out */long * mem_table_no )
 {
-	if( NULL == mem_hash_index )  return SELECT_MEM_HASH_INDEX_ERR_INDEX_IS_NULL;
-	if( NULL == hash_fun       )  return SELECT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	
+  DEBUG("mem_hash_index_select_long() start!\n");                                                                                                                 //è§£è¡Œé”
+	if( NULL == mem_hash_index ){DEBUG("SELECT_MEM_HASH_INDEX_ERR_INDEX_IS_NULL\n"   );  return SELECT_MEM_HASH_INDEX_ERR_INDEX_IS_NULL;     }
+	if( NULL == hash_fun       ){DEBUG("SELECT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL\n");  return SELECT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	 }
 	
 	struct  mem_block_t * array_block_temp   = mem_hash_index->array_space->config.mem_blocks_table;
   struct  mem_block_t * linked_block_temp  = mem_hash_index->linked_space->config.mem_blocks_table;
   if( NULL == array_block_temp  )  return SELECT_MEM_HASH_INDEX_ARRAY_SPACE_IS_NULL;
 	if( NULL == linked_block_temp )  return SELECT_MEM_HASH_INDEX_LINKED_SPACE_IS_NULL;	
+	DEBUG("mem_hash_index_select_long() in!\n");                                                                                                                 //è§£è¡Œé”
 
- //Ö´ĞĞhash º¯Êı
+ //æ‰§è¡Œhash å‡½æ•°
   int err;
   err = hash_fun( key,array_block_temp ,record_num );
   if( 0!= err )return err;
-  //Í¨¹ırecore ÕÒµ½¶ÔÓ¦×Ö¶ÎµÄÖµ ºÍ hash_entry_temp->hash_lkey ±È½Ï£¬²»Ò»ÑùµÄ»°£¬Ë³×Ålink_val ÕÒ£¬ÕÒ²»µ½ËµÃ÷²»´æÔÚ
+  //é€šè¿‡recore æ‰¾åˆ°å¯¹åº”å­—æ®µçš„å€¼ å’Œ hash_entry_temp->hash_lkey æ¯”è¾ƒï¼Œä¸ä¸€æ ·çš„è¯ï¼Œé¡ºç€link_val æ‰¾ï¼Œæ‰¾ä¸åˆ°è¯´æ˜ä¸å­˜åœ¨
   *record_ptr = (struct  record_t *)((char *)(array_block_temp->space_start_addr) + (*record_num)*(MEM_HASH_ENTRY_SIZE+RECORD_HEAD_SIZE));
   
-  //Èç¹û¸ÃĞĞÎ´³õÊ¼»¯£¬Ôò³õÊ¼»¯¸ÃĞĞ
+  //å¦‚æœè¯¥è¡Œæœªåˆå§‹åŒ–ï¼Œåˆ™åˆå§‹åŒ–è¯¥è¡Œ
   if((*record_ptr)->is_used!=1)INIT_RECORD((*record_ptr))
 
-  row_rlock(&((*record_ptr)->row_lock));                                                            //ÉÏĞĞËø
+  row_rlock(&((*record_ptr)->row_lock));                                                            //ä¸Šè¡Œé”
 	struct  mem_hash_entry_t * entry = (struct  mem_hash_entry_t *) ((char *)(*record_ptr) + RECORD_HEAD_SIZE);
 	*array_space_entry               =  entry;
 
-	  //array_space Ã»ÕÒµ½
+	  //array_space æ²¡æ‰¾åˆ°
   if((*record_ptr)->is_used == 0)
   	{
   		row_runlock(&((*record_ptr)->row_lock));
@@ -317,29 +320,29 @@ inline int mem_hash_index_select_long(
   	}
 	if(entry->hash_lkey == key)
 		{
-			//ÔÚarray_space ÖĞÕÒµ½
+			//åœ¨array_space ä¸­æ‰¾åˆ°
 			*record_num = (*record_ptr)->record_num;
 			//*block_no   = entry->block_no;
 			*block_no   = array_block_temp->block_no;
-			row_runlock(&((*record_ptr)->row_lock)); //½âĞĞËø
+			row_runlock(&((*record_ptr)->row_lock)); //è§£è¡Œé”
 			*mem_table_no = mem_hash_index->array_space->config.mem_table_no;
       DEBUG("mem_hash_index_select_long() end,SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND!\n");                                                       
 			return SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND;
 		}
 	else
 		{
-			//ÔÚarray_space ÖĞÃ»ÕÒµ½£¬ÔÚlinked_space ÕÒ
-			//±éÀúËùÓĞµÄlinked_space ¿é
+			//åœ¨array_space ä¸­æ²¡æ‰¾åˆ°ï¼Œåœ¨linked_space æ‰¾
+			//éå†æ‰€æœ‰çš„linked_space å—
 			while(linked_block_temp)
 			{  
-			   row_runlock(&((*record_ptr)->row_lock));                                                             //½âĞĞËø
+			   row_runlock(&((*record_ptr)->row_lock));                                                             //è§£è¡Œé”
 				 *record_ptr = (struct record_t *         )(linked_block_temp->space_start_addr + entry->link_record_num*MEM_HASH_ENTRY_SIZE);
-			   //Èç¹û¸ÃĞĞÎ´³õÊ¼»¯£¬Ôò³õÊ¼»¯¸ÃĞĞ
+			   //å¦‚æœè¯¥è¡Œæœªåˆå§‹åŒ–ï¼Œåˆ™åˆå§‹åŒ–è¯¥è¡Œ
   			if((*record_ptr)->is_used!=1)INIT_RECORD((*record_ptr))
-			   row_rlock(&((*record_ptr)->row_lock));                                                             //ÉÏĞĞËø
+			   row_rlock(&((*record_ptr)->row_lock));                                                             //ä¸Šè¡Œé”
 				 entry      = (struct mem_hash_entry_t * )((char *)(*record_ptr) + RECORD_HEAD_SIZE);
 
-				 //linked_space ÖĞÃ»ÓĞ¾ÍÕÒÏÂÒ»¸ö linked_space »òÕß  Ã»ÕÒµ½¶ÔÓ¦µÄ entry£¬¾ÍÕÒÏÂÒ»¸ö  entry
+				 //linked_space ä¸­æ²¡æœ‰å°±æ‰¾ä¸‹ä¸€ä¸ª linked_space æˆ–è€…  æ²¡æ‰¾åˆ°å¯¹åº”çš„ entryï¼Œå°±æ‰¾ä¸‹ä¸€ä¸ª  entry
 				 if((*record_ptr)->is_used == 0  || entry->link_block_no !=linked_block_temp->block_no)
 				 	{
 				 		linked_block_temp = linked_block_temp->next;
@@ -349,23 +352,23 @@ inline int mem_hash_index_select_long(
 				{
 				  if(entry->hash_lkey == key)
 				  {
-				  	//ÔÚ linked_space ÖĞÕÒµ½
+				  	//åœ¨ linked_space ä¸­æ‰¾åˆ°
 				  	*record_num = (*record_ptr)->record_num;
 				  	//*block_no   = entry->link_block_no;
 				  	*block_no   = linked_block_temp->block_no;
 				  	row_runlock(&((*record_ptr)->row_lock));   
-				  	DEBUG("mem_hash_index_select_long() end,SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND!\n");                                                                                                                 //½âĞĞËø
+				  	DEBUG("mem_hash_index_select_long() end,SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND!\n");                                                                                                                 //è§£è¡Œé”
 				  	*mem_table_no = mem_hash_index->linked_space->config.mem_table_no;
 				  	return SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND;
 				  }	
-				 row_runlock(&((*record_ptr)->row_lock));                                                                //½âĞĞËø
+				 row_runlock(&((*record_ptr)->row_lock));                                                                //è§£è¡Œé”
 				 *record_ptr = (struct record_t *         )(linked_block_temp->space_start_addr + entry->link_record_num*MEM_HASH_ENTRY_SIZE);
-				 //Èç¹û¸ÃĞĞÎ´³õÊ¼»¯£¬Ôò³õÊ¼»¯¸ÃĞĞ
+				 //å¦‚æœè¯¥è¡Œæœªåˆå§‹åŒ–ï¼Œåˆ™åˆå§‹åŒ–è¯¥è¡Œ
   			if((*record_ptr)->is_used!=1)INIT_RECORD((*record_ptr))
-				 row_rlock(&((*record_ptr)->row_lock));                                                                 //ÉÏĞĞËø
+				 row_rlock(&((*record_ptr)->row_lock));                                                                 //ä¸Šè¡Œé”
 				 if((*record_ptr)->is_used == 0) 
 				 	{
-				 		row_runlock(&((*record_ptr)->row_lock));                                                             //½âĞĞËø
+				 		row_runlock(&((*record_ptr)->row_lock));                                                             //è§£è¡Œé”
 				 		return SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND;
 				 	}
 				 entry      = (struct mem_hash_entry_t * )((char *)(*record_ptr) + RECORD_HEAD_SIZE);				
@@ -375,19 +378,19 @@ inline int mem_hash_index_select_long(
 			}
 
 		}
-	row_runlock(&((*record_ptr)->row_lock)); //½âĞĞËø 
-	DEBUG("mem_hash_index_select_long() end,SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND!\n");                                                                                                                 //½âĞĞËø
+	row_runlock(&((*record_ptr)->row_lock)); //è§£è¡Œé” 
+	DEBUG("mem_hash_index_select_long() end,SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND!\n");                                                                                                                 //è§£è¡Œé”
 	return SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND;
 }
 
 
-//²åÈëÒ»¸öÕûĞÍË÷ÒıµÄÊı¾İ,±£Ö¤Ã¿¸öÍ°ÏàÍ¬µÄ val ÏàÁÚ
+//æ’å…¥ä¸€ä¸ªæ•´å‹ç´¢å¼•çš„æ•°æ®,ä¿è¯æ¯ä¸ªæ¡¶ç›¸åŒçš„ val ç›¸é‚»
 inline int mem_hash_index_insert_long(
                         /* in */struct mem_hash_index_t * mem_hash_index ,
                         /* in */unsigned  long          key              ,
-                        /* in */long                    block_no         ,/*²åÈëÊı¾İÔ­±íËùÔÚµÄ¿éºÅ*/
-                        /* in */unsigned  long          record_num       ,/*²åÈëÊı¾İÔ­±íµÄ¿éµÄĞĞºÅ*/
-                        /* in */int (*hash_fun)(unsigned  long      ,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/struct  mem_block_t *,unsigned  long      *),
+                        /* in */long                    block_no         ,/*æ’å…¥æ•°æ®åŸè¡¨æ‰€åœ¨çš„å—å·*/
+                        /* in */unsigned  long          record_num       ,/*æ’å…¥æ•°æ®åŸè¡¨çš„å—çš„è¡Œå·*/
+                        /* in */int (*hash_fun)(unsigned  long      ,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/struct  mem_block_t *,unsigned  long      *),
                         /* out */struct    record_t   **  out_record_ptr,
                         /* out */long                 *   block_no_temp,
                         /* out */long                 *   mem_table_no
@@ -397,13 +400,13 @@ inline int mem_hash_index_insert_long(
 	if( block_no < 0      ) return INSERT_MEM_HASH_INDEX_ERR_BLOCK_NO_UNSAFE;	
 	DEBUG("Enter mem_hash_index_insert_long(),key = %ld\n",key);
 
-	//1 array_space ²»´æÔÚÊı¾İ£¬Ôò´æÈëÊı¾İ
-	//2 array_space ´æÔÚÊı¾İ£¬link_space ²»´æÔÚÊı¾İ£¬²åÈëlink_space
-	//3 ´æÔÚÊı¾İ£¬link_space  ´æÔÚÊı¾İ£¬²åÈëlink_space×î½üµÄµØ·½
+	//1 array_space ä¸å­˜åœ¨æ•°æ®ï¼Œåˆ™å­˜å…¥æ•°æ®
+	//2 array_space å­˜åœ¨æ•°æ®ï¼Œlink_space ä¸å­˜åœ¨æ•°æ®ï¼Œæ’å…¥link_space
+	//3 å­˜åœ¨æ•°æ®ï¼Œlink_space  å­˜åœ¨æ•°æ®ï¼Œæ’å…¥link_spaceæœ€è¿‘çš„åœ°æ–¹
   unsigned  long          record_num_temp = 0;
   struct    record_t   *  record_ptr      = 0;
   struct  mem_hash_entry_t * array_space_entry = 0;
-  int ret;
+  int ret ;
   ret = mem_hash_index_select_long(
                                 mem_hash_index ,
                                 key,
@@ -420,23 +423,25 @@ inline int mem_hash_index_insert_long(
     
    switch(ret)
    {
-   //Á¬Ğø¿Õ¼äÄÚÃ»ÕÒµ½£¬¾Í¸²¸Çµ½Á¬Ğø¿Õ¼ä,entry ´ËÊ±Ö¸Ïò¶ÔÓ¦Á¬Ğø¿Õ¼äµÄÎ»ÖÃ
+   //è¿ç»­ç©ºé—´å†…æ²¡æ‰¾åˆ°ï¼Œå°±è¦†ç›–åˆ°è¿ç»­ç©ºé—´,entry æ­¤æ—¶æŒ‡å‘å¯¹åº”è¿ç»­ç©ºé—´çš„ä½ç½®
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_NOT_FOUND:
    	    DEBUG("ARRAY_SPACE allocat_ptr is %0x\n",record_ptr);
    	    record_ptr->is_used                 =  1;
    	    INIT_RECORD(record_ptr)		
    	    record_ptr->record_num              =  record_num_temp;
-   	    row_wlock(&(record_ptr->row_lock));                       //ÉÏĞĞËø
+   	    row_wlock(&(record_ptr->row_lock));                       //ä¸Šè¡Œé”
    	    array_space_entry->hash_lkey        =  key;
    	    //array_space_entry->hash_ckey      =  (char *[32])(0);
    	    array_space_entry->block_no         =  block_no;
    	    array_space_entry->record_num       =  record_num;
    	    array_space_entry->link_block_no    =  -1;
    	    array_space_entry->link_record_num  =   0;
-   	    row_wunlock(&(record_ptr->row_lock));                      //½âĞĞËø
+   	    row_wunlock(&(record_ptr->row_lock));                      //è§£è¡Œé”
    	    *out_record_ptr = record_ptr;
+   	    //è¿ç»­ç©ºé—´æ²¡æ‰¾åˆ°ï¼Œå°±ç”¨è¿ç»­ç©ºé—´çš„å—å·
+   	    *block_no_temp                      = mem_hash_index->array_space->config.mem_blocks_table->block_no;
    	    break;
-   //ÕÒµ½ÏàÍ¬µÄÖµ¾Í²åµ½ÏàÍ¬µÄÖµµÄºóÃæ
+   //æ‰¾åˆ°ç›¸åŒçš„å€¼å°±æ’åˆ°ç›¸åŒçš„å€¼çš„åé¢
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND:
    	    
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND:
@@ -453,24 +458,24 @@ inline int mem_hash_index_insert_long(
         
         err = mem_table_insert_record(mem_hash_index->linked_space , &new_record_ptr,&new_block_no, (char *)&hash_entry_temp);
    	    if( 0 != err )return err;
-   	    //new_record_ptr Ã»³õÊ¼»¯¹ı£¬Ôò³õÊ¼»¯
+   	    //new_record_ptr æ²¡åˆå§‹åŒ–è¿‡ï¼Œåˆ™åˆå§‹åŒ–
         if((new_record_ptr)->is_used!=1)INIT_RECORD((new_record_ptr))
         
-        row_wlock(&(record_ptr->row_lock));                       //ÉÏĞĞËø
-        row_wlock(&(new_record_ptr->row_lock));                   //ÉÏĞĞËø
+        row_wlock(&(record_ptr->row_lock));                       //ä¸Šè¡Œé”
+        row_wlock(&(new_record_ptr->row_lock));                   //ä¸Šè¡Œé”
         new_record_ptr->is_used = 1;
    	    
-   	    //½«ĞÂ½ÚµãÁ´Èë array_space ºóÃæ
+   	    //å°†æ–°èŠ‚ç‚¹é“¾å…¥ array_space åé¢
    	    ((struct  mem_hash_entry_t *)(new_record_ptr->data))->link_block_no    = ((struct  mem_hash_entry_t *)(((char *)(record_ptr) + RECORD_HEAD_SIZE)))->link_block_no;    
    	   	((struct  mem_hash_entry_t *)(new_record_ptr->data))->link_record_num  = ((struct  mem_hash_entry_t *)(((char *)(record_ptr) + RECORD_HEAD_SIZE)))->link_record_num;    
         ((struct  mem_hash_entry_t *)(((char *)(record_ptr) + RECORD_HEAD_SIZE)))->link_block_no        =  new_block_no;
    	    ((struct  mem_hash_entry_t *)(((char *)(record_ptr) + RECORD_HEAD_SIZE)))->link_record_num      =  new_record_ptr->record_num;
-   	    row_wunlock(&(new_record_ptr->row_lock));                    //½âĞĞËø
-   	    row_wunlock(&(record_ptr->row_lock));                        //½âĞĞËø
+   	    row_wunlock(&(new_record_ptr->row_lock));                    //è§£è¡Œé”
+   	    row_wunlock(&(record_ptr->row_lock));                        //è§£è¡Œé”
    	    *out_record_ptr = new_record_ptr;
    	    break;
    	  }
-   //Á´½Ó¿Õ¼äÄÚÃ»ÕÒµ½£¬¾Í²åÈëµ½Á¬Ğø¿Õ¼äºóÃæ,array_space_entry ´ËÊ±Ö¸Ïò¶ÔÓ¦Á¬Ğø¿Õ¼äµÄÎ»ÖÃ
+   //é“¾æ¥ç©ºé—´å†…æ²¡æ‰¾åˆ°ï¼Œå°±æ’å…¥åˆ°è¿ç»­ç©ºé—´åé¢,array_space_entry æ­¤æ—¶æŒ‡å‘å¯¹åº”è¿ç»­ç©ºé—´çš„ä½ç½®
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND:
    	    {
    	    struct  record_t   * new_record_ptr = 0;
@@ -485,19 +490,20 @@ inline int mem_hash_index_insert_long(
         
    	    err = mem_table_insert_record(mem_hash_index->linked_space , &new_record_ptr,&new_block_no, (char *)&hash_entry_temp);
    	    if( 0 != err )return err;
-   	    //new_record_ptr Ã»³õÊ¼»¯¹ı£¬Ôò³õÊ¼»¯
+   	    //new_record_ptr æ²¡åˆå§‹åŒ–è¿‡ï¼Œåˆ™åˆå§‹åŒ–
         if((new_record_ptr)->is_used!=1)INIT_RECORD((new_record_ptr))
-        row_wlock(&(record_ptr->row_lock));                       //ÉÏĞĞËø
-        row_wlock(&(new_record_ptr->row_lock));                   //ÉÏĞĞËø
+        row_wlock(&(record_ptr->row_lock));                       //ä¸Šè¡Œé”
+        row_wlock(&(new_record_ptr->row_lock));                   //ä¸Šè¡Œé”
         new_record_ptr->is_used   = 1;
-   	    //½«ĞÂ½ÚµãÁ´Èë array_space ºóÃæ
+   	    //å°†æ–°èŠ‚ç‚¹é“¾å…¥ array_space åé¢
    	    ((struct  mem_hash_entry_t *)(new_record_ptr->data))->link_block_no     = array_space_entry->link_block_no;    
    	   	((struct  mem_hash_entry_t *)(new_record_ptr->data))->link_record_num   = array_space_entry->link_record_num;    
         array_space_entry->link_block_no                                        = new_block_no;
    	    array_space_entry->link_record_num                                      = new_record_ptr->record_num;
-   	    row_wunlock(&(new_record_ptr->row_lock));                 //½âĞĞËø
-   	    row_wunlock(&(record_ptr->row_lock));                     //½âĞĞËø
+   	    row_wunlock(&(new_record_ptr->row_lock));                 //è§£è¡Œé”
+   	    row_wunlock(&(record_ptr->row_lock));                     //è§£è¡Œé”
    	    *out_record_ptr = new_record_ptr;
+ 				*block_no_temp = new_block_no;   	   
    	    break;
    	  }
    default:
@@ -505,16 +511,17 @@ inline int mem_hash_index_insert_long(
    	    return ret;	
    	
   }
+
   DEBUG("mem_hash_index_insert_long() END\n");
 
 	return 0;
 }
 
-//²éÕÒÒ»¸ö×Ö·û´®Ë÷Òı
+//æŸ¥æ‰¾ä¸€ä¸ªå­—ç¬¦ä¸²ç´¢å¼•
 inline int mem_hash_index_select_str(
                         /* in */struct mem_hash_index_t * mem_hash_index ,
                         /* in */char                    * key,
-                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      *),
+                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      *),
                        /* out */long                    * block_no,
                        /* out */unsigned  long          * record_num,
                        /* out */struct  record_t        ** record_ptr, /* IF FOUND ,RETURN FOUNDED RECORD   */
@@ -529,51 +536,51 @@ inline int mem_hash_index_select_str(
 	struct  mem_block_t * array_block_temp   = mem_hash_index->array_space->config.mem_blocks_table;
   struct  mem_block_t * linked_block_temp  = mem_hash_index->linked_space->config.mem_blocks_table;
 
- //Ö´ĞĞhash º¯Êı
+ //æ‰§è¡Œhash å‡½æ•°
   int err;
   err = hash_fun( key,array_block_temp ,record_num );
   if( 0!= err )return err;
   
-  //Í¨¹ırecore ÕÒµ½¶ÔÓ¦×Ö¶ÎµÄÖµ ºÍ hash_entry_temp->hash_ckey ±È½Ï£¬²»Ò»ÑùµÄ»°£¬Ë³×Ålink_record_num ÕÒ£¬ÕÒ²»µ½ËµÃ÷²»´æÔÚ
+  //é€šè¿‡recore æ‰¾åˆ°å¯¹åº”å­—æ®µçš„å€¼ å’Œ hash_entry_temp->hash_ckey æ¯”è¾ƒï¼Œä¸ä¸€æ ·çš„è¯ï¼Œé¡ºç€link_record_num æ‰¾ï¼Œæ‰¾ä¸åˆ°è¯´æ˜ä¸å­˜åœ¨
   *record_ptr = (struct  record_t *)(array_block_temp->space_start_addr + (*record_num)*(MEM_HASH_ENTRY_SIZE+RECORD_HEAD_SIZE));
-  //Èç¹û¸ÃĞĞÎ´³õÊ¼»¯£¬Ôò³õÊ¼»¯¸ÃĞĞ
+  //å¦‚æœè¯¥è¡Œæœªåˆå§‹åŒ–ï¼Œåˆ™åˆå§‹åŒ–è¯¥è¡Œ
   if((*record_ptr)->is_used!=1)INIT_RECORD((*record_ptr))
-  row_rlock(&((*record_ptr)->row_lock));                       //ÉÏĞĞËø	
+  row_rlock(&((*record_ptr)->row_lock));                       //ä¸Šè¡Œé”	
 	struct  mem_hash_entry_t * entry = (struct  mem_hash_entry_t *) ((char *)(*record_ptr) + RECORD_HEAD_SIZE);
 	*array_space_entry                =  entry;
 	
-	  //array_space Ã»ÕÒµ½
+	  //array_space æ²¡æ‰¾åˆ°
   if((*record_ptr)->is_used == 0) 
   	{
-  		row_runlock(&((*record_ptr)->row_lock));                     //½âĞĞËø
+  		row_runlock(&((*record_ptr)->row_lock));                     //è§£è¡Œé”
   	return SELECT_MEM_HASH_INDEX_ARRAY_SPACE_NOT_FOUND;
   }
 	if( strcmp(entry->hash_ckey, key) == 0 ) 
 		{
 			
-			//ÔÚarray_space ÖĞÕÒµ½
+			//åœ¨array_space ä¸­æ‰¾åˆ°
 			*record_num = (*record_ptr)->record_num;
 			*mem_table_no = mem_hash_index->array_space->config.mem_table_no;
-			row_runlock(&((*record_ptr)->row_lock));                     //½âĞĞËø
+			row_runlock(&((*record_ptr)->row_lock));                     //è§£è¡Œé”
 			*block_no = array_block_temp->block_no;
 			return SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND;
 		}
 	else
 		{
-			//ÔÚarray_space ÖĞÃ»ÕÒµ½£¬ÔÚlinked_space ÕÒ
-			//±éÀúËùÓĞµÄlinked_space ¿é
+			//åœ¨array_space ä¸­æ²¡æ‰¾åˆ°ï¼Œåœ¨linked_space æ‰¾
+			//éå†æ‰€æœ‰çš„linked_space å—
 			while(linked_block_temp)
 			{
-				 row_runlock(&((*record_ptr)->row_lock));                     //½âĞĞËø
+				 row_runlock(&((*record_ptr)->row_lock));                     //è§£è¡Œé”
 				 *record_ptr = (struct record_t *         )(linked_block_temp->space_start_addr + entry->link_record_num*MEM_HASH_ENTRY_SIZE);
-				  //Èç¹û¸ÃĞĞÎ´³õÊ¼»¯£¬Ôò³õÊ¼»¯¸ÃĞĞ
+				  //å¦‚æœè¯¥è¡Œæœªåˆå§‹åŒ–ï¼Œåˆ™åˆå§‹åŒ–è¯¥è¡Œ
 				 if((*record_ptr)->is_used!=1)INIT_RECORD((*record_ptr))
 				 
-				 row_rlock(&((*record_ptr)->row_lock));                     //½âĞĞËø
+				 row_rlock(&((*record_ptr)->row_lock));                     //è§£è¡Œé”
 				 
 				 entry      = (struct mem_hash_entry_t * )((char *)(*record_ptr) + RECORD_HEAD_SIZE);
 
-				 //linked_space ÖĞÃ»ÓĞ¾ÍÕÒÏÂÒ»¸ö linked_space »òÕß  Ã»ÕÒµ½¶ÔÓ¦µÄ entry£¬¾ÍÕÒÏÂÒ»¸ö  entry
+				 //linked_space ä¸­æ²¡æœ‰å°±æ‰¾ä¸‹ä¸€ä¸ª linked_space æˆ–è€…  æ²¡æ‰¾åˆ°å¯¹åº”çš„ entryï¼Œå°±æ‰¾ä¸‹ä¸€ä¸ª  entry
 				 if((*record_ptr)->is_used == 0  || entry->link_block_no !=linked_block_temp->block_no)
 				 	{
 				 		linked_block_temp = linked_block_temp->next;
@@ -583,20 +590,20 @@ inline int mem_hash_index_select_str(
 				{
 				  if( strcmp(entry->hash_ckey, key) == 0 ) 
 				  {
-				  	//ÔÚ linked_space ÖĞÕÒµ½
+				  	//åœ¨ linked_space ä¸­æ‰¾åˆ°
 				  	*record_num = (*record_ptr)->record_num;
 				  	*block_no = linked_block_temp->block_no;;
-				  	row_runlock(&((*record_ptr)->row_lock));                     //½âĞĞËø
+				  	row_runlock(&((*record_ptr)->row_lock));                     //è§£è¡Œé”
 				  	*mem_table_no = mem_hash_index->linked_space->config.mem_table_no;
 				  	return SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND;
 				  }	
-				 row_runlock(&((*record_ptr)->row_lock));                       //½âĞĞËø
+				 row_runlock(&((*record_ptr)->row_lock));                       //è§£è¡Œé”
 				 *record_ptr = (struct record_t *         )(linked_block_temp->space_start_addr + entry->link_record_num*MEM_HASH_ENTRY_SIZE);
-				  //Èç¹û¸ÃĞĞÎ´³õÊ¼»¯£¬Ôò³õÊ¼»¯¸ÃĞĞ
+				  //å¦‚æœè¯¥è¡Œæœªåˆå§‹åŒ–ï¼Œåˆ™åˆå§‹åŒ–è¯¥è¡Œ
 				 if((*record_ptr)->is_used!=1)INIT_RECORD((*record_ptr))
-				 row_rlock(&((*record_ptr)->row_lock));                         //ÉÏĞĞËø
+				 row_rlock(&((*record_ptr)->row_lock));                         //ä¸Šè¡Œé”
 				 if((*record_ptr)->is_used == 0) {
-				 	                 row_runlock(&((*record_ptr)->row_lock));    //½âĞĞËø        
+				 	                 row_runlock(&((*record_ptr)->row_lock));    //è§£è¡Œé”        
 				 	                 return     SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND;
 				}
 				 entry      = (struct mem_hash_entry_t * )((char *)(record_ptr) + RECORD_HEAD_SIZE);				
@@ -605,19 +612,19 @@ inline int mem_hash_index_select_str(
 				linked_block_temp = linked_block_temp->next;
 			}
 		}
-		row_runlock(&((*record_ptr)->row_lock)); //½âĞĞËø 
+		row_runlock(&((*record_ptr)->row_lock)); //è§£è¡Œé” 
 
 	return SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND;
 }
 
 
-//²åÈëÒ»¸ö×Ö·û´®Ë÷ÒıµÄÊı¾İ,±£Ö¤Ã¿¸öÍ°ÏàÍ¬µÄ val ÏàÁÚ
+//æ’å…¥ä¸€ä¸ªå­—ç¬¦ä¸²ç´¢å¼•çš„æ•°æ®,ä¿è¯æ¯ä¸ªæ¡¶ç›¸åŒçš„ val ç›¸é‚»
 inline int mem_hash_index_insert_str(
                         /* in */struct mem_hash_index_t * mem_hash_index ,
                         /* in */char                    * key,
-                        /* in */long                      block_no,   /*²åÈëÊı¾İµÄ ¿éºÅ*/
-                        /* in */unsigned  long            record_num ,/*²åÈëÊı¾İµÄ¿éµÄĞĞºÅ*/
-                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      * ),
+                        /* in */long                      block_no,   /*æ’å…¥æ•°æ®çš„ å—å·*/
+                        /* in */unsigned  long            record_num ,/*æ’å…¥æ•°æ®çš„å—çš„è¡Œå·*/
+                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      * ),
                         /* out */struct    record_t   **  out_record_ptr,
                         /* out */long                  *   block_no_temp,
                         /* out */long                  *  mem_table_no
@@ -627,9 +634,9 @@ inline int mem_hash_index_insert_str(
 	if( NULL == key       )  return INSERT_MEM_HASH_INDEX_ERR_STR_KEY_IS_NULL;	
 
 	if( block_no < 0      )  return INSERT_MEM_HASH_INDEX_ERR_BLOCK_NO_UNSAFE;	
-	//1 array_space ²»´æÔÚÊı¾İ£¬Ôò´æÈëÊı¾İ
-	//2 array_space ´æÔÚÊı¾İ£¬link_space ²»´æÔÚÊı¾İ£¬²åÈëlink_space
-	//3 ´æÔÚÊı¾İ£¬link_space  ´æÔÚÊı¾İ£¬²åÈëlink_space×î½üµÄµØ·½
+	//1 array_space ä¸å­˜åœ¨æ•°æ®ï¼Œåˆ™å­˜å…¥æ•°æ®
+	//2 array_space å­˜åœ¨æ•°æ®ï¼Œlink_space ä¸å­˜åœ¨æ•°æ®ï¼Œæ’å…¥link_space
+	//3 å­˜åœ¨æ•°æ®ï¼Œlink_space  å­˜åœ¨æ•°æ®ï¼Œæ’å…¥link_spaceæœ€è¿‘çš„åœ°æ–¹
   unsigned  long             insert_record_num = 0; 
   unsigned  long             record_num_temp   = 0;
   struct  record_t         * record_ptr        = 0;
@@ -651,13 +658,13 @@ inline int mem_hash_index_insert_str(
 
    switch(ret)
    {
-   //Á¬Ğø¿Õ¼äÄÚÃ»ÕÒµ½£¬¾Í¸²¸Çµ½Á¬Ğø¿Õ¼ä,entry ´ËÊ±Ö¸Ïò¶ÔÓ¦Á¬Ğø¿Õ¼äµÄÎ»ÖÃ
+   //è¿ç»­ç©ºé—´å†…æ²¡æ‰¾åˆ°ï¼Œå°±è¦†ç›–åˆ°è¿ç»­ç©ºé—´,entry æ­¤æ—¶æŒ‡å‘å¯¹åº”è¿ç»­ç©ºé—´çš„ä½ç½®
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_NOT_FOUND:
-   	 DEBUG("Á¬Ğø¿Õ¼äÄÚÃ»ÕÒµ½£¬¾Í¸²¸Çµ½Á¬Ğø¿Õ¼ä,entry ´ËÊ±Ö¸Ïò¶ÔÓ¦Á¬Ğø¿Õ¼äµÄÎ»ÖÃ\n");
+   	 DEBUG("è¿ç»­ç©ºé—´å†…æ²¡æ‰¾åˆ°ï¼Œå°±è¦†ç›–åˆ°è¿ç»­ç©ºé—´,entry æ­¤æ—¶æŒ‡å‘å¯¹åº”è¿ç»­ç©ºé—´çš„ä½ç½®\n");
    	    record_ptr->is_used                =  1;
    	    record_ptr->record_num             =  record_num_temp;
    	    INIT_RECORD(record_ptr)	
-   	    row_wlock(&(record_ptr->row_lock));                       //ÉÏĞĞËø
+   	    row_wlock(&(record_ptr->row_lock));                       //ä¸Šè¡Œé”
    	    strcpy(array_space_entry->hash_ckey, key);
    	    array_space_entry->hash_lkey       =  0;
    	    array_space_entry->block_no        =  block_no;
@@ -665,14 +672,16 @@ inline int mem_hash_index_insert_str(
    	    array_space_entry->link_block_no   =  -1;
    	    array_space_entry->link_record_num =  0;
    	    *out_record_ptr = record_ptr;
-   	    row_wunlock(&(record_ptr->row_lock));                      //½âĞĞËø
+   	    *block_no_temp                      = mem_hash_index->array_space->config.mem_blocks_table->block_no;
+
+   	    row_wunlock(&(record_ptr->row_lock));                      //è§£è¡Œé”
 
    	    break;
-   //ÕÒµ½ÏàÍ¬µÄÖµ¾Í²åµ½ÏàÍ¬µÄÖµµÄºóÃæ
+   //æ‰¾åˆ°ç›¸åŒçš„å€¼å°±æ’åˆ°ç›¸åŒçš„å€¼çš„åé¢
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND:
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND:
    	    {
-   	    DEBUG("ÕÒµ½ÏàÍ¬µÄÖµ¾Í²åµ½ÏàÍ¬µÄÖµµÄºóÃæ\n");
+   	    DEBUG("æ‰¾åˆ°ç›¸åŒçš„å€¼å°±æ’åˆ°ç›¸åŒçš„å€¼çš„åé¢\n");
 
    	    struct  record_t   * new_record_ptr = 0;
    	    long                   new_block_no = 0;
@@ -685,29 +694,29 @@ inline int mem_hash_index_insert_str(
         hash_entry_temp.record_num          = record_num;
    	    err = mem_table_insert_record(mem_hash_index->linked_space , &new_record_ptr,&new_block_no, (char *)&hash_entry_temp);
    	    if( 0 != err )return err;
-   	    //new_record_ptr Ã»³õÊ¼»¯¹ı£¬Ôò³õÊ¼»¯
+   	    //new_record_ptr æ²¡åˆå§‹åŒ–è¿‡ï¼Œåˆ™åˆå§‹åŒ–
         if((new_record_ptr)->is_used!=1)INIT_RECORD((new_record_ptr))
         		
-   	    //½«ĞÂ½ÚµãÁ´Èë array_space ºóÃæ
-   	    row_wlock(&(record_ptr->row_lock));                                                             //ÉÏĞĞËø
-   	    row_wlock(&(new_record_ptr->row_lock));                                                         //ÉÏĞĞËø
+   	    //å°†æ–°èŠ‚ç‚¹é“¾å…¥ array_space åé¢
+   	    row_wlock(&(record_ptr->row_lock));                                                             //ä¸Šè¡Œé”
+   	    row_wlock(&(new_record_ptr->row_lock));                                                         //ä¸Šè¡Œé”
    	    new_record_ptr->is_used           = 1;
    	    ((struct  mem_hash_entry_t *)(new_record_ptr->data))->link_block_no   = ((struct  mem_hash_entry_t *)(((char *)(record_ptr) + RECORD_HEAD_SIZE)))->link_block_no;    
    	   	((struct  mem_hash_entry_t *)(new_record_ptr->data))->link_record_num = ((struct  mem_hash_entry_t *)(((char *)(record_ptr) + RECORD_HEAD_SIZE)))->link_record_num;    
         ((struct  mem_hash_entry_t *)(((char *)(record_ptr) + RECORD_HEAD_SIZE)))->link_block_no       =  new_block_no;
    	    ((struct  mem_hash_entry_t *)(((char *)(record_ptr) + RECORD_HEAD_SIZE)))->link_record_num     =  new_record_ptr->record_num;
-   	    row_wunlock(&(new_record_ptr->row_lock));                                                        //½âĞĞËø
+   	    row_wunlock(&(new_record_ptr->row_lock));                                                        //è§£è¡Œé”
    	    row_wunlock(&(record_ptr->row_lock));    
-   	    *out_record_ptr = new_record_ptr;                                                       //½âĞĞËø
+   	    *out_record_ptr = new_record_ptr;                                                       //è§£è¡Œé”
    	    break;
    	  }
-   //Á´½Ó¿Õ¼äÄÚÃ»ÕÒµ½£¬¾Í²åÈëµ½Á¬Ğø¿Õ¼äºóÃæ,array_space_entry ´ËÊ±Ö¸Ïò¶ÔÓ¦Á¬Ğø¿Õ¼äµÄÎ»ÖÃ
+   //é“¾æ¥ç©ºé—´å†…æ²¡æ‰¾åˆ°ï¼Œå°±æ’å…¥åˆ°è¿ç»­ç©ºé—´åé¢,array_space_entry æ­¤æ—¶æŒ‡å‘å¯¹åº”è¿ç»­ç©ºé—´çš„ä½ç½®
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND:
    	    {
    	   
    	    struct  record_t   * new_record_ptr = 0;
    	    long                 new_block_no   = 0;
-   	    DEBUG("Á´½Ó¿Õ¼äÄÚÃ»ÕÒµ½£¬¾Í²åÈëµ½Á¬Ğø¿Õ¼äºóÃæ,array_space_entry ´ËÊ±Ö¸Ïò¶ÔÓ¦Á¬Ğø¿Õ¼äµÄÎ»ÖÃ\n");
+   	    DEBUG("é“¾æ¥ç©ºé—´å†…æ²¡æ‰¾åˆ°ï¼Œå°±æ’å…¥åˆ°è¿ç»­ç©ºé—´åé¢,array_space_entry æ­¤æ—¶æŒ‡å‘å¯¹åº”è¿ç»­ç©ºé—´çš„ä½ç½®\n");
 
    	    struct  mem_hash_entry_t hash_entry_temp;
    	    strcpy(hash_entry_temp.hash_ckey,key);
@@ -716,20 +725,21 @@ inline int mem_hash_index_insert_str(
         hash_entry_temp.record_num          = record_num;
    	    err = mem_table_insert_record(mem_hash_index->linked_space , &new_record_ptr,&new_block_no,(char *)&hash_entry_temp);
    	    if( 0 != err )return err;
-   	    //new_record_ptr Ã»³õÊ¼»¯¹ı£¬Ôò³õÊ¼»¯
+   	    //new_record_ptr æ²¡åˆå§‹åŒ–è¿‡ï¼Œåˆ™åˆå§‹åŒ–
         if((new_record_ptr)->is_used!=1)INIT_RECORD((new_record_ptr))
         		
-   	    //½«ĞÂ½ÚµãÁ´Èë array_space ºóÃæ
-   	    row_wlock(&(record_ptr->row_lock));                       //ÉÏĞĞËø
-   	    row_wlock(&(new_record_ptr->row_lock));                   //ÉÏĞĞËø                                      //ÉÏĞĞËø
+   	    //å°†æ–°èŠ‚ç‚¹é“¾å…¥ array_space åé¢
+   	    row_wlock(&(record_ptr->row_lock));                       //ä¸Šè¡Œé”
+   	    row_wlock(&(new_record_ptr->row_lock));                   //ä¸Šè¡Œé”                                      //ä¸Šè¡Œé”
    	    new_record_ptr->is_used          = 1;
    	    ((struct  mem_hash_entry_t *)(new_record_ptr->data))->link_block_no      = array_space_entry->link_block_no;    
    	   	((struct  mem_hash_entry_t *)(new_record_ptr->data))->link_record_num    = array_space_entry->link_record_num;    
         array_space_entry->link_block_no                                         = new_block_no;
    	    array_space_entry->link_record_num                                       =  new_record_ptr->record_num;
-   	    row_wunlock(&(new_record_ptr->row_lock));                 //½âĞĞËø                                   //½âĞĞËø
-   	    row_wunlock(&(record_ptr->row_lock));                     //½âĞĞËø                               //½âĞĞËø
+   	    row_wunlock(&(new_record_ptr->row_lock));                 //è§£è¡Œé”                                   //è§£è¡Œé”
+   	    row_wunlock(&(record_ptr->row_lock));                     //è§£è¡Œé”                               //è§£è¡Œé”
    	    *out_record_ptr = new_record_ptr;  
+   	    *block_no_temp = new_block_no;
    	    break;
    	  }
    default:
@@ -740,13 +750,13 @@ DEBUG("mem_hash_index_insert_str() END\n");
 	return 0;
 }
 
-//É¾³ıÒ»¸öÕûĞÍË÷ÒıµÄÊı¾İ£¬Èç¹ûÓĞÖØ¸´µÄÒ»´ÎÖ»É¾µÚÒ»¸ö
+//åˆ é™¤ä¸€ä¸ªæ•´å‹ç´¢å¼•çš„æ•°æ®ï¼Œå¦‚æœæœ‰é‡å¤çš„ä¸€æ¬¡åªåˆ ç¬¬ä¸€ä¸ª
 inline int mem_hash_index_del_long(
                         /* in */struct mem_hash_index_t * mem_hash_index ,
                         /* in */unsigned  long            key,
                         /* in */long                      block_no_to_del,
                         /* in */unsigned  long            record_num_to_del,
-                        /* in */int (*hash_fun)(unsigned  long      ,struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      *),
+                        /* in */int (*hash_fun)(unsigned  long      ,struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      *),
                         /*out*/struct    record_t  **  out_record_ptr,
                         /*out*/long                 *  block_no_temp,
                         /*out*/long                 *  mem_table_no)
@@ -758,7 +768,7 @@ inline int mem_hash_index_del_long(
   struct  mem_hash_entry_t * array_space_entry  = 0;
   int ret;
   DEBUG("Enter mem_hash_index_del_long() \n");
-  //¶ÔÓÚÖØ¸´µÄÇé¿ö Ñ­»·ÕÒ
+  //å¯¹äºé‡å¤çš„æƒ…å†µ å¾ªç¯æ‰¾
   do{
   ret = mem_hash_index_select_long(
                                 mem_hash_index ,
@@ -773,7 +783,7 @@ inline int mem_hash_index_del_long(
          row_rlock(&(record_ptr->row_lock));     
           struct  mem_hash_entry_t * _mem_hash_entry = (struct  mem_hash_entry_t *)((char *)(record_ptr) + RECORD_HEAD_SIZE);   
          DEBUG("After Search,record_ptr=%0x  ,ret = %ld,block_no_temp=%ld,record_num=%ld !\n",record_ptr,ret,_mem_hash_entry->block_no ,_mem_hash_entry->record_num);                                                       
-         if(// ÕÒµ½¾ÍÍË³ö  
+         if(// æ‰¾åˆ°å°±é€€å‡º  
          	(ret == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND ||  
                    ret == SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND)
                   && 
@@ -781,79 +791,79 @@ inline int mem_hash_index_del_long(
             )
             {
             	DEBUG("Find deleted record_ptr!\n");
-            	row_runlock(&(record_ptr->row_lock));                                                   //½âĞĞËø                     
+            	row_runlock(&(record_ptr->row_lock));                                                   //è§£è¡Œé”                     
             	break; 
             }
-         row_runlock(&(record_ptr->row_lock));                                                        //½âĞĞËø                         
-    }while(   //ÕÒµ½ µ«Ã»¶ÔÓ¦ÉÏÎïÀíÎ»ÖÃ£¬¾Í¼ÌĞøÕÒ
+         row_runlock(&(record_ptr->row_lock));                                                        //è§£è¡Œé”                         
+    }while(   //æ‰¾åˆ° ä½†æ²¡å¯¹åº”ä¸Šç‰©ç†ä½ç½®ï¼Œå°±ç»§ç»­æ‰¾
              (ret == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND || ret == SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND)
           );
-   //row_wlock(&(record_ptr->row_lock));                                                             //ÉÏĞĞËø 
+   //row_wlock(&(record_ptr->row_lock));                                                             //ä¸Šè¡Œé” 
    struct  mem_hash_entry_t * entry = (struct  mem_hash_entry_t *)((char *)(record_ptr) + RECORD_HEAD_SIZE);    
    int err =-1;        
    DEBUG("ret = %ld\n",ret);       
    switch(ret)
    {
-       //Á¬Ğø¿Õ¼äÄÚÃ»ÕÒµ½
+       //è¿ç»­ç©ºé—´å†…æ²¡æ‰¾åˆ°
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_NOT_FOUND:
    			*out_record_ptr = NULL;
         return SELECT_MEM_HASH_INDEX_ARRAY_SPACE_NOT_FOUND;
    	    break;
-      //Á´½Ó¿Õ¼äÄÚÃ»ÕÒµ½
+      //é“¾æ¥ç©ºé—´å†…æ²¡æ‰¾åˆ°
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND:
    	    *out_record_ptr = NULL;
    	    return SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND;
    	    break;
-   //ÕÒµ½µÄÇé¿ö
+   //æ‰¾åˆ°çš„æƒ…å†µ
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND:
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND:
    	{
    DEBUG("SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND or SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND\n");
-   	     //Á¬Ğø¿Õ¼äÖĞ,ÏÂÒ»¸ö¿éºÅ²»´æÔÚ¾ÍÖ±½ÓÉ¾³ı
+   	     //è¿ç»­ç©ºé—´ä¸­,ä¸‹ä¸€ä¸ªå—å·ä¸å­˜åœ¨å°±ç›´æ¥åˆ é™¤
    	    if(entry->link_block_no <= 0)
    	    	{
-   	    		DEBUG("Á¬Ğø¿Õ¼äÖĞ£¬ÏÂÒ»¸ö¿éºÅ²»´æÔÚ¾ÍÖ±½ÓÉ¾³ı,record_ptr=%0x,record_num=%ld\n",record_ptr,record_ptr->record_num);
+   	    		DEBUG("è¿ç»­ç©ºé—´ä¸­ï¼Œä¸‹ä¸€ä¸ªå—å·ä¸å­˜åœ¨å°±ç›´æ¥åˆ é™¤,record_ptr=%0x,record_num=%ld\n",record_ptr,record_ptr->record_num);
    	    		 err = mem_table_del_record(mem_hash_index->array_space , record_ptr);
    	    		 entry->link_block_no 	= 0;
    	    		 entry->link_record_num = 0;
-   	    		 *out_record_ptr = record_ptr;                                                       //½âĞĞËø 
+   	    		 *out_record_ptr = record_ptr;                                                       //è§£è¡Œé” 
    	    		 return 0;
    	    	}
-   	    //ÕÒ entry µÄÏÂÒ»¸öÁ¬½ÓËùÔÚµÄ¿éºÅ
+   	    //æ‰¾ entry çš„ä¸‹ä¸€ä¸ªè¿æ¥æ‰€åœ¨çš„å—å·
    	    int i =0;
    	    struct mem_block_t * mem_block_temp = mem_hash_index->linked_space->config.mem_blocks_table;
    	    for(;i<mem_hash_index->linked_space->config.mem_block_used;++i)
    	    {
    	    	DEBUG("next_block_no= %d\n",mem_block_temp->block_no);
-   	    	if(mem_block_temp->block_no == entry->link_block_no) break;//ÕÒµ½ÏÂÒ»¸ö¿éºÅ
+   	    	if(mem_block_temp->block_no == entry->link_block_no) break;//æ‰¾åˆ°ä¸‹ä¸€ä¸ªå—å·
    	    	mem_block_temp = mem_block_temp->next;
    	    }
-   	    // Ã»ÕÒµ½¿éºÅÔòÊ§°Ü
+   	    // æ²¡æ‰¾åˆ°å—å·åˆ™å¤±è´¥
    	    if(mem_hash_index->linked_space->config.mem_block_used == i)
    	    	{
-   	    		DEBUG("Ã»ÕÒµ½¿éºÅÔòÊ§°Ü\n");
+   	    		DEBUG("æ²¡æ‰¾åˆ°å—å·åˆ™å¤±è´¥\n");
    	    	*out_record_ptr = record_ptr;
    	    	 return MEM_HASH_ERR_BLOCK_NO_NOT_EXIST;
    	    }
-   	    DEBUG("ÕÒµ½¿éºÅ,½«ÏÂÒ»¸öentry copyµ½Õâ¸öentry,È»ºó½«ÏÂÒ»¸öentry´ÓÁ´±íÖĞÉ¾³ı\n");
+   	    DEBUG("æ‰¾åˆ°å—å·,å°†ä¸‹ä¸€ä¸ªentry copyåˆ°è¿™ä¸ªentry,ç„¶åå°†ä¸‹ä¸€ä¸ªentryä»é“¾è¡¨ä¸­åˆ é™¤\n");
    	    struct record_t * next_record_ptr = (struct record_t *)(mem_block_temp->space_start_addr + entry->link_record_num* (MEM_HASH_ENTRY_SIZE+RECORD_HEAD_SIZE));
    	    DEBUG("Next_record_num's %d\n",entry->link_record_num);
    	    
    	    struct mem_hash_entry_t * next_hash_entry	= (struct mem_hash_entry_t * )next_record_ptr->data;
-   	    //½«ÄÚÈİcopy µ½ Õâ¸ö entry
+   	    //å°†å†…å®¹copy åˆ° è¿™ä¸ª entry
    	    memcpy(entry,next_hash_entry,MEM_HASH_ENTRY_SIZE);
-   	    //É¾³ıÏÂ¸öentry
+   	    //åˆ é™¤ä¸‹ä¸ªentry
    	    err = mem_table_del_record(mem_hash_index->linked_space , next_record_ptr);
    	    row_wlock(&(next_record_ptr->row_lock));
    	    next_hash_entry->hash_lkey = 0;
    	    next_hash_entry->link_record_num =  0;
    	    row_wunlock(&(next_record_ptr->row_lock));      
-   	    *out_record_ptr = next_record_ptr;                                                 //½âĞĞËø
+   	    *out_record_ptr = next_record_ptr;                                                 //è§£è¡Œé”
    	    break;
    	  }
    default:
    	{
-   	    *out_record_ptr = record_ptr;                                                           //½âĞĞËø 
+   	    *out_record_ptr = record_ptr;                                                           //è§£è¡Œé” 
    	    return ret;
    	  }
   }
@@ -861,13 +871,13 @@ inline int mem_hash_index_del_long(
 	return 0;
 }
 
-//²åÈëÒ»¸ö×Ö·û´®Ë÷ÒıµÄÊı¾İ,±£Ö¤Ã¿¸öÍ°ÏàÍ¬µÄ val ÏàÁÚ
+//æ’å…¥ä¸€ä¸ªå­—ç¬¦ä¸²ç´¢å¼•çš„æ•°æ®,ä¿è¯æ¯ä¸ªæ¡¶ç›¸åŒçš„ val ç›¸é‚»
 inline int mem_hash_index_del_str(
                         /* in */struct mem_hash_index_t * mem_hash_index ,
                         /* in */char                    * key,
                         /* in */long                      block_no_to_del,
                         /* in */unsigned  long            record_num_to_del,
-                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long *),
+                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long *),
                         /*out*/struct    record_t  **  out_record_ptr,
                         /*out*/long *                  block_no_temp,
                         /*out*/long *                  mem_table_no
@@ -880,7 +890,7 @@ inline int mem_hash_index_del_str(
   struct  record_t         * record_ptr         = 0;
   struct  mem_hash_entry_t * array_space_entry  = 0;
   int ret;
-  //¶ÔÓÚÖØ¸´µÄÇé¿ö Ñ­»·ÕÒ
+  //å¯¹äºé‡å¤çš„æƒ…å†µ å¾ªç¯æ‰¾
   do{
   ret = mem_hash_index_select_str(
                                 mem_hash_index ,
@@ -894,8 +904,8 @@ inline int mem_hash_index_del_str(
                        );
          row_rlock(&(record_ptr->row_lock));
          struct  mem_hash_entry_t * _mem_hash_entry = (struct  mem_hash_entry_t *)((char *)(record_ptr) + RECORD_HEAD_SIZE);   
-         DEBUG("After Search,ret = %ld,block_no_temp=%ld,record_num=%ld !\n",ret,_mem_hash_entry->block_no ,_mem_hash_entry->record_num);                                                            //ÉÏĞĞËø               
-         if(// ÕÒµ½¾ÍÍË³ö  
+         DEBUG("After Search,ret = %ld,block_no_temp=%ld,record_num=%ld !\n",ret,_mem_hash_entry->block_no ,_mem_hash_entry->record_num);                                                            //ä¸Šè¡Œé”               
+         if(// æ‰¾åˆ°å°±é€€å‡º  
          	(ret == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND ||  
                    ret == SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND)
                   && 
@@ -903,99 +913,99 @@ inline int mem_hash_index_del_str(
             )
             {
             	
-            	row_runlock(&(record_ptr->row_lock));                                                   //½âĞĞËø
+            	row_runlock(&(record_ptr->row_lock));                                                   //è§£è¡Œé”
             	break; 
             }
          row_runlock(&(record_ptr->row_lock));                    
-    }while(   //ÕÒµ½ µ«Ã»¶ÔÓ¦ÉÏÎïÀíÎ»ÖÃ£¬¾Í¼ÌĞøÕÒ
+    }while(   //æ‰¾åˆ° ä½†æ²¡å¯¹åº”ä¸Šç‰©ç†ä½ç½®ï¼Œå°±ç»§ç»­æ‰¾
              (ret == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND || ret == SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND)
           );
    //row_wlock(&(record_ptr->row_lock));
-   DEBUG("ret = %ld\n",ret);                                                                  //ÉÏĞĞËø                
+   DEBUG("ret = %ld\n",ret);                                                                  //ä¸Šè¡Œé”                
    struct  mem_hash_entry_t * entry = (struct  mem_hash_entry_t *)((char *)(record_ptr) + RECORD_HEAD_SIZE); 
    int err = -1;                  
    switch(ret)
    {
-       //Á¬Ğø¿Õ¼äÄÚÃ»ÕÒµ½
+       //è¿ç»­ç©ºé—´å†…æ²¡æ‰¾åˆ°
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_NOT_FOUND:
    	{
    			*out_record_ptr = NULL;
         return SELECT_MEM_HASH_INDEX_ARRAY_SPACE_NOT_FOUND;
    	    break;
    	}
-      //Á´½Ó¿Õ¼äÄÚÃ»ÕÒµ½
+      //é“¾æ¥ç©ºé—´å†…æ²¡æ‰¾åˆ°
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND:
    	{
    			*out_record_ptr = NULL;
    	    return SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND;
    	    break;
    	}
-   //ÕÒµ½µÄÇé¿ö
+   //æ‰¾åˆ°çš„æƒ…å†µ
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND:
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND:
    	{
-   	     //ÏÂÒ»¸ö¿éºÅ²»´æÔÚ¾ÍÖ±½ÓÉ¾³ı
+   	     //ä¸‹ä¸€ä¸ªå—å·ä¸å­˜åœ¨å°±ç›´æ¥åˆ é™¤
    	    if(entry->link_block_no <= 0)
    	    	{
    	    		 err = mem_table_del_record(mem_hash_index->array_space , record_ptr);
    	    		 entry->link_block_no = 0;
    	    		 entry->link_record_num      = 0;
    	    		 row_wunlock(&(record_ptr->row_lock)); 
-   	    		 *out_record_ptr = record_ptr;                                                 //½âĞĞËø
+   	    		 *out_record_ptr = record_ptr;                                                 //è§£è¡Œé”
    	    		 return 0;
    	    	}
-   	    //ÕÒ entry µÄÏÂÒ»¸öÁ¬½ÓËùÔÚµÄ¿éºÅ
+   	    //æ‰¾ entry çš„ä¸‹ä¸€ä¸ªè¿æ¥æ‰€åœ¨çš„å—å·
    	    int i =0;
    	    struct mem_block_t * mem_block_temp = mem_hash_index->linked_space->config.mem_blocks_table;
    	    for(;i<mem_hash_index->linked_space->config.mem_block_used;++i)
    	    {
-   	    	if(mem_block_temp->block_no == entry->link_block_no) break;//ÕÒµ½ÏÂÒ»¸ö¿éºÅ
+   	    	if(mem_block_temp->block_no == entry->link_block_no) break;//æ‰¾åˆ°ä¸‹ä¸€ä¸ªå—å·
    	    	mem_block_temp = mem_block_temp->next;
    	    }
-   	    // Ã»ÕÒµ½¿éºÅÔòÊ§°Ü
+   	    // æ²¡æ‰¾åˆ°å—å·åˆ™å¤±è´¥
    	    if(mem_hash_index->linked_space->config.mem_block_used == i)
    	    	{
    	    		*out_record_ptr = NULL;  
    	    		return MEM_HASH_ERR_BLOCK_NO_NOT_EXIST;
    	    	}
-   	    DEBUG("ÕÒµ½¿éºÅ,½«ÏÂÒ»¸ö entry copy µ½ Õâ¸ö entry,È»ºó½«ÏÂÒ»¸ö entry ´ÓÁ´±íÖĞÉ¾³ı\n");
+   	    DEBUG("æ‰¾åˆ°å—å·,å°†ä¸‹ä¸€ä¸ª entry copy åˆ° è¿™ä¸ª entry,ç„¶åå°†ä¸‹ä¸€ä¸ª entry ä»é“¾è¡¨ä¸­åˆ é™¤\n");
    	    struct record_t * next_record_ptr = (struct record_t *)(mem_block_temp->space_start_addr + entry->link_record_num* (MEM_HASH_ENTRY_SIZE+RECORD_HEAD_SIZE));
    	    DEBUG("Next_record_num's %d\n",entry->link_record_num);
    	    struct mem_hash_entry_t * next_hash_entry	= (struct mem_hash_entry_t * )next_record_ptr->data;
-   	    //½«ÄÚÈİcopy µ½ Õâ¸ö entry
+   	    //å°†å†…å®¹copy åˆ° è¿™ä¸ª entry
    	    memcpy(entry,next_hash_entry,MEM_HASH_ENTRY_SIZE);
-   	    //É¾³ıÏÂ¸öentry
+   	    //åˆ é™¤ä¸‹ä¸ªentry
    	    err = mem_table_del_record(mem_hash_index->array_space , next_record_ptr);
    	    //next_hash_entry->hash_ckey = 0;
-   	    row_wlock(&(next_record_ptr->row_lock));                                                      //ÉÏĞĞËø 
+   	    row_wlock(&(next_record_ptr->row_lock));                                                      //ä¸Šè¡Œé” 
    	    next_hash_entry->link_record_num  = 0;
    	    row_wunlock(&(next_record_ptr->row_lock)); 
-   	    *out_record_ptr = next_record_ptr;                                                         //½âĞĞËø
+   	    *out_record_ptr = next_record_ptr;                                                         //è§£è¡Œé”
    	    break;
    	  }
    default:
    	{
    				*out_record_ptr = NULL;    
-   	     row_wunlock(&(record_ptr->row_lock));                                                             //½âĞĞËø
+   	     row_wunlock(&(record_ptr->row_lock));                                                             //è§£è¡Œé”
    	    return ret;
    	  }
   }
-  row_wunlock(&(record_ptr->row_lock));                                                                    //½âĞĞËø
+  row_wunlock(&(record_ptr->row_lock));                                                                    //è§£è¡Œé”
 
 	return 0;
 	}
 	
 	
-// Ìæ»»hash Ë÷Òı,ÏÈÉ¾ÔÙ²åÈë,ÔİÊ±ÎŞÓÃ
+// æ›¿æ¢hash ç´¢å¼•,å…ˆåˆ å†æ’å…¥,æš‚æ—¶æ— ç”¨
  inline int mem_hash_index_update_long (
                         /* in */struct mem_hash_index_t *  mem_hash_index ,
                         /* in */unsigned  long             key,
-                        /* in */int (*hash_fun)(unsigned  long      key,/*Á¬Ğø¿Õ¼ä¿é*/struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      *),
-                        /* in */long                       block_no, /*²åÈëÊı¾İµÄ¿éºÅ*/
-                        /* in */unsigned  long             record_num ,/*²åÈëÊı¾İµÄ¿éµÄĞĞºÅ*/
-                       /* out */struct  record_t        ** record_ptr, /* IF FOUND ,RETURN FOUNDED RECORD  Êä³öÕÒµ½µÄ¿éËùÔÚ¼ÇÂ¼µÄÖ¸Õë */
+                        /* in */int (*hash_fun)(unsigned  long      key,/*è¿ç»­ç©ºé—´å—*/struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      *),
+                        /* in */long                       block_no, /*æ’å…¥æ•°æ®çš„å—å·*/
+                        /* in */unsigned  long             record_num ,/*æ’å…¥æ•°æ®çš„å—çš„è¡Œå·*/
+                       /* out */struct  record_t        ** record_ptr, /* IF FOUND ,RETURN FOUNDED RECORD  è¾“å‡ºæ‰¾åˆ°çš„å—æ‰€åœ¨è®°å½•çš„æŒ‡é’ˆ */
                        /* out */long *  									 out_block_no,
-                       /* out */struct  mem_hash_entry_t ** array_space_entry, //Êä³ö¶ÔÓ¦ Á¬Ğø¿Õ¼äµÄ hash ÏîË÷Òı
+                       /* out */struct  mem_hash_entry_t ** array_space_entry, //è¾“å‡ºå¯¹åº” è¿ç»­ç©ºé—´çš„ hash é¡¹ç´¢å¼•
                        /* out */long                     *  mem_table_no               
                                         )             
                         {
@@ -1030,16 +1040,16 @@ inline int mem_hash_index_del_str(
                       
                       
 	
-// Ìæ»»hash Ë÷Òı,ÏÈÉ¾ÔÙ²åÈë
+// æ›¿æ¢hash ç´¢å¼•,å…ˆåˆ å†æ’å…¥
 inline int mem_hash_index_update_str (
                                 struct mem_hash_index_t *  mem_hash_index ,
                         /* in */char                    *  key,
-                        /* in */int (*hash_fun)(char    *  key,/*Á¬Ğø¿Õ¼ä¿é*/struct  mem_block_t *,/*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/unsigned  long      *),
-                        /* in */long                       block_no, /*²åÈëÊı¾İµÄ¿éºÅ*/
-                        /* in */unsigned  long             record_num ,/*²åÈëÊı¾İµÄ¿éµÄĞĞºÅ*/
-                       /* out */struct  record_t         ** record_ptr, /* IF FOUND ,RETURN FOUNDED RECORD  Êä³öÕÒµ½µÄ¿éËùÔÚ¼ÇÂ¼µÄÖ¸Õë */
+                        /* in */int (*hash_fun)(char    *  key,/*è¿ç»­ç©ºé—´å—*/struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      *),
+                        /* in */long                       block_no, /*æ’å…¥æ•°æ®çš„å—å·*/
+                        /* in */unsigned  long             record_num ,/*æ’å…¥æ•°æ®çš„å—çš„è¡Œå·*/
+                       /* out */struct  record_t         ** record_ptr, /* IF FOUND ,RETURN FOUNDED RECORD  è¾“å‡ºæ‰¾åˆ°çš„å—æ‰€åœ¨è®°å½•çš„æŒ‡é’ˆ */
                        /* out */long                     *  out_block_no,
-                       /* out */struct  mem_hash_entry_t ** array_space_entry, //Êä³ö¶ÔÓ¦ Á¬Ğø¿Õ¼äµÄ hash ÏîË÷Òı
+                       /* out */struct  mem_hash_entry_t ** array_space_entry, //è¾“å‡ºå¯¹åº” è¿ç»­ç©ºé—´çš„ hash é¡¹ç´¢å¼•
                        /* out */long                     *  mem_table_no                 )             
                         {
                         int                  err1,err2;
@@ -1071,10 +1081,10 @@ inline int mem_hash_index_update_str (
                       return 0;
                       }
                       
-//½¨HASHË÷Òı
+//å»ºHASHç´¢å¼•
 inline int mem_hash_index_create(
 														 struct mem_hash_index_t       **   mem_hash_index,
-                             struct mem_table_t              *  mem_table,// Ô­±í
+                             struct mem_table_t              *  mem_table,// åŸè¡¨
                              struct mem_hash_index_config_t  *  mem_index_config
                              )
 {
@@ -1089,23 +1099,23 @@ inline int mem_hash_index_create(
 
       int len = strlen(mem_index_config->index_name);
 			//allocate_index_no(&(mem_index_config->index_no));
-      //1.¹¹Ôì heap_space µÄ block
+      //1.æ„é€  heap_space çš„ block
      int i=0;
 	   struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
 	   off_t array_space_size = 0;
 
-     //±éÀúÔ­±íËùÓĞ¿é,ÀÛ¼ÓÔ­±íßßÊı¾İ¿é´óĞ¡
+     //éå†åŸè¡¨æ‰€æœ‰å—,ç´¯åŠ åŸè¡¨å“Œæ•°æ®å—å¤§å°
 	   for(;i<mem_table->config.mem_block_used;++i)
 	   { 
-	   	  //È¡array¿é´óĞ¡
+	   	  //å–arrayå—å¤§å°
 	   	  array_space_size += mem_block_temp->block_size;   
-	   		mem_block_temp = mem_block_temp->next;      //ÏÂÒ»¸ö¿é
+	   		mem_block_temp = mem_block_temp->next;      //ä¸‹ä¸€ä¸ªå—
       }
-        //Éú³É¿éÃèÊö·û
+        //ç”Ÿæˆå—æè¿°ç¬¦
        mem_block_t *mb = (mem_block_t *) malloc(MEM_BLOCK_HEAD_SIZE);
 	     DEBUG("create mem_array_hash block %0x\n",mb);
       
-      //ÅäÖÃ¿éÃèÊö·û //ÉèÖÃÁ½¸ö heap_space ¿é´óĞ¡,½«ÅäÖÃÊıºÍÊı¾İÊı±È½ÏÈ¡×î´ó
+      //é…ç½®å—æè¿°ç¬¦ //è®¾ç½®ä¸¤ä¸ª heap_space å—å¤§å°,å°†é…ç½®æ•°å’Œæ•°æ®æ•°æ¯”è¾ƒå–æœ€å¤§
        off_t _block_size = (mem_index_config->array_block_size > array_space_size ) ? mem_index_config->array_block_size : array_space_size;      
 			 DEBUG("array_space_size is %d\n",_block_size);
 			 
@@ -1115,12 +1125,12 @@ inline int mem_hash_index_create(
        
 			 mem_block_config( mb  ,_block_size , tem_buf );
        
-       //2. ¹¹Ôì array_fields_table
+       //2. æ„é€  array_fields_table
 			 struct field_t *_fields_table   = (struct field_t *) malloc(FIELD_SIZE);
 		   _fields_table[0].field_type     = FIELD_TYPE_HASH_ENTRY;
 		   
 		   
-		  //¹¹Ôì array_space_config
+		  //æ„é€  array_space_config
 		  struct mem_table_config_t * array_space_config = (struct mem_table_config_t *)malloc(MEM_TABLE_CONFIG_SIZE); 
 		  //array_space_config->mem_table_no             = allocat_mem_table_no();
       //array_space_config->owner_id                   = mem_table->owner_id;
@@ -1128,7 +1138,7 @@ inline int mem_hash_index_create(
       array_space_config->field_used_num             = 1;
       array_space_config->mem_block_used             = 1;
       array_space_config->field_used_num             = 1;
-      array_space_config->auto_extend                = 0; //²»ÔÊĞí×Ô¶¯À©Õ¹
+      array_space_config->auto_extend                = 0; //ä¸å…è®¸è‡ªåŠ¨æ‰©å±•
       array_space_config->mem_blocks_table           = mb;
       array_space_config->mem_blocks_table->next     = 0;
       strcpy(array_space_config->table_name,mem_index_config->index_name);
@@ -1136,7 +1146,7 @@ inline int mem_hash_index_create(
       DEBUG("array_space_config->table_name is %s \n",array_space_config->table_name);
       //DEBUG("array_space_config->mem_blocks_table is %0x \n",(array_space_config->mem_blocks_table));
 
-      //4.¹¹Ôì mem_table_t
+      //4.æ„é€  mem_table_t
 			struct mem_table_t      *array_space_temp ;  		
 			int err=0;
       err = mem_table_create(
@@ -1147,26 +1157,26 @@ inline int mem_hash_index_create(
 			//DEBUG(" mb's block_malloc_addr is %0x \n",mb->block_malloc_addr);
 
 //___________________________________________________________________________________
-      //Éú³É¿éÃèÊö·û
+      //ç”Ÿæˆå—æè¿°ç¬¦
        mem_block_t *mb2 = (mem_block_t *) malloc(MEM_BLOCK_HEAD_SIZE);
 	     DEBUG("create mem_link_hash block %0x\n",*mb2);
        off_t link_space_size;
-      //È¡ link ¿é´óĞ¡
+      //å– link å—å¤§å°
 	    link_space_size = _block_size/mem_index_config->div;
-	    //ÉèÖÃÁ½¸öspace ¿é´óĞ¡,½«ÅäÖÃÊıºÍÊı¾İÊı±È½ÏÈ¡×î´ó
+	    //è®¾ç½®ä¸¤ä¸ªspace å—å¤§å°,å°†é…ç½®æ•°å’Œæ•°æ®æ•°æ¯”è¾ƒå–æœ€å¤§
       //array_space_config->mem_blocks_table->block_size = (mem_index_config->array_block_size > array_block_size ) ? mem_index_config->array_block_size : array_block_size;
       link_space_size= (mem_index_config->link_block_size  > link_space_size  ) ? mem_index_config->link_block_size  : link_space_size;
-      //ÅäÖÃ¿éÃèÊö·û 
+      //é…ç½®å—æè¿°ç¬¦ 
       char tem_buf2[256]={0};
       strcpy(tem_buf2,mem_index_config->index_name);
       strcat(tem_buf2,"_link.dat\0");
       mem_block_config( mb2  ,link_space_size , tem_buf2 );
       
-      //2. ¹¹Ôì fields_table
+      //2. æ„é€  fields_table
 			 struct field_t *_fields_table2   = (struct field_t *) malloc(FIELD_SIZE);
 		  _fields_table2[0].field_type      = FIELD_TYPE_HASH_ENTRY;
 		  
-		  // 3.¹¹Ôì link_space_config
+		  // 3.æ„é€  link_space_config
       
       struct mem_table_config_t * link_space_config = (struct mem_table_config_t *)malloc(MEM_TABLE_CONFIG_SIZE); 
 		  //array_space_config->mem_table_no            = allocat_mem_table_no();
@@ -1174,14 +1184,14 @@ inline int mem_hash_index_create(
       link_space_config->fields_table               = _fields_table2;
       link_space_config->field_used_num             = 1;
       link_space_config->mem_block_used             = 1;
-      link_space_config->auto_extend                = 1; //ÔÊĞí×Ô¶¯À©Õ¹
+      link_space_config->auto_extend                = 1; //å…è®¸è‡ªåŠ¨æ‰©å±•
       link_space_config->mem_blocks_table           = mb2;
       link_space_config->mem_blocks_table->next     = 0;
       strcpy(link_space_config->table_name,mem_index_config->index_name);
       strcat(link_space_config->table_name,"_link");
       DEBUG(" link_space_config->table_name is %s \n",link_space_config->table_name);
 			
-			//4.¹¹Ôì mem_table_t
+			//4.æ„é€  mem_table_t
 			struct mem_table_t      *link_space_temp ;  		
       err = mem_table_create(
                              &link_space_temp,
@@ -1189,7 +1199,7 @@ inline int mem_hash_index_create(
                              );
       DEBUG(" link_space_config is %0x \n",link_space_config);
  			DEBUG(" mb2's block_malloc_addr is %0x \n",mb2->block_malloc_addr);
- 			//5 ÉèÖÃ  mem_hash_index             
+ 			//5 è®¾ç½®  mem_hash_index             
       (*mem_hash_index) = (struct mem_hash_index_t  *)malloc(MEM_HASH_INDEX_SIZE);
       //(*mem_hash_index) -> config.index_no         = /*mem_index_config->index_no*/;
       allocate_index_no(&((*mem_hash_index) -> config.index_no ));
@@ -1202,21 +1212,21 @@ inline int mem_hash_index_create(
       (*mem_hash_index) -> config.array_block_size = array_space_config->mem_blocks_table->block_size;
       (*mem_hash_index) -> config.link_block_size  = link_space_config->mem_blocks_table->block_size ;
        strcpy((*mem_hash_index) -> config.index_name,mem_index_config->index_name);
-				//ÉèÖÃ¶ÑÄÚ´æ
+				//è®¾ç½®å †å†…å­˜
        (*mem_hash_index)->array_space = array_space_temp;
        (*mem_hash_index)->linked_space = link_space_temp;
              
       DEBUG(" mem_hash_index_create() end \n");
 
       if(0!=err)return err;
-      //¶ÔÃ¿¸öÏî½¨Ë÷Òı
+      //å¯¹æ¯ä¸ªé¡¹å»ºç´¢å¼•
 //___________________________________________________________________________________      
       return 0;
 }
 
 
 
-//´ò¿ªË÷Òı
+//æ‰“å¼€ç´¢å¼•
 inline int mem_hash_index_open(struct mem_hash_index_t *  mem_hash_index)
 {
 	if(NULL == mem_hash_index    )  return OPEN_MEM_HASH_ERR_NULL_HASH_PTR;
@@ -1228,7 +1238,7 @@ inline int mem_hash_index_open(struct mem_hash_index_t *  mem_hash_index)
 	if( 0!= err )return err;
 	return 0;
 }	
-//¹ØË÷Òı
+//å…³ç´¢å¼•
 inline	int mem_hash_index_close(struct mem_hash_index_t *  mem_hash_index)
 {
 	if(NULL == mem_hash_index    )  return CLOSE_MEM_HASH_INDEX_ERR_NULL_PTR;
