@@ -296,7 +296,7 @@ inline int mem_hash_index_select_long(
   if( NULL == array_block_temp  )  return SELECT_MEM_HASH_INDEX_ARRAY_SPACE_IS_NULL;
 	if( NULL == linked_block_temp )  return SELECT_MEM_HASH_INDEX_LINKED_SPACE_IS_NULL;	
 	DEBUG("mem_hash_index_select_long() in!\n");                                                                                                                 //解行锁
-
+  DEBUG("array_block_temp is %0x!\n", array_block_temp);
  //执行hash 函数
   int err;
   err = hash_fun( key,array_block_temp ,record_num );
@@ -788,6 +788,7 @@ inline int mem_hash_index_del_long(
          row_rlock(&(record_ptr->row_lock));     
           struct  mem_hash_entry_t * _mem_hash_entry = (struct  mem_hash_entry_t *)((char *)(record_ptr) + RECORD_HEAD_SIZE);   
          DEBUG("After Search,record_ptr=%0x  ,ret = %ld,block_no_temp=%ld,record_num=%ld !\n",record_ptr,ret,_mem_hash_entry->block_no ,_mem_hash_entry->record_num);                                                       
+         DEBUG("block_no_temp is %d\n",block_no_temp);
          if(// 找到就退出  
          	(ret == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND ||  
                    ret == SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND)
@@ -1194,6 +1195,7 @@ inline int mem_hash_index_create(
       link_space_config->auto_extend                = 1; //允许自动扩展
       link_space_config->mem_blocks_table           = mb2;
       link_space_config->mem_blocks_table->next     = 0;
+      link_space_config->extend_block_size          = mem_table->config.extend_block_size;
       strcpy(link_space_config->table_name,mem_index_config->index_name);
       strcat(link_space_config->table_name,"_link");
       DEBUG(" link_space_config->table_name is %s \n",link_space_config->table_name);
