@@ -101,7 +101,7 @@ inline int mem_skiplist_create(
 
         //生成块描述符
        mem_block_t *mb = (mem_block_t *) malloc(MEM_BLOCK_HEAD_SIZE);
-	     DEBUG("create mem_skiplist block %0x\n",*mb);
+      DEBUG("create mem_skiplist block %0x\n",mb);
 	 
 			 
 			 char tem_buf[256]={0};
