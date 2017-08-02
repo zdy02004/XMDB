@@ -27,7 +27,7 @@ extern "C" {
 #define MEM_RBTREE_ERR_SEARCH_NOT_FOUND                 34016
 #define MEM_RBTREE_DELETE_NULL													34017
 
-//ÔİÊ±ÓÃĞ´ËøËøÀ´ÊµÏÖºìºÚÊ÷Ë÷ÒıËø
+//æš‚æ—¶ç”¨å†™é”é”æ¥å®ç°çº¢é»‘æ ‘ç´¢å¼•é”
 #define RBTREE_LOCK_T             rwlock_t
 #define RBTREE_LOCK(x)            rwlock_wlock(x); \
    DEBUG(" RBTREE_LOCK() \n");
@@ -41,35 +41,35 @@ extern "C" {
 #define RBTREE_LOCK_INIT(x)       rwlock_init((x));
 
 
-/*¶¨Òå½Úµã¿ÕÖ¸Õë*/
+/*å®šä¹‰èŠ‚ç‚¹ç©ºæŒ‡é’ˆ*/
 //static mem_rbtree_entry_t *nil;
 
-//ÄÚ´æ rbtree Ë÷ÒıÃèÊö·û_ÊÊÓÃÓÚ·¶Î§¿ìËÙË÷Òı
+//å†…å­˜ rbtree ç´¢å¼•æè¿°ç¬¦_é€‚ç”¨äºèŒƒå›´å¿«é€Ÿç´¢å¼•
 typedef struct  mem_rbtree_index_config_t
 {
-long                        index_no;                     //Ë÷ÒıºÅ
-long                        owner_table_no;               //ËùÊô±íºÅ
-int               *         field_order;                  //ÁªºÏË÷ÒıµÄË³ĞòºÅ
-int                         field_num;                    //ÁªºÏË÷Òı¹ØÁª×Ö¶ÎµÄµÄ¸öÊı
-char                        index_name[128];              //Ë÷ÒıÃû
-long                        owner_id;                     //¸ÃË÷ÒıËùÊôÓÃ»§µÄID
-unsigned  long              heap_block_size;             //Á¬Ğø¿Õ¼ä¿éÅäÖÃ´óĞ¡
+long                        index_no;                     //ç´¢å¼•å·
+long                        owner_table_no;               //æ‰€å±è¡¨å·
+int               *         field_order;                  //è”åˆç´¢å¼•çš„é¡ºåºå·
+int                         field_num;                    //è”åˆç´¢å¼•å…³è”å­—æ®µçš„çš„ä¸ªæ•°
+char                        index_name[128];              //ç´¢å¼•å
+long                        owner_id;                     //è¯¥ç´¢å¼•æ‰€å±ç”¨æˆ·çš„ID
+unsigned  long              heap_block_size;             //è¿ç»­ç©ºé—´å—é…ç½®å¤§å°
 
 } __attribute__ ((packed, aligned (64))) mem_rbtree_index_config_t;
 
 #define MEM_RBTREE_CONFIG_SIZE  sizeof(mem_rbtree_index_config_t)
 
-//ÄÚ´ærbtreeË÷ÒıÃèÊö·û_ÊÊÓÃÓÚ·¶Î§Ë÷Òı
+//å†…å­˜rbtreeç´¢å¼•æè¿°ç¬¦_é€‚ç”¨äºèŒƒå›´ç´¢å¼•
 typedef struct  mem_rbtree_index_t
 {
-struct mem_rbtree_index_config_t  config;                       //hash ÅäÖÃ
-struct mem_table_t                *heap_space;                	 //¶Ñ¿Õ¼ä
-long                               root_block_num;               //root ¿éºÅ
-unsigned  long                     root_record_num;              //root ĞĞºÅ
-mem_rbtree_entry_t                 *root;                        //¸ù½Úµã
-RBTREE_LOCK_T                      locker;                       //Ëø
-struct  mem_rbtree_entry_t				 * nil;                         //¿Õ½Úµã
-// redo_log  ÈÕÖ¾£¬ÔİÎ´ÏëºÃÈçºÎÊµÏÖ.
+struct mem_rbtree_index_config_t  config;                       //hash é…ç½®
+struct mem_table_t                *heap_space;                	 //å †ç©ºé—´
+long                               root_block_num;               //root å—å·
+unsigned  long                     root_record_num;              //root è¡Œå·
+mem_rbtree_entry_t                 *root;                        //æ ¹èŠ‚ç‚¹
+RBTREE_LOCK_T                      locker;                       //é”
+struct  mem_rbtree_entry_t				 * nil;                         //ç©ºèŠ‚ç‚¹
+// redo_log  æ—¥å¿—ï¼Œæš‚æœªæƒ³å¥½å¦‚ä½•å®ç°.
 } __attribute__ ((packed, aligned (64))) mem_rbtree_index_t;
 
 
@@ -81,9 +81,9 @@ rb_root = ( mem_rbtree_entry_t * ) (rb_root)
 
 
 
-/*²åÈëÒ»¸ö½áµã*/
+/*æ’å…¥ä¸€ä¸ªç»“ç‚¹*/
 inline int  mem_rbtree_insert(mem_rbtree_index_t *mem_rbtree_index, mem_rbtree_entry_t *T,mem_rbtree_entry_t* key);
-/*²éÕÒ½áµã*/
+/*æŸ¥æ‰¾ç»“ç‚¹*/
 inline int mem_rbtree_search(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root,unsigned  long key,mem_rbtree_entry_t ** result);
 
 inline mem_rbtree_entry_t * mem_rbtree_upper_bound_help(
@@ -92,7 +92,7 @@ inline mem_rbtree_entry_t * mem_rbtree_upper_bound_help(
 																	unsigned  long key
 																	);
 
-//Ê¹ÓÃ´Ëº¯Êı²éÕÒ >= key µÄµÚÒ»¸ö½Úµã£¬´Ëº¯ÊıÓÃÓÚ·¶Î§²éÕÒ
+//ä½¿ç”¨æ­¤å‡½æ•°æŸ¥æ‰¾ >= key çš„ç¬¬ä¸€ä¸ªèŠ‚ç‚¹ï¼Œæ­¤å‡½æ•°ç”¨äºèŒƒå›´æŸ¥æ‰¾
 inline int mem_rbtree_upper_bound(
 																	mem_rbtree_index_t *mem_rbtree_index,
 																	mem_rbtree_entry_t *root,
@@ -101,57 +101,57 @@ inline int mem_rbtree_upper_bound(
 																	);
 
 inline mem_rbtree_entry_t * mem_rbtree_search_help(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root,unsigned  long key);
-/*É¾³ı½áµã°ïÖúº¯Êı*/
+/*åˆ é™¤ç»“ç‚¹å¸®åŠ©å‡½æ•°*/
 inline mem_rbtree_entry_t *mem_rbtree_real_delete(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root,mem_rbtree_entry_t *x);
 
-/*É¾³ı½áµã*/
+/*åˆ é™¤ç»“ç‚¹*/
 inline int mem_rbtree_delete(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root,mem_rbtree_entry_t* z);
-/*²éÕÒ×îĞ¡µÄ½áµã*/
+/*æŸ¥æ‰¾æœ€å°çš„ç»“ç‚¹*/
 inline mem_rbtree_entry_t * mem_rbtree_minkey(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root);
-/*²éÕÒ×î´óµÄ½áµã*/
+/*æŸ¥æ‰¾æœ€å¤§çš„ç»“ç‚¹*/
 inline mem_rbtree_entry_t * mem_rbtree_maxkey(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root);
-/*´òÓ¡ºìºÚÊ÷*/
+/*æ‰“å°çº¢é»‘æ ‘*/
 inline int rbPrint(mem_rbtree_index_t T);
 
 
-/*²åÈëµ÷Õû*/
+/*æ’å…¥è°ƒæ•´*/
 inline int mem_rbtree_insert_fixup                   (mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *T,mem_rbtree_entry_t *z);
-/*É¾³ıµ÷Õû*/                                         
+/*åˆ é™¤è°ƒæ•´*/                                         
 inline int mem_rbtree_delete_fixup                   (mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *T,mem_rbtree_entry_t *x);
                                                      
 inline mem_rbtree_entry_t * mem_rbtree_parent     (mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *x );
 inline mem_rbtree_entry_t * mem_rbtree_left       (mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *x);
 inline mem_rbtree_entry_t * mem_rbtree_right      (mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *x);
 
-//ÉèÖÃ¸¸½ÚµãÖ¸Õë                                                     
+//è®¾ç½®çˆ¶èŠ‚ç‚¹æŒ‡é’ˆ                                                     
 inline void mem_rbtree_set_parent(mem_rbtree_entry_t *x,mem_rbtree_entry_t *parent );
-//ÉèÖÃ×ó½ÚµãÖ¸Õë   
+//è®¾ç½®å·¦èŠ‚ç‚¹æŒ‡é’ˆ   
 inline void mem_rbtree_set_left(mem_rbtree_entry_t *x,mem_rbtree_entry_t *left);
-//ÉèÖÃÓÒ½ÚµãÖ¸Õë 
+//è®¾ç½®å³èŠ‚ç‚¹æŒ‡é’ˆ 
 inline void mem_rbtree_set_right(mem_rbtree_entry_t *x,mem_rbtree_entry_t *right);
-//ÉèÖÃ½ÚµãÖ¸Õë    
+//è®¾ç½®èŠ‚ç‚¹æŒ‡é’ˆ    
 inline void mem_rbtree_set_self(mem_rbtree_entry_t *x,mem_rbtree_entry_t *y );
 
-/*×óĞı*/                                             
+/*å·¦æ—‹*/                                             
 inline int mem_rbtree_left_rotate								     (mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *T, mem_rbtree_entry_t *x);
-/*ÓÒĞı*/                                             
+/*å³æ—‹*/                                             
 inline int mem_rbtree_right_rotate							     (mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *T, mem_rbtree_entry_t *x);
 //inline int mem_rbtree_entry_t *mem_rbtree_real_delete(mem_rbtree_entry_t *T, mem_rbtree_entry_t *x);
 
-//½¨ºìºÚÊ÷Ë÷Òı
+//å»ºçº¢é»‘æ ‘ç´¢å¼•
 inline int mem_rbtree_create(
                              mem_rbtree_index_t         ** mem_rbtree_index,
                              struct mem_table_t         *  mem_table,
                              struct mem_rbtree_index_config_t  *  mem_index_config
                              );
 
-//´ò¿ªË÷Òı                             
+//æ‰“å¼€ç´¢å¼•                             
 inline int mem_rbtree_index_open  (mem_rbtree_index_t *  mem_hash_index);
-//¹ØË÷Òı
+//å…³ç´¢å¼•
 inline	int mem_rbtree_index_close(mem_rbtree_index_t *  mem_hash_index);	
 
 
-////Í¨¹ırecordµÄÖ¸Õë»ñµÃ mem_block_t Ö¸Õë
+////é€šè¿‡recordçš„æŒ‡é’ˆè·å¾— mem_block_t æŒ‡é’ˆ
 //inline int get_record_by_record_num(struct mem_table_t *mem_table,struct  mem_block_t * mb, unsigned  long   record_num,struct record_t ** record_ptr)
 //{
 //	if( NULL == mem_table )  return READ_RECORD_ERR_TABLE_IS_NULL;
@@ -159,7 +159,7 @@ inline	int mem_rbtree_index_close(mem_rbtree_index_t *  mem_hash_index);
 //	if( NULL == mb				)  return GET_BLOCK_ERR_BLOCK_IS_NULL;
 //  if( record_num<0      )  return GET_BLOCK_ERR_RECORD_IS_IN_BLOCK;
 //  	
-//  //ÓÅ»¯ĞÔÄÜ£¬´Ó O(n) µ½ O(1)£¬record_ptr Í¨¹ıÎ»ÖÃ	 record_num ºÍ MEM_BLOCK_HEAD_SIZE »ñµÃ mem_block Í·µØÖ·
+//  //ä¼˜åŒ–æ€§èƒ½ï¼Œä» O(n) åˆ° O(1)ï¼Œrecord_ptr é€šè¿‡ä½ç½®	 record_num å’Œ MEM_BLOCK_HEAD_SIZE è·å¾— mem_block å¤´åœ°å€
 //  *record_ptr = ((struct  record_t *) ( (char *)(mb->space_start_addr) +(record_num*(mem_table->record_size)) ));
 //  DEBUG("*record_ptr is %0x \n",*record_ptr);	
 //	
@@ -168,7 +168,7 @@ inline	int mem_rbtree_index_close(mem_rbtree_index_t *  mem_hash_index);
 
 //_________________________________________________________________________________________________
 
-/*²åÈëÒ»¸ö½áµã*/
+/*æ’å…¥ä¸€ä¸ªç»“ç‚¹*/
 inline int  mem_rbtree_insert(mem_rbtree_index_t *mem_rbtree_index, mem_rbtree_entry_t *root,mem_rbtree_entry_t* key)
 {
 	 if(NULL == mem_rbtree_index  )  return RBTREE_INDEX_ERR_NULL_INDEX_PRT;
@@ -195,9 +195,9 @@ inline int  mem_rbtree_insert(mem_rbtree_index_t *mem_rbtree_index, mem_rbtree_e
         		return err;
         	}
 			 	
-			 	// root ÊÇ 0ºÅĞĞ
+			 	// root æ˜¯ 0å·è¡Œ
 			 	root = (mem_rbtree_entry_t *)((char *)(record_ptr) + RECORD_HEAD_SIZE);
-			 	//³õÊ¼»¯mem_rbtree_index->nil½áµã£¬nil ÊÇ 1ºÅĞĞ
+			 	//åˆå§‹åŒ–mem_rbtree_index->nilç»“ç‚¹ï¼Œnil æ˜¯ 1å·è¡Œ
 			 	//mem_table_allocate_record(mem_rbtree_index->heap_space , &record_ptr, &block_no);
 			 	DEBUG("Insert NIl Node: \n");
 				struct  record_t* record_ptr2;
@@ -210,7 +210,7 @@ inline int  mem_rbtree_insert(mem_rbtree_index_t *mem_rbtree_index, mem_rbtree_e
 			 	
 			 	mem_rbtree_index->nil   = (mem_rbtree_entry_t *)((char *)(record_ptr2) + RECORD_HEAD_SIZE);
 			 	mem_rbtree_index->nil->color = BLACK;
-			 	// nil µÄÏà¹ØÊı¾İ¶¼Ö¸Ïò×Ô¼º
+			 	// nil çš„ç›¸å…³æ•°æ®éƒ½æŒ‡å‘è‡ªå·±
 			 	mem_rbtree_index->nil->block_no   			 =  block_no;			  
         mem_rbtree_index->nil->record_num 			 =  record_ptr2->record_num; 
 			 	mem_rbtree_index->nil->parent_block_no   =  block_no;			  
@@ -221,12 +221,12 @@ inline int  mem_rbtree_insert(mem_rbtree_index_t *mem_rbtree_index, mem_rbtree_e
         mem_rbtree_index->nil->right_record_num  =  record_ptr2->record_num;
         DEBUG("nil->block_no = %d,nil->record_num = %d \n",mem_rbtree_index->nil->block_no,mem_rbtree_index->nil->record_num);
 
-			 	//ÉèÖÃ½áµãµÄÖ¸Ïò
+			 	//è®¾ç½®ç»“ç‚¹çš„æŒ‡å‘
 			 	mem_rbtree_set_parent(root,mem_rbtree_index->nil   );	
 			 	mem_rbtree_set_left  (root,mem_rbtree_index->nil   );	
 			 	mem_rbtree_set_right (root,mem_rbtree_index->nil   );	
 			 	
-			 	//ÉèÖÃ½áµãÊôĞÔ,key ºÍcolor
+			 	//è®¾ç½®ç»“ç‚¹å±æ€§,key å’Œcolor
 			  root->rbtree_lkey = key->rbtree_lkey;
 			 	root->block_no    = key->block_no;
 			 	root->record_num  = key->record_num;
@@ -257,13 +257,13 @@ inline int  mem_rbtree_insert(mem_rbtree_index_t *mem_rbtree_index, mem_rbtree_e
         		return err;
         	}
 			 
-			 	//»ñµÃÊı¾İ
+			 	//è·å¾—æ•°æ®
 			 	x = (mem_rbtree_entry_t *)((char *)(record_ptr) + RECORD_HEAD_SIZE);
 			 	
 			 	mem_rbtree_set_parent(x,p   );	
 			 	mem_rbtree_set_left  (x,mem_rbtree_index->nil   );	
 			 	mem_rbtree_set_right (x,mem_rbtree_index->nil   );	
-			 	//ÉèÖÃ½áµãÊôĞÔ,key ºÍcolor 			 
+			 	//è®¾ç½®ç»“ç‚¹å±æ€§,key å’Œcolor 			 
 			 	x->rbtree_lkey = key->rbtree_lkey;
 			 	x->block_no    = key->block_no;
 			 	x->record_num  = key->record_num;			 	 
@@ -293,8 +293,8 @@ inline int mem_rbtree_search(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_ent
 	
 }
 
-/*²éÕÒ½áµã°ïÖúº¯Êı*/
-//Ê¹ÓÃ´Ëº¯ÊıÊ±£¬ÔÚ´Ëº¯ÊıÍâ¼ÓËø
+/*æŸ¥æ‰¾ç»“ç‚¹å¸®åŠ©å‡½æ•°*/
+//ä½¿ç”¨æ­¤å‡½æ•°æ—¶ï¼Œåœ¨æ­¤å‡½æ•°å¤–åŠ é”
 inline mem_rbtree_entry_t * mem_rbtree_search_help(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root,unsigned  long key)
 {
 	RBTREE_RLOCK(&(mem_rbtree_index->locker))
@@ -322,7 +322,7 @@ inline mem_rbtree_entry_t * mem_rbtree_search_help(mem_rbtree_index_t *mem_rbtre
 	return NULL;
 }
 
-//Ê¹ÓÃ´Ëº¯ÊıÊ±£¬²éÕÒÖµĞ¡ÓÚ key µÄµÄÀë¸ù×î½üµÄ½Úµã
+//ä½¿ç”¨æ­¤å‡½æ•°æ—¶ï¼ŒæŸ¥æ‰¾å€¼å°äº key çš„çš„ç¦»æ ¹æœ€è¿‘çš„èŠ‚ç‚¹
 inline int mem_rbtree_upper_bound(
 																	mem_rbtree_index_t *mem_rbtree_index,
 																	mem_rbtree_entry_t *root,
@@ -342,8 +342,8 @@ inline int mem_rbtree_upper_bound(
 	
 }
 
-/*²éÕÒ½áµã°ïÖúº¯Êı*/
-//Ê¹ÓÃ´Ëº¯ÊıÊ±£¬²éÕÒÖµĞ¡ÓÚ key µÄ±ß½ç½Úµã
+/*æŸ¥æ‰¾ç»“ç‚¹å¸®åŠ©å‡½æ•°*/
+//ä½¿ç”¨æ­¤å‡½æ•°æ—¶ï¼ŒæŸ¥æ‰¾å€¼å°äº key çš„è¾¹ç•ŒèŠ‚ç‚¹
 inline mem_rbtree_entry_t * mem_rbtree_upper_bound_help(
 																	mem_rbtree_index_t *mem_rbtree_index,
 																	mem_rbtree_entry_t *root,
@@ -355,7 +355,7 @@ inline mem_rbtree_entry_t * mem_rbtree_upper_bound_help(
 	mem_rbtree_entry_t * parent;
 	while(it != mem_rbtree_index->nil)
 	{
-		if(	it->rbtree_lkey < key) // µ±Ç°½ÚµãĞ¡ÓÚ²éÕÒÖµ£¬ÏòÓÒÕÒ,
+		if(	it->rbtree_lkey < key) // å½“å‰èŠ‚ç‚¹å°äºæŸ¥æ‰¾å€¼ï¼Œå‘å³æ‰¾,
 			{
 				DEBUG("it->rbtree_lkey < key,%ld < %ld \n",it->rbtree_lkey , key);
 				parent = it;
@@ -365,14 +365,14 @@ inline mem_rbtree_entry_t * mem_rbtree_upper_bound_help(
 					RBTREE_RUNLOCK(&(mem_rbtree_index->locker))
 					return it;
 				}
-				//¼«´óÖµÈÔÈ»Ğ¡ÓÚkeyµÄ»°£¬·µ»Ø²»´æÔÚ
+				//æå¤§å€¼ä»ç„¶å°äºkeyçš„è¯ï¼Œè¿”å›ä¸å­˜åœ¨
 				if (it == mem_rbtree_index->nil){
 					RBTREE_RUNLOCK(&(mem_rbtree_index->locker))
 					return NULL;
 					
 				}
 			}
-		else if (	it->rbtree_lkey > key)// µ±Ç°½ÚµãĞ¡ÓÚ²éÕÒÖµ£¬Ïò×óÕÒ,
+		else if (	it->rbtree_lkey > key)// å½“å‰èŠ‚ç‚¹å°äºæŸ¥æ‰¾å€¼ï¼Œå‘å·¦æ‰¾,
 			{
 				DEBUG("it->rbtree_lkey > key,%ld > %ld \n",it->rbtree_lkey , key);
 				parent = it;
@@ -382,14 +382,14 @@ inline mem_rbtree_entry_t * mem_rbtree_upper_bound_help(
 			  		RBTREE_RUNLOCK(&(mem_rbtree_index->locker))
 			  		return parent;
 			  	}
-			  //¼«Ğ¡ÖµµÄÇé¿öÊÇÓĞÖµµÄ£¨×îĞ¡Öµ£©
+			  //æå°å€¼çš„æƒ…å†µæ˜¯æœ‰å€¼çš„ï¼ˆæœ€å°å€¼ï¼‰
 		   	if (it == mem_rbtree_index->nil){
 					RBTREE_RUNLOCK(&(mem_rbtree_index->locker))
 					return parent;
 					
 				}
 			}
-			else {// µ±Ç°½ÚµãµÈÓÚ²éÕÒÖµ·µ»Ø,
+			else {// å½“å‰èŠ‚ç‚¹ç­‰äºæŸ¥æ‰¾å€¼è¿”å›,
 				RBTREE_RUNLOCK(&(mem_rbtree_index->locker))
 				return it;
 			}
@@ -401,8 +401,8 @@ inline mem_rbtree_entry_t * mem_rbtree_upper_bound_help(
 }
 
 
-/*²éÕÒÊµ¼ÊÒªÉ¾³ıµÄ½áµã*/
-//ÕÒµ½ÖĞĞò±éÀúµÄÇ°¼Ì
+/*æŸ¥æ‰¾å®é™…è¦åˆ é™¤çš„ç»“ç‚¹*/
+//æ‰¾åˆ°ä¸­åºéå†çš„å‰ç»§
 inline mem_rbtree_entry_t *mem_rbtree_real_delete(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root,mem_rbtree_entry_t *x){
 		mem_rbtree_entry_t *p=mem_rbtree_right(mem_rbtree_index,x);
 		
@@ -413,7 +413,7 @@ inline mem_rbtree_entry_t *mem_rbtree_real_delete(mem_rbtree_index_t *mem_rbtree
 		}
 		return p;
 }
-/*É¾³ı½áµã*/
+/*åˆ é™¤ç»“ç‚¹*/
 inline int mem_rbtree_delete(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root,mem_rbtree_entry_t* z)
 {
 	  if(NULL == mem_rbtree_index  )  return RBTREE_INDEX_ERR_NULL_INDEX_PRT;
@@ -433,7 +433,7 @@ inline int mem_rbtree_delete(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_ent
 	 }
 	 	 DEBUG(" Real Delete COLOR IS %d,find key is %ld;\n",y->color,y->rbtree_lkey);	
 
-	 //xÖ¸ÏòÊµ¼ÊÉ¾³ı½áµãµÄ×Ó½áµã
+	 //xæŒ‡å‘å®é™…åˆ é™¤ç»“ç‚¹çš„å­ç»“ç‚¹
 	 if(!(mem_rbtree_left(mem_rbtree_index,z)==mem_rbtree_index->nil)) 
 	 	{
 	 		DEBUG("!(mem_rbtree_left(mem_rbtree_index,z)==mem_rbtree_index->nil);\n");	
@@ -444,7 +444,7 @@ inline int mem_rbtree_delete(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_ent
 	 		DEBUG(" x = mem_rbtree_right(mem_rbtree_index,y);\n");	
 	 		 x = mem_rbtree_right(mem_rbtree_index,y);
 	 	}
-	 	mem_rbtree_set_parent(x , mem_rbtree_parent(mem_rbtree_index,y)); //É¾³ı½áµãy
+	 	mem_rbtree_set_parent(x , mem_rbtree_parent(mem_rbtree_index,y)); //åˆ é™¤ç»“ç‚¹y
 	 	if( (mem_rbtree_parent(mem_rbtree_index,y)==mem_rbtree_index->nil )){
 	 		DEBUG("mem_rbtree_parent(mem_rbtree_index,y)==mem_rbtree_index->nil;\n");	
 	 		mem_rbtree_index->root = x;
@@ -464,12 +464,12 @@ inline int mem_rbtree_delete(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_ent
 	 		 	DEBUG("z->(rbtree_lkey,block_no,record_num) = (%ld,%ld,%ld);\n",z->rbtree_lkey,z->block_no,z->record_num);	
 	 	    DEBUG("y->(rbtree_lkey,block_no,record_num) = (%ld,%ld,%ld);\n",y->rbtree_lkey,y->block_no,y->record_num);	
 	 	    z->rbtree_lkey 	= y->rbtree_lkey;
-	 	    z->block_no     = y->block_no;			   		 //right½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
-   			z->record_num  =  y->record_num; 		  		 //right½ÚµãË÷ÒıËùÔÚµÄĞĞºÅ	
+	 	    z->block_no     = y->block_no;			   		 //rightèŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+   			z->record_num  =  y->record_num; 		  		 //rightèŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„è¡Œå·	
 
 	 }
 
-	 //Èç¹ûÉ¾³ıµÄ½áµãÊÇºÚÉ«,Î¥·¨ÁËĞÔÖÊ5,Òª½øĞĞÉ¾³ıµ÷Õû
+	 //å¦‚æœåˆ é™¤çš„ç»“ç‚¹æ˜¯é»‘è‰²,è¿æ³•äº†æ€§è´¨5,è¦è¿›è¡Œåˆ é™¤è°ƒæ•´
 	 if(y->color==BLACK){
 	 mem_rbtree_delete_fixup (mem_rbtree_index,mem_rbtree_index->root,x);
 	 }
@@ -484,45 +484,45 @@ inline int mem_rbtree_delete(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_ent
 }
 
 
-/*É¾³ıµ÷Õû*/                                         
+/*åˆ é™¤è°ƒæ•´*/                                         
 inline int mem_rbtree_delete_fixup (mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root,mem_rbtree_entry_t *x)
 {
 	DEBUG("ENTER mem_rbtree_delete_fixup() ;\n");	
 
-	////Ò»ÖÁµ½ºÚÉ«£¬²Å½áÊø
+	////ä¸€è‡³åˆ°é»‘è‰²ï¼Œæ‰ç»“æŸ
 	 while(x!=(root) && x->color==BLACK){
 	 	// x==x->parent->left
 	 		if(x == mem_rbtree_left(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,x ))){  
-	 		mem_rbtree_entry_t* w = mem_rbtree_right(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,x ));//w ÎªxµÄĞÖµÜ½áµã
-	 			if(w->color ==RED){          //case 1 ĞÖµÜ½áµãÎªºìÉ«
-	 			DEBUG("case 1 left ĞÖµÜ½áµãÎªºìÉ«\n");
+	 		mem_rbtree_entry_t* w = mem_rbtree_right(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,x ));//w ä¸ºxçš„å…„å¼Ÿç»“ç‚¹
+	 			if(w->color ==RED){          //case 1 å…„å¼Ÿç»“ç‚¹ä¸ºçº¢è‰²
+	 			DEBUG("case 1 left å…„å¼Ÿç»“ç‚¹ä¸ºçº¢è‰²\n");
 	 			w->color = BLACK;
 	 			mem_rbtree_parent(mem_rbtree_index,x )->color = RED;
 	 		  mem_rbtree_left_rotate(mem_rbtree_index,root, mem_rbtree_parent(mem_rbtree_index,x ));
 	 		  w = mem_rbtree_right(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,x ));
 	 		  }
 	 		  if((w==mem_rbtree_index->nil ))break;
-        if(mem_rbtree_left(mem_rbtree_index,x)->color ==BLACK && mem_rbtree_right(mem_rbtree_index,x)->color ==BLACK ){   //case2 ĞÖµÜ½áµãµÄÁ½¸ö×Ó½áµã¶¼ÎªºÚ
-        DEBUG("case2 ĞÖµÜ½áµãµÄÁ½¸ö×Ó½áµã¶¼ÎªºÚ\n");
+        if(mem_rbtree_left(mem_rbtree_index,x)->color ==BLACK && mem_rbtree_right(mem_rbtree_index,x)->color ==BLACK ){   //case2 å…„å¼Ÿç»“ç‚¹çš„ä¸¤ä¸ªå­ç»“ç‚¹éƒ½ä¸ºé»‘
+        DEBUG("case2 å…„å¼Ÿç»“ç‚¹çš„ä¸¤ä¸ªå­ç»“ç‚¹éƒ½ä¸ºé»‘\n");
         w->color = RED;
         x = mem_rbtree_parent(mem_rbtree_index,x );
-        }else if(mem_rbtree_right(mem_rbtree_index,w)->color ==BLACK){    //case3 wµÄ×ó×ÓÊ÷ÎªºìÉ«,ÓÒ×ÓÊ÷ÎªºÚÉ«
-        DEBUG("case3 wµÄ×ó×ÓÊ÷ÎªºìÉ«,ÓÒ×ÓÊ÷ÎªºÚÉ«\n");
+        }else if(mem_rbtree_right(mem_rbtree_index,w)->color ==BLACK){    //case3 wçš„å·¦å­æ ‘ä¸ºçº¢è‰²,å³å­æ ‘ä¸ºé»‘è‰²
+        DEBUG("case3 wçš„å·¦å­æ ‘ä¸ºçº¢è‰²,å³å­æ ‘ä¸ºé»‘è‰²\n");
         w->color = RED;
         mem_rbtree_left(mem_rbtree_index,w)->color = BLACK;
         mem_rbtree_right_rotate(mem_rbtree_index,root, w );
         w = mem_rbtree_right(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,x ));
         }
-       DEBUG("case 4 wµÄÓÒ×ÓÊ÷ÎªºìÉ«\n");
-       w->color = mem_rbtree_parent(mem_rbtree_index,x )->color;         //case 4 wµÄÓÒ×ÓÊ÷ÎªºìÉ«
+       DEBUG("case 4 wçš„å³å­æ ‘ä¸ºçº¢è‰²\n");
+       w->color = mem_rbtree_parent(mem_rbtree_index,x )->color;         //case 4 wçš„å³å­æ ‘ä¸ºçº¢è‰²
        mem_rbtree_parent(mem_rbtree_index,x )->color = BLACK;
        mem_rbtree_right (mem_rbtree_index,x )->color = BLACK;
 	 	   mem_rbtree_left_rotate(mem_rbtree_index,root, mem_rbtree_parent(mem_rbtree_index,x ));
-       }else{  //¶Ô³Æ µ÷ÕûÍ¬ÉÏ
+       }else{  //å¯¹ç§° è°ƒæ•´åŒä¸Š
        	;
        mem_rbtree_entry_t* w = mem_rbtree_left(	mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,x ) );
        if(w->color == RED){                 //case 1
-       DEBUG("case 1 right ĞÖµÜ½áµãÎªºìÉ«\n");
+       DEBUG("case 1 right å…„å¼Ÿç»“ç‚¹ä¸ºçº¢è‰²\n");
        w->color = BLACK; 
        mem_rbtree_parent(mem_rbtree_index,x )->color = RED;
        mem_rbtree_right_rotate(mem_rbtree_index,root, mem_rbtree_parent(mem_rbtree_index,x ));
@@ -530,18 +530,18 @@ inline int mem_rbtree_delete_fixup (mem_rbtree_index_t *mem_rbtree_index,mem_rbt
        }
        if((w==mem_rbtree_index->nil ))break;
        if(mem_rbtree_left(mem_rbtree_index,w)->color == BLACK && mem_rbtree_right(mem_rbtree_index,w)->color == BLACK ){  //case 2
-       DEBUG("case2 right ĞÖµÜ½áµãµÄÁ½¸ö×Ó½áµã¶¼ÎªºÚ\n");
+       DEBUG("case2 right å…„å¼Ÿç»“ç‚¹çš„ä¸¤ä¸ªå­ç»“ç‚¹éƒ½ä¸ºé»‘\n");
        w->color = RED;
        x = mem_rbtree_parent(mem_rbtree_index,x );
        }else if(mem_rbtree_left(mem_rbtree_index,w)->color == BLACK){                       //case 3
-       	DEBUG("case3 right wµÄ×ó×ÓÊ÷ÎªºìÉ«,ÓÒ×ÓÊ÷ÎªºÚÉ«\n");
+       	DEBUG("case3 right wçš„å·¦å­æ ‘ä¸ºçº¢è‰²,å³å­æ ‘ä¸ºé»‘è‰²\n");
        	w->color = RED;
        	mem_rbtree_right(mem_rbtree_index,w)->color = BLACK;
        	mem_rbtree_left_rotate(mem_rbtree_index,root, w);
        	
        	w = mem_rbtree_left(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,x ));
        	}
-       	 DEBUG("case 4 right wµÄÓÒ×ÓÊ÷ÎªºìÉ«\n");
+       	 DEBUG("case 4 right wçš„å³å­æ ‘ä¸ºçº¢è‰²\n");
        	 w->color = mem_rbtree_parent(mem_rbtree_index,x )->color;
        	 mem_rbtree_parent(mem_rbtree_index,x )->color = BLACK;
        	 mem_rbtree_left  (mem_rbtree_index,w )->color = BLACK;
@@ -556,7 +556,7 @@ inline int mem_rbtree_delete_fixup (mem_rbtree_index_t *mem_rbtree_index,mem_rbt
 }
 
 
-/*²éÕÒ×îĞ¡µÄ½áµã*/
+/*æŸ¥æ‰¾æœ€å°çš„ç»“ç‚¹*/
 inline mem_rbtree_entry_t * mem_rbtree_minkey(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root)
 {
 RBTREE_LOCK(&(mem_rbtree_index->locker))
@@ -573,7 +573,7 @@ RBTREE_LOCK(&(mem_rbtree_index->locker))
 	
 	
 }
-/*²éÕÒ×î´óµÄ½áµã*/
+/*æŸ¥æ‰¾æœ€å¤§çš„ç»“ç‚¹*/
 inline mem_rbtree_entry_t * mem_rbtree_maxkey(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root)
 {
 RBTREE_LOCK(&(mem_rbtree_index->locker))
@@ -591,53 +591,53 @@ RBTREE_LOCK(&(mem_rbtree_index->locker))
 }
 
 
-/*²åÈëµ÷Õû*/
+/*æ’å…¥è°ƒæ•´*/
 inline int mem_rbtree_insert_fixup  (mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root,mem_rbtree_entry_t *z)
 {
 	DEBUG("Enter mem_rbtree_insert_fixup();\n");
 
 	mem_rbtree_entry_t * y;
-	//Ò»ÖÁµ½¸¸½ÚµãÊÇºìÉ«£¬²Å½áÊø
+	//ä¸€è‡³åˆ°çˆ¶èŠ‚ç‚¹æ˜¯çº¢è‰²ï¼Œæ‰ç»“æŸ
 	while(mem_rbtree_parent(mem_rbtree_index,z )->color == RED){
 		// z->parent = z->parent->parent->left
 		if(mem_rbtree_parent(mem_rbtree_index,z ) == mem_rbtree_left(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z )))){
 			DEBUG("z->parent = z->parent->parent->left\n");
 			// y = z->parent->right;
-			y = mem_rbtree_right(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z ))) ; //»ñÈ¡Êå¸¸½áµã
-				if(y->color==RED){             //case 1  Èç¹ûÊå¸¸½áµãÎªºìÉ«,Ôò°Ñ¸¸½ÚµãºÍÊå¸¸½áµã×ÅºÚ,×æ¸¸½áµã×Åºì,zÉÏÒÆµ½×æ¸¸½áµã
-			    DEBUG("case 1  Èç¹ûÊå¸¸½áµãÎªºìÉ«,Ôò°Ñ¸¸½ÚµãºÍÊå¸¸½áµã×ÅºÚ,×æ¸¸½áµã×Åºì,zÉÏÒÆµ½×æ¸¸½áµã\n");		
+			y = mem_rbtree_right(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z ))) ; //è·å–å”çˆ¶ç»“ç‚¹
+				if(y->color==RED){             //case 1  å¦‚æœå”çˆ¶ç»“ç‚¹ä¸ºçº¢è‰²,åˆ™æŠŠçˆ¶èŠ‚ç‚¹å’Œå”çˆ¶ç»“ç‚¹ç€é»‘,ç¥–çˆ¶ç»“ç‚¹ç€çº¢,zä¸Šç§»åˆ°ç¥–çˆ¶ç»“ç‚¹
+			    DEBUG("case 1  å¦‚æœå”çˆ¶ç»“ç‚¹ä¸ºçº¢è‰²,åˆ™æŠŠçˆ¶èŠ‚ç‚¹å’Œå”çˆ¶ç»“ç‚¹ç€é»‘,ç¥–çˆ¶ç»“ç‚¹ç€çº¢,zä¸Šç§»åˆ°ç¥–çˆ¶ç»“ç‚¹\n");		
 					y->color  = BLACK;
 					mem_rbtree_parent(mem_rbtree_index,z )->color = BLACK;
 					mem_rbtree_parent(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z ))->color = RED; 	
 					z = mem_rbtree_parent(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z ));
 				}else{
-				if(z==mem_rbtree_right(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z))){   //case 2  Èç¹ûÊå¸¸½áµãÎªºÚÉ«,zÓÒ½áµã,zÉÏÒÆÎª¸¸Ç×½áµã,×óĞı×ªz½áµã,´ËÊ±±äÎªcase3µÄÇé¿ö
-	        DEBUG("case 2  Èç¹ûÊå¸¸½áµãÎªºÚÉ«,zÓÒ½áµã,zÉÏÒÆÎª¸¸Ç×½áµã,×óĞı×ªz½áµã,´ËÊ±±äÎªcase3µÄÇé¿ö\n");		
+				if(z==mem_rbtree_right(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z))){   //case 2  å¦‚æœå”çˆ¶ç»“ç‚¹ä¸ºé»‘è‰²,zå³ç»“ç‚¹,zä¸Šç§»ä¸ºçˆ¶äº²ç»“ç‚¹,å·¦æ—‹è½¬zç»“ç‚¹,æ­¤æ—¶å˜ä¸ºcase3çš„æƒ…å†µ
+	        DEBUG("case 2  å¦‚æœå”çˆ¶ç»“ç‚¹ä¸ºé»‘è‰²,zå³ç»“ç‚¹,zä¸Šç§»ä¸ºçˆ¶äº²ç»“ç‚¹,å·¦æ—‹è½¬zç»“ç‚¹,æ­¤æ—¶å˜ä¸ºcase3çš„æƒ…å†µ\n");		
 	        z = mem_rbtree_parent(mem_rbtree_index,z);
 	        mem_rbtree_left_rotate	(mem_rbtree_index,root,z);
         }
-          DEBUG("case 3 Êå¸¸½áµãÎªºÚÉ«,ÇÒzµÄ×ó½áµã,zµÄ¸¸Ç××Å×ÅºÚ,zµÄ×æ¸¸×Åºì,È»ºóÓÒĞı×ªzµÄ×æ¸¸½áµã\n");		
-          mem_rbtree_parent(mem_rbtree_index,z)->color                                       = BLACK;   //case 3 Êå¸¸½áµãÎªºÚÉ«,ÇÒzµÄ×ó½áµã,zµÄ¸¸Ç××Å×ÅºÚ,zµÄ×æ¸¸×Åºì,È»ºóĞı×ªzµÄ×æ¸¸½áµã
+          DEBUG("case 3 å”çˆ¶ç»“ç‚¹ä¸ºé»‘è‰²,ä¸”zçš„å·¦ç»“ç‚¹,zçš„çˆ¶äº²ç€ç€é»‘,zçš„ç¥–çˆ¶ç€çº¢,ç„¶åå³æ—‹è½¬zçš„ç¥–çˆ¶ç»“ç‚¹\n");		
+          mem_rbtree_parent(mem_rbtree_index,z)->color                                       = BLACK;   //case 3 å”çˆ¶ç»“ç‚¹ä¸ºé»‘è‰²,ä¸”zçš„å·¦ç»“ç‚¹,zçš„çˆ¶äº²ç€ç€é»‘,zçš„ç¥–çˆ¶ç€çº¢,ç„¶åæ—‹è½¬zçš„ç¥–çˆ¶ç»“ç‚¹
           mem_rbtree_parent(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z))->color   = RED;
           mem_rbtree_right_rotate	(mem_rbtree_index,root,mem_rbtree_parent(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z)));
         }
      // z = z->parent->parent->right
-	 	}else{  //¶Ô³Æ µ÷ÕûÍ¬ÉÏ
+	 	}else{  //å¯¹ç§° è°ƒæ•´åŒä¸Š
 				DEBUG("z = z->parent->parent->right\n");
 	 		   y = mem_rbtree_left(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z)));
 	 		   if(y->color==RED){
-	 		   	DEBUG("case 1 right Èç¹ûÊå¸¸½áµãÎªºìÉ«,Ôò°Ñ¸¸½ÚµãºÍÊå¸¸½áµã×ÅºÚ,×æ¸¸½áµã×Åºì,zÉÏÒÆµ½×æ¸¸½áµã\n");		
+	 		   	DEBUG("case 1 right å¦‚æœå”çˆ¶ç»“ç‚¹ä¸ºçº¢è‰²,åˆ™æŠŠçˆ¶èŠ‚ç‚¹å’Œå”çˆ¶ç»“ç‚¹ç€é»‘,ç¥–çˆ¶ç»“ç‚¹ç€çº¢,zä¸Šç§»åˆ°ç¥–çˆ¶ç»“ç‚¹\n");		
 	 		   		 	y->color  = BLACK;
 	 		   		 	mem_rbtree_parent(mem_rbtree_index,z)->color = BLACK;
 	 		   		 	mem_rbtree_parent(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z))->color = RED;
 	 		   		 	z = mem_rbtree_parent(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z));
 	 		   }else{
 	 		   	if( z == mem_rbtree_left(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z))){
-	 		   		 	 DEBUG("case 2  right Èç¹ûÊå¸¸½áµãÎªºÚÉ«,zÊÇÓÒ½áµã,zÉÏÒÆÎª¸¸Ç×½áµã,×óĞı×ªz½áµã,´ËÊ±±äÎªcase3µÄÇé¿ö\n");		
+	 		   		 	 DEBUG("case 2  right å¦‚æœå”çˆ¶ç»“ç‚¹ä¸ºé»‘è‰²,zæ˜¯å³ç»“ç‚¹,zä¸Šç§»ä¸ºçˆ¶äº²ç»“ç‚¹,å·¦æ—‹è½¬zç»“ç‚¹,æ­¤æ—¶å˜ä¸ºcase3çš„æƒ…å†µ\n");		
 	 		   		  z = mem_rbtree_parent(mem_rbtree_index,z);
 	 		   		  mem_rbtree_right_rotate	(mem_rbtree_index,root,z);
            }
-              DEBUG("case 3 right Êå¸¸½áµãÎªºÚÉ«,ÇÒzÊÇÓÒ½áµã,zµÄ¸¸Ç××Å×ÅºÚ,zµÄ×æ¸¸×Åºì,È»ºó×óĞı×ªzµÄ×æ¸¸½áµã\n");		
+              DEBUG("case 3 right å”çˆ¶ç»“ç‚¹ä¸ºé»‘è‰²,ä¸”zæ˜¯å³ç»“ç‚¹,zçš„çˆ¶äº²ç€ç€é»‘,zçš„ç¥–çˆ¶ç€çº¢,ç„¶åå·¦æ—‹è½¬zçš„ç¥–çˆ¶ç»“ç‚¹\n");		
               mem_rbtree_parent(mem_rbtree_index,z)->color = BLACK;
               mem_rbtree_parent(mem_rbtree_index,mem_rbtree_parent(mem_rbtree_index,z))->color = RED;
               //mem_rbtree_left_rotate	(mem_rbtree_index,root,z);
@@ -653,14 +653,14 @@ inline int mem_rbtree_insert_fixup  (mem_rbtree_index_t *mem_rbtree_index,mem_rb
 
 
 
-//·µ»Ø¸¸½ÚµãÖ¸Õë                                                     
+//è¿”å›çˆ¶èŠ‚ç‚¹æŒ‡é’ˆ                                                     
 inline mem_rbtree_entry_t * mem_rbtree_parent(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *x )
 {
   //if(NULL == x)return RBTREE_INDEX_ERR_LEFT_IS_NULL_PRT;
 	DEBUG("mem_rbtree_parent(),block_no,record_num=( %ld,%ld,%ld );\n",x->rbtree_lkey,x->parent_block_no,x->parent_record_num);										
 
-	long                    parent_block_no   = x->parent_block_no;			    //¸¸½ÚµãÊı¾İËùÔÚµÄ¿éºÅ
-  unsigned  long          parent_record_num = x->parent_record_num; 			//¸¸½ÚµãËùÔÚµÄĞĞºÅ
+	long                    parent_block_no   = x->parent_block_no;			    //çˆ¶èŠ‚ç‚¹æ•°æ®æ‰€åœ¨çš„å—å·
+  unsigned  long          parent_record_num = x->parent_record_num; 			//çˆ¶èŠ‚ç‚¹æ‰€åœ¨çš„è¡Œå·
   
   struct record_t * record_ptr;
   get_record(mem_rbtree_index->heap_space,parent_block_no,parent_record_num,&record_ptr);
@@ -672,28 +672,28 @@ inline mem_rbtree_entry_t * mem_rbtree_parent(mem_rbtree_index_t *mem_rbtree_ind
 	return parent;
 	
 }
-//·µ»Ø×ó½ÚµãÖ¸Õë   
+//è¿”å›å·¦èŠ‚ç‚¹æŒ‡é’ˆ   
 inline mem_rbtree_entry_t * mem_rbtree_left(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *x)
 {
   //if(NULL == x)return RBTREE_INDEX_ERR_LEFT_IS_NULL_PRT;
 	DEBUG("mem_rbtree_left(),block_no,record_num=( %ld,%ld,%ld );\n",x->rbtree_lkey,x->left_block_no,x->left_record_num);										
 
-	long                    left_block_no   = x->left_block_no;			    //¸¸½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
-  unsigned  long          left_record_num = x->left_record_num; 			//¸¸½ÚµãËùÔÚµÄĞĞºÅ
+	long                    left_block_no   = x->left_block_no;			    //çˆ¶èŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+  unsigned  long          left_record_num = x->left_record_num; 			//çˆ¶èŠ‚ç‚¹æ‰€åœ¨çš„è¡Œå·
   struct record_t * record_ptr;
    get_record(mem_rbtree_index->heap_space,left_block_no,left_record_num,&record_ptr);  
   mem_rbtree_entry_t *left;
   left = (mem_rbtree_entry_t *)((char *)(record_ptr) + RECORD_HEAD_SIZE);
 	return left;	
 }
-//·µ»ØÓÒ½ÚµãÖ¸Õë 
+//è¿”å›å³èŠ‚ç‚¹æŒ‡é’ˆ 
 inline mem_rbtree_entry_t * mem_rbtree_right(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *x)
 {
 	//if(NULL == x)return RBTREE_INDEX_ERR_LEFT_IS_NULL_PRT;
 	DEBUG("mem_rbtree_right(),block_no,record_num=( %ld,%ld,%ld );\n",x->rbtree_lkey,x->right_block_no,x->right_record_num);										
 
-	long                    right_block_no    = x->right_block_no;			    //¸¸½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
-  unsigned  long          right_record_num  = x->right_record_num; 			//¸¸½ÚµãËùÔÚµÄĞĞºÅ
+	long                    right_block_no    = x->right_block_no;			    //çˆ¶èŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+  unsigned  long          right_record_num  = x->right_record_num; 			//çˆ¶èŠ‚ç‚¹æ‰€åœ¨çš„è¡Œå·
   struct record_t * record_ptr;
    get_record(mem_rbtree_index->heap_space,right_block_no,right_record_num,&record_ptr);  
    mem_rbtree_entry_t *right;
@@ -701,7 +701,7 @@ inline mem_rbtree_entry_t * mem_rbtree_right(mem_rbtree_index_t *mem_rbtree_inde
 	return right;	
 	
 }
-//ÉèÖÃ½ÚµãÖ¸Õë                                                     
+//è®¾ç½®èŠ‚ç‚¹æŒ‡é’ˆ                                                     
 inline int mem_rbtree_compare_self(mem_rbtree_entry_t *x,mem_rbtree_entry_t *y )
 {	
   //return (x->parent_block_no    == y->block_no) && (x->parent_record_num  == y->record_num); 	
@@ -710,7 +710,7 @@ inline int mem_rbtree_compare_self(mem_rbtree_entry_t *x,mem_rbtree_entry_t *y )
 
 
 //DEBUG("block_no is %d \n",_block_no);																										\
-// ¸ù¾İ rbtreeÊı¾İÖ¸Õë»ñµÃ¿éºÅºÍĞĞºÅ
+// æ ¹æ® rbtreeæ•°æ®æŒ‡é’ˆè·å¾—å—å·å’Œè¡Œå·
 #define get_rbtree_record_num_block_no(data,_block_no,_record_num)				do{				\
 struct record_t * record_ptr = (struct record_t *)((char *)(data) - RECORD_HEAD_SIZE ) ;	\
 (_record_num) = record_ptr->record_num;																										\
@@ -718,58 +718,58 @@ struct  mem_block_t * mem_block = ((struct  mem_block_t *) ( (char *)record_ptr 
 (_block_no) = mem_block->block_no; 																											\
 }while(0);																												
 
-//ÉèÖÃ½ÚµãÖ¸Õë                                                     
+//è®¾ç½®èŠ‚ç‚¹æŒ‡é’ˆ                                                     
 inline void mem_rbtree_set_self(mem_rbtree_entry_t *x,mem_rbtree_entry_t *y )
 {	
   //   x = y;
 	DEBUG("mem_rbtree_set_self();\n");										
-	 x->parent_block_no    = 	y->block_no;			    	//y½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
-   x->parent_record_num  =  y->record_num; 		  		//y½ÚµãË÷ÒıËùÔÚµÄĞĞºÅ	
-   x->rbtree_lkey        =  y->rbtree_lkey;					//y½Úµãkey 
+	 x->parent_block_no    = 	y->block_no;			    	//yèŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+   x->parent_record_num  =  y->record_num; 		  		//yèŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„è¡Œå·	
+   x->rbtree_lkey        =  y->rbtree_lkey;					//yèŠ‚ç‚¹key 
 }
 
-//ÉèÖÃ¸¸½ÚµãÖ¸Õë                                                     
+//è®¾ç½®çˆ¶èŠ‚ç‚¹æŒ‡é’ˆ                                                     
 inline void mem_rbtree_set_parent(mem_rbtree_entry_t *x,mem_rbtree_entry_t *parent )
 {	
-	long                    block_no   ;			    //¸¸½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
-  unsigned  long          record_num ; 	    		//¸¸½ÚµãË÷ÒıËùÔÚµÄĞĞºÅ
+	long                    block_no   ;			    //çˆ¶èŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+  unsigned  long          record_num ; 	    		//çˆ¶èŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„è¡Œå·
 	get_rbtree_record_num_block_no(parent,block_no,record_num);
 	DEBUG("mem_rbtree_set_parent,(parent's (block_no,record_num) =( %ld,%ld );\n",block_no,record_num);										
 
-	 x->parent_block_no    = block_no;			    	//¸¸½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
-   x->parent_record_num  = record_num; 		  		//¸¸½ÚµãË÷ÒıËùÔÚµÄĞĞºÅ	
+	 x->parent_block_no    = block_no;			    	//çˆ¶èŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+   x->parent_record_num  = record_num; 		  		//çˆ¶èŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„è¡Œå·	
    //x->rbtree_lkey        = parent->rbtree_lkey;
 
 }
-//ÉèÖÃ×ó½ÚµãÖ¸Õë   
+//è®¾ç½®å·¦èŠ‚ç‚¹æŒ‡é’ˆ   
 inline void mem_rbtree_set_left(mem_rbtree_entry_t *x,mem_rbtree_entry_t *left)
 {
- long                    block_no   ;			    //left½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
- unsigned  long          record_num ; 	    		//left½ÚµãË÷ÒıËùÔÚµÄĞĞºÅ
+ long                    block_no   ;			    //leftèŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+ unsigned  long          record_num ; 	    		//leftèŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„è¡Œå·
  get_rbtree_record_num_block_no(left,block_no,record_num);
  DEBUG("mem_rbtree_set_left,(left's (block_no,record_num) =( %ld,%ld );\n",block_no,record_num);										
 	 
-	 x->left_block_no    = block_no;			    		//left½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
-   x->left_record_num  = record_num; 		  			//left½ÚµãË÷ÒıËùÔÚµÄĞĞºÅ	
+	 x->left_block_no    = block_no;			    		//leftèŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+   x->left_record_num  = record_num; 		  			//leftèŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„è¡Œå·	
    //x->rbtree_lkey      = left->rbtree_lkey;
 }
-//ÉèÖÃÓÒ½ÚµãÖ¸Õë 
+//è®¾ç½®å³èŠ‚ç‚¹æŒ‡é’ˆ 
 inline void mem_rbtree_set_right(mem_rbtree_entry_t *x,mem_rbtree_entry_t *right)
 {
-  	long                    block_no   ;			    //right½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
-  	unsigned  long          record_num ; 	    		//right½ÚµãË÷ÒıËùÔÚµÄĞĞºÅ
+  	long                    block_no   ;			    //rightèŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+  	unsigned  long          record_num ; 	    		//rightèŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„è¡Œå·
 		get_rbtree_record_num_block_no(right,block_no,record_num);
 		DEBUG("mem_rbtree_set_right,(right's (block_no,record_num) =( %ld,%ld );\n",block_no,record_num);										
 	 
-	 x->right_block_no    = block_no;			   		 //right½ÚµãË÷ÒıËùÔÚµÄ¿éºÅ
-   x->right_record_num  = record_num; 		  	 //right½ÚµãË÷ÒıËùÔÚµÄĞĞºÅ	
+	 x->right_block_no    = block_no;			   		 //rightèŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„å—å·
+   x->right_record_num  = record_num; 		  	 //rightèŠ‚ç‚¹ç´¢å¼•æ‰€åœ¨çš„è¡Œå·	
    //x->rbtree_lkey      =  right->rbtree_lkey;
 	
 }
 
 
-/*×óĞı*/         
-//×óĞı×ª£º½áµãxÔ­À´µÄÓÒ×ÓÊ÷yĞı×ª³ÉÎªxµÄ¸¸Ä¸                                    
+/*å·¦æ—‹*/         
+//å·¦æ—‹è½¬ï¼šç»“ç‚¹xåŸæ¥çš„å³å­æ ‘yæ—‹è½¬æˆä¸ºxçš„çˆ¶æ¯                                    
 inline int mem_rbtree_left_rotate	(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root, mem_rbtree_entry_t *x)
 {
 		if(NULL == x               )return RBTREE_INDEX_ERR_ENTRY_IS_NULL_PRT;
@@ -817,8 +817,8 @@ inline int mem_rbtree_left_rotate	(mem_rbtree_index_t *mem_rbtree_index,mem_rbtr
 	    DEBUG("mem_rbtree_left_rotate() end\n");										
 
 }
-/*ÓÒĞı*/
-//ÓÒĞı×ª£º½áµãxÔ­À´µÄ×ó×ÓÊ÷yĞı×ª³ÉÎªxµÄ¸¸Ä¸                                             
+/*å³æ—‹*/
+//å³æ—‹è½¬ï¼šç»“ç‚¹xåŸæ¥çš„å·¦å­æ ‘yæ—‹è½¬æˆä¸ºxçš„çˆ¶æ¯                                             
 inline int mem_rbtree_right_rotate(mem_rbtree_index_t *mem_rbtree_index,mem_rbtree_entry_t *root, mem_rbtree_entry_t *x)
 {
 		if(NULL == x               )return RBTREE_INDEX_ERR_ENTRY_IS_NULL_PRT;
@@ -861,10 +861,10 @@ inline int mem_rbtree_right_rotate(mem_rbtree_index_t *mem_rbtree_index,mem_rbtr
 }
 //inline int mem_rbtree_entry_t *mem_rbtree_real_delete(mem_rbtree_entry_t *T, mem_rbtree_entry_t *x);
 
-//½¨HASHË÷Òı
+//å»ºHASHç´¢å¼•
 inline int mem_rbtree_create(
 														 mem_rbtree_index_t         **  mem_rbtree_index,	
-                             struct mem_table_t         *  mem_table,// Ô­±í
+                             struct mem_table_t         *  mem_table,// åŸè¡¨
                              struct mem_rbtree_index_config_t  *  mem_index_config
                              )
  {
@@ -873,28 +873,28 @@ inline int mem_rbtree_create(
 	if(NULL == mem_index_config->index_name       )  return CREATE_RBTREE_INDEX_ERR_NO_NAME;
 	if(strlen (mem_index_config->index_name)>=120 )  return CREATE_RBTREE_INDEX_ERR_NAME_TOO_LONG;
   if(mem_index_config->owner_table_no<=0        )  return CREATE_RBTREE_INDEX_ERR_NO_TABLE_NO;
-	//if(NULL == mem_index_config->field_order      )  return CREATE_RBTREE_INDEX_ERR_NO_FIELD_PTR;   //ÔİÊ±²»¿¼ÂÇ ×Ö¶ÎË³Ğò
-  //if(mem_index_config->field_num <= 0          )   return CREATE_RBTREE_INDEX_ERR_FIELD_NUM_LESS_ZERO; //ÔİÊ±²»¿¼ÂÇ ÁªºÏË÷Òı                         	
+	//if(NULL == mem_index_config->field_order      )  return CREATE_RBTREE_INDEX_ERR_NO_FIELD_PTR;   //æš‚æ—¶ä¸è€ƒè™‘ å­—æ®µé¡ºåº
+  //if(mem_index_config->field_num <= 0          )   return CREATE_RBTREE_INDEX_ERR_FIELD_NUM_LESS_ZERO; //æš‚æ—¶ä¸è€ƒè™‘ è”åˆç´¢å¼•                         	
   int len = strlen(mem_index_config->index_name);
   DEBUG("Enter mem_rbtree_create() \n");
   	
-  		//1.¹¹Ôì heap_space µÄ block
+  		//1.æ„é€  heap_space çš„ block
      int i=0;
 	   struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
 	   off_t heap_space_size = 0;
 
-     //±éÀúÔ­±íËùÓĞ¿é,ÀÛ¼ÓÔ­±íßßÊı¾İ¿é´óĞ¡
+     //éå†åŸè¡¨æ‰€æœ‰å—,ç´¯åŠ åŸè¡¨å“Œæ•°æ®å—å¤§å°
 	   for(;i<mem_table->config.mem_block_used;++i)
 	   { 
-	   	  //È¡array¿é´óĞ¡
+	   	  //å–arrayå—å¤§å°
 	   	  heap_space_size += mem_block_temp->block_size;   
-	   		mem_block_temp = mem_block_temp->next;      //ÏÂÒ»¸ö¿é
+	   		mem_block_temp = mem_block_temp->next;      //ä¸‹ä¸€ä¸ªå—
       }
-        //Éú³É¿éÃèÊö·û
+        //ç”Ÿæˆå—æè¿°ç¬¦
        mem_block_t *mb = (mem_block_t *) malloc(MEM_BLOCK_HEAD_SIZE);
-	     DEBUG("create mem_rbtree block %0x\n",*mb);
+	     DEBUG("create mem_rbtree block %0x\n",mb);
 	     
-	     //ÅäÖÃ¿éÃèÊö·û //ÉèÖÃÁ½¸ö heap_space ¿é´óĞ¡,½«ÅäÖÃÊıºÍÊı¾İÊı±È½ÏÈ¡×î´ó
+	     //é…ç½®å—æè¿°ç¬¦ //è®¾ç½®ä¸¤ä¸ª heap_space å—å¤§å°,å°†é…ç½®æ•°å’Œæ•°æ®æ•°æ¯”è¾ƒå–æœ€å¤§
        off_t _block_size = (mem_index_config->heap_block_size > heap_space_size ) ? mem_index_config->heap_block_size : heap_space_size;      
 			 DEBUG("_block_size is %d\n",_block_size);
 			 
@@ -904,27 +904,27 @@ inline int mem_rbtree_create(
        
 			 mem_block_config( mb  ,_block_size , tem_buf );
 			 
-			 //2. ¹¹Ôì fields_table
+			 //2. æ„é€  fields_table
 			 struct field_t *_fields_table   = (struct field_t *) malloc(FIELD_SIZE);
 		   _fields_table[0].field_type     = FIELD_TYPE_RBTREE_ENTRY;
 
-			 // 3.¹¹Ôì mem_table_config_t
+			 // 3.æ„é€  mem_table_config_t
 		  struct mem_table_config_t * heap_space_config = (struct mem_table_config_t *)malloc(MEM_TABLE_CONFIG_SIZE); 
 		  //array_space_config->mem_table_no             = allocat_mem_table_no();
       //array_space_config->owner_id                   = mem_table->owner_id;
       heap_space_config->fields_table               = _fields_table;
       heap_space_config->field_used_num             = 1;
       heap_space_config->mem_block_used             = 1;
-      heap_space_config->auto_extend                = 1; //ÔÊĞí×Ô¶¯À©Õ¹
+      heap_space_config->auto_extend                = 1; //å…è®¸è‡ªåŠ¨æ‰©å±•
       heap_space_config->mem_blocks_table           = mb;
       heap_space_config->mem_blocks_table->next     = 0;
       strcpy(heap_space_config->table_name,mem_index_config->index_name);
       strcat(heap_space_config->table_name,"_heap\0");
       DEBUG(" heap_space_config->table_name is %s \n",heap_space_config->table_name);
 
-		  heap_space_config->extend_block_size   = _block_size; //×Ô¶¯À©Õ¹´óĞ¡
+		  heap_space_config->extend_block_size   = _block_size; //è‡ªåŠ¨æ‰©å±•å¤§å°
 
-			//4.¹¹Ôì mem_table_t
+			//4.æ„é€  mem_table_t
 			struct mem_table_t      *heap_space_temp ;  		
 			int err=0;
       err = mem_table_create(
@@ -934,7 +934,7 @@ inline int mem_rbtree_create(
       DEBUG(" heap_space_temp is %0x \n",heap_space_temp);
 
                     
-       //5 ÉèÖÃ  mem_rbtree_index              
+       //5 è®¾ç½®  mem_rbtree_index              
       (*mem_rbtree_index) = (mem_rbtree_index_t  *)malloc(MEM_RBTREE_INDEX_SIZE);
       //allocate_index_no(&(mem_index_config->index_no));
       //(*mem_rbtree_index) -> config.index_no         = mem_index_config->index_no;
@@ -946,7 +946,7 @@ inline int mem_rbtree_create(
       (*mem_rbtree_index) -> config.owner_id         = mem_index_config->owner_id;
       (*mem_rbtree_index) -> config.heap_block_size =  heap_space_config->mem_blocks_table->block_size;
       strcpy((*mem_rbtree_index) -> config.index_name,mem_index_config->index_name);
-      //ÉèÖÃ¶ÑÄÚ´æ
+      //è®¾ç½®å †å†…å­˜
        (*mem_rbtree_index)->heap_space = heap_space_temp;
        RBTREE_LOCK_INIT(&((*mem_rbtree_index)->locker))
        (*mem_rbtree_index)->root      = NULL;                                       
@@ -958,7 +958,7 @@ inline int mem_rbtree_create(
                              	
                    
 
-//´ò¿ªË÷Òı                             
+//æ‰“å¼€ç´¢å¼•                             
 inline int mem_rbtree_index_open  (mem_rbtree_index_t *  mem_rbtree_index)
 {
 	
@@ -970,12 +970,12 @@ inline int mem_rbtree_index_open  (mem_rbtree_index_t *  mem_rbtree_index)
 	
 	
 }
-//¹ØË÷Òı
+//å…³ç´¢å¼•
 inline	int mem_rbtree_index_close(mem_rbtree_index_t *  mem_rbtree_index)
 {
 	
 		if(NULL == mem_rbtree_index    )  return CLOSE_MEM_RBTREE_INDEX_ERR_NULL_PTR;
-	  DEBUG("Begin to close a mem_index£º%s, addr is %0x .\n",(mem_rbtree_index)->config.index_name,(mem_rbtree_index)->config);
+	  DEBUG("Begin to close a mem_indexï¼š%s, addr is %0x .\n",(mem_rbtree_index)->config.index_name,(mem_rbtree_index)->config);
     RBTREE_LOCK(&(mem_rbtree_index->locker))
 	  int err = 0;
 	 //struct mem_table_t *heap_space_temp = mem_rbtree_index->heap_space;
