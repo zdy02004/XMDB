@@ -18,22 +18,22 @@ extern "C" {
 #include <stdlib.h>  
 #include <errno.h>  
 #include <unistd.h>  
-#include <pthread.h> //ÒıÈë»¥³âËø
+#include <pthread.h> //å¼•å…¥äº’æ–¥é”
 #include<string.h>
 #include"../util/log/log_util.h"
 #include"mem_block_no_manager.h"
 
-//½á¹¹Ìå³ÉÔ±ÔÚ½á¹¹ÌåÄÚµÄÆ«ÒÆ
+//ç»“æ„ä½“æˆå‘˜åœ¨ç»“æ„ä½“å†…çš„åç§»
 #define STRUCT_OFFSET(Type, member) (size_t)&( ((Type*)0)->member) )
 
-//¿é×´Ì¬ £¨Õı³££¬Ëğ»µ, ¿éÃ¦£¬Î´ÓÃ£¬ÓĞÄÚ´æÎŞÊı¾İ£©
+//å—çŠ¶æ€ ï¼ˆæ­£å¸¸ï¼ŒæŸå, å—å¿™ï¼Œæœªç”¨ï¼Œæœ‰å†…å­˜æ— æ•°æ®ï¼‰
 #define MEM_BLOCK_STATUS_UNUSED 0
 #define MEM_BLOCK_STATUS_NORMAL 1
 #define MEM_BLOCK_STATUS_BAD    2
 #define MEM_BLOCK_STATUS_BUSY   3
 #define MEM_BLOCK_STATUS_NO_DATA   4
 
-//´íÎóÀàĞÍ
+//é”™è¯¯ç±»å‹
 #define MEM_BLOCK_ERR_CPY_NULL_PTR        31001
 #define MEM_BLOCK_ERR_GET_MEM_NULL_PTR    31002
 #define MEM_BLOCK_ERR_FROM_OS             31001
@@ -45,7 +45,7 @@ extern "C" {
 #define MEM_BLOCK_SIZE_LESS_ZERO					31009
 #define MEM_BLOCK_ERR_SPACE_SIZE_ZERO		  31010
 
-//ÔİÊ±ÓÃ»¥³âËø±íÊ¾¿éËø
+//æš‚æ—¶ç”¨äº’æ–¥é”è¡¨ç¤ºå—é”
 #define MEM_BLOCK_LOCK_T        pthread_mutex_t
 #define MEM_BLOCK_LOCK(x)       pthread_mutex_lock(x)
 #define MEM_BLOCK_UNLOCK(x)     pthread_mutex_unlock(x)   
@@ -53,14 +53,14 @@ extern "C" {
 #define MEM_BLOCK_LOCK_DEST(x)  pthread_mutex_destroy(x)   
 
 
-//ÔİÊ±ÓÃ×ÔĞıËøËøÀ´ÊµÏÖ»ØÊÕÁ´±íËø
+//æš‚æ—¶ç”¨è‡ªæ—‹é”é”æ¥å®ç°å›æ”¶é“¾è¡¨é”
 #define LIST_LOCK_T             pthread_spinlock_t
 #define LIST_LOCK(x)            pthread_spin_lock(x)
 #define LIST_UNLOCK(x)          pthread_spin_unlock(x)   
 #define LIST_TRYLOCK(x)         pthread_spin_trylock(x)   
 #define LIST_LOCK_INIT(x)       pthread_spin_init(x,0)
 
-//ÔİÊ±ÓÃ×ÔĞıËøËøÀ´ÊµÏÖ¸ßË®Î»ÏßËø
+//æš‚æ—¶ç”¨è‡ªæ—‹é”é”æ¥å®ç°é«˜æ°´ä½çº¿é”
 #define HIGH_LEVEL_LOCK_T             pthread_spinlock_t
 #define HIGH_LEVEL_LOCK(x)            pthread_spin_lock(x);
 #define HIGH_LEVEL_UNLOCK(x)          pthread_spin_unlock(x);
@@ -82,9 +82,9 @@ long long lock_owner;
 //#define HIGH_LEVEL_TRYLOCK(x)         ticket_trylock(x)
 //#define HIGH_LEVEL_LOCK_INIT(x)       
 
-//ÔİÊ±Ö»Ö§³Ö 20480 ¸ö¿é
+//æš‚æ—¶åªæ”¯æŒ 20480 ä¸ªå—
 #define MAX_BLOCK_NO    20480
-//ÎïÀí¿é¿ì²é±í
+//ç‰©ç†å—å¿«æŸ¥è¡¨
 static void * mem_block_no_map[MAX_BLOCK_NO];
 
 struct mem_free_list_t     
@@ -95,7 +95,7 @@ struct mem_free_list_t
 } __attribute__ ((packed, aligned (64)));
 
 
-//±íµÄ¿ÕÏĞÁ´±í³õÊ¼»¯
+//è¡¨çš„ç©ºé—²é“¾è¡¨åˆå§‹åŒ–
 //#define INIT_MEM_FREE_LIST(x) \
 //(x)->head = 0 ;                \
 //LIST_LOCK_INIT(&((x)->list_lock)); 
@@ -113,7 +113,7 @@ LIST_LOCK_INIT(  &((mb)->mem_free_list.list_lock)  ); \
 }while(0);
 
 /*
-¿é ÄÚ´æ²¼¾Ö
+å— å†…å­˜å¸ƒå±€
 
 =====================
 
@@ -131,29 +131,29 @@ struct  mem_block_t
 
 */
 
-//ÄÚ´æ¿éÃèÊö·û
+//å†…å­˜å—æè¿°ç¬¦
 typedef struct  mem_block_t
 {
-long                        block_no;                   //¿éºÅ
-off_t                       block_size;                 //¿é´óĞ¡
-unsigned  long              high_level;                 //¸ßË®Î»Ïß    
-char                        file_name[256];             //Ó³ÉäÎÄ¼şÃû
-off_t                       space_size;                 //¿éÄÚÊı¾İ¿Õ¼ä´óĞ¡
-struct mem_free_list_t      mem_free_list;              // ¿ÕÏĞÁ´±í£¬ÓÃÓÚ¸´ÓÃÒÑ¾­É¾³ıÊı¾İ¼ÇÂ¼
+long                        block_no;                   //å—å·
+off_t                       block_size;                 //å—å¤§å°
+unsigned  long              high_level;                 //é«˜æ°´ä½çº¿    
+char                        file_name[256];             //æ˜ å°„æ–‡ä»¶å
+off_t                       space_size;                 //å—å†…æ•°æ®ç©ºé—´å¤§å°
+struct mem_free_list_t      mem_free_list;              // ç©ºé—²é“¾è¡¨ï¼Œç”¨äºå¤ç”¨å·²ç»åˆ é™¤æ•°æ®è®°å½•
 char                        splite[2];
-void *                      block_start_addr;           //¿éÆğÊ¼µØÖ·
-void *                      block_end_addr;             //¿é½áÊøµØÖ·
-void *                      space_start_addr;           //¿éÄÚÊı¾İ¿Õ¼äÆğÊ¼µØÖ·
-void *                      space_end_addr;             //¿éÄÚÊı¾İ¿Õ¼ä½áÊøµØÖ·
-HIGH_LEVEL_LOCK_T           high_level_lock;            //¸ßË®Î»ÏßËø                
-struct mem_block_t *        next;                       //ÏÂÒ»¸ö¿éµØÖ·
-struct mem_block_t *        block_malloc_addr;					//¿éµÄmallocµØÖ·×Ô¼º
-int                         status;                     //¿é×´Ì¬ 
-key_t                       shmid;                      //¹²ÏíÄÚ´æid
-int                         fd;                         //Ó³Éäid
-MEM_BLOCK_LOCK_T            block_lock;                 //¿éËø
+void *                      block_start_addr;           //å—èµ·å§‹åœ°å€
+void *                      block_end_addr;             //å—ç»“æŸåœ°å€
+void *                      space_start_addr;           //å—å†…æ•°æ®ç©ºé—´èµ·å§‹åœ°å€
+void *                      space_end_addr;             //å—å†…æ•°æ®ç©ºé—´ç»“æŸåœ°å€
+HIGH_LEVEL_LOCK_T           high_level_lock;            //é«˜æ°´ä½çº¿é”                
+struct mem_block_t *        next;                       //ä¸‹ä¸€ä¸ªå—åœ°å€
+struct mem_block_t *        block_malloc_addr;					//å—çš„mallocåœ°å€è‡ªå·±
+int                         status;                     //å—çŠ¶æ€ 
+key_t                       shmid;                      //å…±äº«å†…å­˜id
+int                         fd;                         //æ˜ å°„id
+MEM_BLOCK_LOCK_T            block_lock;                 //å—é”
 char                        splite2[2];
-// redo_log  ÈÕÖ¾£¬ÔİÎ´ÏëºÃÈçºÎÊµÏÖ
+// redo_log  æ—¥å¿—ï¼Œæš‚æœªæƒ³å¥½å¦‚ä½•å®ç°
 } __attribute__ ((packed, aligned (64))) mem_block_t;
 
 #define MEM_BLOCK_HEAD_SIZE sizeof( mem_block_t)
@@ -163,7 +163,7 @@ char                        splite2[2];
 //set_block_no_addr((mb)->block_no,(mb));\
 //
 
-//¿éÃèÊö·û³õÊ¼»¯ //ÔÚËÙ²é±íÀï×¢²á¿éµØÖ·
+//å—æè¿°ç¬¦åˆå§‹åŒ– //åœ¨é€ŸæŸ¥è¡¨é‡Œæ³¨å†Œå—åœ°å€
 #define INIT_MEM_BLOCK(mb)  					\
 allocate_block_no(&((mb)->block_no));    	\
 set_block_no_addr((mb)->block_no,(mb));\
@@ -183,8 +183,8 @@ if((mb)->fd<=0 ){ ERROR("MEM_BLOCK_ERR_OPEN_FILE_FAILED\n"); return MEM_BLOCK_ER
 
 
 
-//¿éÃèÊö·ûÅäÖÃ
-//Ê¹ÓÃ´Ëº¯ÊıÀ´ÅäÖÃÒ»¸ö¿éÃèÊö·û
+//å—æè¿°ç¬¦é…ç½®
+//ä½¿ç”¨æ­¤å‡½æ•°æ¥é…ç½®ä¸€ä¸ªå—æè¿°ç¬¦
 inline void mem_block_config( struct  mem_block_t * mb ,/*long block_no ,*/ unsigned long block_size , char *file_name ) 
 {
 //mb->block_no         =  block_no;       
@@ -213,7 +213,7 @@ if((mb)->fd<=0 ) ERROR("MEM_BLOCK_ERR_OPEN_FILE_FAILED\n");
 }
 
 
-// ¿é¸´ÖÆ
+// å—å¤åˆ¶
 inline int mem_block_cpy(struct  mem_block_t * to,struct  mem_block_t * from)
 {
 		if( to->space_size < from->space_size || from->space_size <=0 )return MEM_BLOCK_ERR_CPY_NULL_PTR;
@@ -228,10 +228,10 @@ inline int mem_block_cpy(struct  mem_block_t * to,struct  mem_block_t * from)
 	  return 0;
 }
 
-//¿é´Ó²Ù×÷ÏµÍ³´´½¨¹²ÏíÄÚ´æ
+//å—ä»æ“ä½œç³»ç»Ÿåˆ›å»ºå…±äº«å†…å­˜
 inline int mem_block_get_mem_from_os(struct  mem_block_t * mb )
 {
-	   //ÏòosÉêÇë¹²ÏíÄÚ´æ
+	   //å‘osç”³è¯·å…±äº«å†…å­˜
 	  if( NULL == mb   )
 	  	{
 	  		ERROR("MEM_BLOCK_ERR_GET_MEM_NULL_PTR\n");
@@ -255,40 +255,40 @@ inline int mem_block_get_mem_from_os(struct  mem_block_t * mb )
         DEBUG("Create shared-memory: %d\n", mb->shmid);  
     }  
 	  
-	  // ´Ó os »ñµÃµÄÄÚ´æÆğÊ¼µØÖ·
+	  // ä» os è·å¾—çš„å†…å­˜èµ·å§‹åœ°å€
 	  void * p_addr;
 	  p_addr = shmat(mb->shmid,0,0);  	   	 
     DEBUG("block_share_mem_addr is : %0x\n", p_addr);  
     
 
 	  
-	  //¿éµÄÆğÊ¼µØÖ·
+	  //å—çš„èµ·å§‹åœ°å€
 	  mb->block_start_addr =  p_addr;
 		DEBUG("mb->block_start_addr is : %0x\n", p_addr);  
 
 	  
-	  //¿éµÄ½áÊøµØÖ·
+	  //å—çš„ç»“æŸåœ°å€
 	  mb->block_end_addr   =  p_addr + mb->block_size;
 		DEBUG("mb->block_end_addr is : %0x\n", p_addr + mb->block_size);  
-	  //¿é×´Ì¬Ã¦
+	  //å—çŠ¶æ€å¿™
 	  mb->status           =  MEM_BLOCK_STATUS_BUSY;
 	 
-	  //¿é×´Ì¬ÎªÓĞÄÚ´æÎŞÊı¾İ
+	  //å—çŠ¶æ€ä¸ºæœ‰å†…å­˜æ— æ•°æ®
 	  mb->status           =  MEM_BLOCK_STATUS_NO_DATA;
 	  MEM_BLOCK_UNLOCK(&(mb->block_lock));
 	  return 0;
 }
 
 
-//°Ñ¿éÖĞµÄÄÚ´æ»¹¸ø²Ù×÷ÏµÍ³,²¢ÊÍ·ÅÖ¸ÕëÊı¾İ
+//æŠŠå—ä¸­çš„å†…å­˜è¿˜ç»™æ“ä½œç³»ç»Ÿ,å¹¶é‡Šæ”¾æŒ‡é’ˆæ•°æ®
 inline int mem_block_put_mem_to_os(struct  mem_block_t * mb)
 {
 		DEBUG("Enter mem_block_put_mem_to_os() \n");	
 
 		MEM_BLOCK_LOCK(&(mb->block_lock));
-	   //¿é×´Ì¬Ã¦
+	   //å—çŠ¶æ€å¿™
 	  mb->status   =  MEM_BLOCK_STATUS_BUSY;
-    //Çå³ı¹²ÏíÄÚ´æ
+    //æ¸…é™¤å…±äº«å†…å­˜
     if ( -1 == shmctl(mb->shmid, IPC_RMID, NULL) )
     {  
          ERROR("%s\n","rm bad");  
@@ -296,10 +296,10 @@ inline int mem_block_put_mem_to_os(struct  mem_block_t * mb)
         return MEM_BLOCK_ERR_PUT_MEM_TO_OS;  
      }  
      	DEBUG("mb->shmid = %d have deleted!\n",mb->shmid);	
-     //¿é×´Ì¬Î´ÓÃ
+     //å—çŠ¶æ€æœªç”¨
 	  mb->status   =  MEM_BLOCK_STATUS_UNUSED;
 	  
-	  //ÔÚËÙ²é±íÀïÉ¾³ı¿éµØÖ·
+	  //åœ¨é€ŸæŸ¥è¡¨é‡Œåˆ é™¤å—åœ°å€
 	  del_block_no_addr(mb->block_no);
 	  unregist_block_name(mb->file_name);
 	  DEBUG("del_block_no_addr ok!\n");	
@@ -311,7 +311,7 @@ inline int mem_block_put_mem_to_os(struct  mem_block_t * mb)
 }
 
 
-// Í¨¹ıÊ¹ÓÃ mmap ÏµÍ³µ÷ÓÃ½«Êı¾İ¼ÓÔØµ½ÄÚ´æ¿é
+// é€šè¿‡ä½¿ç”¨ mmap ç³»ç»Ÿè°ƒç”¨å°†æ•°æ®åŠ è½½åˆ°å†…å­˜å—
 inline int mem_block_mmap(struct  mem_block_t * mb)
 {
 	if( NULL == mb || mb->fd <= 0 )
@@ -321,11 +321,11 @@ inline int mem_block_mmap(struct  mem_block_t * mb)
 		}
 	int fd;
 	struct stat sb; 
-	/* È¡µÃÎÄ¼ş´óĞ¡ */
+	/* å–å¾—æ–‡ä»¶å¤§å° */
 	fstat(mb->fd, &sb); 
 
 	//if(sb.st_size > mb->block_size-MEM_BLOCK_HEAD_SIZE  )return MEM_BLOCK_ERR_MMAP_FILE_TOO_LARGE;
-	// Èç¹ûÎÄ¼ş²»´æÔÚ£¬Ôò´´½¨ÎÄ¼ş£¬·ÀÖ¹coredump
+	// å¦‚æœæ–‡ä»¶ä¸å­˜åœ¨ï¼Œåˆ™åˆ›å»ºæ–‡ä»¶ï¼Œé˜²æ­¢coredump
 	int is_exist =1;
 	if(0 == sb.st_size){
 		lseek(mb->fd,mb->block_size-1,SEEK_END);  
@@ -337,24 +337,24 @@ inline int mem_block_mmap(struct  mem_block_t * mb)
 		MEM_BLOCK_LOCK(&(mb->block_lock));
 	  
    	DEBUG("p_addr = %0x,sb.st_size = %d\n",mb->block_start_addr,sb.st_size);  
-	  //¿éµÄÊı¾İÆğÊ¼µØÖ·
+	  //å—çš„æ•°æ®èµ·å§‹åœ°å€
 	  mb->space_start_addr  =  mmap((mb->block_start_addr),sb.st_size , PROT_READ|PROT_WRITE , MAP_SHARED, mb->fd, 0);
 		DEBUG("space_start oraginal addr is : %0x\n", mb->space_start_addr);  
 		
-		//ÒÑ¾­´æÔÚ¾Í½øĞĞÔ¤¶Á
+		//å·²ç»å­˜åœ¨å°±è¿›è¡Œé¢„è¯»
 		if(1 == is_exist)madvise(mb->space_start_addr, sb.st_size, MADV_SEQUENTIAL);
-		//½«¿éĞÅÏ¢¸´ÖÆµ½»ñµÃÄÚ´æ¿ªÍ·µÄÎ»ÖÃ
+		//å°†å—ä¿¡æ¯å¤åˆ¶åˆ°è·å¾—å†…å­˜å¼€å¤´çš„ä½ç½®
 	 // memcpy(  mb,mb->space_start_addr , MEM_BLOCK_HEAD_SIZE );
 	 // mb->high_level = ((mem_block_t *)mb->space_start_addr)->high_level;
 	  
-	  //Èç¹ûÎÄ¼ş²»´æÔÚ£¬½«¿ØÖÆ¿éĞÅÏ¢¸´ÖÆµ½»ñµÃÄÚ´æ¿ªÍ·µÄÎ»ÖÃ
-	  //·ñÔò£¬½«¶Á³öµÄĞÅÏ¢·´Ğ´»Ø¿ØÖÆ¿éÖĞ
+	  //å¦‚æœæ–‡ä»¶ä¸å­˜åœ¨ï¼Œå°†æ§åˆ¶å—ä¿¡æ¯å¤åˆ¶åˆ°è·å¾—å†…å­˜å¼€å¤´çš„ä½ç½®
+	  //å¦åˆ™ï¼Œå°†è¯»å‡ºçš„ä¿¡æ¯åå†™å›æ§åˆ¶å—ä¸­
 	  if( 0 == is_exist)
 	  {
 	  memcpy(  mb->space_start_addr,mb , MEM_BLOCK_HEAD_SIZE );
 	  //((mem_block_t *)(mb->space_start_addr))->block_malloc_addr = mb->block_malloc_addr;
 	  DEBUG("after copy,the mmap block_malloc_addr is %0x\n",((mem_block_t *)(mb->space_start_addr))->block_malloc_addr);
-	  //Ë®Î»Ïß³õÊ¼´óĞ¡Îª¿éÊı¾İ½áÊøµØÖ·
+	  //æ°´ä½çº¿åˆå§‹å¤§å°ä¸ºå—æ•°æ®ç»“æŸåœ°å€
 	  mb->high_level       =  0 ;
 	  }
 	  else
@@ -366,14 +366,16 @@ inline int mem_block_mmap(struct  mem_block_t * mb)
 //    set_block_no_addr(mb->block_no,mb);
 	  
 	  DEBUG("mb->high_level addr is %0x,mb->high_level is : %d \n", &(mb->high_level),mb->high_level); 
+          ((struct  mem_block_t *)(mb->space_start_addr))->block_malloc_addr=  mb;
+
 	  }
-		//¿éµÄÊı¾İ½áÊøµØÖ·
+		//å—çš„æ•°æ®ç»“æŸåœ°å€
 	  mb->space_end_addr    =  mb->space_start_addr + mb->block_size;
-	  //¿éÊı¾İµÄ´óĞ¡ = ¿é´óĞ¡ - ±íÍ·´óĞ¡
+	  //å—æ•°æ®çš„å¤§å° = å—å¤§å° - è¡¨å¤´å¤§å°
 	  mb->space_size       =   mb->block_size - MEM_BLOCK_HEAD_SIZE;
 	  	
 	  
-	  //´¦ÀíÍêÍ·²¿ºó£¬mb->space_start_addr ÒÆ¶¯µ½Êı¾İ²¿·Ö
+	  //å¤„ç†å®Œå¤´éƒ¨åï¼Œmb->space_start_addr ç§»åŠ¨åˆ°æ•°æ®éƒ¨åˆ†
 		mb->space_start_addr +=  MEM_BLOCK_HEAD_SIZE;
 	  DEBUG("space_start_addr is : %0x,space_size IS %d\n", mb->space_start_addr,mb->space_size);  
 	   
@@ -386,7 +388,7 @@ inline int mem_block_mmap(struct  mem_block_t * mb)
 	  return 0;
 }
 
-// Í¨¹ıÊ¹ÓÃ munmap ÏµÍ³µ÷ÓÃ½«Êı¾İËÍ»Ø¸øÎÄ¼ş
+// é€šè¿‡ä½¿ç”¨ munmap ç³»ç»Ÿè°ƒç”¨å°†æ•°æ®é€å›ç»™æ–‡ä»¶
 inline int mem_block_munmap(struct  mem_block_t * mb)
 {
 		if( NULL == mb || mb->fd <= 0 )return MEM_BLOCK_ERR_MUMMAP_NULL_PTR;
@@ -397,24 +399,24 @@ inline int mem_block_munmap(struct  mem_block_t * mb)
 
 	  
 	   mb->space_start_addr -=  MEM_BLOCK_HEAD_SIZE;
-	   //½«¿éĞÅÏ¢¸´ÖÆµ½»ñµÃÄÚ´æ¿ªÍ·µÄÎ»ÖÃ
+	   //å°†å—ä¿¡æ¯å¤åˆ¶åˆ°è·å¾—å†…å­˜å¼€å¤´çš„ä½ç½®
 	   memcpy( mb->space_start_addr , mb , MEM_BLOCK_HEAD_SIZE );
-	    /* ½â³ıÓ³Éä */
+	    /* è§£é™¤æ˜ å°„ */
      munmap( mb->space_start_addr , mb->space_size );
-     //¹Ø±ÕÎÄ¼ş¾ä±ú
+     //å…³é—­æ–‡ä»¶å¥æŸ„
      close(mb->fd);
      MEM_BLOCK_UNLOCK(&(mb->block_lock));
      DEBUG("mem_block_munmap() ok!\n");  
   	 return 0;
 }
 
-// Í¨¹ıÊ¹ÓÃ mem_block_msync ÏµÍ³µ÷ÓÃ½«Êı¾İËÍ»Ø¸øÎÄ¼ş
+// é€šè¿‡ä½¿ç”¨ mem_block_msync ç³»ç»Ÿè°ƒç”¨å°†æ•°æ®é€å›ç»™æ–‡ä»¶
 inline int mem_block_msync(struct  mem_block_t * mb)
 {
 		if( NULL == mb || mb->fd <= 0 )return MEM_BLOCK_ERR_MUMMAP_NULL_PTR;
-	   /* ½â³ıÓ³Éä */
+	   /* è§£é™¤æ˜ å°„ */
 	   MEM_BLOCK_LOCK(&(mb->block_lock));
-	   //½«¿éĞÅÏ¢¸´ÖÆµ½»ñµÃÄÚ´æ¿ªÍ·µÄÎ»ÖÃ
+	   //å°†å—ä¿¡æ¯å¤åˆ¶åˆ°è·å¾—å†…å­˜å¼€å¤´çš„ä½ç½®
 	   memcpy( mb->block_start_addr , mb , sizeof(struct  mem_block_t) );
      msync( mb->block_start_addr , mb->block_size,MS_SYNC );
      MEM_BLOCK_UNLOCK(&(mb->block_lock));
