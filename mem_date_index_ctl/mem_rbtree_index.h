@@ -975,7 +975,7 @@ inline	int mem_rbtree_index_close(mem_rbtree_index_t *  mem_rbtree_index)
 {
 	
 		if(NULL == mem_rbtree_index    )  return CLOSE_MEM_RBTREE_INDEX_ERR_NULL_PTR;
-	  DEBUG("Begin to close a mem_index：%s, addr is %0x .\n",(mem_rbtree_index)->config.index_name,(mem_rbtree_index)->config);
+	  DEBUG("Begin to close a mem_index：%s, addr is %0x .\n",(mem_rbtree_index)->config.index_name,(mem_rbtree_index) );
     RBTREE_LOCK(&(mem_rbtree_index->locker))
 	  int err = 0;
 	 //struct mem_table_t *heap_space_temp = mem_rbtree_index->heap_space;
