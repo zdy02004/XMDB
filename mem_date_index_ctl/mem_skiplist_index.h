@@ -101,7 +101,7 @@ inline int mem_skiplist_create(
 
         //生成块描述符
        mem_block_t *mb = (mem_block_t *) malloc(MEM_BLOCK_HEAD_SIZE);
-      DEBUG("create mem_skiplist block %0x\n",mb);
+	     DEBUG("create mem_skiplist block %0x\n",mb);
 	 
 			 
 			 char tem_buf[256]={0};
@@ -211,7 +211,13 @@ inline int  mem_skiplist_init(mem_skiplist_index_t *mem_skiplist_index)
    													mem_skiplist_index->heap_space->config.mem_blocks_table, 
    													0,&record_ptr);
    // nil 非空，则不再需要初始化
-   if(record_ptr->is_used)return 0;
+   if(record_ptr->is_used)
+   	{
+   		mem_skiplist_index->nil = (mem_skiplist_entry_t *)((char *)(record_ptr) + RECORD_HEAD_SIZE);
+   		DEBUG(" nil 非空，则不再需要初始化 \n");
+   		return 0;
+   		
+   	}
    
    
    //DEBUG("Enter mem_skiplist_insert(),insert value is %ld ;\n",key->skiplist_lkey);
@@ -258,7 +264,8 @@ inline int  mem_skiplist_init(mem_skiplist_index_t *mem_skiplist_index)
 inline mem_skiplist_entry_t *  mem_skiplist_getlevel_head(mem_skiplist_index_t *mem_skiplist_index,int head_num)
 {
 
-   if(NULL == mem_skiplist_index   ){
+		DEBUG("head_num is %d \n ", head_num );
+    if(NULL == mem_skiplist_index   ){
    	ERROR("SKIPLIST_INDEX_ERR_NULL_INDEX_PRT\n");
    	 return (mem_skiplist_entry_t *)(-1);
    	} 
@@ -274,6 +281,7 @@ inline mem_skiplist_entry_t *  mem_skiplist_getlevel_head(mem_skiplist_index_t *
    } 
    	
    struct record_t * level_head_ptr = (struct record_t *)( ( (char *)(mem_skiplist_index->nil) + FIELD_SKIPLIST_ENTRY_SIZE   )+ (head_num - 1 ) * ( FIELD_SKIPLIST_ENTRY_SIZE + RECORD_HEAD_SIZE )  );
+	 DEBUG("mem_skiplist_index->nil is %0x \n ", (char *)(mem_skiplist_index->nil) );
 	 DEBUG("level_head_ptr is %0x \n ", level_head_ptr );
    DEBUG("level is %d ,level_head_ptr->record_num is %d\n ", head_num , level_head_ptr->record_num );
 
