@@ -180,7 +180,7 @@ inline	int mem_skiplist_index_close(mem_skiplist_index_t *  mem_skiplist_index)
 {
 	
 		if(NULL == mem_skiplist_index    )  return CLOSE_MEM_SKIPLIST_INDEX_ERR_NULL_PTR;
-	  DEBUG("Begin to close a mem_index：%s, addr is %0x .\n",(mem_skiplist_index)->config.index_name,(mem_skiplist_index)->config);
+	  DEBUG("Begin to close a mem_index：%s, addr is %0x .\n",(mem_skiplist_index)->config.index_name,(mem_skiplist_index));
     SKIPLIST_LOCK(&(mem_skiplist_index->locker))
 	  int err = 0;
 	 //struct mem_table_t *heap_space_temp = mem_skiplist_index->heap_space;
