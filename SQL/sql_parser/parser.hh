@@ -5,9 +5,9 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/prettywriter.h"
 #include "stdarg.h"
-#include <iostream>//Ê¹ÓÃC++¿â  
+#include <iostream>//ä½¿ç”¨C++åº“  
 #include <string>
-#include <stdio.h>//printfºÍFILEÒªÓÃµÄ 
+#include <stdio.h>//printfå’ŒFILEè¦ç”¨çš„ 
 
 #define MAX_ERROR_MSG 1024
 using namespace std;
@@ -473,7 +473,12 @@ typedef enum NodeType
   T_NORMAL_DOUBLE_CONDITION = 246,
   T_NORMAL_SINGLE_CONDITION = 247,
   T_COMPLEX_DOUBLE_CONDITION = 248,
-  T_BTW_CONDITION = 249
+  T_BTW_CONDITION = 249,
+  
+  T_OP_NOT_EXISTS = 250,
+  T_SEMI_JOIN_LIST = 251,
+  T_ANTI_JOIN_LIST = 252,
+  T_IGNORE = 253
 } NodeType;
   
   
@@ -492,7 +497,7 @@ typedef struct _NonReservedKeyword
 extern const NonReservedKeyword *non_reserved_keyword_lookup(const char *word);
 #endif 
 
-struct Type//Í¨³£ÕâÀïÃæÃ¿¸ö³ÉÔ±£¬Ã¿´ÎÖ»»áÊ¹ÓÃÆäÖĞÒ»¸ö£¬Ò»°ãÊÇ¶¨Òå³ÉunionÒÔ½ÚÊ¡¿Õ¼ä(µ«ÕâÀïÓÃÁËstringµÈ¸´ÔÓÀàĞÍÔì³É²»¿ÉÒÔ) 
+struct Type//é€šå¸¸è¿™é‡Œé¢æ¯ä¸ªæˆå‘˜ï¼Œæ¯æ¬¡åªä¼šä½¿ç”¨å…¶ä¸­ä¸€ä¸ªï¼Œä¸€èˆ¬æ˜¯å®šä¹‰æˆunionä»¥èŠ‚çœç©ºé—´(ä½†è¿™é‡Œç”¨äº†stringç­‰å¤æ‚ç±»å‹é€ æˆä¸å¯ä»¥) 
 {  
   //struct _ParseNode *node;
   rapidjson::Document *doc;
@@ -517,7 +522,7 @@ typedef struct YYLTYPE
 #define yyltype YYLTYPE /* obsolescent; will be withdrawn */
 #define YYLTYPE_IS_DECLARED 1
 #define YYLTYPE_IS_TRIVIAL 1
-//#define YYSTYPE Type//°ÑYYSTYPE(¼´yylval±äÁ¿)ÖØ¶¨ÒåÎªstruct TypeÀàĞÍ£¬ÕâÑùlex¾ÍÄÜÏòyacc·µ»Ø¸ü¶àµÄÊı¾İÁË  
+//#define YYSTYPE Type//æŠŠYYSTYPE(å³yylvalå˜é‡)é‡å®šä¹‰ä¸ºstruct Typeç±»å‹ï¼Œè¿™æ ·lexå°±èƒ½å‘yaccè¿”å›æ›´å¤šçš„æ•°æ®äº†  
   
 #endif
 
