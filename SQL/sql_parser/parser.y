@@ -1157,7 +1157,9 @@ create_table_stmt:
      rapidjson::Value  *table_options;
      merge_nodes(table_elements, result->Doc.GetAllocator(),T_TABLE_ELEMENT_LIST, $6);
      merge_nodes(table_options,  result->Doc.GetAllocator(),T_TABLE_OPTION_LIST, $8);
-      malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_CREATE_TABLE, $3, $4,table_elements,table_options);
+     malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_CREATE_TABLE, $3, $4,table_elements,table_options);
+     $$->AddMember("OPERATION_NAME","CREATE_TABLE", result->Doc.GetAllocator() );
+    
     }
   ;
 
@@ -1769,6 +1771,8 @@ select_stmt:
       }
       */
        $$ = $1;
+       $$->AddMember("OPERATION_NAME","SELECT", result->Doc.GetAllocator() );
+
        SafeAddMember($$,"hints",$2 , result->Doc.GetAllocator());
        if($$->HasMember("limit") && $2 != NULL)
        	{
@@ -1778,6 +1782,8 @@ select_stmt:
   | select_with_parens    %prec UMINUS
     { 
     	$$ = $1; 
+      $$->AddMember("OPERATION_NAME","SELECT", result->Doc.GetAllocator() );
+
     	//malloc_terminal_node($$,result->Doc.GetAllocator(),T_SUB_SELECT);
 			//SafeAddMember($$,"SUB_SELECT",$1, result->Doc.GetAllocator());	
     }
