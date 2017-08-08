@@ -23,7 +23,7 @@
 
 #include "sql_parser.lex.h"
 
-// 定义成从结构体的成员进行词法扫描
+// 瀹氫箟鎴愪粠缁撴瀯浣撶殑鎴愬憳杩涜璇嶆硶鎵弿
 //#define YYLEX_PARAM result->yyscan_info_
 
 int strcasecmp_(rapidjson::Value * value,const char * ch)
@@ -48,10 +48,10 @@ void malloc_non_terminal_node_with_type(rapidjson::Value **val_father,rapidjson:
   //value_.SetInt(0);
   //type_.SetInt(0);
   val_child.SetArray();
-  	val_child.PushBack(*t1, Allocator); 
+  if(t1)val_child.PushBack(*t1, Allocator); 
   (*val_father)->SetObject().AddMember("tag", val_tag, Allocator).AddMember(rapidjson::StringRef(type_name), rapidjson::StringRef(type_type), Allocator);
   (*val_father)->AddMember("children", val_child, Allocator);
-  delete t1;
+  if(t1)delete t1;
 }
 
 void malloc_non_terminal_node_with_type(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator,const char * type_name,const char * type_type, int node_tag, rapidjson::Value* t1,rapidjson::Value* t2)
@@ -66,13 +66,13 @@ void malloc_non_terminal_node_with_type(rapidjson::Value **val_father,rapidjson:
   //value_.SetInt(0);
   //type_.SetInt(0);
   val_child.SetArray();
-  	val_child.PushBack(*t1, Allocator); 
-  	val_child.PushBack(*t2, Allocator); 
+  	if(t1)val_child.PushBack(*t1, Allocator); 
+  	if(t2)val_child.PushBack(*t2, Allocator); 
   (*val_father)->SetObject().AddMember("tag", val_tag, Allocator).AddMember(rapidjson::StringRef(type_name), rapidjson::StringRef(type_type), Allocator);
   (*val_father)->AddMember("children", val_child, Allocator);
   
-  delete t1;
-  delete t2;
+  if(t1)delete t1;
+  if(t2)delete t2;
 }
 
 void malloc_non_terminal_node_with_type(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator,const char * type_name,const char * type_type, int node_tag, rapidjson::Value* t1,rapidjson::Value* t2,rapidjson::Value* t3)
@@ -87,15 +87,15 @@ void malloc_non_terminal_node_with_type(rapidjson::Value **val_father,rapidjson:
   //value_.SetInt(0);
   //type_.SetInt(0);
   val_child.SetArray();
-  	val_child.PushBack(*t1, Allocator); 
-  	val_child.PushBack(*t2, Allocator); 
-  	val_child.PushBack(*t3, Allocator); 
+  	if(t1)val_child.PushBack(*t1, Allocator); 
+  	if(t2)val_child.PushBack(*t2, Allocator); 
+  	if(t3)val_child.PushBack(*t3, Allocator); 
   (*val_father)->SetObject().AddMember("tag", val_tag, Allocator).AddMember(rapidjson::StringRef(type_name), rapidjson::StringRef(type_type), Allocator);
   (*val_father)->AddMember("children", val_child, Allocator);
 
-  delete t1;
-  delete t2;
-  delete t3;
+  if(t1)delete t1;
+  if(t2)delete t2;
+  if(t3)delete t3;
 }
 
 void malloc_non_terminal_node_with_type(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator,const char * type_name,const char * type_type, int node_tag, rapidjson::Value* t1,rapidjson::Value* t2,rapidjson::Value* t3,rapidjson::Value* t4)
@@ -110,17 +110,17 @@ void malloc_non_terminal_node_with_type(rapidjson::Value **val_father,rapidjson:
   //value_.SetInt(0);
  // type_.SetInt(0);
   val_child.SetArray();
-  	val_child.PushBack(*t1, Allocator); 
-  	val_child.PushBack(*t2, Allocator); 
-  	val_child.PushBack(*t3, Allocator); 
-  	val_child.PushBack(*t4, Allocator); 
+  	if(t1)val_child.PushBack(*t1, Allocator); 
+  	if(t2)val_child.PushBack(*t2, Allocator); 
+  	if(t3)val_child.PushBack(*t3, Allocator); 
+  	if(t4)val_child.PushBack(*t4, Allocator); 
   (*val_father)->SetObject().AddMember("tag", val_tag, Allocator).AddMember(rapidjson::StringRef(type_name), rapidjson::StringRef(type_type), Allocator);
   (*val_father)->AddMember("children", val_child, Allocator);
   
-  delete t1;
-  delete t2;
-  delete t3;
-  delete t4;
+  if(t1)delete t1;
+  if(t2)delete t2;
+  if(t3)delete t3;
+  if(t4)delete t4;
 }
 
 void malloc_non_terminal_node_with_type(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator,const char * type_name,const char * type_type, int node_tag, rapidjson::Value* t1,rapidjson::Value* t2,rapidjson::Value* t3,rapidjson::Value* t4,rapidjson::Value* t5)
@@ -135,19 +135,19 @@ void malloc_non_terminal_node_with_type(rapidjson::Value **val_father,rapidjson:
   //value_.SetInt(0);
   //type_.SetInt(0);
   val_child.SetArray();
-  	val_child.PushBack(*t1, Allocator); 
-  	val_child.PushBack(*t2, Allocator); 
-  	val_child.PushBack(*t3, Allocator); 
-  	val_child.PushBack(*t4, Allocator); 
-    val_child.PushBack(*t5, Allocator); 
+  	if(t1)val_child.PushBack(*t1, Allocator); 
+  	if(t2)val_child.PushBack(*t2, Allocator); 
+  	if(t3)val_child.PushBack(*t3, Allocator); 
+  	if(t4)val_child.PushBack(*t4, Allocator); 
+    if(t5)val_child.PushBack(*t5, Allocator); 
   (*val_father)->SetObject().AddMember("tag", val_tag, Allocator).AddMember(rapidjson::StringRef(type_name), rapidjson::StringRef(type_type), Allocator);
   (*val_father)->AddMember("children", val_child, Allocator);
   
-  delete t1;
-  delete t2;
-  delete t3;
-  delete t4;
-  delete t5;
+  if(t1)delete t1;
+  if(t2)delete t2;
+  if(t3)delete t3;
+  if(t4)delete t4;
+  if(t5)delete t5;
 }
 
 
@@ -163,10 +163,10 @@ void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document:
   //value_.SetInt(0);
   //type_.SetInt(0);
   val_child.SetArray();
-  	val_child.PushBack(*t1, Allocator); 
+ if(t1)val_child.PushBack(*t1, Allocator); 
   (*val_father)->SetObject().AddMember("tag", val_tag, Allocator);
   (*val_father)->AddMember("children", val_child, Allocator);
-  delete t1;
+ if(t1) delete t1;
 }
 
 void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator, int node_tag, rapidjson::Value* t1,rapidjson::Value* t2)
@@ -181,13 +181,13 @@ void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document:
   //value_.SetInt(0);
   //type_.SetInt(0);
   val_child.SetArray();
-  	val_child.PushBack(*t1, Allocator); 
-  	val_child.PushBack(*t2, Allocator); 
+  	if(t1)val_child.PushBack(*t1, Allocator); 
+  	if(t2)val_child.PushBack(*t2, Allocator); 
   (*val_father)->SetObject().AddMember("tag", val_tag, Allocator);
   (*val_father)->AddMember("children", val_child, Allocator);
   
-  delete t1;
-  delete t2;
+  if(t1)delete t1;
+  if(t2)delete t2;
 }
 
 void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator, int node_tag, rapidjson::Value* t1,rapidjson::Value* t2,rapidjson::Value* t3)
@@ -202,15 +202,15 @@ void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document:
   //value_.SetInt(0);
   //type_.SetInt(0);
   val_child.SetArray();
-  	val_child.PushBack(*t1, Allocator); 
-  	val_child.PushBack(*t2, Allocator); 
-  	val_child.PushBack(*t3, Allocator); 
+  	if(t1)val_child.PushBack(*t1, Allocator); 
+  	if(t2)val_child.PushBack(*t2, Allocator); 
+  	if(t3)val_child.PushBack(*t3, Allocator); 
   (*val_father)->SetObject().AddMember("tag", val_tag, Allocator);
   (*val_father)->AddMember("children", val_child, Allocator);
 
-  delete t1;
-  delete t2;
-  delete t3;
+  if(t1)delete t1;
+  if(t2)delete t2;
+  if(t3)delete t3;
 }
 void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator, int node_tag, rapidjson::Value* t1,rapidjson::Value* t2,rapidjson::Value* t3,rapidjson::Value* t4)
 {
@@ -224,17 +224,17 @@ void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document:
   //value_.SetInt(0);
  // type_.SetInt(0);
   val_child.SetArray();
-  	val_child.PushBack(*t1, Allocator); 
-  	val_child.PushBack(*t2, Allocator); 
-  	val_child.PushBack(*t3, Allocator); 
-  	val_child.PushBack(*t4, Allocator); 
+  	if(t1)val_child.PushBack(*t1, Allocator); 
+  	if(t2)val_child.PushBack(*t2, Allocator); 
+  	if(t3)val_child.PushBack(*t3, Allocator); 
+  	if(t4)val_child.PushBack(*t4, Allocator); 
   (*val_father)->SetObject().AddMember("tag", val_tag, Allocator);
   (*val_father)->AddMember("children", val_child, Allocator);
   
-  delete t1;
-  delete t2;
-  delete t3;
-  delete t4;
+  if(t1)delete t1;
+  if(t2)delete t2;
+  if(t3)delete t3;
+  if(t4)delete t4;
 }
 
 void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator, int node_tag, rapidjson::Value* t1,rapidjson::Value* t2,rapidjson::Value* t3,rapidjson::Value* t4,rapidjson::Value* t5)
@@ -249,23 +249,24 @@ void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document:
   //value_.SetInt(0);
   //type_.SetInt(0);
   val_child.SetArray();
-  	val_child.PushBack(*t1, Allocator); 
-  	val_child.PushBack(*t2, Allocator); 
-  	val_child.PushBack(*t3, Allocator); 
-  	val_child.PushBack(*t4, Allocator); 
-    val_child.PushBack(*t5, Allocator); 
+  	if(t1)val_child.PushBack(*t1, Allocator); 
+  	if(t2)val_child.PushBack(*t2, Allocator); 
+  	if(t3)val_child.PushBack(*t3, Allocator); 
+  	if(t4)val_child.PushBack(*t4, Allocator); 
+    if(t5)val_child.PushBack(*t5, Allocator); 
   (*val_father)->SetObject().AddMember("tag", val_tag, Allocator);
   (*val_father)->AddMember("children", val_child, Allocator);
   
-  delete t1;
-  delete t2;
-  delete t3;
-  delete t4;
-  delete t5;
+  if(t1)delete t1;
+  if(t2)delete t2;
+  if(t3)delete t3;
+  if(t4)delete t4;
+  if(t5)delete t5;
 }
 
 void  malloc_terminal_node_(rapidjson::Value& val_father, rapidjson::Document::AllocatorType& Allocator, int node_tag)
 {
+	if( NULL == &val_father )return;
   rapidjson::Value val_tag;
   //rapidjson::Value value_;
   //rapidjson::Value type_;
@@ -295,6 +296,7 @@ do																											\
 
 void  merge_nodes_(rapidjson::Value& val_father, rapidjson::Document::AllocatorType& Allocator,int node_tag, rapidjson::Value* node)
 {
+if(&val_father == NULL ||node == NULL )return ;
 rapidjson::Value val_tag;
 val_tag.SetInt(node_tag);
 val_father.SetObject().AddMember("tag", val_tag, Allocator);
@@ -324,12 +326,22 @@ void malloc_list_node(rapidjson::Value ** root,rapidjson::Document::AllocatorTyp
 {
 va_list va;
 int i;
+
 va_start(va, num);
 rapidjson::Value *first = va_arg(va, rapidjson::Value*);
+int j = 1;
+while( first == NULL && j < num )
+{
+	first = va_arg(va, rapidjson::Value*);
+	++j;
+	if( j == num )return;
+}	
+
+	
 if( first->IsArray() )
 {
 		rapidjson::Value * it;
-		for( i = 1; i < num; ++i)
+		for( i = j; i < num; ++i)
 		{
 		  it = va_arg(va, rapidjson::Value*);
 		  if(it)first->PushBack(*it, Allocator);
@@ -1811,9 +1823,9 @@ select_no_parens:
       */
       rapidjson::Value  select;
       	select.CopyFrom(*$1,result->Doc.GetAllocator());
-      	if (select.HasMember("order_by") && $2 ) {select.RemoveMember("order_by");}select.AddMember("order_by",*$2,result->Doc.GetAllocator());
+      	if (select.HasMember("ORDER_BY_CLAUSE") && $2 ) {select.RemoveMember("ORDER_BY_CLAUSE");}select.AddMember("ORDER_BY_CLAUSE",*$2,result->Doc.GetAllocator());
       if($3)select.AddMember("limit",*$3,result->Doc.GetAllocator());
-     // 	if($3)select.AddMember("order_by",*$3,result->Doc.GetAllocator());
+     // 	if($3)select.AddMember("ORDER_BY_CLAUSE",*$3,result->Doc.GetAllocator());
       $$->Swap(select);
     }
   | select_clause opt_order_by select_limit opt_for_update
@@ -1840,8 +1852,8 @@ select_no_parens:
 
       if ($2)
       {
-      	if (select.HasMember("order_by") /*&& $2*/) {select.RemoveMember("order_by");select.AddMember("order_by",*$2,result->Doc.GetAllocator());}
-      	else if($2) select.AddMember("order_by",*$2,result->Doc.GetAllocator());
+      	if (select.HasMember("ORDER_BY_CLAUSE") /*&& $2*/) {select.RemoveMember("ORDER_BY_CLAUSE");select.AddMember("ORDER_BY_CLAUSE",*$2,result->Doc.GetAllocator());}
+      	else if($2) select.AddMember("ORDER_BY_CLAUSE",*$2,result->Doc.GetAllocator());
       }	
      if ( select.HasMember("limit") /*&& $3*/ ){select.RemoveMember("limit");}
      	select.AddMember("limit",*$3,result->Doc.GetAllocator());
@@ -2417,7 +2429,7 @@ order_by:
    /*   merge_nodes($$, result->malloc_pool_, T_SORT_LIST, $3);*/
         merge_nodes($$,result->Doc.GetAllocator(),T_SORT_LIST,$3);
      //    malloc_terminal_node($$,result->Doc.GetAllocator(),T_SORT_LIST);  
-      //   SafeAddMember($$,"order_by",$3,result->Doc.GetAllocator());
+      //   SafeAddMember($$,"ORDER_BY_CLAUSE",$3,result->Doc.GetAllocator());
     cout<<"T_SORT_LIST"<<endl;
       }
   ;
@@ -2542,7 +2554,9 @@ projection:
       dup_expr_string($$->str_value_, result, @1.first_column, @1.last_column);*/
       rapidjson::Value *star_node ;
       malloc_terminal_node(star_node,result->Doc.GetAllocator(),T_STAR);
-      malloc_non_terminal_node(&$$,result->Doc.GetAllocator(),T_PROJECT_STRING,  star_node);
+      malloc_terminal_node($$,result->Doc.GetAllocator(),T_PROJECT_STRING);
+      SafeAddMember($$,"PROJECT",star_node, result->Doc.GetAllocator());
+
       // dup_expr_string
     }
   ;
