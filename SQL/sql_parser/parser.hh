@@ -16,7 +16,7 @@ using namespace std;
 #define YYTOKENTYPE
    /* Put the tokens into the symbol table, so that GDB and other debuggers
  *       know about them.  */
- enum yytokentype {
+  enum yytokentype {
      NAME = 258,
      STRING = 259,
      INTNUM = 260,
@@ -186,31 +186,39 @@ using namespace std;
      QUERY = 424,
      CONNECTION = 425,
      WEAK = 426,
-     AUTO_INCREMENT = 427,
-     CHUNKSERVER = 428,
-     COMPRESS_METHOD = 429,
-     CONSISTENT_MODE = 430,
-     EXPIRE_INFO = 431,
-     GRANTS = 432,
-     JOIN_INFO = 433,
-     MERGESERVER = 434,
-     REPLICA_NUM = 435,
-     ROOTSERVER = 436,
-     ROW_COUNT = 437,
-     SERVER = 438,
-     SERVER_IP = 439,
-     SERVER_PORT = 440,
-     SERVER_TYPE = 441,
-     STATUS = 442,
-     TABLE_ID = 443,
-     TABLET_BLOCK_SIZE = 444,
-     TABLET_MAX_SIZE = 445,
-     UNLOCKED = 446,
-     UPDATESERVER = 447,
-     USE_BLOOM_FILTER = 448,
-     VARIABLES = 449,
-     VERBOSE = 450,
-     WARNINGS = 451
+     UNIQUE = 427,
+     FULLTEXT = 428,
+     SPATIAL = 429,
+     HASH = 430,
+     BTREE = 431,
+     INDEX = 432,
+     SKIPLIST = 433,
+     AUTO_INCREMENT = 434,
+     CHUNKSERVER = 435,
+     COMPRESS_METHOD = 436,
+     CONSISTENT_MODE = 437,
+     EXPIRE_INFO = 438,
+     GRANTS = 439,
+     JOIN_INFO = 440,
+     MERGESERVER = 441,
+     REPLICA_NUM = 442,
+     ROOTSERVER = 443,
+     ROW_COUNT = 444,
+     SERVER = 445,
+     SERVER_IP = 446,
+     SERVER_PORT = 447,
+     SERVER_TYPE = 448,
+     STATUS = 449,
+     TABLE_ID = 450,
+     TABLET_BLOCK_SIZE = 451,
+     TABLET_MAX_SIZE = 452,
+     EXTERN_SIZE = 453,
+     UNLOCKED = 454,
+     UPDATESERVER = 455,
+     USE_BLOOM_FILTER = 456,
+     VARIABLES = 457,
+     VERBOSE = 458,
+     WARNINGS = 459
    };
 
 typedef enum ObPrivilegeType
@@ -478,7 +486,17 @@ typedef enum NodeType
   T_OP_NOT_EXISTS = 250,
   T_SEMI_JOIN_LIST = 251,
   T_ANTI_JOIN_LIST = 252,
-  T_IGNORE = 253
+  T_IGNORE = 253,
+  
+  T_CREATE_INDEX      = 254,
+  T_INDEX_COLUMN_LIST = 255,
+  T_INDEX_UNIQUE			= 256,
+  T_INDEX_FULLTEXT		= 257,
+  T_INDEX_SPATIAL			= 258,
+  T_INDEX_HASH				= 259,
+  T_INDEX_BTREE				= 260,
+  T_INDEX_SKIPLIST		= 261,
+  T_EXTERN_SIZE        = 262
 } NodeType;
   
   
