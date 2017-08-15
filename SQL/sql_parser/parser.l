@@ -316,6 +316,15 @@ CHANGE_OBI        { return CHANGE_OBI; }
 SWITCH_CLUSTER    { return SWITCH_CLUSTER; }
 SET_MASTER_CLUSTER  { return SET_MASTER_CLUSTER; }
 SET_SLAVE_CLUSTER   { return SET_SLAVE_CLUSTER;  }
+UNIQUE              { return UNIQUE;  }
+FULLTEXT            { return FULLTEXT;  }
+SPATIAL             { return SPATIAL;  }
+HASH                { return HASH;  }
+BTREE               { return BTREE;  }
+SKIPLIST            { return SKIPLIST;  }
+INDEX               { return INDEX;  }
+EXTERN_SIZE         { return EXTERN_SIZE;  }
+
 MASTER            { return MASTER; }
 SLAVE             { return SLAVE;  }
 FORCE             { return FORCE;  }
@@ -403,56 +412,80 @@ FALSE {
 
 {sqbegin} {
   BEGIN(sq);
- /* result->start_col_ = yylloc->first_column;
-  char ** tmp_literal = &result->tmp_literal_;
-  if (*tmp_literal == NULL)
+  ((ParseResult*)yyextra)->start_col_ = yylloc->first_column;
+  char ** tmp_literal = & (((ParseResult*)yyextra)->tmp_literal_);
+if (*tmp_literal == NULL)
   {
-    *tmp_literal = (char*) parse_malloc(
+  /*  *tmp_literal = (char*) parse_malloc(
                                result->input_sql_len_ + 1, 
                                result->malloc_pool_
-                               );
-    check_value(*tmp_literal);
+                               ); */
+   *tmp_literal = (char*)((ParseResult*)yyextra)->Doc.GetAllocator().Malloc(((ParseResult*)yyextra)->input_sql_len_ + 1);                            
+   // check_value(*tmp_literal);
   }
-  malloc_new_node(yylval->node, result->malloc_pool_, T_STRING, 0);
-  yylval->node->value_ = 0;*/
+   /* malloc_new_node(yylval->node, result->malloc_pool_, T_STRING, 0);*/
+  //yylval->node->value_ = 0;
   yylval->node = malloc_new_node(((ParseResult*)yyextra)->Doc.GetAllocator(), T_STRING); 
   yylval->node->AddMember("value_", 0,((ParseResult*)yyextra)->Doc.GetAllocator());
 }
 
 <sq>{sqend} {
   BEGIN(INITIAL);
- /* yylloc->first_column = result->start_col_;
-  char * tmp_literal = result->tmp_literal_;
-  tmp_literal[yylval->node->value_] = '\0';
-  yylval->node->str_value_ = parse_strndup(tmp_literal, yylval->node->value_ + 1,
+  yylloc->first_column = ((ParseResult*)yyextra)->start_col_;
+  char * tmp_literal = ((ParseResult*)yyextra)->tmp_literal_;
+  tmp_literal[ ((ParseResult*)yyextra)->input_sql_len_ + 1  ] = '\0';
+/*  yylval->node->str_value_ = parse_strndup(tmp_literal, yylval->node->value_ + 1,
                                           result->malloc_pool_);*/
+  
+  char _buf[ ((ParseResult*)yyextra)->input_sql_len_ + 1 ];                       
+  int _len = sprintf(_buf, "%s", (tmp_literal));
+ // memmove(_buf, tmp_literal, ((ParseResult*)yyextra)->input_sql_len_ + 1);
+  rapidjson::Value str;                 
+  str.SetString(_buf, _len , ((ParseResult*)yyextra)->Doc.GetAllocator());
+  
+  yylval->node->AddMember("str_value_", str,((ParseResult*)yyextra)->Doc.GetAllocator());
+  
+ // ((ParseResult*)yyextra)->Doc.GetAllocator().Free(result->tmp_literal_);
+  ((ParseResult*)yyextra)->tmp_literal_ = NULL;
+  
   return STRING;  
 }
 
 <sq>{sqdouble} {
-  /*result->tmp_literal_[yylval->node->value_++] = '\'';*/
+	int tmp = (*(yylval->node))["value_"].GetInt();
+((ParseResult*)yyextra)->tmp_literal_[tmp++] = '\'';
+ (*(yylval->node))["value_"].SetInt(tmp);
   
 }
 
 <sq>{sqcontent} {
-  /*memmove(result->tmp_literal_ + yylval->node->value_, yytext, yyleng);
-  yylval->node->value_ += yyleng;*/
+	int tmp = (*(yylval->node))["value_"].GetInt();
+  memmove(((ParseResult*)yyextra)->tmp_literal_ + tmp, yytext, yyleng);
+  
+  tmp+= yyleng;
+  (*(yylval->node))["value_"].SetInt(tmp);
 }
 
 <sq>{sqescape} {
-   /*result->tmp_literal_[yylval->node->value_++] = escaped_char(yytext[1]);*/
+	 int tmp = (*(yylval->node))["value_"].GetInt();
+   ((ParseResult*)yyextra)->tmp_literal_[tmp++] = escaped_char(yytext[1]);
+   (*(yylval->node))["value_"].SetInt(tmp);
 }
 
 <sq>{sqoctal} {
- /* unsigned char c = strtoul(yytext+1, NULL, 8);
-  result->tmp_literal_[yylval->node->value_++] = c;*/
+	int tmp = (*(yylval->node))["value_"].GetInt();
+  unsigned char c = strtoul(yytext+1, NULL, 8);
+  ((ParseResult*)yyextra)->tmp_literal_[tmp++] = c;
+  (*(yylval->node))["value_"].SetInt(tmp);
 }
 
 <sq>{sqnewline} { /* ignore */ }
 
 <sq>. {
   /* Uncatched '\' before end '\'' */
-   /* result->tmp_literal_[yylval->node->value_++] = yytext[0];*/
+  int tmp = (*(yylval->node))["value_"].GetInt();
+    ((ParseResult*)yyextra)->tmp_literal_[tmp++] = yytext[0];
+  (*(yylval->node))["value_"].SetInt(tmp);
 }
 
 <sq><<EOF>>  {
@@ -486,7 +519,7 @@ FALSE {
 }
 
 X'([0-9A-F]{2})+'|0X([0-9A-F]{2})+ {
-  /*  ¶ş½øÖÆ
+  /*  äºŒè¿›åˆ¶
   ParseNode* node = NULL;
   malloc_new_node(node, result->malloc_pool_, T_BINARY, 0);
   char* src = yytext + 2;
@@ -525,7 +558,7 @@ X'([0-9A-F]{2})+'|0X([0-9A-F]{2})+ {
 }
 
 Date{whitespace}?'[0-9]{4}(-[0-9]{2}){2}' {
-  /*  Date ÏÈ²»Ö§³Ö
+  /*  Date å…ˆä¸æ”¯æŒ
   int year, month, day;
   struct  tm time;
   int ret = 0;
@@ -559,7 +592,7 @@ Date{whitespace}?'[0-9]{4}(-[0-9]{2}){2}' {
 }
 
 Time{whitespace}?'[0-9]{2}(:[0-9]{2}){2}[.][0-9]{1,6}' {
-  /*  Time ÏÈ²»Ö§³Ö
+  /*  Time å…ˆä¸æ”¯æŒ
   int hour, minute, second, micro_sec;
   struct  tm time;
   int ret = 0;
