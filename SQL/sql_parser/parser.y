@@ -150,6 +150,66 @@ void malloc_non_terminal_node_with_type(rapidjson::Value **val_father,rapidjson:
   if(t5)delete t5;
 }
 
+void malloc_non_terminal_node_with_type(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator,const char * type_name,const char * type_type, int node_tag, rapidjson::Value* t1,rapidjson::Value* t2,rapidjson::Value* t3,rapidjson::Value* t4,rapidjson::Value* t5,rapidjson::Value* t6)
+{
+	*val_father = new rapidjson::Value;
+  rapidjson::Value val_tag;
+  rapidjson::Value val_child;
+  //rapidjson::Value value_;
+  //rapidjson::Value type_;
+
+  val_tag.SetInt(node_tag);
+  //value_.SetInt(0);
+  //type_.SetInt(0);
+  val_child.SetArray();
+  	if(t1)val_child.PushBack(*t1, Allocator); 
+  	if(t2)val_child.PushBack(*t2, Allocator); 
+  	if(t3)val_child.PushBack(*t3, Allocator); 
+  	if(t4)val_child.PushBack(*t4, Allocator); 
+    if(t5)val_child.PushBack(*t5, Allocator); 
+    if(t6)val_child.PushBack(*t6, Allocator); 
+  (*val_father)->SetObject().AddMember("tag", val_tag, Allocator).AddMember(rapidjson::StringRef(type_name), rapidjson::StringRef(type_type), Allocator);
+  (*val_father)->AddMember("children", val_child, Allocator);
+  
+  if(t1)delete t1;
+  if(t2)delete t2;
+  if(t3)delete t3;
+  if(t4)delete t4;
+  if(t5)delete t5;
+  if(t6)delete t6;
+}
+
+void malloc_non_terminal_node_with_type(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator,const char * type_name,const char * type_type, int node_tag, rapidjson::Value* t1,rapidjson::Value* t2,rapidjson::Value* t3,rapidjson::Value* t4,rapidjson::Value* t5,rapidjson::Value* t6,rapidjson::Value* t7)
+{
+	*val_father = new rapidjson::Value;
+  rapidjson::Value val_tag;
+  rapidjson::Value val_child;
+  //rapidjson::Value value_;
+  //rapidjson::Value type_;
+
+  val_tag.SetInt(node_tag);
+  //value_.SetInt(0);
+  //type_.SetInt(0);
+  val_child.SetArray();
+  	if(t1)val_child.PushBack(*t1, Allocator); 
+  	if(t2)val_child.PushBack(*t2, Allocator); 
+  	if(t3)val_child.PushBack(*t3, Allocator); 
+  	if(t4)val_child.PushBack(*t4, Allocator); 
+    if(t5)val_child.PushBack(*t5, Allocator); 
+    if(t6)val_child.PushBack(*t6, Allocator); 
+    if(t7)val_child.PushBack(*t7, Allocator); 
+  (*val_father)->SetObject().AddMember("tag", val_tag, Allocator).AddMember(rapidjson::StringRef(type_name), rapidjson::StringRef(type_type), Allocator);
+  (*val_father)->AddMember("children", val_child, Allocator);
+  
+  if(t1)delete t1;
+  if(t2)delete t2;
+  if(t3)delete t3;
+  if(t4)delete t4;
+  if(t5)delete t5;
+  if(t6)delete t6;
+  if(t7)delete t7;
+}
+
 
 void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator, int node_tag, rapidjson::Value* t1)
 {
@@ -262,6 +322,67 @@ void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document:
   if(t3)delete t3;
   if(t4)delete t4;
   if(t5)delete t5;
+}
+
+
+void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator, int node_tag, rapidjson::Value* t1,rapidjson::Value* t2,rapidjson::Value* t3,rapidjson::Value* t4,rapidjson::Value* t5,rapidjson::Value* t6)
+{
+	*val_father = new rapidjson::Value;
+  rapidjson::Value val_tag;
+  rapidjson::Value val_child;
+  //rapidjson::Value value_;
+  //rapidjson::Value type_;
+
+  val_tag.SetInt(node_tag);
+  //value_.SetInt(0);
+  //type_.SetInt(0);
+  val_child.SetArray();
+  	if(t1)val_child.PushBack(*t1, Allocator); 
+  	if(t2)val_child.PushBack(*t2, Allocator); 
+  	if(t3)val_child.PushBack(*t3, Allocator); 
+  	if(t4)val_child.PushBack(*t4, Allocator); 
+    if(t5)val_child.PushBack(*t5, Allocator); 
+    if(t6)val_child.PushBack(*t6, Allocator); 
+  (*val_father)->SetObject().AddMember("tag", val_tag, Allocator);
+  (*val_father)->AddMember("children", val_child, Allocator);
+  
+  if(t1)delete t1;
+  if(t2)delete t2;
+  if(t3)delete t3;
+  if(t4)delete t4;
+  if(t5)delete t5;
+  if(t6)delete t6;
+}
+
+void malloc_non_terminal_node(rapidjson::Value **val_father,rapidjson::Document::AllocatorType& Allocator, int node_tag, rapidjson::Value* t1,rapidjson::Value* t2,rapidjson::Value* t3,rapidjson::Value* t4,rapidjson::Value* t5,rapidjson::Value* t6,rapidjson::Value* t7)
+{
+	*val_father = new rapidjson::Value;
+  rapidjson::Value val_tag;
+  rapidjson::Value val_child;
+  //rapidjson::Value value_;
+  //rapidjson::Value type_;
+
+  val_tag.SetInt(node_tag);
+  //value_.SetInt(0);
+  //type_.SetInt(0);
+  val_child.SetArray();
+  	if(t1)val_child.PushBack(*t1, Allocator); 
+  	if(t2)val_child.PushBack(*t2, Allocator); 
+  	if(t3)val_child.PushBack(*t3, Allocator); 
+  	if(t4)val_child.PushBack(*t4, Allocator); 
+    if(t5)val_child.PushBack(*t5, Allocator); 
+    if(t6)val_child.PushBack(*t6, Allocator); 
+    if(t7)val_child.PushBack(*t7, Allocator); 
+  (*val_father)->SetObject().AddMember("tag", val_tag, Allocator);
+  (*val_father)->AddMember("children", val_child, Allocator);
+  
+  if(t1)delete t1;
+  if(t2)delete t2;
+  if(t3)delete t3;
+  if(t4)delete t4;
+  if(t5)delete t5;
+  if(t6)delete t6;
+  if(t7)delete t7;
 }
 
 void  malloc_terminal_node_(rapidjson::Value& val_father, rapidjson::Document::AllocatorType& Allocator, int node_tag)
@@ -402,6 +523,7 @@ else
 %left '(' ')'
 %left '.'
 
+
 %token ADD AND ANY ALL ALTER AS ASC
 %token BETWEEN BEGI BIGINT BINARY BOOLEAN BOTH BY
 %token CASCADE CASE CHARACTER CLUSTER CNNOP COMMENT COMMIT
@@ -426,15 +548,16 @@ else
 %token SCHEMA SCOPE SELECT SESSION SESSION_ALIAS
        SET SHOW SMALLINT SNAPSHOT SPFILE START STATIC SYSTEM STRONG SET_MASTER_CLUSTER SET_SLAVE_CLUSTER SLAVE
 %token TABLE TABLES THEN TIME TIMESTAMP TINYINT TRAILING TRANSACTION TO
-%token UNION UPDATE USER USING
+%token UNION  UPDATE USER USING 
 %token VALUES VARCHAR VARBINARY
-%token WHERE WHEN WITH WORK PROCESSLIST QUERY CONNECTION WEAK
+%token WHERE WHEN WITH WORK PROCESSLIST QUERY CONNECTION WEAK 
+%token UNIQUE FULLTEXT SPATIAL HASH BTREE INDEX SKIPLIST
 
 %token <non_reserved_keyword>
        AUTO_INCREMENT CHUNKSERVER COMPRESS_METHOD CONSISTENT_MODE
        EXPIRE_INFO GRANTS JOIN_INFO
        MERGESERVER REPLICA_NUM ROOTSERVER ROW_COUNT SERVER SERVER_IP
-       SERVER_PORT SERVER_TYPE STATUS TABLE_ID TABLET_BLOCK_SIZE TABLET_MAX_SIZE
+       SERVER_PORT SERVER_TYPE STATUS TABLE_ID TABLET_BLOCK_SIZE TABLET_MAX_SIZE EXTERN_SIZE
        UNLOCKED UPDATESERVER USE_BLOOM_FILTER VARIABLES VERBOSE WARNINGS
 
 %type <node> sql_stmt stmt_list stmt
@@ -489,6 +612,7 @@ else
 %type <non_reserved_keyword> unreserved_keyword
 %type <ival> consistency_level
 %type <node> opt_comma_list hint_options
+%type <node> index_type index_constraint create_index_stmt
 
 %start sql_stmt
 %%
@@ -530,6 +654,7 @@ stmt:
     select_stmt       				{ $$ = $1; }
   | insert_stmt       				{ $$ = $1; }
   | create_table_stmt 				{ $$ = $1; }
+  | create_index_stmt					{ $$ = $1; }
   | update_stmt       				{ $$ = $1; }
   | delete_stmt       				{ $$ = $1; }
   | drop_table_stmt   				{ $$ = $1; }
@@ -1084,7 +1209,12 @@ delete_stmt:
     DELETE FROM relation_factor opt_where opt_when
     {
       /*malloc_non_terminal_node($$, result->malloc_pool_, T_DELETE, 3, $3, $4, $5);*/
-      malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_DELETE,$3, $4, $5);
+      malloc_terminal_node( $$, result->Doc.GetAllocator(), T_DELETE );
+      $$->AddMember("OPERATION_NAME","DELETE_STMT", result->Doc.GetAllocator() );
+      
+     SafeAddMember($$,"TABLE_NAME",$3, result->Doc.GetAllocator());
+     SafeAddMember($$,"WHERE_CLAUSE",$4, result->Doc.GetAllocator());
+     SafeAddMember($$,"OPT_WHEN",$5, result->Doc.GetAllocator());
     }
   ; 
   
@@ -1098,13 +1228,14 @@ delete_stmt:
 update_stmt:
     UPDATE opt_hint relation_factor SET update_asgn_list opt_where opt_when
     {
-      /*ParseNode* assign_list = NULL;*/
-      /*merge_nodes(assign_list, result->malloc_pool_, T_ASSIGN_LIST, $5);*/
-      /*malloc_non_terminal_node($$, result->malloc_pool_, T_UPDATE, 5, $3, assign_list, $6, $7, $2);*/
-         rapidjson::Value *assign_list ;
-         merge_nodes(assign_list, result->Doc.GetAllocator(), T_ASSIGN_LIST,$5);
-         malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_UPDATE, $3, assign_list, $6, $7, $2);
-
+    
+         malloc_terminal_node($$, result->Doc.GetAllocator(), T_UPDATE);
+         $$->AddMember("OPERATION_NAME","UPDATE_STMT", result->Doc.GetAllocator() );
+         SafeAddMember($$,"TABLE_NAME",$3, result->Doc.GetAllocator());
+     		 SafeAddMember($$,"SET_LIST",$5, result->Doc.GetAllocator());
+     		 SafeAddMember($$,"WHERE_CLAUSE",$6, result->Doc.GetAllocator());
+				 SafeAddMember($$,"WHEN_CLAUSE",$7, result->Doc.GetAllocator());
+				 SafeAddMember($$,"HINTS",$2, result->Doc.GetAllocator());
     }
   ;
 
@@ -1127,10 +1258,96 @@ update_asgn_factor:
     column_name COMP_EQ expr
     {
       /*malloc_non_terminal_node($$, result->malloc_pool_, T_ASSIGN_ITEM, 2, $1, $3);*/
-      malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_ASSIGN_ITEM, $1,$3);
+      malloc_terminal_node($$, result->Doc.GetAllocator(), T_ASSIGN_ITEM);
+      SafeAddMember($$,"COLUNM_NAME",$1, result->Doc.GetAllocator());
+			SafeAddMember($$,"EXPR",$3, result->Doc.GetAllocator());
 
     }
   ;
+  
+
+/*****************************************************************************
+ *
+ *	create index
+ *  
+ *****************************************************************************/
+ 
+create_index_stmt:
+		CREATE index_constraint INDEX relation_factor ON relation_factor USING index_type '(' column_list ')' opt_table_option_list
+{
+  malloc_terminal_node($$, result->Doc.GetAllocator(), T_CREATE_INDEX  );
+  $$->AddMember("OPERATION_NAME","CREATE_INDEX", result->Doc.GetAllocator() );
+  if($2) $$->AddMember("CONSTRAINT_TYPE",*$2, result->Doc.GetAllocator() );
+  $$->AddMember("INDEX_NAME",*$4, result->Doc.GetAllocator() );
+  $$->AddMember("RELATION_NAME",*$6, result->Doc.GetAllocator() );
+  $$->AddMember("INDEX_TYPE",*$8, result->Doc.GetAllocator() ); 
+  $$->AddMember("COLUMN_LIST",*$10, result->Doc.GetAllocator() ); 
+  if($12)$$->AddMember("OPT_OPITION",*$12, result->Doc.GetAllocator() ); 
+   // malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_CREATE_INDEX,$2, $4, $6, index_column_list,table_options);
+   //malloc_terminal_node($$,result->Doc.GetAllocator(), T_INDEX_UNIQUE);  
+   //$$->AddMember("OPERATION_NAME","CREATE_INDEX", result->Doc.GetAllocator() );
+}
+|
+    CREATE index_constraint INDEX  relation_factor ON relation_factor  '(' column_list ')'  opt_table_option_list
+{
+	malloc_terminal_node($$, result->Doc.GetAllocator(), T_CREATE_INDEX  );
+  $$->AddMember("OPERATION_NAME","CREATE_INDEX", result->Doc.GetAllocator() );
+  if($2) $$->AddMember("CONSTRAINT_TYPE",*$2, result->Doc.GetAllocator() );
+  $$->AddMember("INDEX_NAME",*$4, result->Doc.GetAllocator() );
+  $$->AddMember("RELATION_NAME",*$6, result->Doc.GetAllocator() );
+  $$->AddMember("COLUMN_LIST",*$8, result->Doc.GetAllocator() ); 
+  if($10)$$->AddMember("OPT_OPITION",*$10, result->Doc.GetAllocator() ); 
+
+}
+;   
+
+index_constraint:
+	UNIQUE
+	{
+		
+		  malloc_terminal_node($$,result->Doc.GetAllocator(), T_INDEX_UNIQUE); 
+		  $$->AddMember("str_value_","UNIQUE", result->Doc.GetAllocator() ); 
+	}
+	|FULLTEXT 			
+	{  
+		malloc_terminal_node($$,result->Doc.GetAllocator(), T_INDEX_FULLTEXT); 
+		$$->AddMember("str_value_","FULLTEXT", result->Doc.GetAllocator() ); 
+
+	}
+	|SPATIAL  			
+	{  
+		malloc_terminal_node($$,result->Doc.GetAllocator(), T_INDEX_SPATIAL); 
+		$$->AddMember("str_value_","SPATIAL", result->Doc.GetAllocator() ); 
+
+	}
+	|
+	{
+		$$ = NULL;
+	}
+	;
+
+     
+index_type:
+	HASH
+	{ 
+		 malloc_terminal_node($$,result->Doc.GetAllocator(), T_INDEX_HASH);
+		 $$->AddMember("str_value_","HASH", result->Doc.GetAllocator() );
+	}
+	|BTREE
+	{ 
+		 malloc_terminal_node($$,result->Doc.GetAllocator(), T_INDEX_BTREE); 
+		 $$->AddMember("str_value_","BTREE", result->Doc.GetAllocator() );
+	}
+	|SKIPLIST
+	{ 
+		 malloc_terminal_node($$,result->Doc.GetAllocator(), T_INDEX_SKIPLIST); 
+		 $$->AddMember("str_value_","SKIPLIST", result->Doc.GetAllocator() );
+	}
+	| /* EMPTY */
+	{ $$ = NULL; }
+	;
+
+  
 /*****************************************************************************
  *
  *	create grammar
@@ -1153,12 +1370,20 @@ create_table_stmt:
               table_options         table option(s) 
               );
      */
-     rapidjson::Value  *table_elements;
-     rapidjson::Value  *table_options;
-     merge_nodes(table_elements, result->Doc.GetAllocator(),T_TABLE_ELEMENT_LIST, $6);
-     merge_nodes(table_options,  result->Doc.GetAllocator(),T_TABLE_OPTION_LIST, $8);
-     malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_CREATE_TABLE, $3, $4,table_elements,table_options);
-     $$->AddMember("OPERATION_NAME","CREATE_TABLE", result->Doc.GetAllocator() );
+     //rapidjson::Value  *table_elements;
+     //rapidjson::Value  *table_options;
+     //merge_nodes(table_elements, result->Doc.GetAllocator(),T_TABLE_ELEMENT_LIST, $6);
+     //merge_nodes(table_options,  result->Doc.GetAllocator(),T_TABLE_OPTION_LIST, $8);
+     //malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_CREATE_TABLE, $3, $4,table_elements,table_options);
+     //$$->AddMember("OPERATION_NAME","CREATE_TABLE", result->Doc.GetAllocator() );
+    
+  malloc_terminal_node($$, result->Doc.GetAllocator(), T_CREATE_TABLE  );
+  $$->AddMember("OPERATION_NAME","CREATE_TABLE", result->Doc.GetAllocator() );
+  if($3) $$->AddMember("IS_EXISTS",*$3, result->Doc.GetAllocator() );
+  $$->AddMember("TABLE_NAME",*$4, result->Doc.GetAllocator() );
+  $$->AddMember("TABLE_ELEMENT",*$6, result->Doc.GetAllocator() );
+  if($8)$$->AddMember("OPT_OPITION",*$8, result->Doc.GetAllocator() ); 
+    
     
     }
   ;
@@ -1167,6 +1392,7 @@ opt_if_not_exists:
     IF NOT EXISTS
     { /* malloc_terminal_node($$, result->malloc_pool_, T_IF_NOT_EXISTS);*/ 
       malloc_terminal_node($$, result->Doc.GetAllocator(), T_IF_NOT_EXISTS);
+      $$->AddMember("str_value_","not_exists", result->Doc.GetAllocator() );
     }
   | /* EMPTY */
     { $$ = NULL; }
@@ -1221,24 +1447,30 @@ data_type:
     TINYINT
     { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INTEGER );*/ 
       malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INTEGER);
+      $$->AddMember("str_value_","TINYINT", result->Doc.GetAllocator() );
+
     }
   | SMALLINT
     { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INTEGER);*/ 
       malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INTEGER);
+      $$->AddMember("str_value_","SMALLINT", result->Doc.GetAllocator() );
 
     }
   | MEDIUMINT
     { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INTEGER);*/ 
       malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INTEGER);
+      $$->AddMember("str_value_","MEDIUMINT", result->Doc.GetAllocator() );
     }
   | INTEGER
     { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INTEGER);*/ 
        malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INTEGER);
+       $$->AddMember("str_value_","INTEGER", result->Doc.GetAllocator() );
 
     }
   | BIGINT
     { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INTEGER);*/
        malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INTEGER);
+       $$->AddMember("str_value_","BIGINT", result->Doc.GetAllocator() );
 
      }
   | DECIMAL opt_decimal
@@ -1246,10 +1478,12 @@ data_type:
       if ($2 == NULL){
         /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_DECIMAL);*/
         malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_DECIMAL);
+        $$->AddMember("str_value_","DECIMAL", result->Doc.GetAllocator() );
 }
       else{
         /*merge_nodes($$, result->malloc_pool_, T_TYPE_DECIMAL, $2);*/
         malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_DECIMAL);
+        $$->AddMember("str_value_","DECIMAL", result->Doc.GetAllocator() );
  }
       yyerror(&@1, result, "DECIMAL type is not supported");
       YYABORT;
@@ -1262,6 +1496,7 @@ data_type:
       else{
        /* merge_nodes($$, result->malloc_pool_, T_TYPE_DECIMAL, $2);*/
      merge_nodes($$, result->Doc.GetAllocator(),T_TYPE_DECIMAL, $2);}
+     $$->AddMember("str_value_","NUMERIC", result->Doc.GetAllocator() );
        
       yyerror(&@1, result, "NUMERIC type is not supported");
       YYABORT;
@@ -1269,16 +1504,19 @@ data_type:
   | BOOLEAN
     { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_BOOLEAN );*/ 
     malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_BOOLEAN);
+    $$->AddMember("str_value_","BOOLEAN", result->Doc.GetAllocator() );
 
     }
   | FLOAT opt_float
     { /*malloc_non_terminal_node($$, result->malloc_pool_, T_TYPE_FLOAT, 1, $2);*/ 
         malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_TYPE_FLOAT,$2);
+        $$->AddMember("str_value_","FLOAT", result->Doc.GetAllocator() );
 
     }
   | REAL
     { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_DOUBLE);*/
     malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_DOUBLE);
+    $$->AddMember("str_value_","REAL", result->Doc.GetAllocator() );
 
      }
   | DOUBLE opt_precision
@@ -1286,6 +1524,7 @@ data_type:
       (void)($2) ; /* make bison mute */
       /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_DOUBLE);*/
        malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_DOUBLE);
+       $$->AddMember("str_value_","DOUBLE", result->Doc.GetAllocator() );
     }
   | TIMESTAMP opt_time_precision
     {
@@ -1296,11 +1535,13 @@ data_type:
       else{
         /*malloc_non_terminal_node($$, result->malloc_pool_, T_TYPE_TIMESTAMP, 1, $2);*/
      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_TIMESTAMP);}
+     $$->AddMember("str_value_","TIMESTAMP", result->Doc.GetAllocator() );
  
     }
   | DATETIME
     { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_TIMESTAMP);*/
          malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_TIMESTAMP);
+         $$->AddMember("str_value_","DATETIME", result->Doc.GetAllocator() );
 
      }
   | CHARACTER opt_char_length
@@ -1311,51 +1552,68 @@ data_type:
 
       else{
         /*malloc_non_terminal_node($$, result->malloc_pool_, T_TYPE_CHARACTER, 1, $2);*/
-     malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_TYPE_CHARACTER,$2);}
+     malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_TYPE_CHARACTER,$2);
+     }
+     $$->AddMember("str_value_","CHARACTER", result->Doc.GetAllocator() );
   
     }
   | BINARY opt_char_length
     {
       if ($2 == NULL){
         /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_CHARACTER);*/
-      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_CHARACTER);}
+      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_CHARACTER);
+      $$->AddMember("str_value_","BINARY", result->Doc.GetAllocator() );
+      }
    
       else{
         /*malloc_non_terminal_node($$, result->malloc_pool_, T_TYPE_CHARACTER, 1, $2);*/
-      malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_TYPE_CHARACTER,$2);  }
+      malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_TYPE_CHARACTER,$2); 
+      $$->AddMember("str_value_","BINARY", result->Doc.GetAllocator() );
+       }
     }
   | VARCHAR opt_char_length
     {
       if ($2 == NULL){
         /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_VARCHAR);*/
-      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_VARCHAR);}
+      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_VARCHAR);
+      $$->AddMember("str_value_","VARCHAR", result->Doc.GetAllocator() );
+      }
       else{
         /*malloc_non_terminal_node($$, result->malloc_pool_, T_TYPE_VARCHAR, 1, $2);*/
-      malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_TYPE_VARCHAR,$2);   }
+      malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_TYPE_VARCHAR,$2);
+      $$->AddMember("str_value_","VARCHAR", result->Doc.GetAllocator() );
+         }
     }
   | VARBINARY opt_char_length
     {
       if ($2 == NULL){
         /* malloc_terminal_node(result->malloc_pool_, T_TYPE_VARCHAR);*/
-      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_VARCHAR);    }
+      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_VARCHAR); 
+      $$->AddMember("str_value_","VARBINARY", result->Doc.GetAllocator() );
+         }
       else{
         /*malloc_non_terminal_node($$, result->malloc_pool_, T_TYPE_VARCHAR, 1, $2);*/
-      malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_TYPE_VARCHAR, $2);   } 
+      malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_TYPE_VARCHAR, $2);
+      $$->AddMember("str_value_","VARBINARY", result->Doc.GetAllocator() );
+         } 
   
     }
   | CREATETIME
     { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_CREATETIME);*/
-    malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_CREATETIME);    
+    malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_CREATETIME);  
+    $$->AddMember("str_value_","CREATETIME", result->Doc.GetAllocator() );  
      }
   | MODIFYTIME
     { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_MODIFYTIME);*/ 
-    malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_MODIFYTIME);     
+    malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_MODIFYTIME);    
+    $$->AddMember("str_value_","MODIFYTIME", result->Doc.GetAllocator() ); 
     }
     
   | DATE
     {
       /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_DATE);*/
     malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_DATE);     
+    $$->AddMember("str_value_","DATE", result->Doc.GetAllocator() );
       yyerror(&@1, result, "DATE type is not supported");
       YYABORT;
     }
@@ -1366,9 +1624,11 @@ data_type:
     malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_TIME);    } 
       else{       /*malloc_non_terminal_node($$, result->malloc_pool_, T_TYPE_TIME, 1, $2);*/
     malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_TYPE_TIME,$2);     }
+    $$->AddMember("str_value_","TIME", result->Doc.GetAllocator() );
       yyerror(&@1, result, "TIME type is not supported");
       YYABORT;
     }
+    
   ;
 
 opt_decimal:
@@ -1376,6 +1636,7 @@ opt_decimal:
     { /*malloc_non_terminal_node($$, result->malloc_pool_, T_LINK_NODE, 2, $2, $4);*/ 
      //malloc_non_terminal_node(&$$, result->Doc.GetAllocator(), T_LINK_NODE,$2, $4);      
      malloc_list_node(&$$,result->Doc.GetAllocator(),2, $2, $4);
+     $$->AddMember("str_value_","not_exists", result->Doc.GetAllocator() );
     }
   | '(' INTNUM ')'
     { $$ = $2; }
@@ -1483,12 +1744,19 @@ table_option:
    malloc_non_terminal_node(&$$,result->Doc.GetAllocator(), T_TABLET_MAX_SIZE, $3);
  
     }
+    | EXTERN_SIZE opt_equal_mark INTNUM
+    {
+      (void)($2) ; /* make bison mute */
+      /*malloc_non_terminal_node($$, result->/*malloc_pool_, T_TABLET_MAX_SIZE, 1, $3);*/
+   		malloc_terminal_node($$,result->Doc.GetAllocator(), T_EXTERN_SIZE);
+   		if($3)$$->AddMember("EXTERN_SIZE",*$3, result->Doc.GetAllocator() );
+    }
   | TABLET_BLOCK_SIZE opt_equal_mark INTNUM
     {
       (void)($2) ; /* make bison mute */
       /*malloc_non_terminal_node($$, result->malloc_pool_, T_TABLET_BLOCK_SIZE, 1, $3);*/
-    malloc_non_terminal_node(&$$,result->Doc.GetAllocator(), T_TABLET_BLOCK_SIZE, $3);
-   
+     malloc_terminal_node($$,result->Doc.GetAllocator(), T_TABLET_BLOCK_SIZE);
+   	 if($3)$$->AddMember("TABLET_BLOCK_SIZE",*$3, result->Doc.GetAllocator() );
     }
   | TABLE_ID opt_equal_mark INTNUM
     {
@@ -1559,7 +1827,11 @@ drop_table_stmt:
       
       rapidjson::Value *tables ;
       merge_nodes(tables, result->Doc.GetAllocator(),T_TABLE_LIST, $4);
-		  malloc_non_terminal_node(&$$,result->Doc.GetAllocator(),T_DROP_TABLE, $3,tables);      
+		  malloc_terminal_node($$,result->Doc.GetAllocator(),T_DROP_TABLE);      
+      $$->AddMember("OPERATION_NAME","DROP_TABLE", result->Doc.GetAllocator() );
+      if($3)$$->AddMember("IF_EXISTS",*$3, result->Doc.GetAllocator() );
+			$$->AddMember("TABLE_LIST",*tables, result->Doc.GetAllocator() );
+   
     }
   ;
 
@@ -1609,12 +1881,13 @@ insert_stmt:
       rapidjson::Value  *val_list ;
       merge_nodes(val_list, result->Doc.GetAllocator(),T_VALUE_LIST, $6);
     // malloc_non_terminal_node(&$$,result->Doc.GetAllocator(),T_INSERT,$3, $4,val_list,NULL,$1,$7);  
-         malloc_terminal_node($$,result->Doc.GetAllocator(),T_INSERT);  
-         SafeAddMember($$,"relation_factor",$3, result->Doc.GetAllocator());
-         SafeAddMember($$,"opt_insert_columns",$4, result->Doc.GetAllocator());
-         SafeAddMember($$,"val_list", val_list, result->Doc.GetAllocator());
-         SafeAddMember($$,"replace_or_insert",$1, result->Doc.GetAllocator());
-         SafeAddMember($$,"opt_when",$7, result->Doc.GetAllocator());
+         malloc_terminal_node($$,result->Doc.GetAllocator(),T_INSERT);
+         $$->AddMember("OPERATION_NAME","INSERT_TABLE", result->Doc.GetAllocator() );
+         SafeAddMember($$,"TABLE_NAME",$3, result->Doc.GetAllocator());
+         SafeAddMember($$,"OPT_INSERT_COLUMNS",$4, result->Doc.GetAllocator());
+         SafeAddMember($$,"VALUE_LIST", val_list, result->Doc.GetAllocator());
+         SafeAddMember($$,"REPLACE_OR_INSERT",$1, result->Doc.GetAllocator());
+         SafeAddMember($$,"OPT_WHEN",$7, result->Doc.GetAllocator());
 
     }
   | replace_or_insert INTO relation_factor select_stmt
@@ -1637,9 +1910,10 @@ insert_stmt:
     //                         NULL          
     //                         );
          malloc_terminal_node($$,result->Doc.GetAllocator(),T_INSERT);  
-         SafeAddMember($$,"relation_factor",$3, result->Doc.GetAllocator());
-         SafeAddMember($$,"select_stmt",$4, result->Doc.GetAllocator());
-         SafeAddMember($$,"replace_or_insert",$1, result->Doc.GetAllocator());
+         $$->AddMember("OPERATION_NAME","INSERT_SELECT_STMT", result->Doc.GetAllocator() );
+         SafeAddMember($$,"TABLE_NAME",$3, result->Doc.GetAllocator());
+         SafeAddMember($$,"SELECT_STMT",$4, result->Doc.GetAllocator());
+         SafeAddMember($$,"REPLACE_OR_INSERT",$1, result->Doc.GetAllocator());
 
     }
   | replace_or_insert INTO relation_factor '(' column_list ')' select_stmt
@@ -1668,10 +1942,11 @@ insert_stmt:
          rapidjson::Value  *col_list ;
          merge_nodes(col_list,result->Doc.GetAllocator(), T_COLUMN_LIST, $5);
          malloc_terminal_node($$,result->Doc.GetAllocator(),T_INSERT);  
-         SafeAddMember($$,"relation_factor",$3, result->Doc.GetAllocator());
-         SafeAddMember($$,"col_list",col_list, result->Doc.GetAllocator());
-         SafeAddMember($$,"select_stmt",$7, result->Doc.GetAllocator());
-         SafeAddMember($$,"replace_or_insert",$1, result->Doc.GetAllocator());
+         $$->AddMember("OPERATION_NAME","INSERT_SELECT_STMT", result->Doc.GetAllocator() );
+         SafeAddMember($$,"TABLE_NAME",$3, result->Doc.GetAllocator());
+         SafeAddMember($$,"COLUMNS_LIST",col_list, result->Doc.GetAllocator());
+         SafeAddMember($$,"SELECT_STMT",$7, result->Doc.GetAllocator());
+         SafeAddMember($$,"REPLACE_OR_INSERT",$1, result->Doc.GetAllocator());
     }
   ;
 
@@ -1692,7 +1967,8 @@ replace_or_insert:
       */
       malloc_terminal_node($$,result->Doc.GetAllocator(),T_BOOL);
       rapidjson::Value tmp(1);
-      (*$$)["value_"].Swap(tmp);
+      SafeAddMember($$,"value_",&tmp, result->Doc.GetAllocator());
+
     }
   | INSERT
     {
@@ -1701,9 +1977,8 @@ replace_or_insert:
       $$->value_ = 0;
       */
       malloc_terminal_node($$,result->Doc.GetAllocator(),T_BOOL);
-      rapidjson::Value tmp(0);
-      (*$$)["value_"].Swap(tmp);
-
+      rapidjson::Value tmp(0);      
+      SafeAddMember($$,"value_",&tmp, result->Doc.GetAllocator());
     }
   ;
 
@@ -1773,7 +2048,7 @@ select_stmt:
        $$ = $1;
        $$->AddMember("OPERATION_NAME","SELECT", result->Doc.GetAllocator() );
 
-       SafeAddMember($$,"hints",$2 , result->Doc.GetAllocator());
+       SafeAddMember($$,"HINTS",$2 , result->Doc.GetAllocator());
        if($$->HasMember("limit") && $2 != NULL)
        	{
        		(*$$)["limit"].SetObject().AddMember("value_", rapidjson::Value(1), result->Doc.GetAllocator());
@@ -2751,9 +3026,11 @@ explain_stmt:
     {
     /*  malloc_non_terminal_node($$, result->malloc_pool_, T_EXPLAIN, 1, $3);
       $$->value_ = ($2 ? 1 : 0); positive: verbose */
-      malloc_non_terminal_node(&$$,result->Doc.GetAllocator(), T_EXPLAIN,$3);
-      rapidjson::Value tmp($2 ? 1 : 0);
-      (*$$)["value_"].Swap(tmp);
+      malloc_terminal_node($$,result->Doc.GetAllocator(), T_EXPLAIN);
+      $$->AddMember("OPERATION_NAME","EXPLAIN", result->Doc.GetAllocator() );
+      $$->AddMember("STMT",*$3,result->Doc.GetAllocator());
+      //rapidjson::Value tmp($2 ? 1 : 0);
+      //(*$$)["value_"].Swap(tmp);
  
     }
   ;
@@ -2780,6 +3057,7 @@ show_stmt:
     SHOW TABLES opt_show_condition
     { /*malloc_non_terminal_node($$, result->malloc_pool_, T_SHOW_TABLES, 1, $3malloc_*/ 
     	malloc_non_terminal_node(&$$,result->Doc.GetAllocator(),T_SHOW_TABLES, $3);
+    	$$->AddMember("OPERATION_NAME","COMMAND", result->Doc.GetAllocator() );
     	}
   | SHOW COLUMNS FROM relation_factor opt_show_condition
     { /*malloc_non_terminal_node($$, result->malloc_pool_, T_SHOW_COLUMNS, 2, $4, $5)*/ 
@@ -2970,7 +3248,15 @@ create_user_stmt:
     CREATE USER user_specification_list
     {
        /* merge_nodes($$, result->malloc_pool_, T_CREATE_USER, $3);*/
-       merge_nodes($$,result->Doc.GetAllocator(),T_CREATE_USER, $3);
+      // merge_nodes($$,result->Doc.GetAllocator(),T_CREATE_USER, $3);
+      printf("AAAAAAAAAAAAA\n");
+      malloc_non_terminal_node(&$$,result->Doc.GetAllocator(), T_CREATE_USER,$3);
+      $$->AddMember("OPERATION_NAME","CREATE_USER", result->Doc.GetAllocator() );
+    }|
+    CREATE USER user
+    {
+    	 printf("CREATE USER\n");
+    	
     }
 ;
 user_specification_list:
@@ -2989,7 +3275,9 @@ user_specification:
     user IDENTIFIED BY password
     {
       /*  malloc_non_terminal_node($$, result->malloc_pool_, T_CREATE_USER_SPEC, 2, $1, $4);*/
-      malloc_non_terminal_node(&$$,result->Doc.GetAllocator(),T_CREATE_USER_SPEC,$1, $4);
+      malloc_terminal_node($$,result->Doc.GetAllocator(),T_CREATE_USER_SPEC);
+      $$->AddMember("USER_NAME",*$1, result->Doc.GetAllocator() );
+      $$->AddMember("PASSWORD", *$4, result->Doc.GetAllocator() );
      
     }
 ;
@@ -2997,6 +3285,8 @@ user:
     STRING
     {
         $$ = $1;
+     // malloc_terminal_node($$,result->Doc.GetAllocator(), T_RELATION);
+     // SafeAddMember($$,"USER_NAME",$1, result->Doc.GetAllocator());
     }
 ;
 password:
@@ -3016,6 +3306,7 @@ drop_user_stmt:
     {
        /* merge_nodes($$, result->malloc_pool_, T_DROP_USER, $3);*/
         merge_nodes($$,result->Doc.GetAllocator(),T_DROP_USER, $3);
+				$$->AddMember("OPERATION_NAME","DROP_USER", result->Doc.GetAllocator() );
 
     }
 ;
@@ -3042,13 +3333,23 @@ set_password_stmt:
     SET PASSWORD opt_for_user COMP_EQ password
     {
      /* malloc_non_terminal_node($$, result->malloc_pool_, T_SET_PASSWORD, 2, $3, $5);*/
-    malloc_non_terminal_node(&$$,result->Doc.GetAllocator(),T_SET_PASSWORD,$3 ,$5);
+    malloc_terminal_node($$,result->Doc.GetAllocator(),T_SET_PASSWORD);
+    $$->AddMember("OPERATION_NAME","SET_PASWD", result->Doc.GetAllocator() );
+    $$->AddMember("USER_NAME",*$3, result->Doc.GetAllocator() );
+    $$->AddMember("PASSWORD",*$5, result->Doc.GetAllocator() );
+
+
 
     }
     | ALTER USER user IDENTIFIED BY password
     {
      /* malloc_non_terminal_node($$, result->malloc_pool_, T_SET_PASSWORD, 2, $3, $6);*/
-      malloc_non_terminal_node(&$$,result->Doc.GetAllocator(),T_SET_PASSWORD,$3 ,$6);
+      malloc_terminal_node($$,result->Doc.GetAllocator(),T_SET_PASSWORD);
+      $$->AddMember("OPERATION_NAME","SET_PASWD", result->Doc.GetAllocator() );
+      $$->AddMember("USER_NAME",*$3, result->Doc.GetAllocator() );
+      $$->AddMember("PASSWORD",*$6, result->Doc.GetAllocator() );
+      
+      
 
     }
 ;
@@ -3071,7 +3372,10 @@ rename_user_stmt:
     RENAME USER rename_list
     {
       /*merge_nodes($$, result->malloc_pool_, T_RENAME_USER, $3);*/
-      merge_nodes($$,result->Doc.GetAllocator(),T_RENAME_USER, $3);
+     // merge_nodes($$,result->Doc.GetAllocator(),T_RENAME_USER, $3);
+      
+      malloc_non_terminal_node(&$$,result->Doc.GetAllocator(),T_RENAME_USER,$3);
+      $$->AddMember("OPERATION_NAME","RENAME_USER", result->Doc.GetAllocator() );
 
     }
 ;
@@ -3079,7 +3383,9 @@ rename_info:
     user TO user
     {
       /*malloc_non_terminal_node($$, result->malloc_pool_, T_RENAME_INFO, 2, $1, $3);*/
-      malloc_non_terminal_node(&$$,result->Doc.GetAllocator(),T_RENAME_INFO,$1 ,$3);
+      malloc_terminal_node($$,result->Doc.GetAllocator(),T_RENAME_INFO);
+      $$->AddMember("OLD_NAME",*$1, result->Doc.GetAllocator() );
+      $$->AddMember("NEW_NAME",*$3, result->Doc.GetAllocator() );
   
     }
 ;
@@ -3135,7 +3441,6 @@ opt_work:
     }
     | /*empty*/
     {
-      (void)$$;
     }
 opt_with_consistent_snapshot:
     WITH CONSISTENT SNAPSHOT
@@ -3173,7 +3478,8 @@ commit_stmt:
     {
       (void)$2;
       /*malloc_terminal_node($$, result->malloc_pool_, T_COMMIT);*/
-      malloc_terminal_node($$,result->Doc.GetAllocator(), T_BEGIN);
+      malloc_terminal_node($$,result->Doc.GetAllocator(), T_COMMIT);
+			$$->AddMember("OPERATION_NAME","COMMIT", result->Doc.GetAllocator() );
 
     }
 
@@ -3188,6 +3494,7 @@ rollback_stmt:
       (void)$2;
       /*malloc_terminal_node($$, result->malloc_pool_, T_ROLLBACK);*/
        malloc_terminal_node($$,result->Doc.GetAllocator(), T_ROLLBACK);
+			 $$->AddMember("OPERATION_NAME","ROLLBACK", result->Doc.GetAllocator() );
 
     }
 
@@ -3200,7 +3507,13 @@ kill_stmt:
     KILL opt_is_global opt_flag INTNUM
     {
     /*  malloc_non_terminal_node($$, result->malloc_pool_, T_KILL, 3, $2, $3, $4);*/
-    malloc_non_terminal_node(&$$,result->Doc.GetAllocator(), T_KILL,$2, $3, $4);
+    malloc_terminal_node($$,result->Doc.GetAllocator(), T_KILL );
+    $$->AddMember("OPERATION_NAME","KILL", result->Doc.GetAllocator() );
+    $$->AddMember("IS_GLOBAL",*$2, result->Doc.GetAllocator() );
+    $$->AddMember("OPT_FLAG",*$3, result->Doc.GetAllocator() );
+    $$->AddMember("INTNUM",*$4, result->Doc.GetAllocator() );
+
+
 
     }
    ;
@@ -3259,12 +3572,16 @@ grant_stmt:
       merge_nodes(users_node, result->malloc_pool_, T_USERS, $6);
       malloc_non_terminal_node($$, result->malloc_pool_, T_GRANT,
                                  3, privileges_node, $4, users_node);*/
-      rapidjson::Value  *privileges_node ; 
-      merge_nodes(privileges_node,result->Doc.GetAllocator(),T_PRIVILEGES,$2);
-      rapidjson::Value  *users_node      ; 
-      merge_nodes(users_node,result->Doc.GetAllocator(),T_USERS,$6);
-      malloc_non_terminal_node(&$$,result->Doc.GetAllocator(),T_GRANT,privileges_node,$4, users_node);
-
+      //rapidjson::Value  *privileges_node ; 
+      //merge_nodes(privileges_node,result->Doc.GetAllocator(),T_PRIVILEGES,$2);
+      //rapidjson::Value  *users_node      ; 
+      //merge_nodes(users_node,result->Doc.GetAllocator(),T_USERS,$6);
+      
+      malloc_terminal_node($$,result->Doc.GetAllocator(),T_GRANT );
+			$$->AddMember("OPERATION_NAME","GRANT", result->Doc.GetAllocator() );
+    	$$->AddMember("PRIV_LEVEL",*$4, result->Doc.GetAllocator() );
+    	$$->AddMember("PRIV_TYPE", *$2, result->Doc.GetAllocator() );
+    	$$->AddMember("USER_NODE", *$6, result->Doc.GetAllocator() );
     }
 ;
 priv_type_list:
@@ -4187,4 +4504,5 @@ int parse_sql(ParseResult* p, const char* buf, size_t len)
   yy_delete_buffer(bp, p->yyscan_info_);
   return ret;
 }
+
 
