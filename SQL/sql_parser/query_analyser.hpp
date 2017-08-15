@@ -5,7 +5,6 @@
 #include<string>
 
 
-
 // 生成1个常数1
 rapidjson::Value  * create_const_value(rapidjson::Document::AllocatorType& Allocator){
 rapidjson::Value  * v = new rapidjson::Value;
