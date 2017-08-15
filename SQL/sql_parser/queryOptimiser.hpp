@@ -395,6 +395,8 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 		if ( v->HasMember("PROJECT") )
 			vv = &(*v)["PROJECT"];
 		else vv = v;
+			
+		cout<<"optimiser_project_const"<<endl;				
 	
     rapidjson::Value  *  proj[64];
     int i = 0;
@@ -402,14 +404,21 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
     int ret = 0;
     int is_simple = 0;
       
-    //rapidjson_log(vv); 
-      		   
+    //      		   
 		if ( vv->HasMember(rapidjson::StringRef("OP_TYPE") ) && vv->HasMember("children" ) ) {
 				for (auto& it :  (*vv)["children"].GetArray()   ){  				
-  				proj[i++] = &it;
+  				cout<<"optimiser_project_const 2"<<endl;				
+
+  				if(it.HasMember("children")){
+  					cout<<"[[[[[]]]]]]"<<endl;
+  					rapidjson_log( &it ); 
+  					optimiser_project_const( &it , level + 1 );
+  				}
+  				
   				if( !it.HasMember("CONST_TYPE") && it["CONST_TYPE"] != "INTNUM" ){
   					continue;
   				}
+  				proj[i++] = &it;
          }//end for
      if( 0 == i ) return;
      	    	
@@ -542,9 +551,9 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 //  常量传递 a = b and b = 5 ==> a = 5 and b =5 暂不打算支持（靠人来消除）
 //  消除 常量运算             只支持简单的四则运算
 //  常量表达式运算            OK
-//  bool表达式化简           暂不打算支持	
-//  重复条件消除             暂不打算支持（靠人来消除）
-//  having 并入 where        OK
+//  bool表达式化简            暂不打算支持	
+//  重复条件消除              暂不打算支持（靠人来消除）
+//  having 并入 where         OK
 
 
 // 选择、投影操作下推 ，（不打算支持 非等 连接和下推）,选择操作扩张（关联）
@@ -556,7 +565,7 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 // 物化器的物理查询优化
 
 // 尽量使用 where 上的索引 ，索引可以启发使用 merge join
-// 排序时 distinct 消除
+// ORDER BY 排序消除 排序下推 ， distinct 消除
 // order by，group by，distinct，count(*),min,max 中 使用索引
 
 // 数据量较少时 不适用索引
