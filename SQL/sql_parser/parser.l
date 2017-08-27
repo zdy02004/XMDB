@@ -853,7 +853,10 @@ Timestamp{whitespace}?'[0-9]{4}(-[0-9]{2}){2}[ ][0-9]{2}(:[0-9]{2}){2}[.]?' {
   node->str_value_ = parse_strdup(yytext + 1, result->malloc_pool_);
   check_value(node->str_value_);
   node->value_ = strlen(node->str_value_);*/
+
   yylval->node = malloc_new_node(((ParseResult*)yyextra)->Doc.GetAllocator(), T_TEMP_VARIABLE);
+  yylval->node->AddMember("CONST_TYPE","TEMP_VARIABLE", ((ParseResult*)yyextra)->Doc.GetAllocator() );
+  
   dup_str(yytext+ 1);
   yylval->node->AddMember("str_value_", str,((ParseResult*)yyextra)->Doc.GetAllocator());
   yylval->node->AddMember("value_", strlen(yytext+1),((ParseResult*)yyextra)->Doc.GetAllocator());
