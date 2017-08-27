@@ -31,7 +31,12 @@ const char *sql_str = ""
 //"COMMIT";
 //"ROLLBACK";
 //"KILL 9";
-//"GRANT CREATE ON test_table TO TEST_USER";///
+//"GRANT CREATE ON test_table TO 'test_user' ";
+//"REVOKE CREATE ON test_table FROM 'test_user' ";
+//"Pprepare optimize_tables from \" SELECT A FORM B \" ";
+//"SET @@sort_buffer_size = 10000"; //暂不支持
+"ALTER TABLE test_table  RENAME TO relation_factor2 ";
+
 
 
 cout<< sql_str <<endl;
