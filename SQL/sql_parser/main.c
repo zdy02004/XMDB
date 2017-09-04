@@ -6,7 +6,7 @@ int main()
 {
 
 const char *sql_str = ""
-   // "select 1 ,distinct qty as quantity, user_name, qty / 100, id + 1000 as new_id, new_id as n_id "
+   // "select distinct qty as quantity, user_name, qty / 100, id + 1000 as new_id, new_id as n_id "
    // "from (select * from table_1 where condition > 1) table1_alias, table_2  "   //sum(c1) t1,o.c2 + 4 t2,o.c3 t3
    // "where table_1.user_id = table_2.user_id and table_1.user_id = 12 and table_2.acct_id = 23 group by table_1.c having table_1.c = 1 ORDER BY table_2.c";
 //    " select  sum(c1) c1 , 2 - 4 * 3  t2  "
