@@ -176,17 +176,17 @@ struct exec_node_type
 	inline int check_isdone( T*  brother_tmp)
 	{
 		if(brother_tmp->is_done!= 1)return 1;       //中断返回
-	  else return 2;
-  }
-  inline int check_isdone( int*  brother_tmp)
+	        else return 2;
+        }
+  	inline int check_isdone( int*  brother_tmp)
 	{
 		return 0;
-  }
+        }
 
-  //执行本节点
+  	//执行本节点
 	inline int try_execute()
 	{
-		//1 所有的前继节点都结束
+		  //1 所有的前继节点都结束
 		  int first_check = 1;
 		  while( first_check )
 		  {
@@ -195,12 +195,12 @@ struct exec_node_type
 					{
 						 typename input_node_type::brother_type_ * brother_tmp =input_node->brother;
 				   	if ( check(brother_tmp)  )
-									{
-										//还不能开始
-										first_check = 1;
-										// 阻塞代码
-										continue;
-									}
+					{
+						//还不能开始
+						first_check = 1;
+						// 阻塞代码
+						continue;
+					}
 					}
 			
 		  }
@@ -224,12 +224,10 @@ struct exec_fun< int,Args...>
 {
 	typedef  int  ret_type;
 	exec_fun(){}
-  void swap()
-  {
-  }
+  	void swap(){}
 	inline int exe()
 	{
-		return 0;
+	    return 0;
 	}
 	
 };
@@ -239,24 +237,22 @@ template<class OpperType>
 struct exec_node_type<int,int,OpperType>
 {
 	typedef int             	pre_type_;
-	//typedef int  						out_type_;
+	//typedef int  			out_type_;
 	typedef int             	brother_type_;
-	typedef int  							OpperType_;
-	typedef int  					  	ret_type; 
+	typedef int  			OpperType_;
+	typedef int  			ret_type; 
 	typedef int	            	input_node_type;
 	//typedef int 			output_node_type;
-	exec_fun< int,OpperType>    exec_node;    //执行节点
-	short  is_start_end;															//是否是开始节点 1 开始   2 结束
-	char   is_done;			
-	input_node_type       *   input_node;  			      //前继依赖节点
-	brother_type_			    *   brother;  				      //前继依赖兄弟节点 
-	//int 									ret;				   			      //执行结果集
+	exec_fun< int,OpperType>        exec_node;       //执行节点
+	short  				is_start_end;															//是否是开始节点 1 开始   2 结束
+	char   				is_done;			
+	input_node_type      	 *      input_node;  	 //前继依赖节点
+	brother_type_		 *      brother;         //前继依赖兄弟节点 
 	exec_node_type():input_node(NULL),brother(NULL),is_start_end(OPERATION_END),is_done(1){}
 	inline int try_execute()
 	{
-		return 0;
-  }
+	  return 0;
+ 	}
 };
-
 
 #endif 
