@@ -7,7 +7,7 @@
 #include <utility>
 #include <functional>
 
-// Ê¹ÓÃtuple ×÷Îªº¯Êı²ÎÊıÁĞ±í
+// ä½¿ç”¨tuple ä½œä¸ºå‡½æ•°å‚æ•°åˆ—è¡¨
 template<size_t N>
 struct Apply {
 template<typename F, typename T, typename... A>
@@ -51,7 +51,7 @@ typename ::std::decay<T>::type
 ::std::forward<T>(t));
 }
 
-//ÀÁÖ´ĞĞº¯Êı°ü×°Æ÷
+//æ‡’æ‰§è¡Œå‡½æ•°åŒ…è£…å™¨
 template<class Funtype,typename ... Args>
 struct exec_fun
 {
@@ -82,11 +82,11 @@ struct exec_fun
 #define OPERATION_START 1
 #define OPERATION_END   2
 /*  
-¶¨ÒåÒÀÀµÖ´ĞĞ½Úµã
+å®šä¹‰ä¾èµ–æ‰§è¡ŒèŠ‚ç‚¹
 
-pre_node1    							  <--(ÒÀÀµ)    current_node    <--(ÒÀÀµ)    out_node
+pre_node1    							  <--(ä¾èµ–)    current_node    <--(ä¾èµ–)    out_node
    |																																			|
-   |brother£¨ÉÏÃæºÍÏÂÃæµÄ½ÚµãÊÇ²¢ĞĞµÄ¹ØÏµ£©																|brother£¨ÉÏÃæºÍÏÂÃæµÄ½ÚµãÊÇ²¢ĞĞµÄ¹ØÏµ£©
+   |brotherï¼ˆä¸Šé¢å’Œä¸‹é¢çš„èŠ‚ç‚¹æ˜¯å¹¶è¡Œçš„å…³ç³»ï¼‰																|brotherï¼ˆä¸Šé¢å’Œä¸‹é¢çš„èŠ‚ç‚¹æ˜¯å¹¶è¡Œçš„å…³ç³»ï¼‰
    |																																			|
 pre_node2																															out_node2
    |																																			|
@@ -97,58 +97,58 @@ pre_node3      																												out_node3
 	NULL																																	 NULL
 */
 
-// ÎïÀíÖ´ĞĞ¼Æ»®
-// ´¦Àí½Úµã
-// pre_type     Ç°¼Ì½ÚµãÀàĞÍ
-// brother_type ĞÖµÜ½ÚµãÀàĞÍ
-// OpperType    ²Ù×÷½ÚµãÀàĞÍ
+// ç‰©ç†æ‰§è¡Œè®¡åˆ’
+// å¤„ç†èŠ‚ç‚¹
+// pre_type     å‰ç»§èŠ‚ç‚¹ç±»å‹
+// brother_type å…„å¼ŸèŠ‚ç‚¹ç±»å‹
+// OpperType    æ“ä½œèŠ‚ç‚¹ç±»å‹
 template<class pre_type,class brother_type,class OpperType>
 struct exec_node_type
 {
 
-	typedef pre_type  						pre_type_;
-	//typedef out_type  					out_type_;
+	typedef pre_type  				pre_type_;
+	//typedef out_type  				out_type_;
 	typedef brother_type  				brother_type_;
-	typedef OpperType  						OpperType_;
+	typedef OpperType  				OpperType_;
 	
-	 //Ö´ĞĞ½Úµã·µ»ØÀàĞÍ
+	 //æ‰§è¡ŒèŠ‚ç‚¹è¿”å›ç±»å‹
 	typedef typename OpperType::ret_type  ret_type; 
   
-  //Ç°¼Ì½ÚµãÀàĞÍ
+  //å‰ç»§èŠ‚ç‚¹ç±»å‹
 	typedef exec_node_type<typename pre_type_::pre_type_ , typename pre_type_::brother_type_,
 									  typename pre_type_::OpperType_
 								   > input_node_type;		 	
 	
-	//ºó¼Ì½ÚµãÀàĞÍ							 	
+	//åç»§èŠ‚ç‚¹ç±»å‹							 	
 	//typedef exec_node<typename out_type_::FunType_, typename out_type_::Arg1_ , typename out_type_::Arg2_ , 
 	//																						 typename out_type_::Arg3_ , typename out_type_::Arg4_ , 
 	//							 typename out_type_::pre_type_,typename out_type_::out_type , typename out_type_::brother_type_  > output_node_type;
 								 	
 	
-	int    									operation_type;		//²Ù×÷ÀàĞÍ
-	short  									is_start_end;			//ÊÇ·ñÊÇ¿ªÊ¼½Úµã 1 ¿ªÊ¼   2 ½áÊø
-	char   									is_done;					//ÊÇ·ñ½áÊø  0 Î´½áÊø   1  ½áÊø
-	OpperType 							exec_node;   			//Ö´ĞĞ½Úµã
+	int    									operation_type;		//æ“ä½œç±»å‹
+	short  									is_start_end;		//æ˜¯å¦æ˜¯å¼€å§‹èŠ‚ç‚¹ 1 å¼€å§‹   2 ç»“æŸ
+	char   									is_done;		//æ˜¯å¦ç»“æŸ  0 æœªç»“æŸ   1  ç»“æŸ
+	OpperType 							        exec_node;   		//æ‰§è¡ŒèŠ‚ç‚¹
 	
-	input_node_type				* input_node;  			//Ç°¼ÌÒÀÀµ½Úµã
-	brother_type          * brother;  				//Ç°¼ÌÒÀÀµĞÖµÜ½Úµã 
-	ret_type 								ret;							//Ö´ĞĞ½á¹û¼¯
+	input_node_type				* input_node;  			//å‰ç»§ä¾èµ–èŠ‚ç‚¹
+	brother_type          			* brother;  			//å‰ç»§ä¾èµ–å…„å¼ŸèŠ‚ç‚¹ 
+	ret_type 				  ret;				//æ‰§è¡Œç»“æœé›†
  
   exec_node_type(int _operation_type ):operation_type(_operation_type),is_start_end(OPERATION_START),is_done(0),input_node( NULL ),brother( NULL ){}
   
-  //ÉèÖÃÖ´ĞĞº¯Êı
+  //è®¾ç½®æ‰§è¡Œå‡½æ•°
   void set_exec(OpperType & _exec_node)
   {
   	exec_node.swap(_exec_node);
   }
   
-   //ÉèÖÃÇ°¼Ì½Úµã
+   //è®¾ç½®å‰ç»§èŠ‚ç‚¹
   void set_input_node(input_node_type & _input_node )
   {
   	input_node = &_input_node;
   }
   
-   //ÉèÖÃĞÖµÜ½Úµã
+   //è®¾ç½®å…„å¼ŸèŠ‚ç‚¹
   void set_brother_node(brother_type & _brohter_node )
   {
   	brother = &_brohter_node;
@@ -156,26 +156,26 @@ struct exec_node_type
   
 	inline int check( int * pre_brother)
 	{
-	 return 0;  //ÍË³ö·µ»Ø
+	 return 0;  //é€€å‡ºè¿”å›
 	}
 	
-  //µİ¹é¼ì²éÇ°¼Ì½Úµã
+  //é€’å½’æ£€æŸ¥å‰ç»§èŠ‚ç‚¹
 	template<class T>
 	inline int check( T*  pre_brother)
 	{
-	 if(pre_brother->brother == NULL)return 0;  //ÍË³ö·µ»Ø
+	 if(pre_brother->brother == NULL)return 0;  //é€€å‡ºè¿”å›
 	 typename T::brother_type_ * brother_tmp = pre_brother->brother;
 	 int ret = check_isdone(brother_tmp);
-	 if( ret == 1 )return 1;       //ÖĞ¶Ï·µ»Ø
-	 if( ret == 0 )return 0;       //ÍË³ö·µ»Ø
+	 if( ret == 1 )return 1;       //ä¸­æ–­è¿”å›
+	 if( ret == 0 )return 0;       //é€€å‡ºè¿”å›
 	 return check(brother_tmp) ;
 	
 	}
-	  //µİ¹é¼ì²éÇ°¼Ì½Úµã
+	  //é€’å½’æ£€æŸ¥å‰ç»§èŠ‚ç‚¹
 	template<class T>
 	inline int check_isdone( T*  brother_tmp)
 	{
-		if(brother_tmp->is_done!= 1)return 1;       //ÖĞ¶Ï·µ»Ø
+		if(brother_tmp->is_done!= 1)return 1;       //ä¸­æ–­è¿”å›
 	  else return 2;
   }
   inline int check_isdone( int*  brother_tmp)
@@ -183,22 +183,22 @@ struct exec_node_type
 		return 0;
   }
 
-  //Ö´ĞĞ±¾½Úµã
+  //æ‰§è¡Œæœ¬èŠ‚ç‚¹
 	inline int try_execute()
 	{
-		//1 ËùÓĞµÄÇ°¼Ì½Úµã¶¼½áÊø
+		//1 æ‰€æœ‰çš„å‰ç»§èŠ‚ç‚¹éƒ½ç»“æŸ
 		  int first_check = 1;
 		  while( first_check )
 		  {
-		 		  first_check = 0;
-					if(first_check && input_node != NULL && input_node->is_done != 1)
+		 		        first_check = 0;
+					if( input_node != NULL && input_node->is_done != 1 )
 					{
 						 typename input_node_type::brother_type_ * brother_tmp =input_node->brother;
 				   	if ( check(brother_tmp)  )
 									{
-										//»¹²»ÄÜ¿ªÊ¼
+										//è¿˜ä¸èƒ½å¼€å§‹
 										first_check = 1;
-										// ×èÈû´úÂë
+										// é˜»å¡ä»£ç 
 										continue;
 									}
 					}
@@ -206,19 +206,19 @@ struct exec_node_type
 		  }
 	  	
 		
-		//2 Ö´ĞĞ±¾½ÚµãÈÎÎñ
+		//2 æ‰§è¡Œæœ¬èŠ‚ç‚¹ä»»åŠ¡
 		ret = exec_node.exe();
 		
-		//3 ËùÓĞµÄºó¼Ì½Úµã¿ÉÒÔ¿ªÊ¼
+		//3 æ‰€æœ‰çš„åç»§èŠ‚ç‚¹å¯ä»¥å¼€å§‹
 		is_done = 1;
 		
-		//4 ¹¹ÔìËùÓĞµÄºó¼Ì½ÚµãÍ¶Èëµ½ÈÎÎñ¶ÓÁĞ
+		//4 æ„é€ æ‰€æœ‰çš„åç»§èŠ‚ç‚¹æŠ•å…¥åˆ°ä»»åŠ¡é˜Ÿåˆ—
 
 	}
 	
 }__attribute__ ((packed, aligned (64)));
 
-//¿ÕÖ´ĞĞ½Úµã
+//ç©ºæ‰§è¡ŒèŠ‚ç‚¹
 template <typename ... Args>
 struct exec_fun< int,Args...>
 {
@@ -234,7 +234,7 @@ struct exec_fun< int,Args...>
 	
 };
 
-// ¿ÕÖ´ĞĞ¸¨Öú½Úµã
+// ç©ºæ‰§è¡Œè¾…åŠ©èŠ‚ç‚¹
 template<class OpperType>
 struct exec_node_type<int,int,OpperType>
 {
@@ -245,12 +245,12 @@ struct exec_node_type<int,int,OpperType>
 	typedef int  					  	ret_type; 
 	typedef int	            	input_node_type;
 	//typedef int 			output_node_type;
-	exec_fun< int,OpperType>    exec_node;    //Ö´ĞĞ½Úµã
-	short  is_start_end;															//ÊÇ·ñÊÇ¿ªÊ¼½Úµã 1 ¿ªÊ¼   2 ½áÊø
+	exec_fun< int,OpperType>    exec_node;    //æ‰§è¡ŒèŠ‚ç‚¹
+	short  is_start_end;															//æ˜¯å¦æ˜¯å¼€å§‹èŠ‚ç‚¹ 1 å¼€å§‹   2 ç»“æŸ
 	char   is_done;			
-	input_node_type       *   input_node;  			      //Ç°¼ÌÒÀÀµ½Úµã
-	brother_type_			    *   brother;  				      //Ç°¼ÌÒÀÀµĞÖµÜ½Úµã 
-	//int 									ret;				   			      //Ö´ĞĞ½á¹û¼¯
+	input_node_type       *   input_node;  			      //å‰ç»§ä¾èµ–èŠ‚ç‚¹
+	brother_type_			    *   brother;  				      //å‰ç»§ä¾èµ–å…„å¼ŸèŠ‚ç‚¹ 
+	//int 									ret;				   			      //æ‰§è¡Œç»“æœé›†
 	exec_node_type():input_node(NULL),brother(NULL),is_start_end(OPERATION_END),is_done(1){}
 	inline int try_execute()
 	{
