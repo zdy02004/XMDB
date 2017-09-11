@@ -59,21 +59,20 @@ struct exec_fun
 	std::tuple<Args...> _arguments;
 	
 	exec_fun(Funtype && _f,Args... args ):f(std::forward<Funtype>(_f)),_arguments(std::make_tuple(args...)){}
-  exec_fun(){}
+        exec_fun(){}
   
 	typedef typename std::result_of<Funtype(Args...)>::type  ret_type;
 
-   void swap(exec_fun< Funtype,Args...> & node)
-  {
-  	f = std::move(node.f);
-  	_arguments = 	std::move(node._arguments);
-  }
+        void swap(exec_fun< Funtype,Args...> & node)
+        {
+  	  f = std::move(node.f);
+  	  _arguments = 	std::move(node._arguments);
+        }
 
 	//inline auto exe() -> decltype(f(std::forward<Arg1>(arg1),std::forward<Arg2>(arg2),std::forward<Arg3>(arg3),std::forward<Arg4>(arg4)))
 	inline ret_type exe() 
 	{
-		//return f(arg1,arg2,arg3,arg4 );
-		return apply( f, _arguments);
+	   return apply( f, _arguments);
 	}
 	
 };
@@ -114,7 +113,7 @@ struct exec_node_type
 	 //执行节点返回类型
 	typedef typename OpperType::ret_type  ret_type; 
   
-  //前继节点类型
+         //前继节点类型
 	typedef exec_node_type<typename pre_type_::pre_type_ , typename pre_type_::brother_type_,
 									  typename pre_type_::OpperType_
 								   > input_node_type;		 	
@@ -159,15 +158,15 @@ struct exec_node_type
 	 return 0;  //退出返回
 	}
 	
-  //递归检查前继节点
+        //递归检查前继节点
 	template<class T>
 	inline int check( T*  pre_brother)
 	{
 	 if(pre_brother->brother == NULL)return 0;  //退出返回
 	 typename T::brother_type_ * brother_tmp = pre_brother->brother;
 	 int ret = check_isdone(brother_tmp);
-	 if( ret == 1 )return 1;       //中断返回
-	 if( ret == 0 )return 0;       //退出返回
+	 if( ret == 1 )return 1;                    //中断返回
+	 if( ret == 0 )return 0;                    //退出返回
 	 return check(brother_tmp) ;
 	
 	}
