@@ -93,6 +93,8 @@ static inline int init_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring,ui
     CAS_RING_SLEEP_COND_INIT(&(cas_ring->sleep_cond))  ;                              							                         \
     cas_ring->is_sleeping = 0;                                                          						                         \
                                                                                         						                         \
+    cas_ring->head.first = cas_ring->head.second = 0;														\
+    cas_ring->tail.first = cas_ring->tail.second = 0;														\
     cas_ring->head.size = cas_ring->tail.size = max  ;                                  						                         \
     cas_ring->head.mask = cas_ring->tail.mask = max-1;                                  						                         \
     return 0;                                                                           						                         \
