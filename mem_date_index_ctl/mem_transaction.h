@@ -793,6 +793,9 @@ inline int init_trans_data_queue(trans_data_queue_t * trans_data_queue,long max)
     TRANS_QUEUE_LOCK_INIT(&(trans_data_queue->locker));
     TRANS_QUEUE_SLEEP_LOCK_INIT(&(trans_data_queue->sleep_locker));
     TRANS_QUEUE_SLEEP_COND_INIT(&(trans_data_queue->sleep_cond));
+    
+    trans_data_queue->head.first = cas_ring->head.second = 0;
+    trans_data_queue->tail.first = cas_ring->tail.second = 0;
     trans_data_queue->is_sleeping = 1;
     trans_data_queue->front = trans_data_queue->tear = 0;  
   
