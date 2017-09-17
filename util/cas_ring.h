@@ -185,9 +185,10 @@ static inline int destroy_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring
 } 
 
 #define CAS_RING_TYPE(ItemType,x)											\
-cas_ring_##ItemType##_t		* x = (cas_ring_##ItemType##_t *)malloc(sizeof(ItemType));                  			
+cas_ring_##ItemType##_t		* x;                  			
                                                 			
 #define CAS_RING_INIT(ItemType,cas_ring,max)					\
+cas_ring = (cas_ring_##ItemType##_t *)malloc(sizeof(ItemType));			\
 init_cas_ring_##ItemType (cas_ring,max);        			
                                                 			
 #define CAS_RING_EN(ItemType,cas_ring,item)						\
