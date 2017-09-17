@@ -200,7 +200,7 @@ de_cas_ring_##ItemType  (cas_ring,item);
 reinit_cas_ring_##ItemType (cas_ring,max);      			
                                                 			
 #define CAS_RING_STOP(ItemType,cas_ring)							\
-stop_cas_ring_##ItemType(cas_ring)										\
+stop_cas_ring_##ItemType(cas_ring);								\
                                                 			
                                                 			
 #define CAS_RING_DESTORY(ItemType,cas_ring)						\
