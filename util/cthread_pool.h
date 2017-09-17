@@ -257,6 +257,9 @@ inline int init_thread_task_queue(thread_task_queue_t * thread_task_queue,uint32
     THREAD_TASK_QUEUE_SLEEP_COND_INIT(&(thread_task_queue->sleep_cond));
     thread_task_queue->is_sleeping = 0;
     
+    thread_task_queue->head.first = thread_task_queue->head.second = 0;
+    thread_task_queue->tail.first = thread_task_queue->tail.second = 0;	
+	
     thread_task_queue->head.size = thread_task_queue->tail.size = max;
     thread_task_queue->head.mask = thread_task_queue->tail.mask = max-1;
     return 0;  
