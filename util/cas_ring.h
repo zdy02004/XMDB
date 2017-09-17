@@ -132,8 +132,8 @@ static inline int de_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring, Ite
         tail = cas_ring->tail.first;                                                    						                         \
         head = cas_ring->head.second;                                                   						                         \
         if ((tail == head) || (tail > head && (head - tail) > mask))                    						                         \
-        {																																																										 \										
-        	return   CAS_RING_EMPTY;                                                                          						     \
+        {																			\
+	return   CAS_RING_EMPTY;                                                                          						     \
         CAS_RING_SLEEP_LOCK(&(cas_ring->sleep_locker));                                 						                         \
         if( 0 == cas_ring->is_sleeping)                                                 						                         \
    		  {                                      																											                         \
