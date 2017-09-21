@@ -461,9 +461,8 @@ inline int mem_mvcc_read_record(struct mem_table_t *mem_table ,
 		}
 		
 	
-    //如果被后发起的事务修改过，无论后续事务是否提交，都读本事务的回滚段
-    //其它未提交的事务修改过，不能直接读出,要读最近的一次回滚段
-	if( record_ptr->scn !=0 && ( record_ptr->scn > scn || transaction_manager.transaction_tables[Tn].ref!=0  ) )
+    //如果读到可见版本号之后的行数据，要读最近的一次回滚段，否则不能读
+	if( record_ptr->scn !=0  && transaction_manager.transaction_tables[Tn].view_scn < record_ptr->scn )
 	{
 		mem_trans_data_entry_t *undo_info_ptr = (mem_trans_data_entry_t *)(record_ptr->undo_info_ptr) ;
 		
