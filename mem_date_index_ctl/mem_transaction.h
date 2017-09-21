@@ -292,6 +292,7 @@ typedef struct sys_transaction_manager_t
 unsigned  long long					scn;              				//用于分配scn号的序列id
 mem_transaction_t *         transaction_tables;   		//事物表,也可以叫事务槽
 long                        transaction_table_num;		//事物表存储事物个数
+long                        last_find;                //上次查找值
 MEM_TRANSACTION_LOCK_T      locker;               		//锁
 off_t                       rollback_space_max_size;	//回滚空间最大值
 int                   			extend_police;            // 扩展策略，默认使用二倍扩展
@@ -550,6 +551,7 @@ inline int config_sys_transaction_manager(unsigned  long long	scn,off_t rollback
 	
 	MEM_TRANSACTION_LOCK(&(transaction_manager.locker));
 	transaction_manager.scn = scn;
+	transaction_manager.last_find = 0;
 	transaction_manager.rollback_space_max_size = rollback_space_max_size;
 	MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));
 	return 0;
@@ -636,19 +638,25 @@ inline int extend_transaction_manager()
 /* 下面是关于事务的操作*/
 
 //分配一个事务槽
-//当系统挂了太多未提交的事务时，会影响分配事务的性能，后面再考虑优化
+//当系统挂了太多未提交的事务时，会影响分配事务的性能，这里从上次查找值循环查找
+//
 inline int allocate_trans(  long long * trans_no) 
 {
 MEM_TRANSACTION_LOCK(&(transaction_manager.locker));  //上锁
-	 long long i = 0;
+	 long long j = transaction_manager.last_find;
+	 long long i = j;
 	 int err,err1;
-	 for(;i<transaction_manager.transaction_table_num;++i)
+	 for(;j<transaction_manager.transaction_table_num + transaction_manager.last_find;++j)
 	 {
 	 	//printf("seq_tables[%d].is_used=%d,cur_num=%ld\n",i,sys_sequens_manager.seq_tables[i].is_used,sys_sequens_manager.seq_tables[i].cur_num);
+	 	if(j<transaction_manager.transaction_table_num)i = j;
+	 		else i = j - transaction_manager.transaction_table_num;
+	 	
 	 	if(transaction_manager.transaction_tables[i].is_used == 0)
 	 		{
 	 			transaction_manager.transaction_tables[i].is_used = 1;
 	 			*trans_no =  i;	
+	 			transaction_manager.last_find = i;
 	 			DEBUG("allocate_trans_no is %ld\n",i);
 	 			break;
 	 		}
@@ -723,6 +731,25 @@ MEM_TRANSACTION_UNLOCK(&(trans->locker));  //解锁
 	return 0;
 }
 
+
+// 从事务中获得 scn
+inline int get_trans_scn( long long  trans_no, long * scn)
+{	
+	DEBUG("get_trans_scn is %ld\n",trans_no);
+	if( transaction_manager.transaction_tables[trans_no].is_used == 0)
+		{
+			ERROR("ERR_TRANS_ISUSED_ZERO\n");
+			return ERR_TRANS_ISUSED_ZERO;
+			
+		}
+	mem_transaction_t * trans = &(transaction_manager.transaction_tables[trans_no]);
+	
+  *scn = trans->scn;
+
+	return 0;
+}
+
+
 // 结束一个事务
 inline int stop_trans( long long  trans_no)
 {	
@@ -795,7 +822,7 @@ inline int init_trans_data_queue(trans_data_queue_t * trans_data_queue,long max)
     TRANS_QUEUE_SLEEP_COND_INIT(&(trans_data_queue->sleep_cond));
     
     trans_data_queue->head.first = cas_ring->head.second = 0;
-    trans_data_queue->tail.first = cas_ring->tail.second = 0;
+    trans_data_queue->tail.first = cas_ring->tail.second = 0;	
     trans_data_queue->is_sleeping = 1;
     trans_data_queue->front = trans_data_queue->tear = 0;  
   
@@ -1001,7 +1028,7 @@ inline int de_trans_data_queue(trans_data_queue_t * trans_data_queue, mem_trans_
         //if ((head - tail) < 1U)
         if ((tail == head) || (tail > head && (head - tail) > mask))
         	{
-        		DEBUG("%s\n","The trans_data_queue_t is empty"); 
+        		//DEBUG("%s\n","The trans_data_queue_t is empty"); 
             return TRANS_ERR_QUEUE_EMPTY;
           }
         next = tail + 1;
