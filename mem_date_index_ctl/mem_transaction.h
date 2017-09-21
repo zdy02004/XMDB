@@ -255,6 +255,7 @@ typedef struct mem_transaction_t
 {
 short                       is_used;							//是否在使用
 unsigned  long long         scn;                	//本记录的逻辑ID
+unsigned  long long         view_scn;						//本事务执行时已经提交的scn
 time_t                      start_time;         	//事物开始时间
 time_t                      end_time;           	//事物结束时间
 MEM_TRANSACTION_LOCK_T      locker;             	//事物锁
@@ -290,6 +291,7 @@ static trans_redo_data_writer_t sys_trans_redo_data_writer;
 typedef struct sys_transaction_manager_t
 {
 unsigned  long long					scn;              				//用于分配scn号的序列id
+unsigned  long long					commit_scn;               //已经提交的最大scn
 mem_transaction_t *         transaction_tables;   		//事物表,也可以叫事务槽
 long                        transaction_table_num;		//事物表存储事物个数
 long                        last_find;                //上次查找值
@@ -551,6 +553,7 @@ inline int config_sys_transaction_manager(unsigned  long long	scn,off_t rollback
 	
 	MEM_TRANSACTION_LOCK(&(transaction_manager.locker));
 	transaction_manager.scn = scn;
+	transaction_manager.commit_scn = scn;
 	transaction_manager.last_find = 0;
 	transaction_manager.rollback_space_max_size = rollback_space_max_size;
 	MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));
@@ -722,7 +725,8 @@ MEM_TRANSACTION_LOCK(&(trans->locker));  //上锁
 // 分配事务的 scn
 MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //上锁 
 ++transaction_manager.scn;
-trans->scn = transaction_manager.scn;
+trans->scn 			= transaction_manager.scn;
+trans->view_scn = transaction_manager.commit_scn;
 MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //解锁
 // 事务开始时间
 trans->start_time = get_systime();
@@ -1663,6 +1667,11 @@ inline int commit_trans( long long  trans_no)
   // 将当前未刷盘的 fwrite 缓冲区，刷盘
  fflush_redo_log_manager();
  // 同步数据
+ 
+		MEM_TRANSACTION_LOCK(&(transaction_manager.locker));
+	  if( trans->scn > transaction_manager.commit_scn )transaction_manager.commit_scn = trans->scn;
+		MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));
+
  int err;
 // 结束一个事务
 if(0!=(err=stop_trans(trans_no)))ERROR("stop_trans failed,trans_no is %d\n",err);  
@@ -2019,6 +2028,10 @@ inline int rollback_trans( long long  trans_no)
   // 将当前未刷盘的 fwrite 缓冲区，刷盘
  fflush_redo_log_manager();
 
+		MEM_TRANSACTION_LOCK(&(transaction_manager.locker));
+	  if( trans->scn > transaction_manager.commit_scn )transaction_manager.commit_scn = trans->scn;
+		MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));
+		
  // 同步数据
 // 结束一个事务
 if(0!=(err=stop_trans(trans_no)))ERROR("stop_trans failed,trans_no is %d\n",err);  
