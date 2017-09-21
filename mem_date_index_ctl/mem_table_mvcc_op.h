@@ -8,6 +8,423 @@
 extern "C" {
 
 #endif
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//———————————————————— with_freelist ————————————————————
+//此函数可以利用回收链表中的空闲空间，优先回收最晚删除的行
+//_____________________with_freelist ————————————————————
+//分配一个空闲记录行
+inline int mem_table_try_allocate_record_with_freelist(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no,unsigned long long  Tn)
+{
+	if( NULL == mem_table )  return ALLOCATE_RECORD_ERR_TABLE_IS_NULL;
+	DEBUG(" ----- Enter mem_table_try_allocate_record() ----- \n");
+  /* 本段逻辑
+	* 1. 优先根据高水位线,找空闲record
+	* 2. 如果高水位线没有空闲空间,则从回收链表回收空间
+	* 3. 回收链表也没有，则自动扩表
+	*/
+	int i = 0;
+	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
+  
+//  DEBUG("mem_block_temp is %0x\n",mem_block_temp);
+  //遍历所有块,查找可以插入数据的内存块			
+  short is_need_extern = 1;
+ 
+	for(;i<mem_table->config.mem_block_used-1;++i)
+	{
+		mem_block_temp = mem_block_temp->next; 
+	}
+	
+	if( 0!= (HIGH_LEVEL_TRYLOCK(&(mem_block_temp->high_level_lock))) )
+		{
+			//IMPORTANT_INFO("HIGH_LEVEL_TRYLOCK =0\n");
+			return HIGH_LEVEL_TRY_LOCK;  //高水位线上锁
+		}
+
+
+	unsigned  long  high_level_temp = mem_block_temp->high_level;  
+	if(mem_block_temp->space_start_addr + mem_block_temp->high_level* mem_table->record_size < mem_block_temp->space_end_addr - mem_table->record_size )
+	{
+		is_need_extern = 0;
+
+   DEBUG("----- try to allocate record _with_freelist by high level -----\n");
+
+ //根据高水位线获取最新插入位置    
+//   DEBUG("mem_block_temp->high_level is %ld,mem_table->record_size is %ld;\n",high_level_temp,mem_table->record_size);
+//   DEBUG("mem_block_temp->space_start_addr is %0x \n",mem_block_temp->space_start_addr);
+  
+	// 找到可用的记录位置
+	(*record_ptr) = (struct record_t *) ( (char *)mem_block_temp->space_start_addr + high_level_temp * (mem_table->record_size) );
+   
+//   DEBUG("allocate_record_ptr is %0x;\n",*record_ptr);
+
+	//返回块的逻辑号
+	 (*block_no) = mem_block_temp->block_no;
+//   DEBUG("allocate_record's block_no is %ld ;\n",(*block_no));
+    ++(mem_block_temp->high_level);
+//    DEBUG(" ----- try to allocate record by high level end -----\n");
+	}
+	
+	//获得事务槽中的 scn
+	int t_err= 0;
+	long  scn ;
+	if( 0!=(t_err = get_trans_scn( Tn, &scn) ) )
+		{
+			return t_err;
+		}
+
+	//没找到的内存块地址 > 块数据尾地址,则查找回收链表
+  if (is_need_extern)
+	{
+		DEBUG(" ----- Try to find record _with_freelist in free_list -----\n");
+		 	i=0;
+    struct  mem_block_t * mem_block_temp2 = mem_table->config.mem_blocks_table;
+  //遍历所有块,查找可以插入数据的内存块中的回收链表			
+    for(;i<mem_table->config.mem_block_used;++i)
+    {
+	      	//空闲链表有数据，从链表头取一个地址插入		
+    if( -1 != mem_block_temp2->mem_free_list.head ) 
+       {
+       	//空闲链表上锁
+       	LIST_LOCK     (  &(mem_block_temp2->mem_free_list.list_lock)  );
+       	//取得空闲链表的对应record的地址
+       	(*record_ptr) =  (struct record_t *) ( (mem_block_temp2->mem_free_list.head) * mem_table->record_size + mem_block_temp->space_start_addr );
+       	DEBUG("Find in Freelist, record_num %ld,record_ptr is %ld,last free pos is %ld\n",mem_block_temp->mem_free_list.head,*record_ptr,(*record_ptr)->last_free_pos);
+       	high_level_temp = (*record_ptr)->record_num;////////////////////
+       	// 不是本事务修改过的行，可以使用
+       	if((*record_ptr)->scn < scn)
+       	{
+       	//空闲链表的head 为上一个空闲链表的位置
+       	mem_block_temp2->mem_free_list.head = (*record_ptr)->last_free_pos;
+       	//空闲链表解锁
+       	LIST_UNLOCK   (  &(mem_block_temp2->mem_free_list.list_lock)  );
+       	//返回块的逻辑号
+       	*block_no = mem_block_temp2->block_no;
+       	is_need_extern = 0;
+       	//DEBUG("----- Free record space in free_list finded!  -----\n");
+        break;
+        }
+        LIST_UNLOCK   (  &(mem_block_temp2->mem_free_list.list_lock)  );
+       }	
+       if(i!=mem_table->config.mem_block_used-1 )
+       	{
+       	mem_block_temp2 = mem_block_temp2->next;      //下一个块
+         }
+    }
+   
+ }
+// 没有空闲空间和回收链表，就自动扩表
+	//if (i == mem_table->config.mem_block_used-1)  
+	if (is_need_extern)  
+{ 
+	DEBUG(" ----- Try to externd_table _with_freelist ----- \n");
+	     	      //自动扩表
+	     	      struct  mem_block_t * extern_mem_block;
+	     	      int err = 0;
+	     	      err =  mem_table_extend(mem_table,&extern_mem_block);
+	     	      if(0 == err)
+	     	      	{
+	     	      			DEBUG("extern_mem_block->space_end_addr is %0x\n",extern_mem_block->space_end_addr);
+	     	      		  DEBUG("extern_mem_block->space_start_addr is %0x\n",extern_mem_block->space_start_addr);
+	     	      		  DEBUG("mem_table->record_size is %d\n",mem_table->record_size);
+	     	      			//自动扩表成功,记录插入扩展块中的第一个位置,重新插入
+	     	      			IMPORTANT_INFO("Externd_Block OK and Try Allocate Agian!\n");                   
+                    HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //高水位线解锁 	
+	     	      			return TRY_LOCK;     	      		  	
+	     	      	}
+	     	      else if(TRY_LOCK== err)
+	     	      	{
+	     	      		  DEBUG(" TRY again! \n");
+	     	      		  HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //高水位线解锁
+	     	      			return TRY_LOCK;
+	     	      	}
+	     	      
+	     	      else 
+	     	      	{
+	     	      		ERROR("MEM_TABLE_EXTEND_ERR err is %d\n",err);
+	     	      		HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //高水位线解锁
+	     	      		return  err;
+	     	      	}
+	     	      	
+	DEBUG("----- Try to externd table_with_freelist end -----\n");	     	      	
+}
+//			DEBUG("----- init a record ! -----\n");
+	   (*record_ptr)->record_num = high_level_temp;
+     (*record_ptr)->is_used    =  1;
+     (*record_ptr)->last_free_pos =  -1;
+     (*record_ptr)->next_free_pos =  -1;
+     (*record_ptr)->scn           =  0;
+     (*record_ptr)->undo_record_ptr= 0;
+     (*record_ptr)->data    =  (char *)(*record_ptr) + RECORD_HEAD_SIZE;  
+     row_lock_init(&((*record_ptr)->row_lock)); //行锁初始化
+     HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //高水位线解锁
+
+     DEBUG(" ----- Allocate_record_with_freelist >>> %0x , high_level is %ld ----- \n",*record_ptr,high_level_temp);
+	   return 0;
+	
+}
+
+
+//分配一个空闲记录行
+inline int mem_table_allocate_record_with_freelist(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no,unsigned long long  Tn)
+{
+	if( NULL == mem_table )  return ALLOCATE_RECORD_ERR_TABLE_IS_NULL;
+//  DEBUG("Enter mem_table_allocate_record();\n");	
+  int err;
+  int i = 0;
+	do{
+		++i;
+		err= mem_table_try_allocate_record_with_freelist(mem_table ,/* out */ record_ptr,block_no,Tn);
+		if(0!= err && TRY_LOCK != err && HIGH_LEVEL_TRY_LOCK !=err)
+  	{
+  		return err;
+  	} 
+  	if( 1 == mem_table->is_externing )
+  		{
+  			i = 0;
+  			continue;
+  		}
+	}while(TRY_LOCK == err || HIGH_LEVEL_TRY_LOCK ==err );
+	//if(0 == err)IMPORTANT_INFO("mem_table_allocate_record IS %ld\n",*record_ptr);
+  DEBUG("mem_table_try_allocate_with_freelist END,record_ptr is %0x,record_num is %ld;\n",*record_ptr,(*record_ptr)->record_num);	
+//	DEBUG("mem_table_allocate_record() ok;\n");	
+	return 0;
+	
+}
+
+
+//插入一个记录的数据
+inline int mem_table_insert_record_with_freelist(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no, /* in */char *buf,unsigned long long  Tn)
+{
+	if( NULL == mem_table )  return INSERT_RECORD_ERR_TABLE_IS_NULL;
+	if( NULL == buf       )  return INSERT_RECORD_ERR_BUF_IS_NULL;	
+	DEBUG("Enter mem_table_insert_record();\n");	
+  int err;
+  err= mem_table_allocate_record_with_freelist(mem_table ,/* out */ record_ptr,block_no,Tn);
+  DEBUG("mem_table allocate a record,record_ptr is %0x ;\n",*record_ptr);	
+	if(0!= err)
+  {
+  	return err;
+  } 
+  DEBUG("record_ptr->data is %0x ;\n",(*record_ptr)->data);	
+	//redo_log .......
+	
+	row_wlock   (  &((*record_ptr)->row_lock) );
+	memcpy      (  (*record_ptr)->data,  buf, mem_table->record_size - RECORD_HEAD_SIZE );
+	row_wunlock (  &((*record_ptr)->row_lock) );
+	return 0;
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//———————————————————— with_rfreelist ————————————————————
+//此函数可以利用回收链表中的空闲空间，优先回收最早删除的行
+//_____________________with_rfreelist ————————————————————
+//分配一个空闲记录行
+inline int mem_table_try_allocate_record_with_rfreelist(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no,unsigned long long  Tn)
+{
+	if( NULL == mem_table )  return ALLOCATE_RECORD_ERR_TABLE_IS_NULL;
+	DEBUG(" ----- Enter mem_table_try_allocate_record() ----- \n");
+  /* 本段逻辑
+	* 1. 优先根据高水位线,找空闲record
+	* 2. 如果高水位线没有空闲空间,则从回收链表回收空间，优先回收最早删除的行
+	* 3. 回收链表也没有，则自动扩表
+	*/
+	int i = 0;
+	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
+  
+//  DEBUG("mem_block_temp is %0x\n",mem_block_temp);
+  //遍历所有块,查找可以插入数据的内存块			
+  short is_need_extern = 1;
+ 
+		for(;i<mem_table->config.mem_block_used-1;++i)
+		{
+			mem_block_temp = mem_block_temp->next; 
+		}
+		
+		if( 0!= (HIGH_LEVEL_TRYLOCK(&(mem_block_temp->high_level_lock))) )
+			{
+				//IMPORTANT_INFO("HIGH_LEVEL_TRYLOCK =0\n");
+				return HIGH_LEVEL_TRY_LOCK;  //高水位线上锁
+			}
+
+
+	unsigned  long  high_level_temp = mem_block_temp->high_level;  
+	if(mem_block_temp->space_start_addr + mem_block_temp->high_level* mem_table->record_size < mem_block_temp->space_end_addr - mem_table->record_size )
+		{
+			is_need_extern = 0;
+	
+	   DEBUG("----- try to allocate record_with_rfreelist by high level -----\n");
+	
+	 //根据高水位线获取最新插入位置    
+	//   DEBUG("mem_block_temp->high_level is %ld,mem_table->record_size is %ld;\n",high_level_temp,mem_table->record_size);
+	//   DEBUG("mem_block_temp->space_start_addr is %0x \n",mem_block_temp->space_start_addr);
+	  
+		// 找到可用的记录位置
+		(*record_ptr) = (struct record_t *) ( (char *)mem_block_temp->space_start_addr + high_level_temp * (mem_table->record_size) );
+	   
+	//   DEBUG("allocate_record_ptr is %0x;\n",*record_ptr);
+	
+		//返回块的逻辑号
+		 (*block_no) = mem_block_temp->block_no;
+	//   DEBUG("allocate_record's block_no is %ld ;\n",(*block_no));
+	    ++(mem_block_temp->high_level);
+	//    DEBUG(" ----- try to allocate record by high level end -----\n");
+		}
+	
+	//获得事务槽中的 scn
+	int t_err= 0;
+	long  scn ;
+	if( 0!=(t_err = get_trans_scn( Tn, &scn) ) )
+		{
+			return t_err;
+		}
+
+	//没找到的内存块地址 > 块数据尾地址,则查找回收链表
+  if (is_need_extern)
+	{
+		DEBUG(" ----- Try to find record _with_rfreelist in free_list -----\n");
+		 	i=0;
+    struct  mem_block_t * mem_block_temp2 = mem_table->config.mem_blocks_table;
+  //遍历所有块,查找可以插入数据的内存块中的回收链表			
+    for(;i<mem_table->config.mem_block_used;++i)
+    {
+	      	//空闲链表有数据，从链表头取一个地址插入		
+    if( -1 != mem_block_temp2->mem_free_list.tail ) 
+       {
+       	//空闲链表上锁
+       	LIST_LOCK     (  &(mem_block_temp2->mem_free_list.list_lock)  );
+       	//取得空闲链表的对应record的地址
+       	long long  next_free_pos = mem_block_temp2->mem_free_list.tail ;
+ 
+       	(*record_ptr) =  (struct record_t *) ( (next_free_pos) * mem_table->record_size + mem_block_temp->space_start_addr );
+       	if( (*record_ptr)->scn < scn ) 
+				{
+       	DEBUG("Find in Freelist, record_num %ld,record_ptr is %ld,last free pos is %ld\n",mem_block_temp->mem_free_list.head,*record_ptr,(*record_ptr)->last_free_pos);
+       	high_level_temp = (*record_ptr)->record_num;////////////////////
+       	//空闲链表的head 为上一个空闲链表的位置
+       	mem_block_temp2->mem_free_list.tail = (*record_ptr)->next_free_pos;
+       	//空闲链表解锁
+       	LIST_UNLOCK   (  &(mem_block_temp2->mem_free_list.list_lock)  );
+       	//返回块的逻辑号
+       	*block_no = mem_block_temp2->block_no;
+
+       	is_need_extern = 0;
+       	break;
+       	}
+       	LIST_UNLOCK   (  &(mem_block_temp2->mem_free_list.list_lock)  );
+
+       	//DEBUG("----- Free record space in free_list finded!  -----\n");
+      
+       }	
+       if(i!=mem_table->config.mem_block_used-1 )
+       	{
+       	mem_block_temp2 = mem_block_temp2->next;      //下一个块
+         }
+    }
+   
+ }
+// 没有空闲空间和回收链表，就自动扩表
+	//if (i == mem_table->config.mem_block_used-1)  
+	if (is_need_extern)  
+{ 
+	DEBUG(" ----- Try to externd_table_with_rfreelist ----- \n");
+	     	      //自动扩表
+	     	      struct  mem_block_t * extern_mem_block;
+	     	      int err = 0;
+	     	      err =  mem_table_extend(mem_table,&extern_mem_block);
+	     	      if(0 == err)
+	     	      	{
+	     	      			DEBUG("extern_mem_block->space_end_addr is %0x\n",extern_mem_block->space_end_addr);
+	     	      		  DEBUG("extern_mem_block->space_start_addr is %0x\n",extern_mem_block->space_start_addr);
+	     	      		  DEBUG("mem_table->record_size is %d\n",mem_table->record_size);
+	     	      			//自动扩表成功,记录插入扩展块中的第一个位置,重新插入
+	     	      			DEBUG("Externd_Block OK and Try Allocate Agian!\n");                   
+                    HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //高水位线解锁 	
+	     	      			return TRY_LOCK;     	      		  	
+	     	      	}
+	     	      else if(TRY_LOCK== err)
+	     	      	{
+	     	      		  DEBUG(" TRY again! \n");
+	     	      		  HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //高水位线解锁
+	     	      			return TRY_LOCK;
+	     	      	}
+	     	      
+	     	      else 
+	     	      	{
+	     	      		ERROR("MEM_TABLE_EXTEND_ERR err is %d\n",err);
+	     	      		HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //高水位线解锁
+	     	      		return  err;
+	     	      	}
+	     	      	
+	DEBUG("----- Try to externd table_with_rfreelist end -----\n");	     	      	
+}
+//			DEBUG("----- init a record ! -----\n");
+	   (*record_ptr)->record_num = high_level_temp;
+     (*record_ptr)->is_used    =  1;
+     (*record_ptr)->last_free_pos =  -1;
+     (*record_ptr)->next_free_pos =  -1;
+     (*record_ptr)->scn           =  0;
+     (*record_ptr)->undo_record_ptr= 0;
+     (*record_ptr)->data    =  (char *)(*record_ptr) + RECORD_HEAD_SIZE;  
+     row_lock_init(&((*record_ptr)->row_lock)); //行锁初始化
+     HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //高水位线解锁
+
+     DEBUG(" ----- Allocate_record_with_rfreelist >>> %0x , high_level is [%ld] ----- \n",*record_ptr,high_level_temp);
+	   return 0;
+	
+}
+
+
+//分配一个空闲记录行
+inline int mem_table_allocate_record_with_rfreelist(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no,unsigned long long  Tn)
+{
+	if( NULL == mem_table )  return ALLOCATE_RECORD_ERR_TABLE_IS_NULL;
+//  DEBUG("Enter mem_table_allocate_record();\n");	
+  int err;
+  int i = 0;
+	do{
+		++i;
+		err= mem_table_try_allocate_record_with_rfreelist(mem_table ,/* out */ record_ptr,block_no,Tn);
+		if(0!= err && TRY_LOCK != err && HIGH_LEVEL_TRY_LOCK !=err)
+  	{
+  		return err;
+  	} 
+  	if( 1 == mem_table->is_externing )
+  		{
+  			i = 0;
+  			continue;
+  		}
+	}while(TRY_LOCK == err || HIGH_LEVEL_TRY_LOCK ==err );
+	//if(0 == err)IMPORTANT_INFO("mem_table_allocate_record IS %ld\n",*record_ptr);
+  DEBUG("mem_table_try_allocate_with_rfreelist END,record_ptr is %0x,record_num is %ld;\n",*record_ptr,(*record_ptr)->record_num);	
+//	DEBUG("mem_table_allocate_record() ok;\n");	
+	return 0;
+	
+}
+
+
+//插入一个记录的数据
+inline int mem_table_insert_record_with_rfreelist(struct mem_table_t *mem_table ,/* out */struct record_t ** record_ptr,long * block_no, /* in */char *buf,unsigned long long  Tn)
+{
+	if( NULL == mem_table )  return INSERT_RECORD_ERR_TABLE_IS_NULL;
+	if( NULL == buf       )  return INSERT_RECORD_ERR_BUF_IS_NULL;	
+  int err;
+  err= mem_table_allocate_record_with_rfreelist(mem_table ,/* out */ record_ptr,block_no,Tn);
+	if(0!= err)
+  {
+  	return err;
+  } 
+  //DEBUG("record_ptr->data is %0x ;\n",(*record_ptr)->data);	
+	
+	row_wlock   (  &((*record_ptr)->row_lock) );
+	memcpy      (  (*record_ptr)->data,  buf, mem_table->record_size - RECORD_HEAD_SIZE );
+	row_wunlock (  &((*record_ptr)->row_lock) );
+	return 0;
+}
+
+
+
+
 //__________________________________________________________
 //___mvcc__operations_______________________________________
 //__________________________________________________________
@@ -24,6 +441,8 @@ inline int mem_mvcc_read_record(struct mem_table_t *mem_table ,
 	if( NULL == record_ptr)  return READ_RECORD_ERR_RECORD_IS_NULL;
 	if( NULL == buf       )  return READ_RECORD_ERR_BUF_IS_NULL;	
 			
+	int err;
+			
 	row_rlock   (  &(record_ptr->row_lock )                                            );
 
  	//记录未使用
@@ -34,8 +453,17 @@ inline int mem_mvcc_read_record(struct mem_table_t *mem_table ,
 		return READ_RECORD_UNUSED;
 	}
 	
-    //如果被其它未提交的事务修改过，不能直接读出,要读最近的一次回滚段
-	if( record_ptr->scn !=0 && record_ptr->scn > Tn /*&& Tn is not comminted*/)
+	//获得事务槽中的 scn
+	long  scn ;
+	if( 0!=(err = get_trans_scn( Tn, &scn) ) )
+		{
+			return err;
+		}
+		
+	
+    //如果被后发起的事务修改过，无论后续事务是否提交，都读本事务的回滚段
+    //其它未提交的事务修改过，不能直接读出,要读最近的一次回滚段
+	if( record_ptr->scn !=0 && ( record_ptr->scn > scn || transaction_manager.transaction_tables[Tn].ref!=0  ) )
 	{
 		mem_trans_data_entry_t *undo_info_ptr = (mem_trans_data_entry_t *)(record_ptr->undo_info_ptr) ;
 		
@@ -50,7 +478,7 @@ inline int mem_mvcc_read_record(struct mem_table_t *mem_table ,
 				if(NULL == undo_info_ptr)
 					{
 						row_runlock (  &(record_ptr->row_lock ) );
-						ERROR("ROLLBACK_STACK_NOT_FOUND\n");
+						DEBUG("ROLLBACK_STACK_NOT_FOUND\n");
 						return ROLLBACK_STACK_NOT_FOUND;
 					}
 					undo_info_ptr = undo_info_ptr->next;
@@ -79,7 +507,14 @@ inline int __mem_mvcc_insert_record(struct mem_table_t *mem_table ,
 	if( NULL == buf       )  return INSERT_RECORD_ERR_BUF_IS_NULL;	
   		
   int err;
-
+  
+  //获得事务槽中的 scn
+	long  scn ;
+	if( 0!=(err = get_trans_scn( Tn, &scn) ) )
+	{
+		return err;
+	}
+  
   //err= mem_table_allocate_record(mem_table ,/* out */ record_ptr,block_no);
   //err= mem_table_allocate_record_with_freelist(mem_table ,/* out */ record_ptr,block_no,Tn);
 
@@ -95,7 +530,7 @@ inline int __mem_mvcc_insert_record(struct mem_table_t *mem_table ,
 
  	if(is_lock)row_wlock   (  &((*record_ptr)->row_lock) );
 	 		//事务未释放
-	if( Tn< (*record_ptr)->scn )
+	if( scn< (*record_ptr)->scn )
 	{
 		if(is_lock)row_wunlock (  &((*record_ptr)->row_lock )                                            );
 		ERROR("TRANS_NOT_FREE\n"); 
@@ -106,7 +541,7 @@ inline int __mem_mvcc_insert_record(struct mem_table_t *mem_table ,
   //构造一个事务
   mem_transaction_entry_t  trans_entry ;
   
-  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.trans_no       			  = Tn;       							//当前事物槽号
   trans_entry.redo_type             = OPT_DATA_INSERT;				//redo 操作类型
   trans_entry.undo_type						  = OPT_DATA_INSERT;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(*record_ptr) + RECORD_HEAD_SIZE)                    ;	//原始数据起始地址
@@ -133,7 +568,7 @@ inline int __mem_mvcc_insert_record(struct mem_table_t *mem_table ,
     (*record_ptr)->undo_info_ptr = undo_info_ptr;
   
   //修改为本次的事务ID
-  (*record_ptr)->scn = Tn;
+  (*record_ptr)->scn = scn;
 	memcpy      (  (*record_ptr)->data,  buf, mem_table->record_size - RECORD_HEAD_SIZE );
 	if(is_lock)row_wunlock (  &((*record_ptr)->row_lock) );
 	return 0;
@@ -176,16 +611,23 @@ inline int __mem_mvcc_delete_record(struct mem_table_t *mem_table ,
 		ERROR("READ_RECORD_UNUSED\n");
 		return READ_RECORD_UNUSED;
 	}
-	
+	int err;
+	   //获得事务槽中的 scn
+	long  scn ;
+	if( 0!=(err = get_trans_scn( Tn, &scn) ) )
+	{
+		return err;
+	}
+	 
 	//事务未释放
-	if( Tn < record_ptr->scn )
+	if( scn < record_ptr->scn )
 	{
 		if(is_lock)row_wunlock (  &(record_ptr->row_lock )                                            );
 		ERROR("TRANS_NOT_FREE\n");
 		return TRANS_NOT_FREE;
 	}
 	
-	int err;
+
 	mem_block_t * mem_block_temp;
 	
 	if(0 != (err=get_block_by_record(mem_table ,record_ptr,&mem_block_temp)))
@@ -202,7 +644,7 @@ inline int __mem_mvcc_delete_record(struct mem_table_t *mem_table ,
   //构造一个事务
   mem_transaction_entry_t  trans_entry ;
   
-  trans_entry.trans_no       			 = Tn;       							  //当前事物号
+  trans_entry.trans_no       			  = Tn;       							  //当前事物槽号
   trans_entry.redo_type             = OPT_DATA_DELETE;				//redo 操作类型
   trans_entry.undo_type						  = OPT_DATA_DELETE;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void*)((char *)(record_ptr)   + RECORD_HEAD_SIZE);	//原始数据起始地址
@@ -226,7 +668,7 @@ inline int __mem_mvcc_delete_record(struct mem_table_t *mem_table ,
 	
 
  //修改为本次的事务ID
-  record_ptr->scn = Tn;
+  record_ptr->scn = scn;
   
 MEM_TABLE_DEL_CODE 
      
@@ -390,7 +832,7 @@ err =  mem_hash_index_insert_l(
   //构造一个事务
   mem_transaction_entry_t  trans_entry ;
   
-  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.trans_no       			  = Tn;       							//当前事物槽号
   trans_entry.redo_type             = OPT_INDEX_HASH_INSERT;				//redo 操作类型
   trans_entry.undo_type						  = OPT_INDEX_HASH_INSERT;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(*record_ptr) + RECORD_HEAD_SIZE)                    ;	//原始数据起始地址
@@ -460,14 +902,19 @@ err =  mem_hash_index_del_l(
                         /* out */&block_no,
                         &mem_table_no
                         ) ;  
-//get_hash_block_no_by_record_ptr(*record_ptr,block_no);
-
+	//获得事务槽中的 scn
+	long  scn ;
+	if( 0!=(err = get_trans_scn( Tn, &scn) ) )
+	{
+		return err;
+	}
+	
 if(err == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND || err == SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND )
 	{
 
  	if(is_lock)row_wlock   (  &((*record_ptr)->row_lock) );
 	 		//事务未释放
-	if( Tn< (*record_ptr)->scn )
+	if( scn< (*record_ptr)->scn )
 	{
 		if(is_lock)row_wunlock (  &((*record_ptr)->row_lock )                                            );
 		ERROR("TRANS_NOT_FREE\n"); 
@@ -478,7 +925,7 @@ if(err == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND || err == SELECT_MEM_HASH_INDE
   //构造一个事务
   mem_transaction_entry_t  trans_entry ;
   
-  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.trans_no       			  = Tn;       							//当前事物槽号
   trans_entry.redo_type             = OPT_INDEX_HASH_DELETE;				//redo 操作类型
   trans_entry.undo_type						  = OPT_INDEX_HASH_DELETE;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(*record_ptr) + RECORD_HEAD_SIZE)                    ;	//原始数据起始地址
@@ -506,7 +953,7 @@ if(err == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND || err == SELECT_MEM_HASH_INDE
     (*record_ptr)->undo_info_ptr = undo_info_ptr;
   
   //修改为本次的事务ID
-  (*record_ptr)->scn = Tn;
+  (*record_ptr)->scn = scn;
   if(is_lock)row_wunlock   (  &((*record_ptr)->row_lock) );
 }
 	return 0;
@@ -551,12 +998,19 @@ err =  mem_hash_index_insert_s(
                          /* out */&block_no,
                         &mem_table_no
                         ) ;  
+	
+	//获得事务槽中的 scn
+	long  scn ;
+	if( 0!=(err = get_trans_scn( Tn, &scn) ) )
+	{
+		return err;
+	}
+	
 
-//get_hash_block_no_by_record_ptr(*record_ptr,block_no);
 
  	if(is_lock)row_wlock   (  &((*record_ptr)->row_lock) );
 	 		//事务未释放
-	if( Tn< (*record_ptr)->scn )
+	if( scn< (*record_ptr)->scn )
 	{
 		if(is_lock)row_wunlock (  &((*record_ptr)->row_lock )                                            );
 		ERROR("TRANS_NOT_FREE\n"); 
@@ -567,7 +1021,7 @@ err =  mem_hash_index_insert_s(
   //构造一个事务
   mem_transaction_entry_t  trans_entry ;
   
-  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.trans_no       			  = Tn;       							//当前事物槽号
   trans_entry.redo_type             = OPT_INDEX_HASH_INSERT_STR;				//redo 操作类型
   trans_entry.undo_type						  = OPT_INDEX_HASH_INSERT_STR;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(*record_ptr) + RECORD_HEAD_SIZE)                    ;	//原始数据起始地址
@@ -596,7 +1050,7 @@ err =  mem_hash_index_insert_s(
     (*record_ptr)->undo_info_ptr = undo_info_ptr;
   
   //修改为本次的事务ID
-  (*record_ptr)->scn = Tn;
+  (*record_ptr)->scn = scn;
   if(is_lock)row_wunlock   (  &((*record_ptr)->row_lock) );
 
 	return 0;
@@ -643,11 +1097,19 @@ err =  mem_hash_index_del_s(
                         &mem_table_no
                         ) ;  
 //get_hash_block_no_by_record_ptr(*record_ptr,block_no);
+	//获得事务槽中的 scn
+	long  scn ;
+	if( 0!=(err = get_trans_scn( Tn, &scn) ) )
+	{
+		return err;
+	}
+	
+
 if(err == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND || err == SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND )
 {
  	if(is_lock)row_wlock   (  &((*record_ptr)->row_lock) );
 	 		//事务未释放
-	if( Tn< (*record_ptr)->scn )
+	if( scn< (*record_ptr)->scn )
 	{
 		if(is_lock)row_wunlock (  &((*record_ptr)->row_lock )                                            );
 		ERROR("TRANS_NOT_FREE\n"); 
@@ -658,7 +1120,7 @@ if(err == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND || err == SELECT_MEM_HASH_INDE
   //构造一个事务
   mem_transaction_entry_t  trans_entry ;
   
-  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.trans_no       			 = Tn;       							//当前事物槽号
   trans_entry.redo_type             = OPT_INDEX_HASH_DELETE_STR;				//redo 操作类型
   trans_entry.undo_type						  = OPT_INDEX_HASH_DELETE_STR;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(*record_ptr) + RECORD_HEAD_SIZE)                    ;	//原始数据起始地址
@@ -687,7 +1149,7 @@ if(err == SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND || err == SELECT_MEM_HASH_INDE
     (*record_ptr)->undo_info_ptr = undo_info_ptr;
   
   //修改为本次的事务ID
-  (*record_ptr)->scn = Tn;
+  (*record_ptr)->scn = scn;
     if(is_lock)row_wunlock   (  &((*record_ptr)->row_lock) );
 
 }
@@ -730,7 +1192,7 @@ inline int  __mem_rbtree_mvcc_insert(mem_rbtree_index_t *mem_rbtree_index,
    //构造一个事务
   mem_transaction_entry_t  trans_entry ;
   mem_trans_data_entry_t * undo_info_ptr;
-  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.trans_no       			 = Tn;       							//当前事物槽号
   trans_entry.redo_type             = OPT_INDEX_RBTREE_INSERT;				//redo 操作类型
   trans_entry.undo_type						  = OPT_INDEX_RBTREE_INSERT;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(key));                    ;	//原始数据起始地址
@@ -906,7 +1368,7 @@ inline int __mem_rbtree_mvcc_delete(mem_rbtree_index_t *mem_rbtree_index,
   //构造一个事务
   mem_transaction_entry_t  trans_entry ;
   mem_trans_data_entry_t * undo_info_ptr;
-  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.trans_no       			 = Tn;       							//当前事物槽号
   trans_entry.redo_type             = OPT_INDEX_RBTREE_DELETE;				//redo 操作类型
   trans_entry.undo_type						  = OPT_INDEX_RBTREE_DELETE;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(z));                    ;	//原始数据起始地址
@@ -1219,13 +1681,20 @@ int __mem_skiplist_mvcc_insert(mem_skiplist_index_t *mem_skiplist_index,
  												short is_lock
  												)
 {
+	int err = 0;
+	//获得事务槽中的 scn
+	long  scn ;
+	if( 0!=(err = get_trans_scn( Tn, &scn) ) )
+	{
+		return err;
+	}
 	
 	
   //构造一个事务
   mem_transaction_entry_t  trans_entry ;
    mem_trans_data_entry_t * undo_info_ptr;
    
-  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.trans_no       			  = Tn;       							//当前事物槽号
   trans_entry.redo_type             = OPT_INDEX_SKIPLIST_INSERT;				//redo 操作类型
   trans_entry.undo_type						  = OPT_INDEX_SKIPLIST_INSERT;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(in));                    ;	//原始数据起始地址
@@ -1235,7 +1704,7 @@ int __mem_skiplist_mvcc_insert(mem_skiplist_index_t *mem_skiplist_index,
 
   
   DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
-  int err = 0;
+
   if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
   
   
@@ -1440,10 +1909,18 @@ inline int mem_skiplist_mvcc_delete_help(mem_skiplist_index_t *mem_skiplist_inde
 
 inline int __mem_skiplist_mvcc_delete(mem_skiplist_index_t *mem_skiplist_index ,mem_skiplist_entry_t *in,unsigned long long Tn,short is_lock )
 {
+	int err = 0;
+	//获得事务槽中的 scn
+	long  scn ;
+	if( 0!=(err = get_trans_scn( Tn, &scn) ) )
+	{
+		return err;
+	}
+	
 	//构造一个事务
   mem_transaction_entry_t  trans_entry ;
   mem_trans_data_entry_t * undo_info_ptr;
-  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.trans_no       			  = Tn;       							//当前事物槽号
   trans_entry.redo_type             = OPT_INDEX_SKIPLIST_DELETE;				//redo 操作类型
   trans_entry.undo_type						  = OPT_INDEX_SKIPLIST_DELETE;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(in) );                   ;	//原始数据起始地址
@@ -1452,7 +1929,7 @@ inline int __mem_skiplist_mvcc_delete(mem_skiplist_index_t *mem_skiplist_index ,
   trans_entry.object_no 					= mem_skiplist_index->config.index_no;//联系空间或连接空间的 no      							
 
   DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
-  int err = 0;
+
   if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
   
 	
@@ -1725,13 +2202,20 @@ int __mem_skiplist_mvcc_insert_str(mem_skiplist_index_t *mem_skiplist_index,
  												short is_lock
  												)
 {
+	int err = 0;
+	//获得事务槽中的 scn
+	long  scn ;
+	if( 0!=(err = get_trans_scn( Tn, &scn) ) )
+	{
+		return err;
+	}
 	
 	
   //构造一个事务
   mem_transaction_entry_t  trans_entry ;
-   mem_trans_data_entry_t * undo_info_ptr;
+  mem_trans_data_entry_t * undo_info_ptr;
    
-  trans_entry.trans_no       			 = Tn;       							//当前事物号
+  trans_entry.trans_no       			  = Tn;       							//当前事物槽号
   trans_entry.redo_type             = OPT_INDEX_SKIPLIST_INSERT_STR;				//redo 操作类型
   trans_entry.undo_type						  = OPT_INDEX_SKIPLIST_INSERT_STR;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(in));                    ;	//原始数据起始地址
@@ -1741,7 +2225,7 @@ int __mem_skiplist_mvcc_insert_str(mem_skiplist_index_t *mem_skiplist_index,
 
   
   DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
-  int err = 0;
+
   if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
   
   
@@ -1946,10 +2430,18 @@ inline int mem_skiplist_mvcc_delete_help_str(mem_skiplist_index_t *mem_skiplist_
 
 inline int __mem_skiplist_mvcc_delete_str(mem_skiplist_index_t *mem_skiplist_index ,mem_skiplist_entry_t *in,unsigned long long Tn,short is_lock )
 {
+	int err = 0;
+	//获得事务槽中的 scn
+	long  scn ;
+	if( 0!=(err = get_trans_scn( Tn, &scn) ) )
+	{
+		return err;
+	}
+	
 	//构造一个事务
   mem_transaction_entry_t  trans_entry ;
   mem_trans_data_entry_t * undo_info_ptr;
-  trans_entry.trans_no       			  = Tn;       							//当前事物号
+  trans_entry.trans_no       			  = Tn;       							//当前事物槽号
   trans_entry.redo_type             = OPT_INDEX_SKIPLIST_DELETE_STR;				//redo 操作类型
   trans_entry.undo_type						  = OPT_INDEX_SKIPLIST_DELETE_STR;				//undo 操作类型 insert update delete truncate index_op
   trans_entry.ori_data_start        = (void *)((char *)(in) );                   ;	//原始数据起始地址
@@ -1958,7 +2450,7 @@ inline int __mem_skiplist_mvcc_delete_str(mem_skiplist_index_t *mem_skiplist_ind
   trans_entry.object_no 					= mem_skiplist_index->config.index_no;//联系空间或连接空间的 no      							
 
   DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
-  int err = 0;
+
   if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
   
 	
