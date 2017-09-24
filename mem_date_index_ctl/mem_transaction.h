@@ -255,7 +255,9 @@ typedef struct mem_transaction_t
 {
 short                       is_used;							//是否在使用
 unsigned  long long         scn;                	//本记录的逻辑ID
-unsigned  long long         view_scn;						//本事务执行时已经提交的scn
+unsigned  long long         view_scn;							//本事务执行时已经提交的scn
+struct mem_transaction_t ** next;									//活动事务list 的next 指针的指针
+struct mem_transaction_t ** pre;									//活动事务list 的 pre 指针的指针
 time_t                      start_time;         	//事物开始时间
 time_t                      end_time;           	//事物结束时间
 MEM_TRANSACTION_LOCK_T      locker;             	//事物锁
@@ -293,6 +295,8 @@ typedef struct sys_transaction_manager_t
 unsigned  long long					scn;              				//用于分配scn号的序列id
 unsigned  long long					commit_scn;               //已经提交的最大scn
 mem_transaction_t *         transaction_tables;   		//事物表,也可以叫事务槽
+mem_transaction_t *         earliest_active_trans;   	//最早的活动事务
+mem_transaction_t *         latest_active_trans;   	//最早的活动事务
 long                        transaction_table_num;		//事物表存储事物个数
 long                        last_find;                //上次查找值
 MEM_TRANSACTION_LOCK_T      locker;               		//锁
@@ -523,6 +527,9 @@ inline int init_sys_transaction_manager()
 	//初始化事务槽
 	mem_transaction_t * mem_transaction_temp = (mem_transaction_t *)malloc(DEFAULT_MAX_TRANS_NUM*TRANSACTION_SIZE);
 	transaction_manager.transaction_tables 			=  mem_transaction_temp;
+	transaction_manager.latest_active_trans		=	NULL;
+	transaction_manager.earliest_active_trans	=	transaction_manager.latest_active_trans;
+	
 	transaction_manager.transaction_table_num 	=  DEFAULT_MAX_TRANS_NUM;
 	transaction_manager.rollback_space_max_size =  DEFAULT_ROLLBACK_SPACE_SIZE;
 	DEBUG("transaction_manager.transaction_tables is %0x\n",transaction_manager.transaction_tables);
@@ -658,6 +665,8 @@ MEM_TRANSACTION_LOCK(&(transaction_manager.locker));  //上锁
 	 	if(transaction_manager.transaction_tables[i].is_used == 0)
 	 		{
 	 			transaction_manager.transaction_tables[i].is_used = 1;
+	 			transaction_manager.transaction_tables[i].pre     = NULL;
+	 			transaction_manager.transaction_tables[i].next    = NULL;
 	 			*trans_no =  i;	
 	 			transaction_manager.last_find = i;
 	 			DEBUG("allocate_trans_no is %ld\n",i);
@@ -727,6 +736,18 @@ MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //上锁
 ++transaction_manager.scn;
 trans->scn 			= transaction_manager.scn;
 trans->view_scn = transaction_manager.commit_scn;
+//新事务入队列
+if(transaction_manager.latest_active_trans)
+{
+	transaction_manager.latest_active_trans->next = &trans;
+	trans->pre = &(transaction_manager.latest_active_trans);
+
+	transaction_manager.latest_active_trans = trans;
+}
+else
+	{
+		transaction_manager.earliest_active_trans = transaction_manager.latest_active_trans = trans;
+	}
 MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));  //解锁
 // 事务开始时间
 trans->start_time = get_systime();
@@ -1669,7 +1690,13 @@ inline int commit_trans( long long  trans_no)
  // 同步数据
  
 		MEM_TRANSACTION_LOCK(&(transaction_manager.locker));
-	  if( trans->scn > transaction_manager.commit_scn )transaction_manager.commit_scn = trans->scn;
+		
+		//先取活动事务列表的最小scn
+		transaction_manager.commit_scn = transaction_manager.earliest_active_trans->scn;
+		//再将旧事务出队列
+		if(trans->pre)  (*(trans->pre))->next = trans->next;
+		if(trans->next) (*(trans->next))->pre = trans->pre;
+	  
 		MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));
 
  int err;
@@ -2029,7 +2056,13 @@ inline int rollback_trans( long long  trans_no)
  fflush_redo_log_manager();
 
 		MEM_TRANSACTION_LOCK(&(transaction_manager.locker));
-	  if( trans->scn > transaction_manager.commit_scn )transaction_manager.commit_scn = trans->scn;
+		
+		//先取活动事务列表的最小scn
+		transaction_manager.commit_scn = transaction_manager.earliest_active_trans->scn;
+		//再将旧事务出队列
+		if(trans->pre)  (*(trans->pre))->next = trans->next;
+		if(trans->next) (*(trans->next))->pre = trans->pre;
+				  
 		MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker));
 		
  // 同步数据
