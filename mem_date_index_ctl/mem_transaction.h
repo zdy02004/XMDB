@@ -214,17 +214,19 @@ typedef struct trans_data_queue_t {
         uint32_t mask;
         uint32_t size;
         volatile uint32_t first;
+     		char pad0[CACHE_LINE_SIZE - 3 * sizeof(uint32_t)];
         volatile uint32_t second;
     } head;
-    char pad1[CACHE_LINE_SIZE - 4 * sizeof(uint32_t)];
+    char pad1[CACHE_LINE_SIZE - 1 * sizeof(uint32_t)];
 
     struct {
         uint32_t mask;
         uint32_t size;
         volatile uint32_t first;
+        char pad3[CACHE_LINE_SIZE - 3 * sizeof(uint32_t)];
         volatile uint32_t second;
     } tail;
-    char pad2[CACHE_LINE_SIZE - 4 * sizeof(uint32_t)];
+    char pad4[CACHE_LINE_SIZE - 1 * sizeof(uint32_t)];
     
     uint32_t max;
     TRANS_QUEUE_SLEEP_LOCK_T sleep_locker; //消费者睡眠锁
@@ -1006,13 +1008,13 @@ inline int en_trans_data_queue(trans_data_queue_t * trans_data_queue, mem_trans_
         // 已满 且 非空
         if (((head - tail) > mask) && (!((tail == head) || (tail > head && (head - tail) > mask))))
         	{
-        		printf("%s\n","The trans_data_queue_t is full");
+        		ERROR("%s\n","The trans_data_queue_t is full");
             return TRANS_ERR_QUEUE_FULL;
           }
         next = head + 1;
         ok = __sync_bool_compare_and_swap(&trans_data_queue->head.first, head, next);
     } while (!ok);
-
+    
     memcpy(&(trans_data_queue->item[head & mask]),item,sizeof(mem_trans_data_entry_t));
     //入队列就增加事务的引用计数，表示未写入日志的action
     inc_trans_ref(item->trans.trans_no);
