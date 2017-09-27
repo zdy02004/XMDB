@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #include <pthread.h>
-#define __DEBUG__  
+//#define __DEBUG__  
 
 
 #ifdef __cplusplus
@@ -58,12 +58,12 @@ int GetTimeForNAME(char *buffer)
 
     return 0;
 }
-#define IMPORTANT_INFO(format,...) printf("%s["__FILE__",%s() Line:%05d,tid:%ld]:>>>IMPORTANT_INFO " format "",GetTime(),__FUNCTION__, __LINE__, pthread_self() ,##__VA_ARGS__)  
-#define ERROR(format,...) printf("%s["__FILE__",%s() Line:%05d ,tid:%ld]:>>>>Err " format "",GetTime(),__FUNCTION__, __LINE__,pthread_self() , ##__VA_ARGS__)  
+#define IMPORTANT_INFO(format,...) printf("%s [ " __FILE__" ,%s () Line: %05d ,tid: %ld ]:>>>IMPORTANT_INFO " format "",GetTime(),__FUNCTION__, __LINE__, pthread_self() ,##__VA_ARGS__)  
+#define ERROR(format,...) printf("%s [" __FILE__ ",%s () Line: %05d ,tid: %ld ]:>>>>Err " format "",GetTime(),__FUNCTION__, __LINE__,pthread_self() , ##__VA_ARGS__)  
 
 #ifdef __DEBUG__  
-#define DEBUG(format,...) printf("%s["__FILE__",%s() Line:%05d,tid:%ld]: " format "",GetTime(),__FUNCTION__, __LINE__,pthread_self(), ##__VA_ARGS__)  
-//#define IMPORTANT_INFO(format,...) printf("%s["__FILE__",%s() Line:%05d]:>>>>IMPORTANT_INFO  " format "",GetTime(),__FUNCTION__, __LINE__, ##__VA_ARGS__)  
+#define DEBUG(format,...) printf("%s [" __FILE__ ",%s () Line: %05d ,tid: %ld ]: " format "",GetTime(),__FUNCTION__, __LINE__,pthread_self(), ##__VA_ARGS__)  
+//#define IMPORTANT_INFO(format,...) printf("%s["__FILE__",%s () Line:%05d]:>>>>IMPORTANT_INFO  " format "",GetTime(),__FUNCTION__, __LINE__, ##__VA_ARGS__)  
 //#define IMPORTANT_INFO(format,...) 
 #else  
 #define DEBUG(format,...)  
