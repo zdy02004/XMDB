@@ -165,7 +165,7 @@ static inline int de_cas_sleep_ring_##ItemType(cas_sleep_ring_##ItemType##_t * c
 static inline int reinit_cas_sleep_ring_##ItemType(cas_sleep_ring_##ItemType##_t * cas_sleep_ring,uint32_t max)				                         \
 {                                                                                										                         \
     free(cas_sleep_ring->item);                                                        										                         \
-    return init_cas_sleep_ring(cas_sleep_ring, max);                                         										                         \
+    return init_cas_sleep_ring_##ItemType(cas_sleep_ring, max);                                         										                         \
 }                                                                                										                         \
 static inline int stop_cas_sleep_ring_##ItemType(cas_sleep_ring_##ItemType##_t * cas_sleep_ring)											                         \
 {                                                                                          					                         \
