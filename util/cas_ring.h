@@ -50,7 +50,7 @@ typedef struct cas_ring_##ItemType##_t {																														          
         uint32_t mask;                                                                   						                         \
         uint32_t size;                                                                   						                         \
         volatile uint32_t first;                                                         						                         \
-        char pad2[CACHE_LINE_SIZE - 3 * sizeof(uint32_t)];                                   						                         \        
+				char pad2[CACHE_LINE_SIZE - 3 * sizeof(uint32_t)];																																	\
         volatile uint32_t second;                                                        						                         \
     } tail;                                                                              						                         \
     char pad3[CACHE_LINE_SIZE - 1 * sizeof(uint32_t)];                                   						                         \
@@ -65,7 +65,7 @@ static inline int reinit_cas_ring_##ItemType (cas_ring_##ItemType##_t * cas_ring
 static inline int destroy_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring);                                           \
 static inline int init_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring,uint32_t max)                                  \
 {                                                                                        						                         \
-    cas_ring->item = malloc( (max+1) * sizeof(ItemType) );                         		                           \
+    cas_ring->item =(ItemType *)malloc( (max+1) * sizeof(ItemType) );                         		                           \
     cas_ring->max  = max;                                                                                                    \
     if(!cas_ring->item)                                                                 						                         \
     {                                                                                   						                         \
@@ -129,7 +129,7 @@ static inline int de_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring, Ite
 static inline int reinit_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring,uint32_t max)				                         \
 {                                                                                										                         \
     free(cas_ring->item);                                                        										                         \
-    return init_cas_ring(cas_ring, max);                                         										                         \
+    return init_cas_ring_##ItemType(cas_ring, max);                                         										                         \
 }                                                                                										                         \
 static inline int stop_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring)											                         \
 {                                                                                          					                         \
