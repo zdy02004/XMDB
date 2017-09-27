@@ -35,22 +35,6 @@ extern "C" {
 //暂时改回 不阻塞线程的模式
 //满或空直接返回错误码
 
-//暂时用互斥锁表示睡眠锁
-#define CAS_RING_SLEEP_LOCK_T        pthread_mutex_t
-#define CAS_RING_SLEEP_LOCK(x)       pthread_mutex_lock(x)
-#define CAS_RING_SLEEP_UNLOCK(x)     pthread_mutex_unlock(x)   
-#define CAS_RING_SLEEP_LOCK_INIT(x)  pthread_mutex_init(x,0)
-#define CAS_RING_SLEEP_LOCK_DEST(x)  pthread_mutex_destroy(x) 
-
-//暂时用互斥锁条件变量
-#define CAS_RING_SLEEP_COND_T                pthread_cond_t  
-#define CAS_RING_SLEEP_COND_INIT(x)          pthread_cond_init(x, NULL)
-#define CAS_RING_SLEEP_COND_DEST(x)          pthread_cond_destroy(x)
-#define CAS_RING_SLEEP_COND_WAIT(x,y)        //pthread_cond_wait(x, y)
-#define CAS_RING_SLEEP_COND_SIGN(x)          //pthread_cond_signal(x)
-#define CAS_RING_SLEEP_COND_BROADCAST(x)     //pthread_cond_broadcast(x)
-  
-//#define ItemType int
 
 #define CAS_RING_STRUCT(ItemType)																																														 \
 typedef struct cas_ring_##ItemType##_t {																														                         \
@@ -58,22 +42,21 @@ typedef struct cas_ring_##ItemType##_t {																														          
         uint32_t mask;                                                                   						                         \
         uint32_t size;                                                                   						                         \
         volatile uint32_t first ;                                                        						                         \
+        char pad0[CACHE_LINE_SIZE - 3 * sizeof(uint32_t)];                                   						                    \
         volatile uint32_t second;                                                        						                         \
     } head;                                                                              						                         \
-    char pad1[CACHE_LINE_SIZE - 4 * sizeof(uint32_t)];                                   						                         \
+    char pad1[CACHE_LINE_SIZE - 1 * sizeof(uint32_t)];                                   						                         \
     struct {                                                                             						                         \
         uint32_t mask;                                                                   						                         \
         uint32_t size;                                                                   						                         \
         volatile uint32_t first;                                                         						                         \
+        char pad2[CACHE_LINE_SIZE - 3 * sizeof(uint32_t)];                                   						                         \        
         volatile uint32_t second;                                                        						                         \
     } tail;                                                                              						                         \
-    char pad2[CACHE_LINE_SIZE - 4 * sizeof(uint32_t)];                                   						                         \
-                                                                                         						                         \
+    char pad3[CACHE_LINE_SIZE - 1 * sizeof(uint32_t)];                                   						                         \
     uint32_t max;                                                                        						                         \
-    CAS_RING_SLEEP_LOCK_T  sleep_locker;                                 								 						                         \
     int                    is_sleeping ;                      										       						                         \
-    CAS_RING_SLEEP_COND_T  sleep_cond  ;                      													 						                         \
-    ItemType                  * item      ;                                                					                         \
+    ItemType               * item      ;                                                					                         \
 }cas_ring_##ItemType##_t;                                                                    				                         \
 static inline int init_cas_ring_##ItemType   (cas_ring_##ItemType##_t * cas_ring, uint32_t max);                             \
 static inline int en_cas_ring_##ItemType     (cas_ring_##ItemType##_t * cas_ring, ItemType* item );                          \
@@ -82,24 +65,21 @@ static inline int reinit_cas_ring_##ItemType (cas_ring_##ItemType##_t * cas_ring
 static inline int destroy_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring);                                           \
 static inline int init_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring,uint32_t max)                                  \
 {                                                                                        						                         \
-    cas_ring->item = (ItemType*)calloc(1,(max+1) * sizeof(ItemType));                         		                           \
+    cas_ring->item = malloc( (max+1) * sizeof(ItemType) );                         		                           \
     cas_ring->max  = max;                                                                                                    \
     if(!cas_ring->item)                                                                 						                         \
     {                                                                                   						                         \
         ERROR("%s\n","Alloc failed,not memory enough");                                  						                         \
         return CAS_RING_ALLOC_FAILED;                                                   						                         \
     }                                                                                   						                         \
-    CAS_RING_SLEEP_LOCK_INIT(&(cas_ring->sleep_locker));                              							                         \
-    CAS_RING_SLEEP_COND_INIT(&(cas_ring->sleep_cond))  ;                              							                         \
     cas_ring->is_sleeping = 0;                                                          						                         \
-                                                                                        						                         \
     cas_ring->head.first = cas_ring->head.second = 0;														\
     cas_ring->tail.first = cas_ring->tail.second = 0;														\
     cas_ring->head.size = cas_ring->tail.size = max  ;                                  						                         \
     cas_ring->head.mask = cas_ring->tail.mask = max-1;                                  						                         \
     return 0;                                                                           						                         \
 }                                                                                       						                         \
-static inline int en_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring, ItemType* item)                                 \
+static inline int en_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring, ItemType* _item)                                 \
 {                                                                                       					                           \
 if(cas_ring->is_sleeping ==2)return -1;																								  						                         \
     uint32_t head, tail, mask, next;                                                    					 	                         \
@@ -116,13 +96,12 @@ if(cas_ring->is_sleeping ==2)return -1;																								  						         
         next = head + 1;                                                                 						                         \
         ok = CAS(&cas_ring->head.first, head, next);                                     						                         \
     } while (!ok);                                                                       						                         \
-    memcpy(&(cas_ring->item[head & mask]),item,sizeof(ItemType));                        						                         \
+    cas_ring->item[head & mask] = *_item;\
     asm volatile ("":::"memory");                                                        						                         \
     while (unlikely((cas_ring->head.second != head)))                                    						                         \
         _mm_pause();                                                                     						                         \
     cas_ring->head.second = next;                                                        						                         \
    	if(cas_ring->is_sleeping!=2)cas_ring->is_sleeping = 0;                               						                         \
-    CAS_RING_SLEEP_COND_SIGN(&(cas_ring->sleep_cond));                                   						                         \
     return 0;                                                                            						                         \
 }                                                                                        						                         \
 static inline int de_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring, ItemType * item)				                         \
@@ -135,22 +114,8 @@ static inline int de_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring, Ite
         head = cas_ring->head.second;                                                   						                         \
         if ((tail == head) || (tail > head && (head - tail) > mask))                    						                         \
         {																			\
-	return   CAS_RING_EMPTY;                                                                          						     \
-        CAS_RING_SLEEP_LOCK(&(cas_ring->sleep_locker));                                 						                         \
-        if( 0 == cas_ring->is_sleeping)                                                 						                         \
-   		  {                                      																											                         \
-   		  	cas_ring->is_sleeping = 1;                                                    						                         \
-   		  }																																														                         \
-   		  if(2 == cas_ring->is_sleeping)                                                  						                         \
-   		   	{                                                                             						                         \
-   		   		CAS_RING_SLEEP_UNLOCK(&(cas_ring->sleep_locker));                           						                         \
-   		   		return -1;                                                                  						                         \
-					}	                                                                            						                         \
-   		  	CAS_RING_SLEEP_COND_WAIT(&(cas_ring->sleep_cond),&(cas_ring->sleep_locker));							                         \
-   	      CAS_RING_SLEEP_UNLOCK(&(cas_ring->sleep_locker));																					                         \
-         ok =0;																																																							 \
-         continue;                               																										                         \
-         }                                                                              						                         \
+					return   CAS_RING_EMPTY;                                                                          						     \
+        }                                                                              						                         \
         next = tail + 1;                                                                						                         \
         ok = CAS(&cas_ring->tail.first, tail, next);                                    						                         \
     } while (!ok);                                                                      						                         \
@@ -169,18 +134,13 @@ static inline int reinit_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring,
 static inline int stop_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring)											                         \
 {                                                                                          					                         \
 	 if (cas_ring->is_sleeping == 2)return -1; /*防止两次调用*/                              					                         \
-	 CAS_RING_SLEEP_LOCK  (&(cas_ring->sleep_locker));                                       					                         \
    cas_ring->is_sleeping = 2;                                                              					                         \
-   CAS_RING_SLEEP_UNLOCK(&(cas_ring->sleep_locker));                                       					                         \
    /* 已满 且 非空*/                                                                       					                         \
-   CAS_RING_SLEEP_COND_BROADCAST(&(cas_ring->sleep_cond)); 																					                         \
 		return 0;																																												                         \
 }																																																		                         \
 static inline int destroy_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring)										                         \
 {  																																																	                         \
-	  CAS_RING_SLEEP_COND_DEST(&(cas_ring->sleep_cond));                           										                         \
 	  cas_ring->is_sleeping = 0;                                                   										                         \
-	  CAS_RING_SLEEP_LOCK_DEST(&(cas_ring->sleep_locker));                         										                         \
     free(cas_ring->item);                                                                                                    \
     free(cas_ring);                                                                                                          \
     return 0;                                         																																			 \
@@ -190,24 +150,24 @@ static inline int destroy_cas_ring_##ItemType(cas_ring_##ItemType##_t * cas_ring
 cas_ring_##ItemType##_t		* (x);                  			
                                                 			
 #define CAS_RING_INIT(ItemType,cas_ring,max)											\
-(cas_ring) = (cas_ring_##ItemType##_t *)malloc(sizeof(ItemType));								\
+(cas_ring) = (cas_ring_##ItemType##_t *)malloc(sizeof(cas_ring_##ItemType##_t));								\
 init_cas_ring_##ItemType (cas_ring,max); 
 
 #define CAS_RING_EN(ItemType,cas_ring,item)						\
-en_cas_ring_##ItemType (cas_ring, item );       			
+en_cas_ring_##ItemType (cas_ring, item )       			
                                                 			
 #define CAS_RING_DN(ItemType,cas_ring,item)						\
-de_cas_ring_##ItemType  (cas_ring,item);        			
+de_cas_ring_##ItemType  (cas_ring,item)        			
                                                 			
 #define CAS_RING_REINIT(ItemType,cas_ring,item)				\
-reinit_cas_ring_##ItemType (cas_ring,max);      			
+reinit_cas_ring_##ItemType (cas_ring,max)      			
                                                 			
 #define CAS_RING_STOP(ItemType,cas_ring)							\
-stop_cas_ring_##ItemType(cas_ring);								\
+stop_cas_ring_##ItemType(cas_ring) 							\
                                                 			
                                                 			
 #define CAS_RING_DESTORY(ItemType,cas_ring)						\
-destroy_cas_ring_##ItemType(cas_ring);      
+destroy_cas_ring_##ItemType(cas_ring)      
 
 #ifdef __cplusplus
 }
