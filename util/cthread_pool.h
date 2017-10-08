@@ -114,13 +114,13 @@ typedef struct  CThread_pool_t
 } CThread_pool_t;  
   
   
-int pool_add_worker (CThread_pool_t *pool,void *(*process) (void *arg), void *arg);  
-void * thread_routine (void *pool);
+inline int pool_add_worker (CThread_pool_t *pool,void *(*process) (void *arg), void *arg);  
+inline void * thread_routine (void *pool);
 
-void  
+inline void  
 thread_pool_init (CThread_pool_t *pool,int max_thread_num,uint32_t max_task)  
 {  
-	  DEBUG("pool->task_queue %ld \n",pool->task_queue);
+	 // DEBUG("pool->task_queue %ld \n",pool->task_queue);
     pool->task_queue = (thread_task_queue_t*) malloc (sizeof (thread_task_queue_t));  
 
     init_thread_task_queue  (pool->task_queue, max_task);
@@ -138,7 +138,7 @@ thread_pool_init (CThread_pool_t *pool,int max_thread_num,uint32_t max_task)
   
   
 /*向线程池中加入任务*/  
-int  
+inline int  
 thread_pool_add_task (CThread_pool_t *pool,void *(*process) (void *arg), void *arg)  
 {  
 	//printf("thread_pool_add_task %ld,%ld,%ld,%ld\n",pool,process,arg/*,pool->task_queue*/);
@@ -157,7 +157,7 @@ thread_pool_add_task (CThread_pool_t *pool,void *(*process) (void *arg), void *a
   
 /*销毁线程池，等待队列中的任务不会再被执行，但是正在运行的线程会一直 
 把任务运行完后再退出*/  
-int  
+inline int  
 thread_pool_destroy (CThread_pool_t *pool)  
 {  
     if (pool->shutdown)  
@@ -192,7 +192,7 @@ thread_pool_destroy (CThread_pool_t *pool)
  
 
   
-void* thread_routine (void *pool)  
+inline void* thread_routine (void *pool)  
 {  
     //DEBUG ("starting thread 0x%x\n", pthread_self ());  
     int ret;
@@ -240,6 +240,20 @@ void* thread_routine (void *pool)
    return (void*)0;  
 }  
  
+
+inline void* thread_routine_once (void *pool)  
+{  
+    //DEBUG ("starting thread 0x%x\n", pthread_self ());  
+    int ret;
+    thread_task_entry_t item; 
+
+        ret = de_thread_task_queue(((CThread_pool_t *)pool)->task_queue, &item) ;
+        if(1 == ret)return (void*)0;
+        (*(item.process)) (item.arg);  
+    /*这一句应该是不可达的*/  
+   return (void*)0;  
+}   
+ 
 //______________________________________________________
 
 inline int init_thread_task_queue(thread_task_queue_t * thread_task_queue,uint32_t max)  
@@ -267,7 +281,7 @@ inline int init_thread_task_queue(thread_task_queue_t * thread_task_queue,uint32
  // 入队列
 inline int en_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_task_entry_t* item)  
 {  
-	  DEBUG("en_thread_task_queue\n"	);
+	 // DEBUG("en_thread_task_queue\n"	);
 	  if(thread_task_queue->is_sleeping == 2)return THREAD_POOL_IS_STOPED;
 	  
     uint32_t head, tail, mask, next;
@@ -304,7 +318,7 @@ inline int en_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
   //     if( 1 == thread_task_queue->is_sleeping)
   //		{
    			if(thread_task_queue->is_sleeping!=2)thread_task_queue->is_sleeping = 0;
-   			DEBUG("TRANS_QUEUE_SLEEP_COND_SIGN\n"	);
+   	//		DEBUG("TRANS_QUEUE_SLEEP_COND_SIGN\n"	);
    			THREAD_TASK_QUEUE_SLEEP_COND_SIGN(&(thread_task_queue->sleep_cond));
    //	  }
   //  THREAD_TASK_QUEUE_SLEEP_UNLOCK(&(thread_task_queue->sleep_locker));
