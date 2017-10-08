@@ -241,17 +241,17 @@ inline void* thread_routine (void *pool)
 }  
  
 
-inline void* thread_routine_once (void *pool)  
+inline void thread_routine_once (void *pool)  
 {  
     //DEBUG ("starting thread 0x%x\n", pthread_self ());  
     int ret;
     thread_task_entry_t item; 
 
         ret = de_thread_task_queue(((CThread_pool_t *)pool)->task_queue, &item) ;
-        if(1 == ret)return (void*)0;
+        if(1 == ret)return ;
         (*(item.process)) (item.arg);  
     /*这一句应该是不可达的*/  
-   return (void*)0;  
+    return ;
 }   
  
 //______________________________________________________
