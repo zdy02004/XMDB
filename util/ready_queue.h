@@ -49,16 +49,27 @@ public:
     //从等待队列中拿出一个执行
     int schedule()
     {
+    	int ret = 0;
     	jmp_buf_ptr  jmp_buf_p;
-    	if( !pop( &jmp_buf_p ) )
+    	if( !( ret = pop( &jmp_buf_p ) ) )
     		{
     			longjmp( *jmp_buf_p,2 );
     			return 0;
     		}
-    		return -1;
+    		
+    		return ret;
+    }
+    ready_queue_t (ready_queue_t && move)
+    {
+    	already_queue = move.already_queue;
+    }
+    void operator = (ready_queue_t && move)
+    {
+    	already_queue = move.already_queue;
     }
     
-    CAS_RING_TYPE(jmp_buf_ptr,already_queue)            // 等待队列
+     CAS_RING_TYPE(jmp_buf_ptr,already_queue)            // 等待队列
+    
 
 
 
