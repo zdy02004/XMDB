@@ -159,7 +159,7 @@ en_cas_ring_##ItemType (cas_ring, item )
 #define CAS_RING_DN(ItemType,cas_ring,item)						\
 de_cas_ring_##ItemType  (cas_ring,item)        			
                                                 			
-#define CAS_RING_REINIT(ItemType,cas_ring,item)				\
+#define CAS_RING_REINIT(ItemType,cas_ring,max)				\
 reinit_cas_ring_##ItemType (cas_ring,max)      			
                                                 			
 #define CAS_RING_STOP(ItemType,cas_ring)							\
