@@ -11,7 +11,7 @@ typedef jmp_buf *  jmp_buf_ptr;
 CAS_RING_STRUCT( jmp_buf_ptr )
 #endif 
 
-//È«¾Ö¾ÍÐ÷¶ÓÁÐ
+//å…¨å±€å°±ç»ªé˜Ÿåˆ—
 class ready_queue_t
 {
 public:
@@ -19,7 +19,7 @@ public:
 	  {
 	  	 CAS_RING_INIT( jmp_buf_ptr,already_queue,size );
 	  }
-	  
+	  ready_queue_t(){}
 	  ~ready_queue_t( )
 	  {
 	  	 CAS_RING_DESTORY(jmp_buf_ptr, already_queue );
@@ -46,7 +46,7 @@ public:
     
     }
     
-    //´ÓµÈ´ý¶ÓÁÐÖÐÄÃ³öÒ»¸öÖ´ÐÐ
+    //ä»Žç­‰å¾…é˜Ÿåˆ—ä¸­æ‹¿å‡ºä¸€ä¸ªæ‰§è¡Œ
     int schedule()
     {
     	int ret = 0;
@@ -68,7 +68,7 @@ public:
     	already_queue = move.already_queue;
     }
     
-     CAS_RING_TYPE(jmp_buf_ptr,already_queue)            // µÈ´ý¶ÓÁÐ
+     CAS_RING_TYPE(jmp_buf_ptr,already_queue)            // ç­‰å¾…é˜Ÿåˆ—
     
 
 
