@@ -17,9 +17,11 @@ class ready_queue_t
 public:
 	  void init(uint32_t size)
 	  {
-	  	 CAS_RING_INIT( jmp_buf_ptr,already_queue,size );
+	  	 CAS_RING_REINIT( jmp_buf_ptr,already_queue,size );
 	  }
-	  ready_queue_t(){}
+	  ready_queue_t(){
+	  	CAS_RING_INIT( jmp_buf_ptr,already_queue,1024 );
+	  	}
 	  ~ready_queue_t( )
 	  {
 	  	 CAS_RING_DESTORY(jmp_buf_ptr, already_queue );
@@ -69,18 +71,7 @@ public:
     }
     
      CAS_RING_TYPE(jmp_buf_ptr,already_queue)            // 等待队列
-    
-
-
 
 };
 
 #endif
-
-
-
-
-		
-  		
-  		
-
