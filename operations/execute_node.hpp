@@ -122,6 +122,8 @@ pre_node3      																												out_node3
 	NULL																																	 NULL
 */
 
+static ready_queue_t    ready_queue;					//全局就绪队列
+
 // 物理执行计划
 // 处理节点
 // pre_type     前继节点类型
@@ -133,7 +135,7 @@ struct exec_node_type
 
 	typedef pre_type  				pre_type_;
 	//typedef out_type  				out_type_;
-	typedef brother_type  				brother_type_;
+	typedef brother_type  		brother_type_;
 	typedef OpperType  				OpperType_;
 	
 	 //执行节点返回类型
@@ -148,7 +150,7 @@ struct exec_node_type
 	//typedef exec_node<typename out_type_::FunType_, typename out_type_::Arg1_ , typename out_type_::Arg2_ , 
 	//																						 typename out_type_::Arg3_ , typename out_type_::Arg4_ , 
 	//							 typename out_type_::pre_type_,typename out_type_::out_type , typename out_type_::brother_type_  > output_node_type;
-								 	
+								 
 	
 	int    									operation_type;	//操作类型
 	short  									is_start_end;		//是否是开始节点 1 开始   2 结束		
@@ -159,7 +161,6 @@ struct exec_node_type
 	brother_type          	* brother;						//前继依赖兄弟节点 
 	ret_type 									ret;								//执行结果集
   CAS_RING_TYPE(jmp_buf_ptr,wait_queue);				//等待队列
-  static ready_queue_t    ready_queue;					//全局就绪队列
   std::function<void(void)>    call_once_thread_poll;//线程池一次取任务干活
   jmp_buf jump_point;                           //  线程上下文
   
@@ -171,7 +172,7 @@ struct exec_node_type
   		//在类外初始化
   		//ready_queue.init(DEFAULT_READY_BUF);
   		//设置默认 call_once
-  		set_call_once(empty_call_once);
+  		call_once_thread_poll = [](void){return;};
   	}
   	//move 语义
   	exec_node_type( exec_node_type< pre_type, brother_type, OpperType>&& move )
@@ -182,11 +183,11 @@ struct exec_node_type
   		exec_node      = std::move(move.exec_node);	
   		input_node     = move.input_node;
   		brother        = move.brother;
-  		ret						 = std::move(move.ret);	
-  		wait_queue	   = move.wait_queue;	
+  		ret	       = std::move(move.ret);	
+  		wait_queue     = move.wait_queue;	
   		ready_queue    = std::move(move.ready_queue);	
   		call_once_thread_poll = std::move(move.call_once_thread_poll);	
-  	  jump_point    =  std::move(move.jump_point);	
+  	        jump_point     =  std::move(move.jump_point);	
   	}
   	void operator = ( exec_node_type< pre_type, brother_type, OpperType>&& move )
   	{
@@ -268,8 +269,8 @@ struct exec_node_type
   	//
   template<class Funtype,typename ... Args>
   inline   exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点类型
-													 exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //兄弟节点类型
-													 exec_fun<Funtype,Args...> >
+			   exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //兄弟节点类型
+			   exec_fun<Funtype,Args...> >
 	 then(exec_fun<Funtype,Args...> & later_func )
 	{
 		// then 节点类型
@@ -298,7 +299,7 @@ struct exec_node_type
 					{
 						typename input_node_type::brother_type_ * brother_tmp =input_node->brother;
 				   	//前继节点或者前继的兄弟节点没执行完，就睡眠
-				   	if ( check(brother_tmp) || input_node->is_done.load()== 0 )
+				   	if ( check(brother_tmp) || false == input_node->is_done.load()  )
 					  {
 						 first_check = 1;
 						// lock (is_done)
@@ -320,7 +321,7 @@ struct exec_node_type
 								if( !( check(brother_tmp) || input_node->is_done.load() == 0 ) )
 									{
 										jmp_buf_ptr * out_p = NULL; 
-										while( CAS_RING_EMPTY != CAS_RING_DN(jmp_buf_ptr,input_node->wait_queue,&(out_p)) )
+										while( CAS_RING_EMPTY != CAS_RING_DN(jmp_buf_ptr,input_node->wait_queue,(out_p)) )
 										{
 											ready_queue.push(out_p);
 										}
@@ -363,7 +364,7 @@ struct exec_node_type
 	  // 将等待队列(普通队列)中的 jmp_buf 放入全局就绪队列中
 	    is_done.store(true);
 	  	jmp_buf_ptr * out_p = NULL; 
-			while( CAS_RING_EMPTY != CAS_RING_DN(jmp_buf_ptr,this->wait_queue,&(out_p)) )
+			while( CAS_RING_EMPTY != CAS_RING_DN(jmp_buf_ptr,this->wait_queue,(out_p)) )
 			{
 				ready_queue.push(out_p);
 			}
@@ -400,16 +401,25 @@ struct exec_node_type<int,int,OpperType>
 	typedef int  			ret_type; 
 	typedef int	            	input_node_type;
 	//typedef int 			output_node_type;
-	exec_fun< int,OpperType>        exec_node;       //执行节点
+	exec_fun< int,OpperType>  exec_node;              //执行节点
 	short  				is_start_end;															//是否是开始节点 1 开始   2 结束
-	bool   				is_done;			
+	std::atomic<bool>      		is_done;			
 	input_node_type      	 *      input_node;  	 //前继依赖节点
-	brother_type_		 *      brother;            //前继依赖兄弟节点 
-	exec_node_type():input_node(NULL),brother(NULL),is_start_end(OPERATION_END),is_done(1){}
+	brother_type_		 *      brother;         //前继依赖兄弟节点 
+	CAS_RING_TYPE(jmp_buf_ptr,wait_queue);		 //等待队列
+
+	exec_node_type():input_node(NULL),brother(NULL),is_start_end(OPERATION_END),is_done(1){
+		  	CAS_RING_INIT( jmp_buf_ptr,wait_queue,DEFAULT_RING_BUF );
+		}
 	inline int try_execute()
 	{
 	  return 0;
  	}
+ 	  ~exec_node_type()
+  	{
+  		//销毁等待队列
+  		CAS_RING_DESTORY(jmp_buf_ptr,wait_queue);
+  	}
 };
 
 #endif 
