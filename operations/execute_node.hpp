@@ -328,19 +328,19 @@ inline exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前�
     // 传递依赖 线程池的 call_once 函数
     		then_exec_node.set_call_once(this->call_once_thread_poll);
         // 扔进线程池
-        //DEBUG("put_once_to_thread_poll() \n");
+       //DEBUG("put_once_to_thread_poll() \n");
     		//std::function<void * (void *)> process  =[&](void * a)	 {
     		//	then_exec_node.try_execute();
     		//	return (void *)0;
     		//};    		
     		//put_once_to_thread_poll(process,(void *)0);
     		
-    		// 扔进等待队列
+    		 //扔进等待队列
     		DEBUG("put_once_to_wait_queue() \n");
     		std::function<void (void )> this_process=[&](){
-				this->try_execute();
+				then_exec_node.try_execute();
 				} ;  
-				input_node->wait_queue.push( this_process );
+				wait_queue.push( this_process );
     		
 			  DEBUG("Leave then	() \n");
 		return  ( then_exec_node );
@@ -409,6 +409,7 @@ inline exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前�
 	  is_done.store(true);	  	
     DEBUG(" Before done ==================================\n");
     wait_queue.schedule(put_once_to_thread_poll);
+    //wait_queue.schedule_one_now();
     DEBUG(" After done ==================================\n");
 		
 	}
