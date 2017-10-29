@@ -96,7 +96,7 @@ if(cas_ring->is_sleeping ==2)return -1;																								  						         
         next = head + 1;                                                                 						                         \
         ok = CAS(&cas_ring->head.first, head, next);                                     						                         \
     } while (!ok);                                                                       						                         \
-    cas_ring->item[head & mask] = *_item;\
+    memcpy(&(cas_ring->item[tail & mask]),_item,sizeof(ItemType));                       						                         \
     asm volatile ("":::"memory");                                                        						                         \
     while (unlikely((cas_ring->head.second != head)))                                    						                         \
         _mm_pause();                                                                     						                         \
