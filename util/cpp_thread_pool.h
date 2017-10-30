@@ -6,7 +6,7 @@
 #include <sys/types.h>  
 //#include <pthread.h>  
 #include <thread>
-//#include <condition_variable>
+#include <condition_variable>
 #include <assert.h>  
 #include <emmintrin.h>
 #include <string.h>
@@ -48,9 +48,9 @@ namespace cpp_thread_namespace{
 //#define THREAD_TASK_QUEUE_SLEEP_COND_T              std::condition_variable  
 //#define THREAD_TASK_QUEUE_SLEEP_COND_INIT(x)        
 //#define THREAD_TASK_QUEUE_SLEEP_COND_DEST(x)        
-//#define THREAD_TASK_QUEUE_SLEEP_COND_WAIT(x,y)      std::unique_lock <std::mutex> lck(y);\
+//#define THREAD_TASK_QUEUE_SLEEP_COND_WAIT(x,y)      std::unique_lock <std::mutex> lck((y));\
 //																										(x).wait(lck);
-//#define THREAD_TASK_QUEUE_SLEEP_COND_SIGN(x)        DEBUG("notify_one()\n");(x).notify_one()
+//#define THREAD_TASK_QUEUE_SLEEP_COND_SIGN(x)        DEBUG("notify_one()\n");(x).notify_all()
 //#define THREAD_TASK_QUEUE_SLEEP_COND_BROADCAST(x)   (x).notify_all()
  
  
