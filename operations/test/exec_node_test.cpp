@@ -1,6 +1,13 @@
 //  g++ -w -std=c++11  execute_node.cpp  -o cc.exe  
 #include"../execute_node.hpp"
 
+int func2(int a,int b)
+{
+	printf("%d,%d\n",a,b);
+	sleep(1);
+	return 0;
+}
+
 int fun4(int a,int b ,int c )
 {
 	
@@ -16,11 +23,14 @@ int func4(char a,char b ,char c, char d)
 	return 0;
 }
 
-int func2(int a,int b)
+int func0()
 {
-	printf("%d,%d\n",a,b);
+	
+	printf("0 Parameters\n");
 	return 0;
 }
+
+
 
 class void_func_helper_t
 {
@@ -53,8 +63,8 @@ int main()
 	//typedef  std::function< int(int,int,int,int )> int_fun;
 	typedef int(*int_fun)(int,int,int );
 	typedef int(*char_fun)(char,char,char,char );
+	typedef int(*int0_fun)(void );
 	typedef int(*int2_fun)(int,int );
-	
 
   // 首节执行器类型
   typedef exec_fun < int_fun,int,int,int    >  ew1_type;
@@ -105,16 +115,20 @@ int main()
 	//	};
 	//pool.add_task(process,(void *)0);
 
-	enode2.then(func2,7,8);
+	auto a = enode2.then(func2,7,8).then(func2,9,10);
+	//enode2.then(func0);
 	//运行2节点
+	//a->try_execute();
 	enode2.try_execute();
-	
+
 	//std::function<void * (void *)> process2=[&](void * a){
 	//		enode2.try_execute();
 	//		return (void *)0;
 	//	};
 	//pool.add_task(process2,(void *)0);
-	
+  	
+  	sleep(2);
+  	DEBUG("Send stop command!\n");
 	/*销毁线程池 不要忘记*/  
     pool.thread_pool_destroy ();
 	
