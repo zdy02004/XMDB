@@ -142,24 +142,29 @@ return	pool.add_task(process,arg);
 //运行3节点
 enode3.try_execute();
   
-  
-  
+  std::function<int(int,int,int &)> f1 = [&](int a,int b,int &c)->int {return a^2+b^2;};
+  std::function<void(int &)> 				f2 = [&](int &k){printf("%d\n",k);};
+
 //快速语法
  auto b = make_exec_node(func2,111,222);
- b.set_put_once(
-[&](std::function<void * (void *)> &process, void *arg)->int{
-return	pool.add_task(process,arg);
-}
- );
- //
+ b.set_pool(pool);
+ int c = 0;
  b.then(func4,'f','f','f','f');
+// .then(
+// f1,
+// 1,
+// 2
+// ).then(
+// f2,
+//  c
+//  );
+ 
  b.try_execute();
-  
   	
-  	sleep(7);
-  	ERROR("Send stop command!\n");
+	sleep(7);
+	ERROR("Send stop command!\n");
 	/*销毁线程池 不要忘记*/  
-    pool.thread_pool_destroy ();
+	pool.thread_pool_destroy ();
 	
 	return 0;
 }
