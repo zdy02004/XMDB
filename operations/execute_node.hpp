@@ -176,12 +176,15 @@ struct exec_node_type
   
   //jmp_buf_type  *jump_point;                           //  线程上下文
   //jmp_buf_type   jump_loop;
+
+  
   exec_node_type(int _operation_type ):operation_type(_operation_type),is_start_end(OPERATION_START),input_node( NULL ),brother( NULL )
   	{
   		is_done.store(0);
   		call_once_thread_poll = [](void){DEBUG("Empty call_once\n");return;};
-  		put_once_to_thread_poll = [](std::function<void * (void *)> &,void *){return  0;};
+  		put_once_to_thread_poll = [](std::function<void * (void *)> &,void *){DEBUG("Empty put_once\n");return  0;};
   	}
+  	exec_node_type( ):operation_type(OPERATION_RUNING){}
   	  	//普通 同move	 语义
   	exec_node_type( exec_node_type< pre_type, brother_type, OpperType>& move )
   	{
@@ -263,7 +266,7 @@ struct exec_node_type
   
   void set_put_once(put_once_t  _put_once)
   {
-  	put_once_to_thread_poll = std::move(_put_once);
+  	put_once_to_thread_poll = (_put_once);
   }
   
 	inline int check( int * pre_brother)
@@ -300,56 +303,67 @@ struct exec_node_type
   }
 
   template<class Funtype,typename ... Args>
-inline exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点类型
+inline 
+    exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点类型
 		   exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //兄弟节点类型
-		   exec_fun<Funtype,Args...> > 
+		   exec_fun<Funtype,Args...> > &
+//std::function<
+//				exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, 
+//												exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, 
+//												exec_fun<Funtype,Args...> >  (exec_fun<Funtype,Args...> )
+//										> 		   
 	 then(exec_fun<Funtype,Args...> & later_func )
 	{
-		// then 节点类型
-	//std::shared_ptr<
-				exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点类型
-												exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //兄弟节点类型
-												exec_fun<Funtype,Args...> >   
-	//									>   
-		then_exec_node(OPERATION_RUNING);
-		//= std::make_shared<
-		//		exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点类型
-		//										exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //兄弟节点类型
-		//										exec_fun<Funtype,Args...> >   
-		//								> 
-		
-		
-		// 设置执行器								
-    		then_exec_node.set_exec(later_func);
-		// 设置前继依赖项为 this
-    		then_exec_node.set_input_node(*this);
-    // 传递依赖 线程池的 put_once 函数
-    		then_exec_node.set_put_once(this->put_once_to_thread_poll);
-    // 传递依赖 线程池的 call_once 函数
-    		then_exec_node.set_call_once(this->call_once_thread_poll);
-        // 扔进线程池
-       //DEBUG("put_once_to_thread_poll() \n");
-    		//std::function<void * (void *)> process  =[&](void * a)	 {
-    		//	then_exec_node.try_execute();
-    		//	return (void *)0;
-    		//};    		
-    		//put_once_to_thread_poll(process,(void *)0);
+		   // then 节点类型
+		   std::shared_ptr<
+			exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点类型
+											exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //兄弟节点类型
+											exec_fun<Funtype,Args...> >  
+									>   then_exec_node ( new
+			exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点类型
+											exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //兄弟节点类型
+											exec_fun<Funtype,Args...> >			);					 
+	 //   then_exec_node ;//(OPERATION_RUNING) 
+
+	
+	// 设置执行器								
+   		then_exec_node->set_exec(later_func);
+	// 设置前继依赖项为 this
+   		then_exec_node->set_input_node(*this);
+   // 传递依赖 线程池的 put_once 函数
+   		then_exec_node->set_put_once(this->put_once_to_thread_poll);
+   // 传递依赖 线程池的 call_once 函数
+   		then_exec_node->set_call_once(this->call_once_thread_poll);
+       // 扔进线程池
+      DEBUG("put_once_to_thread_poll() \n");
+   		std::function<void * (void *)> process  =[=](void * a)	 {
+   			then_exec_node->try_execute();
+   			return (void *)0;
+   		};    		
+   		put_once_to_thread_poll(process,(void *)0);
     		
     		 //扔进等待队列
-    		DEBUG("put_once_to_wait_queue() \n");
-    		std::function<void (void )> this_process=[&](){
-				then_exec_node.try_execute();
-				} ;  
-				wait_queue.push( this_process );
-    		
-			  DEBUG("Leave then	() \n");
-		return  ( then_exec_node );
+    	//DEBUG("put_once_to_wait_queue() \n");
+    	//std::function<void (void )> this_process=[=](){
+			//then_exec_node->try_execute();
+			//} ;  
+			//wait_queue.push( this_process );
+    	//
+			 DEBUG("Leave then	() \n");
+		return  ( *then_exec_node );
+	
 	}
 	
-	template<class Funtype,typename ... Args>
-  inline   exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点类型
+template<class Funtype,typename ... Args>
+inline   
+  exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点类型
 			   exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //兄弟节点类型
-			   exec_fun<Funtype,Args...> >
+			   exec_fun<Funtype,Args...> >  &
+//std::function<
+//				exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, 
+//												exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, 
+//												exec_fun<Funtype,Args...> >  (exec_fun<Funtype,Args...> )
+//										> 		   
 	 then( Funtype f,Args... args ) 
 	{		
 		exec_fun<Funtype,Args...> later_func ( std::forward<Funtype>(f) ,args ...);
@@ -409,7 +423,7 @@ inline exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前�
 	  is_done.store(true);	  	
     DEBUG(" Before done ==================================\n");
     wait_queue.schedule(put_once_to_thread_poll);
-    //wait_queue.schedule_one_now();
+    //wait_queue.schedule_now();
     DEBUG(" After done ==================================\n");
 		
 	}
