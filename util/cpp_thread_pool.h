@@ -374,7 +374,7 @@ inline int de_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
 {     
 	   DEBUG("Enter de_thread_task_queue\n"	);
      if(NULL == thread_task_queue)ERROR("NULL == thread_task_queue \n"	);
-     DEBUG("thread_task_queue->tail is %d \n",thread_task_queue->tail);
+    // DEBUG("thread_task_queue->tail is %d \n",thread_task_queue->tail);
     uint32_t tail, head, mask, next;
     int ok;
     mask = thread_task_queue->tail.mask;
