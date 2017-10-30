@@ -306,6 +306,21 @@ inline  void set_put_once(put_once_t  _put_once)
 {
 	put_once_to_thread_poll = (_put_once);
 }
+template<class pool_type>
+inline  void set_pool(pool_type&  pool)
+{
+		set_put_once(
+	[&](std::function<void * (void *)> &process, void *arg)->int{
+	return	pool.add_task(process,arg);
+	}
+	 );
+	 
+	 set_call_once(
+	[&](){
+	   pool.thread_routine_once();
+			 }
+	 );
+}
   
 inline int check( int * pre_brother)
 {
