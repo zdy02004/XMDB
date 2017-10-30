@@ -49,7 +49,7 @@ typedef struct func_task_t
     	}
     func_task_t( func_task_t & _move)
     {
-    	process = _move.process;
+    	process =std::move(_move.process);
     }
     func_task_t( func_task_t && _move)
     {
@@ -57,7 +57,7 @@ typedef struct func_task_t
     }
      void operator =( func_task_t & _move)
     {
-    	process = _move.process;
+    	process = std::move(_move.process);
     }
     
     void operator =( func_task_t && _move)
@@ -266,22 +266,25 @@ public:
     	while( FUNC_TASK_ERR_QUEUE_EMPTY != ( ret = pop( func_task ) ) )
     		{
     			DEBUG("In ready_queue_t::schedule(),put_once_func() \n");
-    				std::function<void* (void* )> this_process=[=](void * a){
-									func_task.process();
-									return (void*) 0;
-									} ;  
-					put_once_func(this_process,(void *)0);    			
+    			//(func_task.process)();
+    			std::function<void* (void* )> this_process=[=](void * a){
+    				DEBUG("In ready_queue_t::schedule(),In Function \n");
+    						//func_task_t func_task_inner (func_task);
+								(func_task.process)();
+								return (void*) 0;
+								} ;  
+				put_once_func(this_process,(void *)0);    			
     		}
       DEBUG("Leave  wait_func_queue_t::schedule()\n");
     	return ret;
     }
         //从等待队列中拿出一个立即执行
-    int schedule_one_now( )
+    int schedule_now( )
     {
     	DEBUG("Enter  wait_func_queue_t::schedule_one_now()\n");
     	func_task_t func_task;
     	int ret = 0;
-    	if( FUNC_TASK_ERR_QUEUE_EMPTY != ( ret = pop( func_task ) ) )
+    	while( FUNC_TASK_ERR_QUEUE_EMPTY != ( ret = pop( func_task ) ) )
     		{
     			DEBUG("In ready_queue_t::schedule_one_now(),run_now() \n");
 					(func_task.process)();    			
