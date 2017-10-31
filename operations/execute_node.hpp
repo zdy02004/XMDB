@@ -15,10 +15,41 @@
 #define DEFAULT_RING_BUF  1024
 #define DEFAULT_READY_BUF 1024*1024*16
 
-#define EXEC_DONE_LOCK_T        rwlock_t
-#define EXEC_DONE_LOCK(x)       rwlock_wlock(&(x))
-#define EXEC_DONE_UNLOCK(x)     rwlock_wunlock(&(x))   
-#define EXEC_DONE_INITLOCK(x)   rwlock_init(&(x))
+//用来判断 类中是否存在某成员函数的模板元函数
+//#define exec_has_member(s) \
+//template<typename T>\
+//struct exec_has_member_##s{\
+//    template <typename _T>static auto check(_T)->typename std::decay<decltype(_T::s)>::type;\
+//    static void check(...);\
+//    using type=decltype(check(std::declval<T>()));\
+//    enum{value=!std::is_void<type>::value};\
+//};
+//
+////has_exe
+//exec_has_member(exe)
+//
+//
+//// 有reserve成员函数的要执行，否则不执行
+//template<class exe_type,bool T2>
+//struct __exec__
+//{
+//static void exe(const exe_type & exe_object)
+//{
+//	return;
+//}
+//};
+//
+//template<class exe_type,class T1>
+//struct __exec__<exe_type,true>
+//{
+//static exe(const exe_type & exe_object)->decltype(exe_object->exe(); )
+//{
+//	
+//	return exe_object->exe();
+//}
+//};
+
+
 
 // 使用tuple 作为函数参数列表
 template<size_t N>
@@ -64,6 +95,21 @@ typename ::std::decay<T>::type
 ::std::forward<T>(t));
 }
 
+template<class T,bool T2,typename ... Args>
+struct is_functional
+{
+typedef typename std::result_of<T(Args...)>::type  ret_type;
+
+};
+
+template<class T,typename ... Args>
+struct is_functional<T,true,Args...>
+{
+typedef typename T::result_type  ret_type;
+
+};
+
+
 //懒执行函数包装器
 template<class Funtype,typename ... Args>
 struct exec_fun
@@ -78,8 +124,12 @@ struct exec_fun
   exec_fun(){}
   
   typedef exec_fun<Funtype,Args...>  this_type;
-	typedef typename std::result_of<Funtype(Args...)>::type  ret_type;
-
+	//typedef typename std::result_of<Funtype(Args...)>::type  ret_type;
+	typedef typename is_functional<Funtype,std::is_function<Funtype>::value, Args ...>::ret_type  ret_type;	  
+		
+		
+  //typedef typename decltype(apply( f, _arguments))  ret_type;
+  
         void swap(exec_fun< Funtype,Args...> & node)
         {
   	      f = std::move(node.f);
@@ -125,6 +175,11 @@ struct exec_fun
 
 	//inline auto exe() -> decltype(f(std::forward<Arg1>(arg1),std::forward<Arg2>(arg2),std::forward<Arg3>(arg3),std::forward<Arg4>(arg4)))
 	inline ret_type exe() 
+	{
+	   return apply( f, _arguments);
+	}
+		
+	inline ret_type operator()()
 	{
 	   return apply( f, _arguments);
 	}
@@ -461,7 +516,11 @@ inline int try_execute()
 	
 	DEBUG("exec_node.exe() \n");
 	//2 执行本节点任务
-	ret = exec_node.exe(); 
+	//ret = exec_node.exe();
+	ret =  exec_node();
+	//decltype(exec_node)
+	//ret = __exec__<decltype(exec_node),exec_has_member_exe<decltype(exec_node)>::value>::exe(exec_node);
+	
   //set_stat(1);
   is_done.store(1);	  	
   DEBUG(" Before done ==================================\n");
