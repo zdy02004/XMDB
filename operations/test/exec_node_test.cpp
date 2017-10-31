@@ -25,12 +25,9 @@ int func4(char a,char b ,char c, char d)
 
 int func0()
 {
-	
 	printf("0 Parameters\n");
 	return 0;
 }
-
-
 
 class void_func_helper_t
 {
@@ -53,8 +50,6 @@ void set_func(std::function<void * (void *)> & _process )
 }
 
 };
-
-
 
 int main()
 {
@@ -146,21 +141,24 @@ enode3.try_execute();
   std::function<int(int&)> 	  	   f2 = [](int &k)->int{printf(">>>>>>>>>>>>>>> = %d\n",k);return 0;};
 
 //快速语法
-// 由于 exec_node  内部用 tupe 存 执行参数，因此不能传右值，例如引用
- auto b = make_exec_node(func2,111,222);
- b.set_pool(pool);
+// 由于 exec_node  内部用 tupe 存执行参数，执行参数无法根据函数类型推到，因此传右值要将左值转换，
+// 例如引用 std::ref(c)
  int c = 0;
- b.then(func4,'f','f','f','f')
+ auto b = make_exec_node(func2,111,222).set_pool(pool)
+ .then(func4,'f','f','f','f')
  .then(
  f1,
  1,
  2,
- &c //由于多个 then 直接是 立刻构建，稍后执行，因此要想上一个 then结果，作为下一个then的参数，需要传指针
+ &c //由于多个 then 直接是 立刻构建，稍后执行，因此要想上一个 then结果，作为下一个then的参数，需要传指针或引用
  )
 .then(
   f2,
  std::ref(c)
  //	c
+ ).then(
+ [](int &k)->int{++k;printf("~~~~~~~~~~~~~~~~~~~ = %d\n",k);return 0;},
+  std::ref(c)
  );
  
  b.try_execute();
