@@ -143,9 +143,10 @@ return	pool.add_task(process,arg);
 enode3.try_execute();
   
   std::function<int(int,int,int*)> f1 = [](int a1,int b1,int *c)->int { DEBUG("########### %d,%d\n",a1,b1);*c = a1+b1;printf("########### c= %d\n",*c);return 0;};
-  std::function<int(int)> 	  	   f2 = [](int k)->int{printf(">>>>>>>>>>>>>>> = %d\n",k);return 0;};
+  std::function<int(int&)> 	  	   f2 = [](int &k)->int{printf(">>>>>>>>>>>>>>> = %d\n",k);return 0;};
 
 //快速语法
+// 由于 exec_node  内部用 tupe 存 执行参数，因此不能传右值，例如引用
  auto b = make_exec_node(func2,111,222);
  b.set_pool(pool);
  int c = 0;
@@ -154,11 +155,12 @@ enode3.try_execute();
  f1,
  1,
  2,
- &c
+ &c //由于多个 then 直接是 立刻构建，稍后执行，因此要想上一个 then结果，作为下一个then的参数，需要传指针
  )
 .then(
-f2,
- c
+  f2,
+ std::ref(c)
+ //	c
  );
  
  b.try_execute();
