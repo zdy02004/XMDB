@@ -142,22 +142,24 @@ return	pool.add_task(process,arg);
 //运行3节点
 enode3.try_execute();
   
-  std::function<int(int,int,int &)> f1 = [&](int a,int b,int &c)->int {return a^2+b^2;};
-  std::function<void(int &)> 				f2 = [&](int &k){printf("%d\n",k);};
+  std::function<int(int,int,int*)> f1 = [](int a1,int b1,int *c)->int { DEBUG("########### %d,%d\n",a1,b1);*c = a1+b1;printf("########### c= %d\n",*c);return 0;};
+  std::function<int(int)> 	  	   f2 = [](int k)->int{printf(">>>>>>>>>>>>>>> = %d\n",k);return 0;};
 
 //快速语法
  auto b = make_exec_node(func2,111,222);
  b.set_pool(pool);
  int c = 0;
- b.then(func4,'f','f','f','f');
-// .then(
-// f1,
-// 1,
-// 2
-// ).then(
-// f2,
-//  c
-//  );
+ b.then(func4,'f','f','f','f')
+ .then(
+ f1,
+ 1,
+ 2,
+ &c
+ )
+.then(
+f2,
+ c
+ );
  
  b.try_execute();
   	
