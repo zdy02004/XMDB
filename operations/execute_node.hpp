@@ -15,41 +15,6 @@
 #define DEFAULT_RING_BUF  1024
 #define DEFAULT_READY_BUF 1024*1024*16
 
-//用来判断 类中是否存在某成员函数的模板元函数
-//#define exec_has_member(s) \
-//template<typename T>\
-//struct exec_has_member_##s{\
-//    template <typename _T>static auto check(_T)->typename std::decay<decltype(_T::s)>::type;\
-//    static void check(...);\
-//    using type=decltype(check(std::declval<T>()));\
-//    enum{value=!std::is_void<type>::value};\
-//};
-//
-////has_exe
-//exec_has_member(exe)
-//
-//
-//// 有reserve成员函数的要执行，否则不执行
-//template<class exe_type,bool T2>
-//struct __exec__
-//{
-//static void exe(const exe_type & exe_object)
-//{
-//	return;
-//}
-//};
-//
-//template<class exe_type,class T1>
-//struct __exec__<exe_type,true>
-//{
-//static exe(const exe_type & exe_object)->decltype(exe_object->exe(); )
-//{
-//	
-//	return exe_object->exe();
-//}
-//};
-
-
 
 // 使用tuple 作为函数参数列表
 template<size_t N>
@@ -109,6 +74,20 @@ typedef typename T::result_type  ret_type;
 
 };
 
+//template<class T,bool T2,typename ... Args>
+//struct is_functional_arg
+//{
+//typedef typename Args...  argument_type;
+//
+//};
+//
+//template<class T,typename ... Args>
+//struct is_functional_arg<T,true,Args...>
+//{
+//typedef typename T::argument_type  argument_type;
+//
+//};
+
 
 //懒执行函数包装器
 template<class Funtype,typename ... Args>
@@ -118,8 +97,10 @@ struct exec_fun
 	Funtype  f;
 	std::tuple<Args...> _arguments;
 	
-	exec_fun( Funtype && _f, Args... args ):f(std::forward<Funtype>(_f)),_arguments(std::make_tuple(args...)){}
-	exec_fun( Funtype  & _f, Args... args ):f(_f),_arguments(std::make_tuple(args...)){}
+	//exec_fun( Funtype && _f, Args &&... args ):f(std::forward<Funtype>(_f)),_arguments(std::make_tuple(std::forward<Args>(args)...)){}
+	  exec_fun( Funtype && _f, Args ... args ):f(std::forward<Funtype>(_f)),_arguments(std::forward_as_tuple((args)...)){}
+    
+	//exec_fun( Funtype  & _f, Args... args ):f(_f),_arguments(std::make_tuple(args...)){}
 
   exec_fun(){}
   
@@ -144,11 +125,8 @@ struct exec_fun
   	 _arguments =std::move(node._arguments);
    } 
   
-   exec_fun ( exec_fun<Funtype,Args...> & node )
+   exec_fun ( exec_fun<Funtype,Args...> & node ):f(node.f),_arguments(node._arguments)
    {
-   	//swap( std::forward< exec_fun<Funtype,Args...> >(move));
-   	f = (node.f);
-  	 _arguments =(node._arguments);
    }   
    
     exec_fun (const exec_fun<Funtype,Args...> & node )
@@ -267,17 +245,6 @@ exec_node_type( ):operation_type(OPERATION_RUNING),is_start_end(OPERATION_START)
 
 }
 
-template<class Funtype,typename ... Args>
-inline exec_node_type(Funtype && _f,Args... args ):operation_type(OPERATION_RUNING),is_start_end(OPERATION_START),input_node( NULL ),brother( NULL )
-{
-	//OpperType node(_f,args...);
-	//exec_node.swap(node);
-	is_done.store(1);
-	call_once_thread_poll = [](void){DEBUG("Empty call_once\n");return;};
-	put_once_to_thread_poll = [](std::function<void * (void *)> &,void *){DEBUG("Empty put_once\n");return  0;};
-	OpperType node(_f,args...);
-	exec_node.swap(node); 			
-}
 //普通同 move语义
 inline exec_node_type( exec_node_type< pre_type, brother_type, OpperType>& move )
 {
@@ -410,6 +377,30 @@ inline void empty_call_once()
 	return ;
 }
 
+
+template<class Funtype,typename ... Args>
+inline exec_node_type(Funtype & _f,Args... args ):operation_type(OPERATION_RUNING),is_start_end(OPERATION_START),input_node( NULL ),brother( NULL )
+{
+	//OpperType node(_f,args...);
+	//exec_node.swap(node);
+	is_done.store(1);
+	call_once_thread_poll = [](void){DEBUG("Empty call_once\n");return;};
+	put_once_to_thread_poll = [](std::function<void * (void *)> &,void *){DEBUG("Empty put_once\n");return  0;};
+	OpperType node(std::forward<Funtype>(_f),std::forward<Args>(args)...);
+	exec_node.swap(node); 			
+}
+
+template<class Funtype,typename ... Args>
+inline exec_node_type(exec_fun<Funtype,Args...> & later_func ):exec_node(later_func),operation_type(OPERATION_RUNING),is_start_end(OPERATION_START),input_node( NULL ),brother( NULL )
+{
+	//OpperType node(_f,args...);
+	//exec_node.swap(node);
+	is_done.store(1);
+	call_once_thread_poll = [](void){DEBUG("Empty call_once\n");return;};
+	put_once_to_thread_poll = [](std::function<void * (void *)> &,void *){DEBUG("Empty put_once\n");return  0;};
+	//exec_node.swap(later_func); 			
+}
+
 template<class Funtype,typename ... Args>
 inline 
   exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点类型
@@ -425,9 +416,9 @@ exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点
 						>   then_exec_node ( new
 exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点类型
 								exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //兄弟节点类型
-								exec_fun<Funtype,Args...> >			);					 
+								exec_fun<Funtype,Args...> >(later_func)		);					 
 // 设置执行器								
- 		then_exec_node->set_exec(later_func);
+ 	//	then_exec_node->set_exec(later_func);
 // 设置前继依赖项为 this
  		then_exec_node->set_input_node(*this);
 // 传递依赖 线程池的 put_once 函数
@@ -462,7 +453,10 @@ exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // 前继节点
 		   exec_fun<Funtype,Args...> >  &
 then( Funtype f,Args... args ) 
 {		
-	exec_fun<Funtype,Args...> later_func ( std::forward<Funtype>(f) ,args ...);
+	//这里要对类型 Args 重写
+	exec_fun<Funtype,Args...> later_func ( std::forward<Funtype>(f),std::forward<Args>(args)...);
+	//exec_fun<Funtype,Args...> later_func ( std::forward<Funtype>(f),args...);
+
 	return then( later_func  );
 }
 	//执行本节点
@@ -538,8 +532,7 @@ inline int try_execute()
  	exec_node_type<exec_node_type<int,int,exec_fun < Funtype,Args... > >,exec_node_type<int,int,exec_fun < Funtype,Args... > >,exec_fun < Funtype,Args... > >
   make_exec_node(Funtype _f,Args... args )
 	{
-  return	exec_node_type<exec_node_type<int,int,exec_fun < Funtype,Args... > >,exec_node_type<int,int,exec_fun < Funtype,Args... > >,exec_fun < Funtype,Args... > > ( _f,args... );
-	}
+  return	exec_node_type<exec_node_type<int,int,exec_fun < Funtype,Args... > >,exec_node_type<int,int,exec_fun < Funtype,Args... > >,exec_fun < Funtype,Args... > > ( _f,args... );	}
 
 void empty_func(void)
 {
