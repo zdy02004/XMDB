@@ -648,6 +648,202 @@ _hash_inner_join_ctl(const input_type1 & container1,const input_type2 & containe
 	      return __hash_inner_join_ctl(container2,container1,key_fun2,key_fun1);
 }
 //_____________________________________________________________________
+// 是最终工作的函数 __hash_inner_anti_join 1 
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<vector<std::pair<typename input_type1::value_type,typename input_type2::value_type> > >
+__hash_inner_anti_join_ctl(const input_type1 & container1,const input_type2 & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{
+typedef typename std::result_of<fun_type1(typename input_type1::value_type )>::type  key_type1; 
+typedef typename std::result_of<fun_type2(typename input_type2::value_type )>::type  key_type2; 
+typedef unordered_map<key_type1,vector<typename input_type1::value_type> > hash_map_type;
+typedef vector<std::pair<typename input_type1::value_type,typename input_type2::value_type > > ret_type;
+        
+shared_ptr<ret_type     >  ret (make_shared<ret_type>());
+
+ret->reserve( container2.size()*container1.size());
+
+for(typename input_type1::const_iterator	it = container1.begin();it!=container1.end();++it) 
+{
+	 key_type1 key1 = key_fun1(*it);
+	 for(typename input_type2::const_iterator	it2 = container2.begin();it2!=container2.end();++it2) 
+   {
+   			key_type2 key2 = key_fun2(*it2);
+   			if(key1 != key2)
+  	  	ret->emplace_back(make_pair((*it), (*it2)));
+   }
+   
+}
+  return ret;
+
+}
+
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<vector<std::pair<typename input_type1::value_type,typename input_type2::value_type> > >
+_hash_inner_anti_join_ctl(const shared_ptr<input_type1> & container1,const input_type2 & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{  
+		return __hash_inner_anti_join_ctl(*container1,container2,key_fun1,key_fun2);
+}
+
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<vector<std::pair<typename input_type1::value_type,typename input_type2::value_type> > >
+_hash_inner_anti_join_ctl(const input_type1 & container1,const shared_ptr<input_type2> & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{
+	  return __hash_inner_anti_join_ctl(container1,*container2,key_fun1,key_fun2);
+}
+
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<vector<std::pair<typename input_type1::value_type,typename input_type2::value_type> > >
+_hash_inner_anti_join_ctl(const shared_ptr<input_type1> & container1,const shared_ptr<input_type2> & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{
+	  return __hash_inner_anti_join_ctl(*container1,*container2,key_fun1,key_fun2);
+}
+
+
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<vector<std::pair<typename input_type1::value_type,typename input_type2::value_type> > >
+_hash_inner_anti_join_ctl(const input_type1 & container1,const input_type2 & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{
+	  return __hash_inner_anti_join_ctl(container1,container2,key_fun1,key_fun2);
+}
+
+//_____________________________________________________________________
+// 是最终工作的函数 __hash_inner_semi_join 1 
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<input_type1>
+__hash_inner_semi_join_ctl(const input_type1 & container1,const input_type2 & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{
+typedef typename std::result_of<fun_type1(typename input_type1::value_type )>::type  key_type1; 
+typedef typename std::result_of<fun_type2(typename input_type2::value_type )>::type  key_type2; 
+typedef unordered_map<key_type1,vector<typename input_type1::value_type> > hash_map_type;
+typedef unordered_map<key_type2,vector<typename input_type2::value_type> > hash_map_type2;
+
+typedef input_type1 ret_type;
+        
+shared_ptr<hash_map_type>  hash_container  (make_shared<hash_map_type>());
+shared_ptr<hash_map_type>  hash_container2 (make_shared<hash_map_type2>());
+
+shared_ptr<input_type1  >  ret (make_shared<input_type1>());
+
+ret->reserve(1*container1.size());
+
+for(typename input_type1::const_iterator	it = container1.begin();it!=container1.end();++it) 
+{
+	 key_type1 key = key_fun1(*it);
+   (*hash_container)[key].emplace_back(*it);
+}
+
+
+for(typename input_type2::const_iterator	it = container2.begin();it!=container2.end();++it) 
+{
+	 key_type2 key = key_fun2(*it);
+	 if((*hash_container2)[key].empty())
+	 {
+	 		(*hash_container2)[key].emplace_back(*it);
+	 		for(auto it2 = (*hash_container)[key].begin();it2!=(*hash_container)[key].end() ;++it2) 
+   		{
+  			  	ret->emplace_back(*it2);
+   		}
+   }
+}
+  return ret;
+
+}
+
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<input_type1>
+_hash_inner_semi_join_ctl(const shared_ptr<input_type1> & container1,const input_type2 & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{  
+				return __hash_inner_semi_join_ctl(*container1,container2,key_fun1,key_fun2);
+}
+
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<input_type1>
+_hash_inner_semi_join_ctl(const input_type1 & container1,const shared_ptr<input_type2> & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{
+	      return __hash_inner_semi_join_ctl(container1,*container2,key_fun1,key_fun2);
+}
+
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<input_type1>
+_hash_inner_semi_join_ctl(const shared_ptr<input_type1> & container1,const shared_ptr<input_type2> & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{
+	      return __hash_inner_semi_join_ctl(*container1,*container2,key_fun1,key_fun2);
+}
+
+
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<input_type1>
+_hash_inner_semi_join_ctl(const input_type1 & container1,const input_type2 & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{
+	      return __hash_inner_semi_join_ctl(container1,container2,key_fun1,key_fun2);
+}
+//_____________________________________________________________________
+// 是最终工作的函数 __hash_inner_anti_semi_join 1 
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<input_type1>
+__hash_inner_anti_semi_join_ctl(const input_type1 & container1,const input_type2 & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{
+typedef typename std::result_of<fun_type1(typename input_type1::value_type )>::type  key_type1; 
+typedef typename std::result_of<fun_type2(typename input_type2::value_type )>::type  key_type2; 
+typedef unordered_map<key_type1,vector<typename input_type1::value_type> > hash_map_type;
+typedef unordered_map<key_type2,vector<typename input_type2::value_type> > hash_map_type2;
+
+typedef input_type1 ret_type;
+        
+//shared_ptr<hash_map_type>  hash_container  (make_shared<hash_map_type>());
+shared_ptr<hash_map_type>  hash_container2 (make_shared<hash_map_type2>());
+
+shared_ptr<input_type1  >  ret (make_shared<input_type1>());
+
+ret->reserve(1*container1.size());
+
+for(typename input_type2::const_iterator	it = container2.begin();it!=container2.end();++it) 
+{
+	 key_type2 key = key_fun2(*it);
+   (*hash_container2)[key].emplace_back(*it);
+}
+for(typename input_type1::const_iterator	it = container1.begin();it!=container1.end();++it) 
+{
+	 key_type1 key = key_fun1(*it);
+	 if((*hash_container2)[key].empty())
+	 {
+  		ret->emplace_back(*it);
+   }
+   
+}
+  return ret;
+
+}
+
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<input_type1>
+_hash_inner_anti_semi_join_ctl(const shared_ptr<input_type1> & container1,const input_type2 & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{  
+				return __hash_inner_anti_semi_join_ctl(*container1,container2,key_fun1,key_fun2);
+}
+
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<input_type1>
+_hash_inner_anti_semi_join_ctl(const input_type1 & container1,const shared_ptr<input_type2> & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{
+	      return __hash_inner_anti_semi_join_ctl(container1,*container2,key_fun1,key_fun2);
+}
+
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<input_type1>
+_hash_inner_anti_semi_join_ctl(const shared_ptr<input_type1> & container1,const shared_ptr<input_type2> & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{
+	      return __hash_inner_anti_semi_join_ctl(*container1,*container2,key_fun1,key_fun2);
+}
+
+
+template<typename input_type1,typename input_type2,typename fun_type1,typename fun_type2>
+shared_ptr<input_type1>
+_hash_inner_anti_semi_join_ctl(const input_type1 & container1,const input_type2 & container2,fun_type1 key_fun1,fun_type2 key_fun2)
+{
+	      return __hash_inner_anti_semi_join_ctl(container1,container2,key_fun1,key_fun2);
+}
+//_____________________________________________________________________
 // 算交集
 template<class input_type>
 shared_ptr<input_type >
@@ -758,6 +954,52 @@ int test_hash_join()
     for_each(jj2.begin(),jj2.end(),[](std::pair<char,int> x){	cout<<" "<<x.first<<","<<x.second<<"  ";});cout<<endl<<endl;
 
     auto f =_hash_inner_join_ctl(ii2,jj2,[](std::pair<char,int> x){return x.first;},[](std::pair<char,int> x){return x.first;});
+    for_each(f->begin(),f->end(),[](std::pair<std::pair<char,int>,std::pair<char,int> > x){
+	cout<<" "<<x.first.first<<","<<x.first.second<<" | "<< x.second.first<<","<<x.second.second <<endl;
+});
+	return 0;
+}
+
+int test_hash_semi_join()
+{
+	cout<<"test_hash_semi_join"<<endl;
+		vector<pair<char,int> > ii2{std::make_pair('a', 1),std::make_pair('b', 2),std::make_pair('b', 3),std::make_pair('d', 4),std::make_pair('c', 13),std::make_pair('c', 19)};
+    vector<pair<char,int> > jj2{std::make_pair('a', 2),std::make_pair('b', 4),std::make_pair('c', 6),std::make_pair('e', 8),std::make_pair('c', 26)};
+    for_each(ii2.begin(),ii2.end(),[](std::pair<char,int> x){	cout<<" "<<x.first<<","<<x.second<<"  ";});cout<<endl;
+    for_each(jj2.begin(),jj2.end(),[](std::pair<char,int> x){	cout<<" "<<x.first<<","<<x.second<<"  ";});cout<<endl<<endl;
+
+    auto f =_hash_inner_semi_join_ctl(ii2,jj2,[](std::pair<char,int> x){return x.first;},[](std::pair<char,int> x){return x.first;});
+    for_each(f->begin(),f->end(),[](std::pair<char,int>  x){
+	cout<<" "<<x.first<<","<<x.second<<endl;
+});
+	return 0;
+}
+
+
+int test_hash_anti_semi_join()
+{
+	cout<<"test_hash_semi_join"<<endl;
+		vector<pair<char,int> > ii2{std::make_pair('a', 1),std::make_pair('b', 2),std::make_pair('b', 3),std::make_pair('d', 4),std::make_pair('c', 13),std::make_pair('c', 19)};
+    vector<pair<char,int> > jj2{std::make_pair('a', 2),std::make_pair('b', 4),std::make_pair('c', 6),std::make_pair('e', 8),std::make_pair('c', 26)};
+    for_each(ii2.begin(),ii2.end(),[](std::pair<char,int> x){	cout<<" "<<x.first<<","<<x.second<<"  ";});cout<<endl;
+    for_each(jj2.begin(),jj2.end(),[](std::pair<char,int> x){	cout<<" "<<x.first<<","<<x.second<<"  ";});cout<<endl<<endl;
+
+    auto f =_hash_inner_anti_semi_join_ctl(ii2,jj2,[](std::pair<char,int> x){return x.first;},[](std::pair<char,int> x){return x.first;});
+    for_each(f->begin(),f->end(),[](std::pair<char,int>  x){
+	cout<<" "<<x.first<<","<<x.second<<endl;
+});
+	return 0;
+}
+
+int test_hash_anti_join()
+{
+	cout<<"test_hash_anti_join()"<<endl;
+		vector<pair<char,int> > ii2{std::make_pair('a', 1),std::make_pair('b', 2),std::make_pair('b', 3),std::make_pair('d', 4),std::make_pair('c', 13),std::make_pair('c', 19)};
+    vector<pair<char,int> > jj2{std::make_pair('a', 2),std::make_pair('b', 4),std::make_pair('c', 6),std::make_pair('e', 8),std::make_pair('c', 26)};
+    for_each(ii2.begin(),ii2.end(),[](std::pair<char,int> x){	cout<<" "<<x.first<<","<<x.second<<"  ";});cout<<endl;
+    for_each(jj2.begin(),jj2.end(),[](std::pair<char,int> x){	cout<<" "<<x.first<<","<<x.second<<"  ";});cout<<endl<<endl;
+
+    auto f =_hash_inner_anti_join_ctl(ii2,jj2,[](std::pair<char,int> x){return x.first;},[](std::pair<char,int> x){return x.first;});
     for_each(f->begin(),f->end(),[](std::pair<std::pair<char,int>,std::pair<char,int> > x){
 	cout<<" "<<x.first.first<<","<<x.first.second<<" | "<< x.second.first<<","<<x.second.second <<endl;
 });
