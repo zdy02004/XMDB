@@ -4,12 +4,16 @@
 
 int main()
 {
-
+// distinct
 const char *sql_str = ""
-   // "select distinct qty as quantity, user_name, qty / 100, id + 1000 as new_id, new_id as n_id "
-   // "from (select * from table_1 where condition > 1) table1_alias, table_2  "   //sum(c1) t1,o.c2 + 4 t2,o.c3 t3
-   // "where table_1.user_id = table_2.user_id and table_1.user_id = 12 and table_2.acct_id = 23 group by table_1.c having table_1.c = 1 ORDER BY table_2.c";
-//    " select  sum(c1) c1 , 2 - 4 * 3  t2  "
+   // "select  distinct user_name,  qty  as quantity ,qty / 100, id + 1000 as new_id, 1 + 4 "
+   //"from (select * from table_1 where condition > 1) table1_alias  , table_2  "   //sum(c1) t1,o.c2 + 4 t2,o.c3 t3
+   //"where table_1.user_id = table_2.user_id and table_1.user_id = 12 and table_2.acct_id = 23 group by table_1.c having table_1.c = 1 ORDER BY table_2.c";
+    
+    "select  user_name,  qty  as quantity from table_1 t where t.user_name = 'c' ";
+    
+    
+ //   " select  sum(c1) c1 , 2 - 4 * 3  t2  "
 //    " from  table_name table1 where  a = 1 and a = b and not true "; //and ( t2.c = 3 or t2.d = 4 )";,(select k3.t4 from  table_name2  k3 where k3.aa>1 ) t1,(select k5.t5 from  table_name4  t4 where t4.a4>1 ) t4 "
      //" where 4 = 3   and not exists (select 1 from  table_name2 k3 where k3.aa in ( select uu from  table_name3 k4 where k4.aa = 1 ) ) and cc.e = 1";
     // " and c3 between 1 and 2 group by a.cc  , dd.kk having e.re = 1 order by cc.c11,dd.po "; exists ( select 1 from  table_name2 ) and
@@ -35,7 +39,7 @@ const char *sql_str = ""
 //"REVOKE CREATE ON test_table FROM 'test_user' ";
 //"Pprepare optimize_tables from \" SELECT A FORM B \" ";
 //"SET @@sort_buffer_size = 10000"; //暂不支持
-"ALTER TABLE test_table  RENAME TO relation_factor2 ";
+//"ALTER TABLE test_table  RENAME TO relation_factor2 ";
 
 
 
@@ -55,13 +59,19 @@ ParseResult result;
     result.Doc.Accept(writer);
     
  
-
-    std::cout << buffer.GetString() << std::endl;
+//优化前
+  std::cout << buffer.GetString() << std::endl;
 
  for (auto& v : result.Doc["ROOT"]["children"].GetArray() ){
   		//QueryAnalyser qa( v ,result.Doc );
-  		if( v.HasMember("OPERATION_NAME") && v["OPERATION_NAME"].GetString() == "SELECT"  ){
+  		if( v.HasMember("OPERATION_NAME") && v["OPERATION_NAME"] == "SELECT"  ){
   		QueryAnalyser qa( v ,result.Doc );
+  		
+  		for(auto& name : qa.tables){
+  			std::cout<<"Names: "<<name.table_name_<<" "<<name.alias_name_<<std::endl;
+  			
+  		}
+  		
   		//上拉子链接
   		qa.pull_up_sublinks();
   		//上拉子查询
@@ -86,8 +96,9 @@ ParseResult result;
 		}
   }	
   
-  
+  //优化后
   rapidjson_log( &result.Doc["ROOT"] );
+  
 parse_terminate(&result);
 return 0;
 }
