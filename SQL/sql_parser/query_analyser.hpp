@@ -408,7 +408,9 @@ void pushback_subquery_from_list( rapidjson::Value  * fromlist, rapidjson::Value
 } // end 
 
 void   pull_up_subquerys(){
-   pull_up_subquerys(this);
+   if( 0 != sub_querys.size() ){
+   	pull_up_subquerys(this);
+  }
 }
 
 //子查询上拉
@@ -579,10 +581,11 @@ void resolve_from_list_help( rapidjson::Value  * v,int level = 0 ){
   				
   				// 隐式的 内联写法
   				if(is_alias){
-  					cout<< "is_alias "<<endl;
-  				 //table_name=string((*v)["RELATION"]["str_value_"].GetString()); 	// 表名				
+  					if( (*v).HasMember("RELATION") ) table_name=string((*v)["RELATION"]["str_value_"].GetString()); 	// 表名				
+  					if( (*v).HasMember("RELATION_ALIAS") ) alias_name=string((*v)["RELATION_ALIAS"]["str_value_"].GetString()); 		//表别名
+  					if( (*v).HasMember("SUB_SELECT_ALIAS") ) alias_name=string((*v)["SUB_SELECT_ALIAS"]["str_value_"].GetString()); //表别名
+
   				 //alias_name=string((*v)["RELATION_ALIAS"]["str_value_"].GetString()); 					
-            cout<< "is_alias end"<<endl;
             
             //2. 子查询的情况，子查询无表名
             if( (*v)["RELATION"].HasMember("SUB_SELECT") ){
@@ -596,7 +599,7 @@ void resolve_from_list_help( rapidjson::Value  * v,int level = 0 ){
             	}
       		}	
 							 // 插入解析后的表
-  			 			// tables.emplace_back( TableItem(table_name,alias_name) );
+  			 			 tables.emplace_back( TableItem(table_name,alias_name) );
   			 			 single_fromlists.emplace_back( v );
 }
 
