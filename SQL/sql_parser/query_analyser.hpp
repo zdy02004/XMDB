@@ -123,7 +123,8 @@ struct TableItem
 {  
     string    table_name_;  
     string    alias_name_;  
-    TableItem(string & table_name , string & alias_name ):table_name_(table_name),alias_name_(alias_name){}
+    string    sub_select_alias_name_;
+    TableItem(string & table_name , string & alias_name, string & sub_select_alias_name ):table_name_(table_name),alias_name_(alias_name),sub_select_alias_name_(sub_select_alias_name){}
 };  
 
 struct RawTarget
@@ -566,6 +567,7 @@ void resolve_from_list_help( rapidjson::Value  * v,int level = 0 ){
   				
   				string table_name;  // 表名
   				string alias_name;  // 表别名
+  				string sub_select_alias_name;  // 表别名
   				
   				// 显式的 联接写法
   				if(is_obvious_join){
@@ -579,12 +581,12 @@ void resolve_from_list_help( rapidjson::Value  * v,int level = 0 ){
   			  	}
   			  }
   				
+  				  if( (*v).HasMember("RELATION") && (*v)["RELATION"].HasMember("str_value_") ) table_name=string((*v)["RELATION"]["str_value_"].GetString()); 	// 表名				
+  					if( (*v).HasMember("RELATION_ALIAS") ) alias_name=string((*v)["RELATION_ALIAS"]["str_value_"].GetString()); 		//表别名
+  				  if( (*v).HasMember("SUB_SELECT_ALIAS") ) sub_select_alias_name=string((*v)["SUB_SELECT_ALIAS"]["str_value_"].GetString()); //子查询别名
+  						
   				// 隐式的 内联写法
   				if(is_alias){
-  					if( (*v).HasMember("RELATION") ) table_name=string((*v)["RELATION"]["str_value_"].GetString()); 	// 表名				
-  					if( (*v).HasMember("RELATION_ALIAS") ) alias_name=string((*v)["RELATION_ALIAS"]["str_value_"].GetString()); 		//表别名
-  					if( (*v).HasMember("SUB_SELECT_ALIAS") ) alias_name=string((*v)["SUB_SELECT_ALIAS"]["str_value_"].GetString()); //表别名
-
   				 //alias_name=string((*v)["RELATION_ALIAS"]["str_value_"].GetString()); 					
             
             //2. 子查询的情况，子查询无表名
@@ -599,7 +601,7 @@ void resolve_from_list_help( rapidjson::Value  * v,int level = 0 ){
             	}
       		}	
 							 // 插入解析后的表
-  			 			 tables.emplace_back( TableItem(table_name,alias_name) );
+  			 			 tables.emplace_back( TableItem(table_name,alias_name,sub_select_alias_name) );
   			 			 single_fromlists.emplace_back( v );
 }
 
