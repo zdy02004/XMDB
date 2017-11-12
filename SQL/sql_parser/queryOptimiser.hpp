@@ -208,56 +208,80 @@ void optimiser_not( rapidjson::Value  * vx ,rapidjson::Value  *  father){
  	  			// =  !=
  	  			if(  (*inner)["tag"] == T_OP_EQ  ){
  	  				(*inner)["tag"] = T_OP_NE ;
+ 	  				vx->Swap(*inner);
  	  			}
  	  			
- 	  			if(  (*inner)["tag"] == T_OP_NE  ){
+ 	  			else if(  (*inner)["tag"] == T_OP_NE  ){
  	  				(*inner)["tag"] =  T_OP_EQ;
+ 	  				vx->Swap(*inner);
  	  			}
  	  			// is not is
- 	  			if(  (*inner)["tag"] == T_OP_IS  ){
+ 	  			else if(  (*inner)["tag"] == T_OP_IS  ){
  	  				(*inner)["tag"] =  T_OP_IS_NOT;
+ 	  				vx->Swap(*inner);
  	  			}
  	  			
- 	  			if(  (*inner)["tag"] == T_OP_IS_NOT  ){
+ 	  			else if(  (*inner)["tag"] == T_OP_IS_NOT  ){
  	  				(*inner)["tag"] =  T_OP_IS;
+ 	  				vx->Swap(*inner);
  	  			}
  	  			//btw not btw
- 	  			if(  (*inner)["tag"] == T_OP_BTW  ){
+ 	  			else if(  (*inner)["tag"] == T_OP_BTW  ){
  	  				(*inner)["tag"] =  T_OP_NOT_BTW;
+ 	  				vx->Swap(*inner);
  	  			}
 
- 	  			if(  (*inner)["tag"] == T_OP_NOT_BTW  ){
+ 	  			else if(  (*inner)["tag"] == T_OP_NOT_BTW  ){
  	  				(*inner)["tag"] =  T_OP_BTW;
+ 	  				vx->Swap(*inner);
  	  			}
  	  			//like not like
- 	  			if(  (*inner)["tag"] == T_OP_LIKE  ){
+ 	  			else if(  (*inner)["tag"] == T_OP_LIKE  ){
  	  				(*inner)["tag"] =  T_OP_NOT_LIKE;
+ 	  				vx->Swap(*inner);
  	  			}
  	  			
- 	  			if(  (*inner)["tag"] == T_OP_NOT_LIKE  ){
+ 	  			else if(  (*inner)["tag"] == T_OP_NOT_LIKE  ){
  	  				(*inner)["tag"] =  T_OP_LIKE;
+ 	  				vx->Swap(*inner);
  	  			}
  	  			// in not in
- 	  			if(  (*inner)["tag"] == T_OP_IN  ){
+ 	  			else if(  (*inner)["tag"] == T_OP_IN  ){
  	  				(*inner)["tag"] =  T_OP_NOT_IN;
+ 	  				vx->Swap(*inner);
  	  			}
  	  			
- 	  			if(  (*inner)["tag"] == T_OP_NOT_IN  ){
+ 	  			else if(  (*inner)["tag"] == T_OP_NOT_IN  ){
  	  				(*inner)["tag"] =  T_OP_IN;
+ 	  				vx->Swap(*inner);
  	  			}
- 	  					printf("ddddddddd\n");
- 	  			if(  (*inner)["tag"] == T_BOOL  ){
+ 	  			else if(  (*inner)["tag"] == T_BOOL  ){
  	  				if( (*inner)["value_"].GetInt() == 0 ){
  	  				(*inner)["value_"].SetInt(1);
+ 	  				vx->Swap(*inner);
  	  			}
  	  				else
  	  				{
  	  				(*inner)["value_"].SetInt(0);
+ 	  				vx->Swap(*inner);
  	  			  }
  	  			 
  	  			}
  	  			
- 	  			vx->Swap(*inner);
+ 	  			 	else if(  (*inner)["tag"] == T_INT  ){
+ 	  				if( atoi( (*inner)["str_value_"].GetString() ) == 0 ){
+ 	  				(*inner)["str_value_"].SetString("1");
+ 	  				vx->Swap(*inner);
+ 	  			}
+ 	  				else
+ 	  				{
+ 	  				(*inner)["str_value_"].SetString("0");
+ 	  				vx->Swap(*inner);
+ 	  			  }
+ 	  			 
+ 	  			}
+ 	  			
+ 	  			
  	  		//}
 			
  	  	}
