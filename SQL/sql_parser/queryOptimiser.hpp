@@ -414,17 +414,22 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
   					rapidjson_log( &it ); 
   					optimiser_project_const( &it , level + 1 );
   				}
-  				
-  				if( !it.HasMember("CONST_TYPE") && it["CONST_TYPE"] != "INTNUM" ){
+  				cout<<"optimiser_project_const 3"<<endl;
+  				if( !it.HasMember("CONST_TYPE") /*&& it["CONST_TYPE"].GetString() != "INTNUM"*/ ){
   					continue;
   				}
+  				//cout<<it["str_value_"].GetString()<<endl;
   				proj[i++] = &it;
          }//end for
+
      if( 0 == i ) return;
-     	    	
+     if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
+     cout<<"optimiser_project_const 4"<<endl;
+
 		 if( vv->HasMember("OP_TYPE") && ((*vv)["tag"]).GetInt() == T_OP_ADD )	{
 				  is_simple = 1;
 				  for(;j<i;++j){
+					if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				 	 ret += atoi( (*vv)["children"][j]["str_value_"].GetString() );
 				  }
 				}		 		
@@ -432,11 +437,13 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 					is_simple = 1;
 				  if( 0 == j )
 				  	{
+				  		if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				  		ret = atoi( (*vv)["children"][j]["str_value_"].GetString() );
 				  		++j;
 				  	}
 				  
 				  for(;j<i;++j){
+				   if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				 	 ret -= atoi( (*vv)["children"][j]["str_value_"].GetString() );
 				  }
 				}
@@ -445,10 +452,12 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
  				  is_simple = 1;
 
 			    if( 0 == j ){
+			    	if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 			    	ret = atoi( (*vv)["children"][j]["str_value_"].GetString() );
 			    	++j;
 			    }
 				  for(;j<i;++j){
+				  	if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				 	 ret *= atoi( (*vv)["children"][j]["str_value_"].GetString() );
 				  }
 				}
@@ -456,10 +465,12 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 		if( vv->HasMember("OP_TYPE") && (*vv)["tag"].GetInt() == T_OP_DIV )	{
 			is_simple = 1;
 			if( 0 == j ){
+				if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				ret = atoi( (*vv)["children"][j]["str_value_"].GetString() );
 				++j;
 			}
 		  for(;j<i;++j){
+		  	if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 		 	 ret /= atoi( (*vv)["children"][j]["str_value_"].GetString() );
 		  }
 		}		
@@ -468,6 +479,7 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 			if( vv->HasMember("FUN_TYPE") && (*vv)["tag"].GetInt() == T_FUN_SUM )	{
 				 	is_simple = 1;
 				  for(;j<i;++j){
+				  	if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				 	 ret += atoi( (*vv)["children"][j]["str_value_"].GetString() );
 				  }
 				}
@@ -475,9 +487,11 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 				  is_simple = 1;
 				   for(;j<i;++j){
 				   	if( 0 == j ){
+				   		if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				   		ret = atoi( (*vv)["children"][j]["str_value_"].GetString() );
 				   		++j;
 				   	}
+				   if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				   ret = std::min( atoi( (*vv)["children"][j]["str_value_"].GetString() ),ret );
 				  }
 				}
@@ -485,17 +499,21 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 					is_simple = 1;
 					for(;j<i;++j){
 				   	if( 0 == j ){
+				   		if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				   		ret = atoi( (*vv)["children"][j]["str_value_"].GetString() );
 				   		++j;
 				   	}
+				   if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				   ret = std::max( atoi( (*vv)["children"][j]["str_value_"].GetString() ),ret );
 				  }
 				}
 				// 暂不支持平均数
 			if( (*vv)["tag"].GetInt() == T_FUN_AVG)	{
 					for(;j<i;++j){
+						if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				 	 ret += atoi( (*vv)["children"][j]["str_value_"].GetString() );
 				  }
+				  if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				  ret /= i;
 				}
 		
