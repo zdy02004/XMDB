@@ -2910,7 +2910,7 @@ table_factor:
      //malloc_non_terminal_node(&$$,result->Doc.GetAllocator(), T_ALIAS, $1, $3);
     malloc_terminal_node($$,result->Doc.GetAllocator(), T_RELATION);
     SafeAddMember($$,"RELATION",$1, result->Doc.GetAllocator());
-    SafeAddMember($$,"RELATION_ALIAS",$3, result->Doc.GetAllocator());
+    SafeAddMember($$,"SUB_SELECT_ALIAS",$3, result->Doc.GetAllocator());
     }
   | select_with_parens relation_name
     {
@@ -2918,7 +2918,7 @@ table_factor:
     // malloc_non_terminal_node(&$$,result->Doc.GetAllocator(), T_ALIAS, $1, $2);
     malloc_terminal_node($$,result->Doc.GetAllocator(), T_RELATION);
     SafeAddMember($$,"RELATION",$1, result->Doc.GetAllocator());
-    SafeAddMember($$,"RELATION_ALIAS",$2, result->Doc.GetAllocator());
+    SafeAddMember($$,"SUB_SELECT_ALIAS",$2, result->Doc.GetAllocator());
     }
   | joined_table
     {
