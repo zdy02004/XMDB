@@ -336,10 +336,11 @@ void optimiser_const( rapidjson::Value  * vx ,rapidjson::Value  *  father){
 		 	      	
 		 	     if( first->HasMember("CONST_TYPE") && second->HasMember("CONST_TYPE") ) 
 		 	     {
-		 	     		if( (*first)["tag"].GetInt() == 1 && (*second)["tag"].GetInt() == 1 )
+		 	     		//if( (*first)["tag"].GetInt() == 1 && (*second)["tag"].GetInt() == 1 )
+		 	     			if( (*first)["tag"].GetInt() == (*second)["tag"].GetInt()  )
 		 	     		{
-		 	     			  long val1 = atoi((*first )["str_value_"].GetString()  );
-		 	     			  long val2 = atoi((*second)["str_value_"].GetString()  );
+		 	     			  std::string val1 = (*first )["str_value_"].GetString()  ;
+		 	     			  std::string val2 = (*second)["str_value_"].GetString()  ;
 		 	     			  int ret = 0;
 		 	     			   
 		 	     				switch(oper_type)
@@ -364,10 +365,10 @@ void optimiser_const( rapidjson::Value  * vx ,rapidjson::Value  *  father){
 		 	     						if( val1 != val2 )ret = 1;
 		 	     							break;
 		 	     					case T_OP_AND:	
-		 	     						if( val1 & val2  )ret = val1 & val2;
+		 	     						if(  (*first)["tag"].GetInt() == 1  )ret = atoi(val1.c_str()) & atoi(val2.c_str());
 		 	     							break;
 		 	     					case T_OP_OR:	
-		 	     						if( val1 | val2  )ret = val1 | val2;
+		 	     						if(   (*first)["tag"].GetInt() == 1 )ret = atoi(val1.c_str()) | atoi(val2.c_str());
 		 	     							break;
 		 	     				}
 		 	     	// 常量条件	替换为 布尔条件		
@@ -539,6 +540,15 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 				  }
 				  if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
 				  ret /= i;
+				}
+				// ==
+				if( (*vv)["tag"].GetInt() == T_OP_EQ)	{
+					ret = 0;
+					for(;j<i-1;++j){
+						if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
+				 	 ret &= ( (*vv)["children"][j]["str_value_"].GetString() ==  (*vv)["children"][j+1]["str_value_"].GetString() ) ;
+				  }
+
 				}
 		
 			//if ( vv->HasMember("children") )optimiser_project_const( &(*vv)["children"],level );
