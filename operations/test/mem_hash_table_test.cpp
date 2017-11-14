@@ -30,6 +30,7 @@ typedef struct test_table_t
 	FIELD_INT  id;
 	FIELD_INT  try_num;
 	FIELD_DATE try_time;
+	int allocate(size_t s){return 0;}
 }test_table_t;
 
 
