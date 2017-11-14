@@ -160,7 +160,9 @@ inline int mem_skiplist_index_scan_long(
   int ret ;
   struct    record_t   *  return_record_ptr    = 0;
   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-  record_type return_record;	
+  record_type return_record;
+  return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+	
   
   mem_skiplist_entry_t * finded_entry  =  0;
   if(!mem_skiplist_find_one_at_lowest(mem_skiplist_index,
@@ -220,6 +222,8 @@ inline int mem_skiplist_index_scan_str(
   struct    record_t   *  return_record_ptr    = 0;
   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
   record_type return_record;	
+  return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
   
   mem_skiplist_entry_t * finded_entry  =  0;
   if(!mem_skiplist_find_one_at_lowest_str(mem_skiplist_index,
@@ -282,6 +286,8 @@ inline int mem_skiplist_LE_scan(
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
    record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
 	 
 	 DEBUG("Enter mem_skiplist_LE_scan(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
 	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
@@ -353,7 +359,8 @@ inline int mem_skiplist_LE_scan_str(
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
    record_type return_record;	
-	 
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
 	 DEBUG("Enter mem_skiplist_LE_scan_str(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
 	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
 	 do{
@@ -424,7 +431,8 @@ inline int mem_skiplist_L_scan(
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
    record_type return_record;	
-	 
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
 	 DEBUG("Enter mem_skiplist_L_scan(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
 	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
 	 do{
@@ -495,6 +503,7 @@ inline int mem_skiplist_L_scan_str(
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
    record_type return_record;	
+   return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 	 
 	 DEBUG("Enter mem_skiplist_L_scan_str(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
 	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
