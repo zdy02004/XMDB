@@ -735,9 +735,10 @@ inline int start_trans( long long  trans_no)
 MEM_TRANSACTION_LOCK(&(trans->locker));  //上锁
 // 分配事务的 scn
 MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //上锁 
-++transaction_manager.scn;
+
 trans->scn 			= transaction_manager.scn;
 trans->view_scn = transaction_manager.commit_scn;
+++transaction_manager.scn;
 //新事务入队列
 if(transaction_manager.latest_active_trans)
 {
@@ -2502,4 +2503,3 @@ int redo(char * path,char * start_str_in)
 #endif
 
 #endif 
-
