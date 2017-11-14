@@ -72,7 +72,7 @@ inline int mem_hash_index_scan_long(
    	    ret2 = get_record( mem_table, entry->block_no,  entry->record_num,  &return_record_ptr);
    	    if(!ret2 && !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 				{
-					  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+					  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 						DEBUG("Find one hash record in array_space!\n");
 						ret_list->emplace_back(return_record );
 				}
@@ -82,7 +82,7 @@ inline int mem_hash_index_scan_long(
    	    DEBUG("case SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND:\n");
         if(ret != SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND && !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) ) 
         {
-        		memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+        		memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 						DEBUG("Find one hash record in linked space!\n");
 						ret_list->emplace_back(return_record );
         }
@@ -107,7 +107,7 @@ inline int mem_hash_index_scan_long(
    	    ret2 = get_record( mem_table, entry->block_no,  entry->record_num,  &return_record_ptr);
    	    if(!ret2 && !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 				{
-					  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+					  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 						DEBUG("Find one hash record in array_space!\n");
 						ret_list->emplace_back(return_record );
 				}
@@ -200,7 +200,7 @@ inline int mem_hash_index_scan_str(
    	    ret2 = get_record( mem_table, entry->block_no,  entry->record_num,  &return_record_ptr);
    	    if(!ret2 && !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 				{
-					  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+					  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 						DEBUG("Find one hash record in array_space!\n");
 						ret_list->emplace_back(return_record );
 				}
@@ -210,7 +210,7 @@ inline int mem_hash_index_scan_str(
    	    DEBUG("case SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND:\n");
         if(ret != SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND && !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) ) 
         {
-        		memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+        		memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 						DEBUG("Find one hash record in linked space!\n");
 						ret_list->emplace_back(return_record );
         }
@@ -235,7 +235,7 @@ inline int mem_hash_index_scan_str(
    	    ret2 = get_record( mem_table, entry->block_no,  entry->record_num,  &return_record_ptr);
    	    if(!ret2 && !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 				{
-					  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+					  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 						DEBUG("Find one hash record in array_space!\n");
 						ret_list->emplace_back(return_record );
 				}
