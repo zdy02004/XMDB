@@ -39,7 +39,7 @@ inline int mem_hash_index_scan_long(
   
   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
   record_type return_record;	
-  
+  return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
   
   int ret;
   int ret2;
@@ -166,7 +166,8 @@ inline int mem_hash_index_scan_str(
   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
   struct record_t  *return_record_ptr     = 0;
   record_type return_record;	
-  
+  return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
   
   int ret;
   int ret2;
