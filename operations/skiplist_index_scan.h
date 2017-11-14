@@ -174,7 +174,7 @@ inline int mem_skiplist_index_scan_long(
  		ret = get_record( mem_table, finded_entry->block_no, finded_entry->record_num,  &return_record_ptr);
    	if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 		{
-				  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+				  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 					DEBUG("Find one skiplist record in skiplist_space!\n");
 					ret_list->emplace_back(return_record );
 					*last_find_entry = finded_entry;
@@ -190,7 +190,7 @@ inline int mem_skiplist_index_scan_long(
  				ret = get_record( mem_table, finded_entry->block_no, finded_entry->record_num,  &return_record_ptr);
    			if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 				{
-						  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+						  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 							DEBUG("Find one skiplist record in skiplist_space next link!\n");
 							ret_list->emplace_back(return_record );
 							*last_find_entry = finded_entry;
@@ -235,7 +235,7 @@ inline int mem_skiplist_index_scan_str(
  		ret = get_record( mem_table, finded_entry->block_no, finded_entry->record_num,  &return_record_ptr);
    	if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 		{
-				  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+				  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 					DEBUG("Find one skiplist record in skiplist_space!\n");
 					ret_list->emplace_back(return_record );
 					*last_find_entry = finded_entry;
@@ -251,7 +251,7 @@ inline int mem_skiplist_index_scan_str(
  				ret = get_record( mem_table, finded_entry->block_no, finded_entry->record_num,  &return_record_ptr);
    			if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 				{
-						  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+						  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 							DEBUG("Find one skiplist record in skiplist_space next link!\n");
 							ret_list->emplace_back(return_record );
 							*last_find_entry = finded_entry;
@@ -319,7 +319,7 @@ inline int mem_skiplist_LE_scan(
  					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
    				if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 					{
-							  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 								DEBUG("Find one skiplist record in skiplist_space next link!\n");
 								ret_list->emplace_back(return_record );
 					}
@@ -391,7 +391,7 @@ inline int mem_skiplist_LE_scan_str(
  					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
    				if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 					{
-							  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 								DEBUG("Find one skiplist record in skiplist_space next link!\n");
 								ret_list->emplace_back(return_record );
 					}
@@ -463,7 +463,7 @@ inline int mem_skiplist_L_scan(
  					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
    				if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 					{
-							  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 								DEBUG("Find one skiplist record in skiplist_space next link!\n");
 								ret_list->emplace_back(return_record );
 					}
@@ -535,7 +535,7 @@ inline int mem_skiplist_L_scan_str(
  					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
    				if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 					{
-							  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 								DEBUG("Find one skiplist record in skiplist_space next link!\n");
 								ret_list->emplace_back(return_record );
 					}
