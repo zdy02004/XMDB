@@ -6,6 +6,7 @@
 #include<list>
 #include <functional>
 #include <cstdlib>
+#include <iostream>
 
 template<int size>
 struct selection_obj
@@ -184,7 +185,9 @@ struct compare_list
 		//int j = -1;
 		//j = get_field_index(  field_name,mem_table ) ;
 		field_type1* b = (field_type1*)cmp_field_value ;
-		
+		DEBUG("cmp_fun\n");
+		std::cout<<*a<<std::endl;
+		std::cout<<*b<<std::endl;
 		return !( (*a) == (*b) );
 	}
 } __attribute__ ((packed, aligned (64)));
@@ -195,6 +198,7 @@ struct compare_list
 
 int get_field_by_index_help(struct compare_list * cmp_list,struct mem_table_t *mem_table,struct record_t * record_ptr, int j,int field_type_nr)
 {
+	DEBUG("field_type_nr is %d\n",field_type_nr);
 switch (field_type_nr)
 {
 __get_field_help__(1)
@@ -235,6 +239,7 @@ inline int full_table_scan_with_conlist(
 
     char buf[mem_table->record_size - RECORD_HEAD_SIZE];
     record_type return_record;	
+    return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
     
     int __i = 0;									 
     struct record_t     * record_ptr = NULL;
@@ -283,7 +288,7 @@ inline int full_table_scan_with_conlist(
 					}
 					com_list_iter = com_list;
 					
-					 if( is_ok && !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn ) )
+					 if( is_ok && !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn )/*!mem_table_read_record(mem_table , record_ptr, (char *)buf )*/ )
 						{
 							  //int size = mem_table->record_size ;
 							  memcpy(&return_record,buf,mem_table->record_size - RECORD_HEAD_SIZE);
@@ -330,6 +335,8 @@ inline int full_table_scan_with_con(
 	
 char buf[mem_table->record_size - RECORD_HEAD_SIZE];
 record_type return_record;	
+return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
 
 int __i = 0;											 
 struct record_t     * record_ptr;
