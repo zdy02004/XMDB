@@ -20,6 +20,7 @@ typedef struct test_table_t
 	FIELD_INT  id;
 	FIELD_INT  try_num;
 	FIELD_DATE try_time;
+	int allocate(size_t s){return 0;}
 }test_table_t;
 
 
@@ -111,6 +112,7 @@ void dest_mem_no_manager()
 
 int cmp_int(int * a,int * b)
 {
+	DEBUG("cmp_int() \n");
 	DEBUG( "*a = %d , *b = %d \n",*a,*b);
 	return *a == *b;
 }
@@ -136,7 +138,7 @@ char date1[]="20170101120000";
 
 test_table_t  bufe ;
 bufe.id 		    = 1;
-bufe.try_num 	  = 1;
+bufe.try_num 	  = 2;
 bufe.try_time   =str_to_time2(date1)  ;
 
 DEBUG("bufe.id =  %ld\n",bufe.id );
@@ -265,7 +267,7 @@ for(;j<tnum;++j){
  char field_name[32] = {"id"};
  char field_name2[32] = {"try_num"};
  int  com_value = 1;
- int  try_value = 1;
+ int  try_value = 2;
  DEBUG("Start to full_talbe_scan\n");
 // int ret = full_table_scan_with_con(
 //														mem_table,    //表
@@ -301,15 +303,22 @@ int ret =full_table_scan_with_conlist(
 
 
 //打印结果集 
-std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++\n"<<std::endl;
-std::for_each(ret_vector.begin(),ret_vector.end(),[](test_table_t& x){
+//std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++\n"<<std::endl;
+//std::for_each(ret_vector.begin(),ret_vector.end(),[](test_table_t& x){
+//	std::cout<<"========================="<<std::endl;
+//	std::cout<<"id="<<x.id<<std::endl;
+//	std::cout<<"try_num="<<x.try_num<<std::endl;
+//	std::cout<<"try_time="<<x.try_time<<std::endl;
+//	
+//	});  
+	
+	for(auto& x : ret_vector){
 	std::cout<<"========================="<<std::endl;
 	std::cout<<"id="<<x.id<<std::endl;
 	std::cout<<"try_num="<<x.try_num<<std::endl;
 	std::cout<<"try_time="<<x.try_time<<std::endl;
 	
-	});
-
+	}
 
 // 回滚事务
 //if(0!=(err=rollback_trans(trans_no)))ERROR("rollback_trans failed,trans_no is %d\n",err);
