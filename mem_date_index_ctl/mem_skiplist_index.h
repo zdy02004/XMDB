@@ -529,7 +529,53 @@ inline int mem_skiplist_find_EQO(mem_skiplist_index_t *mem_skiplist_index,
 	  return 0;
 }
 
+//  获得本层 > lkey的前继节点
+inline int mem_skiplist_find_G(mem_skiplist_index_t *mem_skiplist_index, 
+ 												mem_skiplist_entry_t *prev, 
+ 												mem_skiplist_entry_t *in,
+ 												mem_skiplist_entry_t **last_find_entry 
+ 											 )
+{
+	//右指针 和 它的数据指针 
+	 record_t 						* right_record = NULL;
+	 mem_skiplist_entry_t * right_entry  = NULL;
+	 record_t 						* prev_record = NULL;
+	 mem_skiplist_entry_t * prev_entry  = prev;
+	 int err;
+	 DEBUG("Enter mem_skiplist_find_G(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
+	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
+	 do{
+	 			//	do{
+	 					  if( right_record &&right_record->is_used == 0)printf("right_record->is_used == 0 \n");
+	 						prev_record = (record_t *)((char *)prev_entry - RECORD_HEAD_SIZE);
+	 						
+	 						SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&right_record                   );
+	 						SKIPLIST_RUNLOCK( &(prev_record->row_lock) );
+	 						if( right_record->is_used == 0 )return SKIPLIST_INDEX_ERR_GETGE_FAILED;
 
+	 						if(err)return err;
+	 			//	}while( right_record->is_used == 0 );
+   
+	 right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);
+	 DEBUG(" go pass entry %ld \n ",right_entry->lkey);
+
+	 
+	 if( mem_skiplist_index->nil != right_entry && 
+	 			right_entry->lkey < in->lkey            )prev_entry = right_entry ;
+	 
+	 }while(right_entry != mem_skiplist_index->nil && right_entry->lkey <= in->lkey);
+	 
+	 *last_find_entry = prev_entry;
+	 	 
+	 DEBUG(" mem_skiplist_find_GE end,prev_record is %0x \n ",right_record->record_num );
+	 //IMPORTANT_INFO(" End mem_skiplist_find_GE ,prev_record is %ld \n ",prev_entry);
+
+	  return 0;
+}
 
 //  获得本层 >= lkey的前继节点
 inline int mem_skiplist_find_GE(mem_skiplist_index_t *mem_skiplist_index, 
@@ -1240,6 +1286,54 @@ inline int mem_skiplist_find_EQO_str(mem_skiplist_index_t *mem_skiplist_index,
 	  return 0;
 }
 
+
+//  获得本层 > ckey的前继节点
+inline int mem_skiplist_find_G_str(mem_skiplist_index_t *mem_skiplist_index, 
+ 												mem_skiplist_entry_t *prev, 
+ 												mem_skiplist_entry_t *in,
+ 												mem_skiplist_entry_t **last_find_entry 
+ 											 )
+{
+	//右指针 和 它的数据指针 
+	 record_t 						* right_record = NULL;
+	 mem_skiplist_entry_t * right_entry  = NULL;
+	 record_t 						* prev_record = NULL;
+	 mem_skiplist_entry_t * prev_entry  = prev;
+	 int err;
+	 DEBUG("Enter mem_skiplist_find_G_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
+	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
+	 do{
+	 			//	do{
+	 					  if( right_record &&right_record->is_used == 0)printf("right_record->is_used == 0 \n");
+	 						prev_record = (record_t *)((char *)prev_entry - RECORD_HEAD_SIZE);
+	 						
+	 						SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&right_record                   );
+	 						SKIPLIST_RUNLOCK( &(prev_record->row_lock) );
+	 						if( right_record->is_used == 0 )return SKIPLIST_INDEX_ERR_GETGE_FAILED;
+
+	 						if(err)return err;
+	 			//	}while( right_record->is_used == 0 );
+   
+	 right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);
+	 DEBUG(" go pass entry %s \n ",right_entry->ckey);
+
+	 
+	 if( mem_skiplist_index->nil != right_entry && 
+	 			strcmp( right_entry->ckey , in->ckey ) < 0   )prev_entry = right_entry ;
+	 
+	 }while(right_entry != mem_skiplist_index->nil && strcmp( right_entry->ckey , in->ckey ) <= 0 );
+	 
+	 *last_find_entry = prev_entry;
+	 	 
+	 DEBUG(" mem_skiplist_find_GE_str end,prev_record is %0x \n ",right_record->record_num );
+	 //IMPORTANT_INFO(" End mem_skiplist_find_GE_str ,prev_record is %ld \n ",prev_entry);
+
+	  return 0;
+}
 
 
 //  获得本层 >= ckey的前继节点
