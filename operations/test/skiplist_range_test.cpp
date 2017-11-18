@@ -353,14 +353,14 @@ for(;j<tnum;++j){
  int  try_value = 1;
 //DEBUG("Start to skiplist_index_scan\n");
  
-  DEBUG("Start to skiplist_index_scan_str\n");
+DEBUG("Start to skiplist_index_scan_str\n");
 const char str_date[] ="abvvcdef\n";
 
 mem_skiplist_entry_t in;
-in.lkey  = 1;
+in.lkey  = 2;
 
 mem_skiplist_entry_t in2;
-in2.lkey  = 6;
+in2.lkey  = 5;
 
 
 //strcpy(in.ckey, str_date );
@@ -383,16 +383,36 @@ std::list<test_table_t> ret_vector2;
 //&ret_vector2		    //原始结果集
 //);
 
+//between
 
+//int ret = mem_skiplist_index_btw_scan_long(  
+//                                 mem_table,
+//                        /* in */ mem_skiplist_index ,
+//                        /* in */&in                 ,
+//                        /* in */&in2                ,
+//                          			&last_find_entry,
+//                          			trans_no,                 //当前事务ID
+//																&ret_vector2      		    //原始结果集
+//                        );
 
-int ret = mem_skiplist_index_btw_scan_long(  
-                                 mem_table,
-                        /* in */ mem_skiplist_index ,
-                        /* in */&in                 ,
-                        /* in */&in2                ,
-                          			&last_find_entry,
-                          			trans_no,                 //当前事务ID
-																&ret_vector2      		    //原始结果集
+// >                   
+     
+//int ret = mem_skiplist_index_scan_long_GE(  
+//                                       mem_table,
+//                        /* in */       mem_skiplist_index ,
+//                        /* in */ 			 &in             ,
+//                          						 &last_find_entry,
+//                          			       trans_no,            //当前事务ID
+//																       &ret_vector2  		    //原始结果集
+//                        );
+
+int ret = mem_skiplist_index_scan_long_LE(  
+                                       mem_table,
+                        /* in */       mem_skiplist_index ,
+                        /* in */ 			 &in             ,
+                          						 &last_find_entry,
+                          			       trans_no,            //当前事务ID
+																       &ret_vector2  		    //原始结果集
                         );
 
 //打印结果集 

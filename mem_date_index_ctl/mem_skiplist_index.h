@@ -25,6 +25,9 @@ extern "C" {
 #define SKIPLIST_INDEX_SEARCH_NOT_FOUND					 38012
 #define SKIPLIST_INDEX_ERR_GETDOWN_FAILED        38013
 #define SKIPLIST_INDEX_ERR_GETGE_FAILED          38014
+#define SKIPLIST_INDEX_ERR_GETG_FAILED           38015
+#define SKIPLIST_INDEX_ERR_GETLE_FAILED          38014
+#define SKIPLIST_INDEX_ERR_GETL_FAILED           38015
 
 //暂时用写锁锁来实现跳表索引锁
 #define SKIPLIST_LOCK_T             rwlock_t

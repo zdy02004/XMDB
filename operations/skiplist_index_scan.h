@@ -551,6 +551,298 @@ inline int mem_skiplist_L_scan_str(
 	  return 0;
 }
 
+//__________________________________________________________________________________
+
+//  获得本层 > lkey的前继节点
+template<typename record_type >
+inline int mem_skiplist_G_scan(mem_table_t *mem_table,
+												mem_skiplist_index_t *mem_skiplist_index, 
+ 												mem_skiplist_entry_t *prev, 
+ 												mem_skiplist_entry_t *in,
+ 												mem_skiplist_entry_t **last_find_entry,
+ 												unsigned long long  Tn,                 //当前事务ID
+												std::list<record_type>* ret_list		    //原始结果集 
+ 											 )
+{
+	//右指针 和 它的数据指针 
+	 record_t 						* right_record = NULL;
+	 mem_skiplist_entry_t * right_entry  = NULL;
+	 record_t 						* prev_record = NULL;
+	 mem_skiplist_entry_t * prev_entry  = prev;
+	 int err;
+	 
+	 int ret; 
+	 struct    record_t   *  return_record_ptr    = 0;
+   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+   record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
+	 
+	 DEBUG("Enter mem_skiplist_find_G(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
+	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
+	 do{
+	 			//	do{
+	 					  if( right_record &&right_record->is_used == 0)printf("right_record->is_used == 0 \n");
+	 						prev_record = (record_t *)((char *)prev_entry - RECORD_HEAD_SIZE);
+	 						
+	 						SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&right_record                   );
+	 						SKIPLIST_RUNLOCK( &(prev_record->row_lock) );
+	 						if( right_record->is_used == 0 )return SKIPLIST_INDEX_ERR_GETG_FAILED;
+
+	 						if(err)return err;
+	 			//	}while( right_record->is_used == 0 );
+   
+	 right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);
+	 DEBUG(" go pass entry %ld \n ",right_entry->lkey);
+
+	 
+	 if( mem_skiplist_index->nil != right_entry && 
+	 			right_entry->lkey > in->lkey            )
+	 			{
+	 				prev_entry = right_entry ;
+	 					//插入结果集
+ 					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
+   				if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
+					{
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+								DEBUG("Find one skiplist record in skiplist_space next link!\n");
+								ret_list->emplace_back(return_record );
+					}
+	 			
+	 			}
+	 }while(right_entry != mem_skiplist_index->nil && right_entry->lkey > in->lkey);
+	 
+	 *last_find_entry = prev_entry;
+	 	 
+	 DEBUG(" mem_skiplist_find_G end,prev_record is %0x \n ",right_record->record_num );
+	 //IMPORTANT_INFO(" End mem_skiplist_find_GE ,prev_record is %ld \n ",prev_entry);
+
+	  return 0;
+}
+
+//  获得本层 >= lkey的前继节点
+template<typename record_type >
+inline int mem_skiplist_GE_scan(mem_table_t *mem_table,
+												mem_skiplist_index_t *mem_skiplist_index, 
+ 												mem_skiplist_entry_t *prev, 
+ 												mem_skiplist_entry_t *in,
+ 												mem_skiplist_entry_t **last_find_entry,
+ 												unsigned long long  Tn,                 //当前事务ID
+												std::list<record_type>* ret_list		    //原始结果集 
+ 											 )
+{
+	//右指针 和 它的数据指针 
+	 record_t 						* right_record = NULL;
+	 mem_skiplist_entry_t * right_entry  = NULL;
+	 record_t 						* prev_record = NULL;
+	 mem_skiplist_entry_t * prev_entry  = prev;
+	 int err;
+	 
+	 int ret; 
+	 struct    record_t   *  return_record_ptr    = 0;
+   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+   record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+	 
+	 DEBUG("Enter mem_skiplist_find_GE(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
+	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
+	 do{
+	 			//	do{
+	 					  if( right_record &&right_record->is_used == 0)printf("right_record->is_used == 0 \n");
+	 						prev_record = (record_t *)((char *)prev_entry - RECORD_HEAD_SIZE);
+	 						
+	 						SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&right_record                   );
+	 						SKIPLIST_RUNLOCK( &(prev_record->row_lock) );
+	 						if( right_record->is_used == 0 )return SKIPLIST_INDEX_ERR_GETGE_FAILED;
+
+	 						if(err)return err;
+	 			//	}while( right_record->is_used == 0 );
+   
+	 right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);
+	 DEBUG(" go pass entry %ld \n ",right_entry->lkey);
+
+	 
+	 if( mem_skiplist_index->nil != right_entry && 
+	 			right_entry->lkey >= in->lkey            )
+	 			{
+	 				prev_entry = right_entry ;
+	 					//插入结果集
+ 					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
+   				if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
+					{
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+								DEBUG("Find one skiplist record in skiplist_space next link!\n");
+								ret_list->emplace_back(return_record );
+					}
+	 			
+	 			}
+	 
+	 }while(right_entry != mem_skiplist_index->nil && right_entry->lkey >= in->lkey);
+	 
+	 *last_find_entry = prev_entry;
+	 	 
+	 DEBUG(" mem_skiplist_find_GE end,prev_record is %0x \n ",right_record->record_num );
+	 //IMPORTANT_INFO(" End mem_skiplist_find_GE ,prev_record is %ld \n ",prev_entry);
+
+	  return 0;
+}
+
+
+
+
+//  获得本层 > ckey的前继节点
+template<typename record_type >
+inline int mem_skiplist_G_scan_str(mem_table_t *mem_table,
+												mem_skiplist_index_t *mem_skiplist_index, 
+ 												mem_skiplist_entry_t *prev, 
+ 												mem_skiplist_entry_t *in,
+ 												mem_skiplist_entry_t **last_find_entry,
+ 												unsigned long long  Tn,                 //当前事务ID
+												std::list<record_type>* ret_list		    //原始结果集 
+ 											 )
+{
+	//右指针 和 它的数据指针 
+	 record_t 						* right_record = NULL;
+	 mem_skiplist_entry_t * right_entry  = NULL;
+	 record_t 						* prev_record = NULL;
+	 mem_skiplist_entry_t * prev_entry  = prev;
+	 int err;
+	 
+	 int ret; 
+	 struct    record_t   *  return_record_ptr    = 0;
+   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+   record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+	 
+	 DEBUG("Enter mem_skiplist_find_G_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
+	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
+	 do{
+	 			//	do{
+	 					  if( right_record &&right_record->is_used == 0)printf("right_record->is_used == 0 \n");
+	 						prev_record = (record_t *)((char *)prev_entry - RECORD_HEAD_SIZE);
+	 						
+	 						SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&right_record                   );
+	 						SKIPLIST_RUNLOCK( &(prev_record->row_lock) );
+	 						if( right_record->is_used == 0 )return SKIPLIST_INDEX_ERR_GETG_FAILED;
+
+	 						if(err)return err;
+	 			//	}while( right_record->is_used == 0 );
+   
+	 right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);
+	 DEBUG(" go pass entry %s \n ",right_entry->ckey);
+
+	 
+	 if( mem_skiplist_index->nil != right_entry && 
+	 			strcmp( right_entry->ckey , in->ckey ) > 0   )
+	 			{
+	 				prev_entry = right_entry ;
+	 					//插入结果集
+ 					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
+   				if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
+					{
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+								DEBUG("Find one skiplist record in skiplist_space next link!\n");
+								ret_list->emplace_back(return_record );
+					}
+	 			
+	 			}
+	 
+	 }while(right_entry != mem_skiplist_index->nil && strcmp( right_entry->ckey , in->ckey ) > 0 );
+	 
+	 *last_find_entry = prev_entry;
+	 	 
+	 DEBUG(" mem_skiplist_find_G_str end,prev_record is %0x \n ",right_record->record_num );
+	 //IMPORTANT_INFO(" End mem_skiplist_find_GE_str ,prev_record is %ld \n ",prev_entry);
+
+	  return 0;
+}
+
+
+//  获得本层 >= ckey的前继节点
+template<typename record_type >
+inline int mem_skiplist_GE_scan_str(mem_table_t *mem_table,
+												mem_skiplist_index_t *mem_skiplist_index, 
+ 												mem_skiplist_entry_t *prev, 
+ 												mem_skiplist_entry_t *in,
+ 												mem_skiplist_entry_t **last_find_entry,
+ 												unsigned long long  Tn,                 //当前事务ID
+												std::list<record_type>* ret_list		    //原始结果集 
+ 											 )
+{
+	//右指针 和 它的数据指针 
+	 record_t 						* right_record = NULL;
+	 mem_skiplist_entry_t * right_entry  = NULL;
+	 record_t 						* prev_record = NULL;
+	 mem_skiplist_entry_t * prev_entry  = prev;
+	 int err;
+	 
+	 int ret; 
+	 struct    record_t   *  return_record_ptr    = 0;
+   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+   record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+	 
+	 DEBUG("Enter mem_skiplist_find_GE_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
+	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
+	 do{
+	 			//	do{
+	 					  if( right_record &&right_record->is_used == 0)printf("right_record->is_used == 0 \n");
+	 						prev_record = (record_t *)((char *)prev_entry - RECORD_HEAD_SIZE);
+	 						
+	 						SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&right_record                   );
+	 						SKIPLIST_RUNLOCK( &(prev_record->row_lock) );
+	 						if( right_record->is_used == 0 )return SKIPLIST_INDEX_ERR_GETGE_FAILED;
+
+	 						if(err)return err;
+	 			//	}while( right_record->is_used == 0 );
+   
+	 right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);
+	 DEBUG(" go pass entry %s \n ",right_entry->ckey);
+
+	 
+	 if( mem_skiplist_index->nil != right_entry && 
+	 			strcmp( right_entry->ckey , in->ckey ) >= 0   )
+	 			{
+	 				prev_entry = right_entry ;
+	 					//插入结果集
+ 					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
+   				if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
+					{
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+								DEBUG("Find one skiplist record in skiplist_space next link!\n");
+								ret_list->emplace_back(return_record );
+					}
+	 			
+	 			}
+	 
+	 }while(right_entry != mem_skiplist_index->nil && strcmp( right_entry->ckey , in->ckey ) >= 0 );
+	 
+	 *last_find_entry = prev_entry;
+	 	 
+	 DEBUG(" mem_skiplist_find_GE_str end,prev_record is %0x \n ",right_record->record_num );
+	 //IMPORTANT_INFO(" End mem_skiplist_find_GE_str ,prev_record is %ld \n ",prev_entry);
+
+	  return 0;
+}
+
+
+
 template<typename record_type >
 inline int mem_skiplist_index_btw_scan_long(  
                                 mem_table_t *mem_table,
@@ -619,5 +911,466 @@ if(!mem_skiplist_index_scan_str(
 
 }
 
+//-------------------------------------------------------------------------------------------
+//扫描所有 < 某个数的结果集
+template<typename record_type >
+inline int mem_skiplist_index_scan_long_L(  
+                                mem_table_t *mem_table,
+                        /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
+                        /* in */mem_skiplist_entry_t *in             ,
+                          			mem_skiplist_entry_t **last_find_entry,
+                          			unsigned long long  Tn,                 //当前事务ID
+																std::list<record_type>* ret_list		    //原始结果集
+                        )
+{
+//1.从最低层开始找
+	mem_skiplist_entry_t * prev_entry;
+	struct record_t *      prev_record;
+	int err = 0;
+  
+   int ret; 
+	 struct    record_t   *  return_record_ptr    = 0;
+   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+   record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
+	//获得最低层头节点
+	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index, 1 );
+	  prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE );
+	
+	 DEBUG("Get first elemet %d\n",prev_entry->lkey);
+	  
+	  SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&return_record_ptr         );
+	 	SKIPLIST_RUNLOCK( &(prev_record->row_lock) );
+	 	if( (return_record_ptr)->is_used == 0 )return SKIPLIST_INDEX_ERR_GETL_FAILED;
+
+	 	if(err)return err;
+	 		
+	 	*last_find_entry = prev_entry;
+	 	DEBUG("Prepare Serach one %ld\n",in->lkey );	
+	 	
+	 	//if( mem_skiplist_index->nil != prev_entry && 
+	 	//	 prev_entry->lkey < in->lkey   )
+	 	//	{
+	 	//			//插入结果集
+   	//		if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
+		//		{
+		//				  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+		//					DEBUG("Find one skiplist record in skiplist_space next link!\n");
+		//					ret_list->emplace_back(return_record );
+		//		}
+	 	//	
+	 	//	}							 	 						
+// 范围扫入
+		DEBUG("return  mem_skiplist_index_L_scan_long,last_find_entry is %0x \n",*last_find_entry	);
+		return  mem_skiplist_L_scan(
+											mem_table,
+										  mem_skiplist_index, 
+											*last_find_entry,
+										  in,
+										  last_find_entry,
+										  Tn,                 //当前事务ID
+										  ret_list		    //原始结果集 
+									 );
+
+}
+
+//扫描所有 <= 某个数的结果集
+template<typename record_type >
+inline int mem_skiplist_index_scan_long_LE(  
+                                mem_table_t *mem_table,
+                        /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
+                        /* in */mem_skiplist_entry_t *in             ,
+                          			mem_skiplist_entry_t **last_find_entry,
+                          			unsigned long long  Tn,                 //当前事务ID
+																std::list<record_type>* ret_list		    //原始结果集
+                        )
+{
+//1.从最低层开始找
+	mem_skiplist_entry_t * prev_entry;
+	struct record_t *      prev_record;
+	int err = 0;
+  
+   int ret; 
+	 struct    record_t   *  return_record_ptr    = 0;
+   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+   record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
+	//获得最低层头节点
+	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index, 1 );
+	  prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE );
+	  
+	  SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&return_record_ptr         );
+	 	SKIPLIST_RUNLOCK( &(prev_record->row_lock) );
+	 	if( (return_record_ptr)->is_used == 0 )return SKIPLIST_INDEX_ERR_GETLE_FAILED;
+
+	 	if(err)return err;
+	 		
+	 	*last_find_entry = prev_entry;
+	 	DEBUG("Prepare Serach one %ld\n",in->lkey );	
+	 							 	 						
+// 范围扫入
+		DEBUG("return  mem_skiplist_index_L_scan_long,last_find_entry is %0x \n",*last_find_entry	);
+		return  mem_skiplist_LE_scan(
+											mem_table,
+										  mem_skiplist_index, 
+											*last_find_entry,
+										  in,
+										  last_find_entry,
+										  Tn,                 //当前事务ID
+										  ret_list		    //原始结果集 
+									 );
+
+}
+
+//扫描所有 > 某个数的结果集
+template<typename record_type >
+inline int mem_skiplist_index_scan_long_G(  
+                                mem_table_t *mem_table,
+                        /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
+                        /* in */mem_skiplist_entry_t *in             ,
+                          			mem_skiplist_entry_t **last_find_entry,
+                          			unsigned long long  Tn,                 //当前事务ID
+																std::list<record_type>* ret_list		    //原始结果集
+                        )
+{
+//1.从最低层开始找
+	mem_skiplist_entry_t * prev_entry;
+	struct record_t *      prev_record;
+	int err = 0;
+  
+   int ret; 
+	 struct    record_t   *  return_record_ptr    = 0;
+   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+   record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
+	//获得对应节点
+	 err = mem_skiplist_search( mem_skiplist_index,
+ 												in,
+ 												last_find_entry
+ 											 );
+
+	 	if(err)return err;
+	  return_record_ptr = (struct record_t *)( (char *)(*last_find_entry) - RECORD_HEAD_SIZE );
+	  
+	 	
+	 	DEBUG("Find minst element %ld\n",(*last_find_entry)->lkey );	
+	 	
+	 	 if( (*last_find_entry)->lkey > in->lkey   )
+	 			{
+	 					//插入结果集
+   				if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
+					{
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+								DEBUG("Find one skiplist record in skiplist_space next link!\n");
+								ret_list->emplace_back(return_record );
+					}
+	 			
+	 			}							 	 						
+// 范围扫入
+		DEBUG("return  mem_skiplist_index_L_scan_long,last_find_entry is %0x \n",*last_find_entry	);
+		return  mem_skiplist_G_scan(
+											mem_table,
+										  mem_skiplist_index, 
+											*last_find_entry,
+										  in,
+										  last_find_entry,
+										  Tn,                 //当前事务ID
+										  ret_list		    //原始结果集 
+									 );
+
+}
+
+//扫描所有 >= 某个数的结果集
+template<typename record_type >
+inline int mem_skiplist_index_scan_long_GE(  
+                                mem_table_t *mem_table,
+                        /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
+                        /* in */mem_skiplist_entry_t *in             ,
+                          			mem_skiplist_entry_t **last_find_entry,
+                          			unsigned long long  Tn,                 //当前事务ID
+																std::list<record_type>* ret_list		    //原始结果集
+                        )
+{
+//1.从最低层开始找
+	mem_skiplist_entry_t * prev_entry;
+	struct record_t *      prev_record;
+	int err = 0;
+  
+   int ret; 
+	 struct    record_t   *  return_record_ptr    = 0;
+   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+   record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
+	//获得对应节点
+	 err = mem_skiplist_search( mem_skiplist_index,
+ 												in,
+ 												last_find_entry
+ 											 );
+
+	 	if(err)return err;
+	  return_record_ptr = (struct record_t *)( (char *)(*last_find_entry) - RECORD_HEAD_SIZE );
+	  
+	 	
+	 	DEBUG("Prepare Serach one %ld\n",in->lkey );	
+	 	
+	 	 if( (*last_find_entry)->lkey >= in->lkey   )
+	 			{
+	 					//插入结果集
+   				if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
+					{
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+								DEBUG("Find one skiplist record in skiplist_space next link!\n");
+								ret_list->emplace_back(return_record );
+					}
+	 			
+	 			}							 	 						
+// 范围扫入
+		DEBUG("return  mem_skiplist_index_L_scan_long,last_find_entry is %0x \n",*last_find_entry	);
+		return  mem_skiplist_GE_scan(
+											mem_table,
+										  mem_skiplist_index, 
+											*last_find_entry,
+										  in,
+										  last_find_entry,
+										  Tn,                 //当前事务ID
+										  ret_list		    //原始结果集 
+									 );
+
+}
+
+//扫描所有 < 某个数的结果集
+template<typename record_type >
+inline int mem_skiplist_index_scan_str_L(  
+                                mem_table_t *mem_table,
+                        /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
+                        /* in */mem_skiplist_entry_t *in             ,
+                          			mem_skiplist_entry_t **last_find_entry,
+                          			unsigned long long  Tn,                 //当前事务ID
+																std::list<record_type>* ret_list		    //原始结果集
+                        )
+{
+//1.从最低层开始找
+	mem_skiplist_entry_t * prev_entry;
+	struct record_t *      prev_record;
+	int err = 0;
+  
+   int ret; 
+	 struct    record_t   *  return_record_ptr    = 0;
+   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+   record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
+	//获得最低层头节点
+	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index, 1 );
+	  prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE );
+	  
+	  SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&return_record_ptr         );
+	 	SKIPLIST_RUNLOCK( &(prev_record->row_lock) );
+	 	if( (return_record_ptr)->is_used == 0 )return SKIPLIST_INDEX_ERR_GETL_FAILED;
+
+	 	if(err)return err;
+	 		
+	 	*last_find_entry = prev_entry;
+	 	DEBUG("Prepare Serach one %ld\n",in->lkey );	
+						 	 						
+// 范围扫入
+		DEBUG("return  mem_skiplist_index_L_scan_long,last_find_entry is %0x \n",*last_find_entry	);
+		return  mem_skiplist_L_scan_str(
+											mem_table,
+										  mem_skiplist_index, 
+											*last_find_entry,
+										  in,
+										  last_find_entry,
+										  Tn,                 //当前事务ID
+										  ret_list		    //原始结果集 
+									 );
+
+}
+
+//扫描所有 <= 某个数的结果集
+template<typename record_type >
+inline int mem_skiplist_index_scan_str_LE(  
+                                mem_table_t *mem_table,
+                        /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
+                        /* in */mem_skiplist_entry_t *in             ,
+                          			mem_skiplist_entry_t **last_find_entry,
+                          			unsigned long long  Tn,                 //当前事务ID
+																std::list<record_type>* ret_list		    //原始结果集
+                        )
+{
+//1.从最低层开始找
+	mem_skiplist_entry_t * prev_entry;
+	struct record_t *      prev_record;
+	int err = 0;
+  
+   int ret; 
+	 struct    record_t   *  return_record_ptr    = 0;
+   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+   record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
+	//获得最低层头节点
+	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index, 1 );
+	  prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE );
+	  
+	  SKIPLIST_RLOCK( &(prev_record->row_lock) );
+	 						err = get_record(mem_skiplist_index->heap_space ,
+	 												prev_entry->right_block_no,
+	 												prev_entry->right_record_num,
+	 												&return_record_ptr         );
+	 	SKIPLIST_RUNLOCK( &(prev_record->row_lock) );
+	 	if( (return_record_ptr)->is_used == 0 )return SKIPLIST_INDEX_ERR_GETLE_FAILED;
+
+	 	if(err)return err;
+	 		
+	 	*last_find_entry = prev_entry;
+	 	DEBUG("Prepare Serach one %ld\n",in->lkey );	
+	 							 	 						
+// 范围扫入
+		DEBUG("return  mem_skiplist_index_L_scan_long,last_find_entry is %0x \n",*last_find_entry	);
+		return  mem_skiplist_LE_scan_str(
+											mem_table,
+										  mem_skiplist_index, 
+											*last_find_entry,
+										  in,
+										  last_find_entry,
+										  Tn,                 //当前事务ID
+										  ret_list		    //原始结果集 
+									 );
+
+}
+
+//扫描所有 > 某个数的结果集
+template<typename record_type >
+inline int mem_skiplist_index_scan_str_G(  
+                                mem_table_t *mem_table,
+                        /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
+                        /* in */mem_skiplist_entry_t *in             ,
+                          			mem_skiplist_entry_t **last_find_entry,
+                          			unsigned long long  Tn,                 //当前事务ID
+																std::list<record_type>* ret_list		    //原始结果集
+                        )
+{
+//1.从最低层开始找
+	mem_skiplist_entry_t * prev_entry;
+	struct record_t *      prev_record;
+	int err = 0;
+  
+   int ret; 
+	 struct    record_t   *  return_record_ptr    = 0;
+   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+   record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
+	//获得对应节点
+	 err = mem_skiplist_search_str( mem_skiplist_index,
+ 												in,
+ 												last_find_entry
+ 											 );
+
+	 	if(err)return err;
+	  return_record_ptr = (struct record_t *)( (char *)(*last_find_entry) - RECORD_HEAD_SIZE );
+	  
+	 	
+	 	DEBUG("Prepare Serach one %ld\n",in->lkey );	
+	 	
+	 	 if( strcmp( (*last_find_entry)->ckey , in->ckey ) > 0   )
+	 			{
+	 					//插入结果集
+   				if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
+					{
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+								DEBUG("Find one skiplist record in skiplist_space next link!\n");
+								ret_list->emplace_back(return_record );
+					}
+	 			
+	 			}							 	 						
+// 范围扫入
+		DEBUG("return  mem_skiplist_index_L_scan_long,last_find_entry is %0x \n",*last_find_entry	);
+		return  mem_skiplist_G_scan_str(
+											mem_table,
+										  mem_skiplist_index, 
+											*last_find_entry,
+										  in,
+										  last_find_entry,
+										  Tn,                 //当前事务ID
+										  ret_list		    //原始结果集 
+									 );
+
+}
+
+//扫描所有 >= 某个数的结果集
+template<typename record_type >
+inline int mem_skiplist_index_scan_str_GE(  
+                                mem_table_t *mem_table,
+                        /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
+                        /* in */mem_skiplist_entry_t *in             ,
+                          			mem_skiplist_entry_t **last_find_entry,
+                          			unsigned long long  Tn,                 //当前事务ID
+																std::list<record_type>* ret_list		    //原始结果集
+                        )
+{
+//1.从最低层开始找
+	mem_skiplist_entry_t * prev_entry;
+	struct record_t *      prev_record;
+	int err = 0;
+  
+   int ret; 
+	 struct    record_t   *  return_record_ptr    = 0;
+   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+   record_type return_record;	
+	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
+	//获得对应节点
+	 err = mem_skiplist_search_str( mem_skiplist_index,
+ 												in,
+ 												last_find_entry
+ 											 );
+
+	 	if(err)return err;
+	  return_record_ptr = (struct record_t *)( (char *)(*last_find_entry) - RECORD_HEAD_SIZE );
+	  
+	 	
+	 	DEBUG("Prepare Serach one %ld\n",in->lkey );	
+	 	
+	 	 if( strcmp( (*last_find_entry)->ckey , in->ckey ) >= 0    )
+	 			{
+	 					//插入结果集
+   				if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
+					{
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+								DEBUG("Find one skiplist record in skiplist_space next link!\n");
+								ret_list->emplace_back(return_record );
+					}
+	 			
+	 			}							 	 						
+// 范围扫入
+		DEBUG("return  mem_skiplist_index_L_scan_long,last_find_entry is %0x \n",*last_find_entry	);
+		return  mem_skiplist_GE_scan_str(
+											mem_table,
+										  mem_skiplist_index, 
+											*last_find_entry,
+										  in,
+										  last_find_entry,
+										  Tn,                 //当前事务ID
+										  ret_list		    //原始结果集 
+									 );
+
+}
 #endif 
