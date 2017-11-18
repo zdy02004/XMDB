@@ -844,7 +844,7 @@ inline int mem_skiplist_GE_scan_str(mem_table_t *mem_table,
 
 
 template<typename record_type >
-inline int mem_skiplist_index_btw_scan_long(  
+inline int mem_skiplist_index_scan_long_btw(  
                                 mem_table_t *mem_table,
                         /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
                         /* in */mem_skiplist_entry_t *min             ,
@@ -879,7 +879,7 @@ if(!mem_skiplist_index_scan_long(
 
 
 template<typename record_type >
-inline int mem_skiplist_index_btw_scan_str(  
+inline int mem_skiplist_index_scan_str_btw(  
                                 mem_table_t *mem_table,
                         /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
                         /* in */mem_skiplist_entry_t *min             ,

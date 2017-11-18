@@ -385,7 +385,7 @@ std::list<test_table_t> ret_vector2;
 
 //between
 
-//int ret = mem_skiplist_index_btw_scan_long(  
+//int ret = mem_skiplist_index_scan_long_btw(  
 //                                 mem_table,
 //                        /* in */ mem_skiplist_index ,
 //                        /* in */&in                 ,
