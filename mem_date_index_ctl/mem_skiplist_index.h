@@ -571,7 +571,7 @@ inline int mem_skiplist_find_G(mem_skiplist_index_t *mem_skiplist_index,
 	 
 	 *last_find_entry = prev_entry;
 	 	 
-	 DEBUG(" mem_skiplist_find_GE end,prev_record is %0x \n ",right_record->record_num );
+	 DEBUG(" mem_skiplist_find_G end,prev_record is %0x \n ",right_record->record_num );
 	 //IMPORTANT_INFO(" End mem_skiplist_find_GE ,prev_record is %ld \n ",prev_entry);
 
 	  return 0;
@@ -1329,7 +1329,7 @@ inline int mem_skiplist_find_G_str(mem_skiplist_index_t *mem_skiplist_index,
 	 
 	 *last_find_entry = prev_entry;
 	 	 
-	 DEBUG(" mem_skiplist_find_GE_str end,prev_record is %0x \n ",right_record->record_num );
+	 DEBUG(" mem_skiplist_find_G_str end,prev_record is %0x \n ",right_record->record_num );
 	 //IMPORTANT_INFO(" End mem_skiplist_find_GE_str ,prev_record is %ld \n ",prev_entry);
 
 	  return 0;
