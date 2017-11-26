@@ -265,6 +265,24 @@ public:
 	}
 } __attribute__ ((packed, aligned (64)));
 
+struct compare_ne_list:public compare_list
+{
+
+public:
+	// 对于特殊情况，请重载该函数	
+	template< typename field_type1 > 
+	int cmp_fun(field_type1* a)
+	{
+		//int j = -1;
+		//j = get_field_index(  field_name,mem_table ) ;
+		field_type1* b = (field_type1*)cmp_field_value ;
+		DEBUG("cmp_fun\n");
+		std::cout<<*a<<std::endl;
+		std::cout<<*b<<std::endl;
+		return !( (*a) != (*b) );
+	}
+} __attribute__ ((packed, aligned (64)));
+
 
 #define __get_field_help__(field_type_nr) case field_type_nr: return cmp_list->cmp_fun( get_field_by_index<field_type_nr>::get(mem_table, record_ptr, j ) );
 
