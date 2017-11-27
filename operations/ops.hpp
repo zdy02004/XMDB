@@ -486,6 +486,59 @@ struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;
 	return 0;
 }
 
+
+ //表扫描
+//un 遍历函数
+//aram 函数参数
+//template<>  typename record_type,  typename record_type,
+template<typename record_type >
+inline int full_table_scan(
+														struct mem_table_t *mem_table,       //表
+														unsigned long long  Tn,             //当前事务ID
+														std::list<record_type>* ret		    //原始结果集
+) 
+{
+
+char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+record_type return_record;	
+return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
+
+
+int __i = 0;											 
+struct record_t     * record_ptr;
+struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;	
+ 
+	for(;__i<mem_table->config.mem_block_used;++__i)//遍历所有块																
+	{
+			unsigned  long  __high_level_temp = 0;
+
+				for(; //遍历所有行
+				__mem_block_temp->space_start_addr + (__high_level_temp)* (mem_table->record_size) < __mem_block_temp->space_end_addr - mem_table->record_size ;
+				++__high_level_temp
+				   )		 															
+				{
+					//DEBUG("__high_level_temp = %ld\n",__high_level_temp);
+						// 找到可用的记录位置
+						record_ptr = (struct record_t *) ( (char *)__mem_block_temp->space_start_addr + (__high_level_temp) * (mem_table->record_size) );
+						// 已经删除的行不处理
+						if(record_ptr->is_used != 1)continue;
+					  DEBUG("record_ptr addr is %0x,record_ptr->is_used = %d\n",record_ptr,record_ptr->is_used);
+
+						if( !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn) )
+						{
+							  //int size = mem_table->record_size ;
+							  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+								DEBUG("find one record!\n");
+								ret->emplace_back( return_record );
+						}
+						
+				}
+			__mem_block_temp = __mem_block_temp->next;      //下一个块
+	}
+	return 0;
+}
+
+
 //////带限制的全表扫描
 //////fun 遍历函数
 //////param 函数参数
