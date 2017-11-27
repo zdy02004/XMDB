@@ -851,12 +851,12 @@ expr:
   | expr IS NULLX
     {
      /* malloc_non_terminal_node($$, result->malloc_pool_, T_OP_IS, 2, $1, $3);*/
-      malloc_non_terminal_node_with_type(&$$, result->Doc.GetAllocator(),"OP_TYPE","IS", T_OP_IS, $1,$3);
+      malloc_non_terminal_node_with_type(&$$, result->Doc.GetAllocator(),"OP_TYPE","IS_NULL", T_OP_IS, $1);
     }
   | expr IS NOT NULLX
     {
      /* malloc_non_terminal_node($$, result->malloc_pool_, T_OP_IS_NOT, 2, $1, $4);*/
-     malloc_non_terminal_node_with_type(&$$, result->Doc.GetAllocator(),"OP_TYPE","IS_NOT", T_OP_IS_NOT, $1,$4);
+     malloc_non_terminal_node_with_type(&$$, result->Doc.GetAllocator(),"OP_TYPE","IS_NOT_NULL", T_OP_IS_NOT, $1);
     }
   | expr IS BOOL
     {
@@ -4548,5 +4548,3 @@ int parse_sql(ParseResult* p, const char* buf, size_t len)
   yy_delete_buffer(bp, p->yyscan_info_);
   return ret;
 }
-
-
