@@ -192,6 +192,19 @@ struct compare_list
 	}
 } __attribute__ ((packed, aligned (64)));
 
+struct full_scan_list:public compare_list
+{
+
+public:
+	// 对于特殊情况，请重载该函数	
+	template< typename field_type1 > 
+	int cmp_fun(field_type1* a)
+	{
+		return true;
+	}
+} __attribute__ ((packed, aligned (64)));
+
+
 struct compare_le_list:public compare_list
 {
 
