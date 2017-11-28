@@ -69,7 +69,18 @@ int GetTimeForNAME(char *buffer)
 #endif 
 
 #else  
-#define DEBUG(format,...)  
+#define DEBUG(format,...) 
+#ifdef __cplusplus
+typdedef struct null_log
+{
+	template<class T>
+	void operator << (T a)
+	{
+		return;
+	}
+}null_log;
+#define CPP_DEBUG null_log
+#endif 
 //#define ERROR(format,...) printf("%s["__FILE__",%s() Line:%05d]:>>>>Err  " format "",GetTime(),__FUNCTION__, __LINE__, ##__VA_ARGS__)  
 //#define IMPORTANT_INFO(format,...) printf("%s["__FILE__",%s() Line:%05d]:>>>>IMPORTANT_INFO  " format "",GetTime(),__FUNCTION__, __LINE__, ##__VA_ARGS__)  
 //#define IMPORTANT_INFO(format,...) 
