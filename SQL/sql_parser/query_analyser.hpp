@@ -3,6 +3,7 @@
 #include "parser.hh"
 #include<vector>
 #include<string>
+#include "../../util/log/log_util.h"
 
 
 // 生成1个常数1
@@ -78,7 +79,7 @@ void rapidjson_log(rapidjson::Value  * v)
 		 
 		 Doc.Accept(writer);
 		 
-		 std::cout << buffer.GetString() << std::endl;
+		 CPP_DEBUG<<buffer.GetString() << std::endl;
 	}
 	
 	void rapidjson_log(rapidjson::Value  & v)
@@ -164,7 +165,7 @@ if(  root->HasMember( _member ) )					 \
 		{                                                 		\
 			(target) = &( (*root)[ _member ] );			\
 		}																						\
-		else cout<<"do not have "<<_member<<endl;
+		else CPP_DEBUG<<"do not have "<<_member<<endl;
 
 
 
@@ -418,7 +419,7 @@ void   pull_up_subquerys(){
 void   pull_up_subquerys(QueryAnalyser *qa ){
 	// 递归上拉子链接
 	if( qa->sub_querys.size()> 0 ){
-		cout<<"0>>>pull_up_subquerys"<<endl;
+		CPP_DEBUG<<"0>>>pull_up_subquerys"<<endl;
 		for( auto &sub_query : qa->sub_querys ){
 				pull_up_subquerys( &sub_query );
 		}
@@ -426,8 +427,8 @@ void   pull_up_subquerys(QueryAnalyser *qa ){
 	  qa->sub_querys.clear();
 	//return ;
 	}
-	cout<<" qa->up_stmt "<<  qa->up_stmt  <<endl;
-	cout<<" a->sub_querys.size() "<<  qa->sub_querys.size() <<endl;
+	CPP_DEBUG<<" qa->up_stmt "<<  qa->up_stmt  <<endl;
+	CPP_DEBUG<<" a->sub_querys.size() "<<  qa->sub_querys.size() <<endl;
 	//最底层的子连接，上拉到上一层的 from list
 	if(/*qa->up_stmt && */ 0 == qa->sub_querys.size()){
 		
@@ -596,7 +597,7 @@ void resolve_from_list_help( rapidjson::Value  * v,int level = 0 ){
   								// 递归子查询
   									 sub_querys.emplace_back( (*v)["RELATION"]["SUB_SELECT"], *doc , this );
   									 (sub_querys.end()-1)->set_sub_query_father(v);
-  									 cout<<"===========sub_querys.size()"<< sub_querys.size() <<endl;
+  									 CPP_DEBUG<<"===========sub_querys.size()"<< sub_querys.size() <<endl;
   								//if( (*v)["SUB_SELECT"].HasMember("FROM_CLAUSE") )resolve_from_list( &((*v)["SUB_SELECT"]["FROM_CLAUSE"]), level+1 );
             	}
       		}	
@@ -659,7 +660,7 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 						tmp[i++] = vv["tag"].GetInt() ;
 						cout<<vv["tag"].GetInt()<<endl;
 					}
-						cout<< " Resolve_One_Oper_condition " <<endl;
+						CPP_DEBUG<< " Resolve_One_Oper_condition " <<endl;
 			  				 		  				 
 				// 是常数条件
 				if( check_if_const_value(tmp[0])   ){
@@ -682,11 +683,11 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 							tmp[i++] = vv["tag"].GetInt() ;
 							cout<<vv["tag"].GetInt()<<endl;
 						}
-				 	cout<< " Resolve_Two_Oper_condition " <<endl;
+				 	CPP_DEBUG<< " Resolve_Two_Oper_condition " <<endl;
 
 				 	// 关联条件
 				 	if( check_if_join_condition(tmp[0]) && check_if_join_condition(tmp[1]) && (*v)["tag"].GetInt() == T_OP_EQ ){
-						 cout<< "关联条件 " <<endl;
+						 CPP_DEBUG<< "关联条件 " <<endl;
 				 		 swap_father( father,v, T_JOIN_CONDITION, "JOIN_CONDITION"  );
 				 		 join_conditions.emplace_back( &(*father)["JOIN_CONDITION"] );
 				 		 return ;
@@ -727,9 +728,10 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 				 	{
 				 		 	  swap_father( father,v, T_COMPLEX_DOUBLE_CONDITION, "COMPLEX_DOUBLE_CONDITION"  );
 				 				complex_double_conditions.emplace_back( &( (*father)["COMPLEX_DOUBLE_CONDITION"] ) );
-				 				cout<< "递归细分 " <<endl;
+				 				CPP_DEBUG<< "递归细分 " <<endl;
 				 				// 递归细分
 				 			   resolve_where_list( &((*father)["COMPLEX_DOUBLE_CONDITION"]["children"][0]), &((*father)["COMPLEX_DOUBLE_CONDITION"]["children"][0]) );
+				 			 	CPP_DEBUG<< "递归细分2 " <<endl; 
 				 			 	 resolve_where_list( &((*father)["COMPLEX_DOUBLE_CONDITION"]["children"][1]), &((*father)["COMPLEX_DOUBLE_CONDITION"]["children"][1]) );
 
 				 				return ;
@@ -763,7 +765,7 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 
 		if ( vv->HasMember(rapidjson::StringRef("FUN_TYPE") )   ) {
 				if (check_if_aggregation_fun( (*vv)["tag"].GetInt()) ) {	
-					cout<< "聚合函数 in"  <<endl;
+					CPP_DEBUG<< "聚合函数 in"  <<endl;
 					//聚合函数	
 					aggregat_funs.emplace_back( vv );
 					vv->AddMember("IS_AGGREGATE", 1, doc->GetAllocator());
@@ -799,7 +801,7 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 		  }
 		  
 		  if ( (*vv)["tag"] == T_STAR  ){
-		  	cout<<"******************"<<endl;
+		  	CPP_DEBUG<<"******************"<<endl;
 				vv->AddMember("SELECT_ALL",1,doc->GetAllocator());
 				is_select_all = 1;
 			return;
@@ -920,22 +922,22 @@ int select_prepared()
  		 // order 处理 orderby_list 处理
  		  if( order_list  )	resolve_orderby_list( order_list );
  		  
- 	//  cout<<"<< 1 >>"<<endl;
+ 	//  CPP_DEBUG<<"<< 1 >>"<<endl;
   //  for(auto &a : aggregat_funs ){
   //  	rapidjson_log( a );
   //  }
   //  
-  //  cout<<"<< 2 >>"<<endl;
+  //  CPP_DEBUG<<"<< 2 >>"<<endl;
   //   for(auto &a : raw_target_list ){
   //  	cout<<a.relation_name<<" "<<a.column_name<<" "<<a.project_alias<<endl;
   //  }
   //  
-  //  cout<<"<< 3 >>"<<endl;
+  //  CPP_DEBUG<<"<< 3 >>"<<endl;
   //   for(auto &a : project_opers ){
   //  	rapidjson_log( a );
   //  }
   //  
-  //  cout<<"<< 4 >>"<<endl;
+  //  CPP_DEBUG<<"<< 4 >>"<<endl;
   //  for(auto &a : nomal_funs ){
   //  	rapidjson_log( a );
   //  }
