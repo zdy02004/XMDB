@@ -17,10 +17,10 @@ QueryOptimiser(rapidjson::Value & value ,rapidjson::Document & doc_ , QueryAnaly
 
 QueryOptimiser(QueryAnalyser &qa ):QueryAnalyser( *(qa.root),*(qa.doc),NULL)
 {
+	 clone ( qa);
 
 }
 
-// 
  void optimiser_template( rapidjson::Value  * vx ,rapidjson::Value  *  father, std::function<void(rapidjson::Value  * vx ,rapidjson::Value  *  father)> func ){
 if( vx->IsArray()  ){
 			 	DEBUG("vx->IsArray()\n");
@@ -611,6 +611,8 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 // 选择、投影操作下推 ，（不打算支持 非等 连接和下推）,选择操作扩张（关联）
 
 // 聚合下推
+
+
 
 // 物化器的物理查询优化
 
