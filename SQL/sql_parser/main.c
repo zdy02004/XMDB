@@ -10,8 +10,10 @@ const char *sql_str = ""
    //"from (select * from table_1 where condition > 1) table1_alias  , table_2  "   //sum(c1) t1,o.c2 + 4 t2,o.c3 t3
    //"where table_1.user_id = table_2.user_id and table_1.user_id = 12 and table_2.acct_id = 23 group by table_1.c having table_1.c = 1 ORDER BY table_2.c";
     
-    "select  user_name,  qty  as quantity from table_1 t where t.user_name = 'c' ";
-    
+  //"select  user_name,  qty  as quantity from (select * from table_2 ) t where t.user_name = 'c' and not t.qty and '1' = '2' ";
+  //  "select  user_name,  qty  as quantity from (select * from table_2 ) t where t.user_name = 'c' and not t.qty between 1 and 8 ";
+      "select  user_name,  qty  as quantity from  table_2 t where t.user_name = 'c' and  t.ff is null and t.ee like '%cc'";
+
     
  //   " select  sum(c1) c1 , 2 - 4 * 3  t2  "
 //    " from  table_name table1 where  a = 1 and a = b and not true "; //and ( t2.c = 3 or t2.d = 4 )";,(select k3.t4 from  table_name2  k3 where k3.aa>1 ) t1,(select k5.t5 from  table_name4  t4 where t4.a4>1 ) t4 "
@@ -43,7 +45,7 @@ const char *sql_str = ""
 
 
 
-cout<< sql_str <<endl;
+CPP_DEBUG<< sql_str <<endl;
 
 ParseResult result;
  int ret = parse_init(&result);
@@ -60,7 +62,7 @@ ParseResult result;
     
  
 //优化前
-  std::cout << buffer.GetString() << std::endl;
+  CPP_DEBUG << buffer.GetString() << std::endl;
 
  for (auto& v : result.Doc["ROOT"]["children"].GetArray() ){
   		//QueryAnalyser qa( v ,result.Doc );
@@ -68,7 +70,7 @@ ParseResult result;
   		QueryAnalyser qa( v ,result.Doc );
   		
   		for(auto& name : qa.tables){
-  			std::cout<<"Names: "<<name.table_name_<<" "<<name.alias_name_<<std::endl;
+  			CPP_DEBUG<<"Names: "<<name.table_name_<<" "<<name.alias_name_<<" "<<name.sub_select_alias_name_<<std::endl;
   			
   		}
   		
@@ -79,6 +81,8 @@ ParseResult result;
   		
   		//逻辑优化器
   		QueryOptimiser qo(qa);
+  		CPP_DEBUG<<"Begin Optimiser\n "<<std::endl;
+
   		//优化between
   		qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_btw,&qo,std::placeholders::_1,std::placeholders::_2) );
 		//优化 in
