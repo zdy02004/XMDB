@@ -6,11 +6,11 @@
 #include <stdio.h>
 
 #include <pthread.h>
-//#define __DEBUG__  
+#define __DEBUG__  
 
 
 #ifdef __cplusplus
-
+#include<iostream>
 extern "C" {
 
 #endif
@@ -63,8 +63,11 @@ int GetTimeForNAME(char *buffer)
 
 #ifdef __DEBUG__  
 #define DEBUG(format,...) printf("%s [" __FILE__ ",%s () Line: %05d ,tid: %ld ]: " format "",GetTime(),__FUNCTION__, __LINE__,pthread_self(), ##__VA_ARGS__)  
-//#define IMPORTANT_INFO(format,...) printf("%s["__FILE__",%s () Line:%05d]:>>>>IMPORTANT_INFO  " format "",GetTime(),__FUNCTION__, __LINE__, ##__VA_ARGS__)  
-//#define IMPORTANT_INFO(format,...) 
+
+#ifdef __cplusplus
+#define CPP_DEBUG std::cout<<GetTime()<<" [ " <<__FILE__<<","<<__FUNCTION__<<" () Line: "<<__LINE__<<" ,tid: "<<pthread_self()<<" ] "
+#endif 
+
 #else  
 #define DEBUG(format,...)  
 //#define ERROR(format,...) printf("%s["__FILE__",%s() Line:%05d]:>>>>Err  " format "",GetTime(),__FUNCTION__, __LINE__, ##__VA_ARGS__)  
