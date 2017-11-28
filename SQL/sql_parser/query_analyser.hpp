@@ -333,6 +333,67 @@ QueryAnalyser(rapidjson::Value & value ,rapidjson::Document & doc_ , QueryAnalys
 select_prepared();
 }
 
+//QueryAnalyser(QueryAnalyser & qa):root(qa.root),doc(qa.doc),is_distinct(qa.is_distinct),is_join(qa.is_join),sub_links_count(qa.sub_links_count),is_select_all(qa.is_select_all),
+//																	project_lists(qa.project_lists),from_list(qa.from_list),where_list(qa.where_list),group_list(qa.group_list),having_list(qa.having_list),order_list(qa.order_list),hints_list(qa.hints_list),
+//																	aggregat_funs(qa.aggregat_funs),raw_target_list(qa.raw_target_list),project_opers(qa.project_opers),nomal_funs(qa.nomal_funs),
+//																	sub_querys(qa.sub_querys),sub_query_father(qa.sub_query_father),tables(qa.tables),single_fromlists(qa.single_fromlists),
+//																	sub_links(qa.sub_links),sub_link_father(qa.sub_link_father),up_stmt(qa.up_stmt),
+//																	join_conditions(qa.join_conditions),const_conditions(qa.const_conditions),nomal_single_conditions(qa.nomal_single_conditions),nomal_double_conditions(qa.nomal_double_conditions),
+//																	complex_double_conditions(qa.complex_double_conditions),nomal_btw_conditions(qa.nomal_btw_conditions),
+//																	group_target(qa.group_target),order_target(qa.order_target){}
+
+void clone (QueryAnalyser & qa)
+{
+// 上下文要素
+//root = qa.root;
+//doc  = qa.doc;
+
+// 原始要素
+//project_lists = qa.project_lists;
+//from_list = qa.from_list;
+//where_list = qa.where_list;
+//group_list = qa.group_list;
+//having_list = qa.having_list;
+//order_list = qa.order_list;
+//hints_list = qa.hints_list;
+
+//类别判断
+is_distinct = qa.is_distinct;
+is_join = qa.is_join;
+sub_links_count = qa.sub_links_count;
+is_select_all= qa.is_select_all;
+
+// select_list 解析要素
+aggregat_funs   = qa.aggregat_funs; 					// 聚合函数
+raw_target_list = qa.raw_target_list;         // 不可再分的非常量目标 
+project_opers   = qa.project_opers;           // 作用于目标列的操作
+nomal_funs      = qa.nomal_funs;							// 非聚合普通函数
+
+//from_list 解析要素
+sub_querys       = qa.sub_querys;  		  // from 中的子查询
+sub_query_father = qa.sub_query_father; // 当自己就是子查询时，sub_query_father  指向 RELATION 的上一层
+tables           = qa.tables;				 	  // 解析后的表
+single_fromlists = qa.single_fromlists; // from 中的子查询
+
+// where 条件要素
+sub_links        = qa.sub_links; 	   					// where 中的子链接
+sub_link_father  = qa.sub_link_father;        // 当自己就是自连接中的 子查询时，sub_link_father  指向 SUB_LINK_BODY 的上一层
+up_stmt          = qa.up_stmt; 					      //如果是子连接 则还要存一个上层 where
+
+join_conditions           = qa.join_conditions;   				// 关联条件
+const_conditions          = qa.const_conditions;         	// 常数不可再分条件
+nomal_single_conditions   = qa.nomal_single_conditions;  	// 单操作数不可再分条件
+nomal_double_conditions   = qa.nomal_double_conditions;  	// 双操作数不可再分条件
+complex_double_conditions = qa.complex_double_conditions; // 可再分双操作数条件
+nomal_btw_conditions      = qa.nomal_btw_conditions;      // between and 
+	
+// Group 条件要素	
+group_target = qa.group_target;      
+
+// Order by 条件要素	
+order_target = qa.order_target;   
+}
+
 void set_sub_link_father(rapidjson::Value  * v){
 	sub_link_father = v;
 	
