@@ -23,7 +23,7 @@ QueryOptimiser(QueryAnalyser &qa ):QueryAnalyser( *(qa.root),*(qa.doc),NULL)
 // 
  void optimiser_template( rapidjson::Value  * vx ,rapidjson::Value  *  father, std::function<void(rapidjson::Value  * vx ,rapidjson::Value  *  father)> func ){
 if( vx->IsArray()  ){
-			 	printf("vx->IsArray()\n");
+			 	DEBUG("vx->IsArray()\n");
   		for (auto& v : (*vx).GetArray()  ){  				
   				optimiser_template( &(v),vx, func);
          }//end for
@@ -31,34 +31,34 @@ if( vx->IsArray()  ){
 if(vx->IsObject()){
 
 		if( vx->HasMember("COMPLEX_DOUBLE_CONDITION")  ){
-			 	printf("COMPLEX_DOUBLE_CONDITION\n");
+			 	DEBUG("COMPLEX_DOUBLE_CONDITION\n");
 				optimiser_template( &(*vx)["COMPLEX_DOUBLE_CONDITION"] ,vx,func);
 		}
 		if( vx->HasMember("NORMAL_DOUBLE_CONDITION")  ){
-			 	printf("NORMAL_DOUBLE_CONDITION\n");
+			 	DEBUG("NORMAL_DOUBLE_CONDITION\n");
 				optimiser_template( &(*vx)["NORMAL_DOUBLE_CONDITION"] ,vx,func);
 		}
 		if( vx->HasMember("NORMAL_SINGLE_CONDITION")  ){
-			 	printf("NORMAL_SINGLE_CONDITION\n");
+			 	DEBUG("NORMAL_SINGLE_CONDITION\n");
 				optimiser_template( &(*vx)["NORMAL_SINGLE_CONDITION"] ,vx,func);
 		}
 		if( vx->HasMember("JOIN_CONDITION")  ){
-			 	printf("JOIN_CONDITION\n");
+			 	DEBUG("JOIN_CONDITION\n");
 				optimiser_template( &(*vx)["JOIN_CONDITION"] ,vx,func);
 		}
 		
 		if( vx->HasMember("children")  ){
-			 	printf("children\n");
+			 	DEBUG("children\n");
 			if( (*vx)["children"].IsArray() ) {
   		for (auto& v : (*vx)["children"].GetArray()  ){ 
-  				printf("in children\n"); 				
+  				DEBUG("in children\n"); 				
   				optimiser_template( &(v),vx,func);
          }//end for
     }
 		}
 		 // 1. 其他 3操作数条件打标签
  if(vx->IsObject()){ 
- 		printf("vx->IsObject() 2\n");
+ 		DEBUG("vx->IsObject() 2\n");
     func(vx,father);
     return;
   }
@@ -68,7 +68,7 @@ if(vx->IsObject()){
  void optimiser_btw( rapidjson::Value  * vx ,rapidjson::Value  *  father){
 
 //if( vx->IsArray()  ){
-//			 	printf("vx->IsArray()\n");
+//			 	DEBUG("vx->IsArray()\n");
 //  		for (auto& v : (*vx).GetArray()  ){  				
 //  				optimiser_btw( &(v),vx);
 //         }//end for
@@ -77,7 +77,7 @@ if(vx->IsObject()){
 		
  // 1. 其他 3操作数条件打标签
  if ( vx->HasMember("NORMAL_BTW_CONDITION")  ){
- 	printf("NORMAL_BTW_CONDITION\n");
+ 	DEBUG("NORMAL_BTW_CONDITION\n");
  			rapidjson::Value  * v = &(((*vx)["NORMAL_BTW_CONDITION"]));
 				int i = 0;
 			if ( v->HasMember("children") && (*v)["children"].GetArray().Size()== 3 ){
@@ -86,7 +86,7 @@ if(vx->IsObject()){
 					for (auto& vv : (*v)["children"].GetArray()) 
 						{
 							tmp[i++] = vv["tag"].GetInt() ;
-							cout<<vv["tag"].GetInt()<<endl;
+							CPP_DEBUG<<vv["tag"].GetInt()<<endl;
 						}
 					if( (*v)["tag"].GetInt() == T_OP_BTW && check_if_const_value(tmp[1])  &&  check_if_const_value(tmp[2]) )
 					{
@@ -123,7 +123,7 @@ if(vx->IsObject()){
 
 						vx->Swap(*nested);
 						
-						//std::cout<<"<<nested3>>"<<std::endl;
+						//CPP_DEBUG<<"<<nested3>>"<<std::endl;
 						//rapidjson_log( v );
 							
 						//swap_father( nested,v, T_BTW_CONDITION, "NORMAL_BTW_CONDITION"  );
@@ -196,7 +196,7 @@ void optimiser_in( rapidjson::Value  * vx ,rapidjson::Value  *  father){
 void optimiser_not( rapidjson::Value  * vx ,rapidjson::Value  *  father){
  	
  	  if ( (*vx)["tag"] == T_OP_NOT  ){
- 	  	 printf(" optimiser_not \n");
+ 	  	 DEBUG(" optimiser_not \n");
  	  	  rapidjson::Value  * outter;
  	  	  rapidjson::Value  * inner;
  	  	  	
@@ -311,7 +311,7 @@ void optimiser_const( rapidjson::Value  * vx ,rapidjson::Value  *  father){
  
  					 int oper_type = ((*outter)["tag"]).GetInt(); 
  					 
- 					 printf("oper_type is %d\n",oper_type);
+ 					 DEBUG("oper_type is %d\n",oper_type);
  					 if(oper_type == T_OP_NOT){
  					 	optimiser_not( outter , outter );
  					 	return;
@@ -346,7 +346,7 @@ void optimiser_const( rapidjson::Value  * vx ,rapidjson::Value  *  father){
 		 	     				switch(oper_type)
 		 	     				{
 		 	     					case T_OP_EQ:
-		 	     						printf("T_OP_EQ\n");
+		 	     						DEBUG("T_OP_EQ\n");
 		 	     						if( val1 == val2 )ret = 1;
 		 	     							break;
 		 	     					case T_OP_LE:
@@ -383,7 +383,7 @@ void optimiser_const( rapidjson::Value  * vx ,rapidjson::Value  *  father){
 		 	     		CONST_TYPE.SetObject().SetString("BOOL");			
 		 	     		children.SetArray().PushBack(children, doc->GetAllocator() );
 		 	     		
-		 	     		printf("here\n");
+		 	     		DEBUG("here\n");
 		 	     		
 		 	     		child.AddMember("tag",child_tag,doc->GetAllocator());	
 		 	     		child.AddMember("value_",child_val,doc->GetAllocator());	
@@ -406,7 +406,7 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
    	
   	if( projectlist->IsArray() ) {
   		for (auto& v : ( (*projectlist).GetArray() )  ){  
-  			  cout<<"ret01"<<endl;				
+  			  CPP_DEBUG<<"ret01"<<endl;				
   				optimiser_project_template( &(v),level,func);
          }//end for
     }
@@ -421,7 +421,7 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 			vv = &(*v)["PROJECT"];
 		else vv = v;
 			
-		cout<<"optimiser_project_const"<<endl;				
+		CPP_DEBUG<<"optimiser_project_const"<<endl;				
 	
     rapidjson::Value  *  proj[64];
     int i = 0;
@@ -432,14 +432,14 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
     //      		   
 		if ( vv->HasMember(rapidjson::StringRef("OP_TYPE") ) && vv->HasMember("children" ) ) {
 				for (auto& it :  (*vv)["children"].GetArray()   ){  				
-  				cout<<"optimiser_project_const 2"<<endl;				
+  				CPP_DEBUG<<"optimiser_project_const 2"<<endl;				
 
   				if(it.HasMember("children")){
-  					cout<<"[[[[[]]]]]]"<<endl;
+  					CPP_DEBUG<<"[[[[[]]]]]]"<<endl;
   					rapidjson_log( &it ); 
   					optimiser_project_const( &it , level + 1 );
   				}
-  				cout<<"optimiser_project_const 3"<<endl;
+  				CPP_DEBUG<<"optimiser_project_const 3"<<endl;
   				if( !it.HasMember("CONST_TYPE") /*&& it["CONST_TYPE"].GetString() != "INTNUM"*/ ){
   					continue;
   				}
@@ -449,7 +449,7 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 
      if( 0 == i ) return;
      if( !(*vv)["children"][j].HasMember("CONST_TYPE" ) )return;
-     cout<<"optimiser_project_const 4"<<endl;
+     CPP_DEBUG<<"optimiser_project_const 4"<<endl;
 
 		 if( vv->HasMember("OP_TYPE") && ((*vv)["tag"]).GetInt() == T_OP_ADD )	{
 				  is_simple = 1;
@@ -561,7 +561,7 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 				 				
 				// string s;
 				// s += to_string(ret) ;
-				 cout<<" sz= "<< sz <<endl;
+				 CPP_DEBUG<<" sz= "<< sz <<endl;
 				  
 				 rapidjson::Value   		str_value_;
 				 str_value_.SetObject().SetString( sz,strlen(sz),doc->GetAllocator() );
@@ -611,8 +611,6 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 // 选择、投影操作下推 ，（不打算支持 非等 连接和下推）,选择操作扩张（关联）
 
 // 聚合下推
-
-
 
 // 物化器的物理查询优化
 
