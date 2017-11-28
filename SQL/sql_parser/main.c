@@ -12,7 +12,8 @@ const char *sql_str = ""
     
   //"select  user_name,  qty  as quantity from (select * from table_2 ) t where t.user_name = 'c' and not t.qty and '1' = '2' ";
   //  "select  user_name,  qty  as quantity from (select * from table_2 ) t where t.user_name = 'c' and not t.qty between 1 and 8 ";
-      "select  user_name,  qty  as quantity from  table_2 t where t.user_name = 'c' and  t.ff is null and t.ee like '%cc'";
+ //  "select  user_name,  qty  as quantity from  table_2 t where t.user_name = 'c' and  t.ff is null and t.ee like '%cc'";
+      "select  user_name,  qty  as quantity from  table_2 t,table_3 t3 where t2.user_name = t3.user_name ";
 
     
  //   " select  sum(c1) c1 , 2 - 4 * 3  t2  "
@@ -62,7 +63,7 @@ ParseResult result;
     
  
 //优化前
-  CPP_DEBUG << buffer.GetString() << std::endl;
+  CPP_DEBUG <<"优化前 json"<< buffer.GetString() << std::endl;
 
  for (auto& v : result.Doc["ROOT"]["children"].GetArray() ){
   		//QueryAnalyser qa( v ,result.Doc );
@@ -80,7 +81,7 @@ ParseResult result;
   		qa.pull_up_subquerys();
   		
   		//逻辑优化器
-  		QueryOptimiser qo(qa);
+  		QueryOptimiser qo (qa);
   		CPP_DEBUG<<"Begin Optimiser\n "<<std::endl;
 
   		//优化between
@@ -97,11 +98,21 @@ ParseResult result;
 
 		//优化 const 条件
 		qo.optimiser_project_template( (qa.where_list) ,0,  std::bind(&QueryOptimiser::optimiser_project_const,&qo,std::placeholders::_1,std::placeholders::_2) );
+		
+		CPP_DEBUG <<"关联条件 json\n";
+  	for(auto v : qo.join_conditions )
+  	{
+  	rapidjson_log( v );
+		}
+		
 		}
   }	
   
   //优化后
+  CPP_DEBUG <<"优化后 json\n";
   rapidjson_log( &result.Doc["ROOT"] );
+  
+  
   
 parse_terminate(&result);
 return 0;
