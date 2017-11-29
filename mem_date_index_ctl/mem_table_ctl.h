@@ -94,6 +94,7 @@ extern "C" {
 #define ALLOCTE_RECODR_TOO_TIMES               32038
 #define HIGH_LEVEL_TRY_LOCK										 32039
 #define UNLOCK_FAILED													 32040
+#define GET_LINE_MEM_TABLE_IS_NULL						 32041
 
 //最大字段个数
 //1个表最大内存块数
@@ -1537,6 +1538,25 @@ int mem_table_rwunlock_by_writer(struct mem_table_t *  mem_table,  long long  tr
   ret = table_rwlock_wrlock(&(mem_table->rwlocker));
   return ret;
 }
+
+
+unsigned long mem_table_get_used_line( mem_table_t *mem_table )
+{  
+	if( NULL == mem_table )return GET_LINE_MEM_TABLE_IS_NULL;
+ 	int i = 0;
+ 	unsigned long count_line = 0;									 
+  struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;	
+     
+	for(;i<mem_table->config.mem_block_used;++i)//遍历所有块																
+	{
+		count_line += ( (char *)__mem_block_temp->space_end_addr  - (char *)__mem_block_temp->space_start_addr )/(mem_table->record_size);
+		__mem_block_temp = __mem_block_temp->next;      //下一个块
+	}
+	
+	return count_line;
+}
+
+
 #ifdef __cplusplus
 
 }
