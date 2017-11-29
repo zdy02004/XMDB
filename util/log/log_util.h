@@ -10,7 +10,7 @@
 
 
 #ifdef __cplusplus
-#include<iostream>
+//#include<iostream>
 extern "C" {
 
 #endif
