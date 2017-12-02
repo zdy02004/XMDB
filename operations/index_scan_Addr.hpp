@@ -2,7 +2,7 @@
 #define INDEX_ADDR_SCAN
 
 /*
-g++ -w -lpthread -C -std=c++11 skiplist_scan_Addr.hpp 
+g++ -w -lpthread -C -std=c++11 index_scan_Addr.hpp 
 */
 
 #include <map>
@@ -1649,6 +1649,7 @@ inline int merg_index_result(
   struct    record_t   *  return_record_ptr    = 0;
   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
   record_type return_record;
+  return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);
   return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
   
   
