@@ -32,6 +32,9 @@ typedef struct test_table_t
 	FIELD_DATE try_time;
 	int allocate(size_t s){return 0;}
 	char * get_date(){return (char *)this;};
+	size_t     row_size;
+	void set_row_size(size_t s){row_size =s; }
+	size_t get_row_size(){return row_size; }
 }test_table_t;
 
 
