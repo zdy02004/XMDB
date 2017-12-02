@@ -342,7 +342,8 @@ inline int full_table_scan_with_conlist(
 	  field_used_num =  mem_table->config.field_used_num;
 
     char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-    record_type return_record;	
+    record_type return_record;
+		return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
     return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
     
     int __i = 0;									 
@@ -438,7 +439,8 @@ inline int full_table_scan_with_con(
  j = get_field_index(field_name, mem_table/*, field */ );
 	
 char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-record_type return_record;	
+record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 
@@ -500,7 +502,8 @@ inline int full_table_scan(
 {
 
 char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-record_type return_record;	
+record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 
