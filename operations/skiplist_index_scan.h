@@ -157,7 +157,7 @@ inline int mem_skiplist_index_scan_long(
                         )
 {
   DEBUG("mem_skiplist_index_scan_long() start!\n");
-  int ret ;
+  int ret = 0;
   struct    record_t   *  return_record_ptr    = 0;
   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
   record_type return_record;
@@ -218,7 +218,7 @@ inline int mem_skiplist_index_scan_str(
                         )
 {
   DEBUG("mem_skiplist_index_scan_str() start!\n");
-  int ret ;
+  int ret = 0;
   struct    record_t   *  return_record_ptr    = 0;
   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
   record_type return_record;	
