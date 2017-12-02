@@ -161,6 +161,7 @@ inline int mem_skiplist_index_scan_long(
   struct    record_t   *  return_record_ptr    = 0;
   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);
   return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 	
   
@@ -221,7 +222,8 @@ inline int mem_skiplist_index_scan_str(
   int ret = 0;
   struct    record_t   *  return_record_ptr    = 0;
   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-  record_type return_record;	
+  record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
   return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
   
@@ -285,7 +287,8 @@ inline int mem_skiplist_LE_scan(
 	 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 	 
@@ -358,7 +361,8 @@ inline int mem_skiplist_LE_scan_str(
 	 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 	 DEBUG("Enter mem_skiplist_LE_scan_str(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
@@ -430,7 +434,8 @@ inline int mem_skiplist_L_scan(
 	 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 	 DEBUG("Enter mem_skiplist_L_scan(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
@@ -502,7 +507,8 @@ inline int mem_skiplist_L_scan_str(
 	 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
    return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 	 
 	 DEBUG("Enter mem_skiplist_L_scan_str(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
@@ -574,7 +580,8 @@ inline int mem_skiplist_G_scan(mem_table_t *mem_table,
 	 int ret; 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 	 
@@ -645,7 +652,8 @@ inline int mem_skiplist_GE_scan(mem_table_t *mem_table,
 	 int ret; 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 	 
 	 DEBUG("Enter mem_skiplist_find_GE(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
@@ -719,7 +727,8 @@ inline int mem_skiplist_G_scan_str(mem_table_t *mem_table,
 	 int ret; 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 	 
 	 DEBUG("Enter mem_skiplist_find_G_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
@@ -791,7 +800,8 @@ inline int mem_skiplist_GE_scan_str(mem_table_t *mem_table,
 	 int ret; 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 	 
 	 DEBUG("Enter mem_skiplist_find_GE_str(),prev_entry is %0x,input_key is %s 	\n ",prev_entry,in->ckey);
@@ -931,7 +941,8 @@ inline int mem_skiplist_index_scan_long_L(
    int ret; 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 	//获得最低层头节点
@@ -998,7 +1009,8 @@ inline int mem_skiplist_index_scan_long_LE(
    int ret; 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 	//获得最低层头节点
@@ -1051,7 +1063,8 @@ inline int mem_skiplist_index_scan_long_G(
    int ret; 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 	//获得对应节点
@@ -1110,7 +1123,8 @@ inline int mem_skiplist_index_scan_long_GE(
    int ret; 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 	//获得对应节点
@@ -1169,7 +1183,8 @@ inline int mem_skiplist_index_scan_str_L(
    int ret; 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 	//获得最低层头节点
@@ -1222,7 +1237,8 @@ inline int mem_skiplist_index_scan_str_LE(
    int ret; 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 	//获得最低层头节点
@@ -1275,7 +1291,8 @@ inline int mem_skiplist_index_scan_str_G(
    int ret; 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 	//获得对应节点
@@ -1334,7 +1351,8 @@ inline int mem_skiplist_index_scan_str_GE(
    int ret; 
 	 struct    record_t   *  return_record_ptr    = 0;
    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-   record_type return_record;	
+   record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);	
 	 return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
 	//获得对应节点
