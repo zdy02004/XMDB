@@ -38,7 +38,8 @@ inline int mem_hash_index_scan_long(
   long                                link_block_no;
   
   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
-  record_type return_record;	
+  record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);;	
   return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
   
   int ret;
@@ -165,7 +166,8 @@ inline int mem_hash_index_scan_str(
   
   char buf[mem_table->record_size - RECORD_HEAD_SIZE];
   struct record_t  *return_record_ptr     = 0;
-  record_type return_record;	
+  record_type return_record;
+return_record.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);;	
   return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 
   
