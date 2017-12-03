@@ -981,6 +981,9 @@ for(typename std::list<generic_result>::const_iterator	it = container2.begin();i
   generic_result return_record;
   return_record.set_row_size( it2->get_row_size() + it->get_row_size() );
   return_record.allocate();
+  memcpy(return_record.get_data(),(char *)(&(*it2)),it2->get_row_size());
+  memcpy(return_record.get_data()+it2->get_row_size(),(char *)(&(*it)),it->get_row_size());
+  
   ret->push_back(return_record);
    }
 }
