@@ -1,11 +1,17 @@
 #ifndef PLAN_NODE_HPP  
 #define PLAN_NODE_HPP 
 
+
+/*
+g++ -w -lpthread -C -std=c++11 physical_plan_node.hpp 
+*/
+
+
 #define PLAN_TYPE_HASH_INDXE_SCAN   				1
 #define PLAN_TYPE_SKIPLIST_EQ_INDXE_SCAN		2
 #define PLAN_TYPE_SKIPLIST_GE_INDXE_SCAN		3
 #define PLAN_TYPE_SKIPLIST_GT_INDXE_SCAN		4
-#define PLAN_TYPE_SKIPLIST_LQ_INDXE_SCAN		5
+#define PLAN_TYPE_SKIPLIST_LE_INDXE_SCAN		5
 #define PLAN_TYPE_SKIPLIST_LT_INDXE_SCAN		6
 #define PLAN_TYPE_SKIPLIST_BTW_INDXE_SCAN		7
 #define PLAN_TYPE_FULL_SCAN									8
@@ -14,12 +20,214 @@
 
 #define PLAN_TYPE_EQ_FIELTER								11
 #define PLAN_TYPE_ET_FIELTER								12
-#define PLAN_TYPE_GQ_FIELTER								13
+#define PLAN_TYPE_GE_FIELTER								13
 #define PLAN_TYPE_GT_FIELTER								14
-#define PLAN_TYPE_NE_FIELTER								15
-#define PLAN_TYPE_BTW_FIELTER								16
+#define PLAN_TYPE_LE_FIELTER								15
+#define PLAN_TYPE_LT_FIELTER								16
+#define PLAN_TYPE_NE_FIELTER								17
+#define PLAN_TYPE_BTW_FIELTER								18
 
-#define PLAN_TYPE_DO_JOIN										17
+#define PLAN_TYPE_DO_JOIN										20
+
+
+#define PHYSICY_PLAN_EMPTY_TABLE 			10501
+#define FIELD_NAME_EMPTY 							10502
+#define NOT_FOUND_FIELD								10503
+
+
+#include "../SQL/sql_parser/queryOptimiser.hpp"
+#include "ops.hpp"
+#include "func_help.hpp"
+#include "../mem_date_index_ctl/mem_table_mvcc_op.h"
+#include "../mem_date_index_ctl/mem_index_no_manager.h"
+#include "index_scan_Addr.hpp"
+
+
+
+//暂时为了编译成功
+int trans_no = 1;
+
+
+template<int>
+struct get_field_type
+{
+	
+	typedef int value_type;
+};
+
+template<>
+struct get_field_type<FIELD_TYPE_INT>
+{
+	
+	typedef FIELD_INT value_type;
+};
+
+template<>
+struct get_field_type<FIELD_TYPE_SHORT>
+{
+	
+	typedef FIELD_SHORT value_type;
+};
+
+template<>
+struct get_field_type<FIELD_TYPE_LONG>
+{
+	
+	typedef FIELD_LONG value_type;
+};
+
+template<>
+struct get_field_type<FIELD_TYPE_LONGLONG>
+{
+	
+	typedef FIELD_LONGLONG value_type;
+};
+
+template<>
+struct get_field_type<FIELD_TYPE_FLOAT>
+{
+	
+	typedef FIELD_FLOAT value_type;
+};
+
+template<>
+struct get_field_type<FIELD_TYPE_DOUBLE>
+{
+	
+	typedef FIELD_DOUBLE value_type;
+};
+
+template<>
+struct get_field_type<FIELD_TYPE_DATE>
+{
+	
+	typedef FIELD_DATE value_type;
+};
+
+template<>
+struct get_field_type<FIELD_TYPE_STR>
+{
+	
+	typedef char* value_type;
+};
+
+// 将结果行中的字段析出
+template<class T,int T2>
+typename get_field_type<T2>::value_type cast_field( T * record , const field_t & field ){  
+    
+    switch( field.field_type )
+    {
+    	case FIELD_TYPE_INT:            return *(FIELD_INT *)( (char *)(record)+field.field_dis );
+			case FIELD_TYPE_SHORT:          return *(FIELD_SHORT *)( (char *)(record)+field.field_dis );
+ 			case FIELD_TYPE_LONG:           return *(FIELD_LONG *)( (char *)(record)+field.field_dis );
+			case FIELD_TYPE_LONGLONG:       return *(FIELD_LONGLONG *)( (char *)(record)+field.field_dis );
+			case FIELD_TYPE_FLOAT:          return *(FIELD_FLOAT *)( (char *)(record)+field.field_dis );
+			case FIELD_TYPE_DOUBLE:         return *(FIELD_DOUBLE *)( (char *)(record)+field.field_dis );
+ 			case FIELD_TYPE_DATE:           return *(FIELD_DATE *)( (char *)(record)+field.field_dis );
+ 			//case FIELD_TYPE_HASH_ENTRY:       return *(FIELD_INT *)( (char *)(record)+field.field_dis ); 
+ 			//case FIELD_TYPE_RBTREE_ENTRY:     return *(FIELD_INT *)( (char *)(record)+field.field_dis );
+ 			//case FIELD_TYPE_SKIPLIST_ENTRY:   return *(FIELD_INT *)( (char *)(record)+field.field_dis );
+ 			case FIELD_TYPE_STR:            return *(char *)( (char *)(record)+field.field_dis );
+    		
+    }
+   	
+   return 0;
+}
+
+template<int T>
+typename get_field_type<T>::value_type cast_condition( std::string& condition , const field_t & field ){  
+    
+    switch( field.field_type )
+    {
+    	case FIELD_TYPE_INT:            return  (FIELD_INT)atoi(condition.c_str() );
+			case FIELD_TYPE_SHORT:          return  (FIELD_SHORT)atoi(condition.c_str() );
+ 			case FIELD_TYPE_LONG:           return  (FIELD_LONG )atol(condition.c_str() );
+			case FIELD_TYPE_LONGLONG:       return  (FIELD_LONGLONG)atoll(condition.c_str() );
+			case FIELD_TYPE_FLOAT:          return  (FIELD_FLOAT *)atof(condition.c_str() );
+			case FIELD_TYPE_DOUBLE:         return  (FIELD_DOUBLE *)atof(condition.c_str() );
+				
+ 			case FIELD_TYPE_DATE:           return  (FIELD_DATE )atol(condition.c_str() );
+ 			//case FIELD_TYPE_HASH_ENTRY:       return *(FIELD_INT *)( (char *)(record)+field.field_dis ); 
+ 			//case FIELD_TYPE_RBTREE_ENTRY:     return *(FIELD_INT *)( (char *)(record)+field.field_dis );
+ 			//case FIELD_TYPE_SKIPLIST_ENTRY:   return *(FIELD_INT *)( (char *)(record)+field.field_dis );
+ 			case FIELD_TYPE_STR:         		return  (char *)(condition.c_str() );
+    		
+    }
+   	
+   return 0;
+}
+
+// 字段比较辅助结构
+struct field_compare
+{
+char * buf;
+field_t field;
+size_t  size;
+field_compare(char * _buf,field_t &_field, size_t _size ):buf(_buf),field(_field),size(_size){}
+bool operator == ( const field_compare &a)
+{
+	if(a.field.field_type != field.field_type)return false;
+	if(a.size != size)return false;
+	if( 0!=strncmp(a.buf,buf,size) )return false;
+	return true;
+}
+};
+
+
+
+// 表中是否有该字段
+inline int has_field(mem_table_t *mem_table ,std::string field_name){  
+   
+   if( NULL == mem_table        )   return PHYSICY_PLAN_EMPTY_TABLE;
+   if( field_name.empty()       )   return FIELD_NAME_EMPTY;
+   for(int i = 0;i < mem_table->config.field_used_num; ++i  )
+   {
+   		field_t& field = mem_table->config.fields_table[i];
+   	  if (0 == strcmp(field.field_name,field_name.c_str()) ){
+   	  	return 1;
+   	  }
+   }
+   return 0;
+
+}
+// 表中是否有索引
+inline int field_has_index(mem_table_t *mem_table ,std::string field_name,long & index_no,int & index_type){  
+   int err = has_field( mem_table , field_name);
+   if( !err )return err;
+   	
+   for(int i = 0;i < mem_table->config.field_used_num; ++i  )
+   {
+   		field_t& field = mem_table->config.fields_table[i];
+   	  if (0 == strcmp(field.field_name,field_name.c_str()) ){
+   	  	if(field.index_nr > 0 ){
+   	  		index_no = field.relate_index[0];
+   	  		index_type = field.index_type;
+   	  		return 1;
+   	  	}
+   	  	
+   	  }
+   }
+   return 0;
+
+}
+
+// 从表中获得字段
+inline int get_field(mem_table_t *mem_table ,std::string field_name,field_t & field){  
+   int err = has_field( mem_table , field_name);
+   if( !err )return err;
+   	
+   for(int i = 0;i < mem_table->config.field_used_num; ++i  )
+   {
+   		field_t& _field = mem_table->config.fields_table[i];
+   	  if (0 == strcmp(_field.field_name,field_name.c_str()) ){
+ 			 field = _field;
+ 			 return 0;
+   	  	
+   	  }
+   }
+   return NOT_FOUND_FIELD;
+
+}
 
 
 //通用结果集 
@@ -31,13 +239,11 @@ struct generic_result
 	size_t row_size;
 	int allocate(size_t s){data =(char*)malloc(s); }
 	int allocate(){data =(char*)malloc(row_size); }
-	int deallocate(free(data););
-	char * get_date(){return data};
-	void set_row_size(size_t s){row_size =s; }
-	size_t get_row_size(){return row_size; }
+	int deallocate(){free(data);}
+	char * get_data(){return data;};
+	void set_row_size( size_t s){row_size =s; }
+	size_t get_row_size()const {return row_size; }
 }	;	
-
-
 
 
 struct plan_node
@@ -51,7 +257,7 @@ size_t ret_size;
 
 plan_node(rapidjson::Value& _json,rapidjson::Document * _Doc):Doc(_Doc)
 {
-		json.CopyFrom( _json,Doc.GetAllocator() );
+		json.CopyFrom( _json,Doc->GetAllocator() );
 }
 
 virtual void make_json() = 0;
@@ -59,7 +265,7 @@ virtual std::string to_sring () = 0;
 virtual int execute() = 0;
 };
 
-struct scan_index_node:public plan_node
+struct scan_hash_index_node:public plan_node
 {
 long index_no;						  // 索引 id
 int  index_type;            // 1 hash 2 skiplist
@@ -71,10 +277,11 @@ std::string column_name   ; //列名
 std::string const_value   ; //常数值
 std::string const_type    ; //常数类型
 	
-std::list<finded_Addr_t> ret_list;//结果集
-finded_Addr_t * finded_Addr;      //与结果求交集
+//std::list<finded_Addr_t> ret_list;//结果集
+finded_Addr_t   ret_list;	//索引结果集
+finded_Addr_t * finded_Addr; //与结果求交集
 
-scan_index_node(long _index_no,
+scan_hash_index_node(long _index_no,
   								int  _index_type,
   								mem_table_t *_mem_table,
   								mem_hash_index_t * _index,
@@ -100,7 +307,50 @@ virtual int execute() ;
 };
 
 
-struct scan_index_hash_node:public scan_index_node
+struct scan_skiplist_index_node:public plan_node
+{
+long index_no;						  // 索引 id
+int  index_type;            // 1 hash 2 skiplist
+mem_table_t *mem_table;		  // 表地址
+mem_skiplist_index_t * index;	  // 索引地址
+                            
+std::string relation_name ; //表名
+std::string column_name   ; //列名
+std::string const_value   ; //常数值
+std::string const_type    ; //常数类型
+	
+//std::list<finded_Addr_t> ret_list;//结果集
+finded_Addr_t   ret_list;	//索引结果集
+finded_Addr_t * finded_Addr; //与结果求交集
+
+scan_skiplist_index_node(long _index_no,
+  								int  _index_type,
+  								mem_table_t *_mem_table,
+  								mem_skiplist_index_t * _index,
+  								rapidjson::Value& _json,
+  								rapidjson::Document * _Doc,
+  								std::string& _relation_name,
+  								std::string& _column_name,
+  								std::string& _const_value,
+  								std::string& _const_type,
+  								finded_Addr_t * _finded_Addr):plan_node(_json,_Doc),index_no(_index_no),
+  																					index_type(_index_type),mem_table(_mem_table),
+  																					index(_index),relation_name(_relation_name),
+  																					column_name(_column_name),const_value(_const_value),
+  																					const_type(_const_type),finded_Addr(_finded_Addr)
+{
+ret_size = mem_table->record_size - RECORD_HEAD_SIZE;
+}
+
+virtual void make_json() ;
+virtual std::string to_sring () ;
+virtual int execute() ;
+	
+};
+
+
+
+struct scan_index_hash_node:public scan_hash_index_node
 {
 scan_index_hash_node(long _index_no,
   								int  _index_type,
@@ -112,7 +362,7 @@ scan_index_hash_node(long _index_no,
   								std::string& _column_name,
   								std::string& _const_value,
   								std::string& _const_type,
-  								finded_Addr_t * _finded_Addr):scan_index_node(long _index_no,
+  								finded_Addr_t * _finded_Addr):scan_hash_index_node( _index_no,
   																				  _index_type,
   																					_mem_table,
   																					_index,
@@ -121,8 +371,7 @@ scan_index_hash_node(long _index_no,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type,_finded_Addr),
-  																					plan_type(PLAN_TYPE_HASH_INDXE_SCAN){}
+  																					_const_type,_finded_Addr){plan_type = PLAN_TYPE_HASH_INDXE_SCAN;}
 
 virtual int execute( )
 {
@@ -134,9 +383,8 @@ if( const_type == "INTNUM" )
 														index,
 														atoi(const_value.c_str()),
 														integer_hash_fun,
-														trans_no,// get_trans_no()
 														*finded_Addr,
-														&ret_list
+														ret_list
 														 );
 }
 
@@ -145,11 +393,10 @@ if( const_type == "STRING" )
 	ret =	mem_hash_index_scanAddr_str (
 														mem_table,
 														index,
-														const_value.c_str(),
+														const_cast<char *>(const_value.c_str() ),
 														str_hash_fun,
-														trans_no,//get_trans_no()
 														*finded_Addr,
-														&ret_list
+														ret_list
 														 );
 }
 			
@@ -160,20 +407,20 @@ if( const_type == "STRING" )
 
 };
 
-struct scan_skiplist_eq_node:public scan_index_node
+struct scan_skiplist_eq_node:public scan_skiplist_index_node
 {
 
 scan_skiplist_eq_node(long _index_no,
   								int  _index_type,
   								mem_table_t *_mem_table,
-  								mem_hash_index_t * _index,
+  								mem_skiplist_index_t* _index,
   								rapidjson::Value& _json,
   								rapidjson::Document * _Doc,
   								std::string& _relation_name,
   								std::string& _column_name,
   								std::string& _const_value,
   								std::string& _const_type,
-  								finded_Addr_t * _finded_Addr):scan_index_node(long _index_no,
+  								finded_Addr_t * _finded_Addr):scan_skiplist_index_node( _index_no,
   																				  _index_type,
   																					_mem_table,
   																					_index,
@@ -182,8 +429,7 @@ scan_skiplist_eq_node(long _index_no,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type,_finded_Addr),
-  																					plan_type(PLAN_TYPE_SKIPLIST_EQ_INDXE_SCAN){}
+  																					_const_type,_finded_Addr){ plan_type = PLAN_TYPE_SKIPLIST_EQ_INDXE_SCAN; }
 
 virtual int execute( )
 {
@@ -198,25 +444,23 @@ if( const_type == "INTNUM" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
-                          			trans_no,//get_trans_no()                 //当前事务ID
-                          			*finded_Addr,
-																&ret_list	    //原始结果集
+                          		*finded_Addr,
+								ret_list	    //原始结果集
                         );
 }
 
 if( const_type == "STRING" )
 {
 	mem_skiplist_entry_t in;
-	in.ckey  = const_value.c_str();
+	strcpy(in.ckey, const_value.c_str() );
 	
 	ret = mem_skiplist_index_scanAddr_str(  
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
-                          			trans_no,//get_trans_no()                 //当前事务ID
-                          			*finded_Addr,
-																&ret_list	    //原始结果集
+                          		*finded_Addr,
+								ret_list	    //原始结果集
                         );
 }
 			
@@ -227,20 +471,20 @@ if( const_type == "STRING" )
 
 };
 
-struct scan_skiplist_ge_node:public scan_index_node
+struct scan_skiplist_ge_node:public scan_skiplist_index_node
 {
 
 scan_skiplist_ge_node(long _index_no,
   								int  _index_type,
   								mem_table_t *_mem_table,
-  								mem_hash_index_t * _index,
+  								mem_skiplist_index_t * _index,
   								rapidjson::Value& _json,
   								rapidjson::Document * _Doc,
   								std::string& _relation_name,
   								std::string& _column_name,
   								std::string& _const_value,
   								std::string& _const_type,
-  								finded_Addr_t * _finded_Addr):scan_index_node(long _index_no,
+  								finded_Addr_t * _finded_Addr):scan_skiplist_index_node( _index_no,
   																				  _index_type,
   																					_mem_table,
   																					_index,
@@ -249,8 +493,7 @@ scan_skiplist_ge_node(long _index_no,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type,_finded_Addr),
-  																					plan_type(PLAN_TYPE_SKIPLIST_GE_INDXE_SCAN){}
+  																					_const_type,_finded_Addr){plan_type = PLAN_TYPE_SKIPLIST_GE_INDXE_SCAN;}
 
 virtual int execute( )
 {
@@ -265,25 +508,23 @@ if( const_type == "INTNUM" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
-                          			trans_no,//get_trans_no()                 //当前事务ID
-                          			*finded_Addr,
-																&ret_list	    //原始结果集
+                          		*finded_Addr,
+								ret_list	    //原始结果集
                         );
 }
 
 if( const_type == "STRING" )
 {
 	mem_skiplist_entry_t in;
-	in.ckey  = const_value.c_str();
+	strcpy(in.ckey , const_value.c_str() );
 	
 	ret = mem_skiplist_index_scanAddr_str_GE(  
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
-                          			trans_no,//get_trans_no()                 //当前事务ID
-                          			*finded_Addr,
-																&ret_list	    //原始结果集
+                          		*finded_Addr,
+								ret_list	    //原始结果集
                         );
 }
 			
@@ -294,20 +535,20 @@ if( const_type == "STRING" )
 
 };
 
-struct scan_skiplist_gt_node:public scan_index_node
+struct scan_skiplist_gt_node:public scan_skiplist_index_node
 {
 
 scan_skiplist_gt_node(long _index_no,
   								int  _index_type,
   								mem_table_t *_mem_table,
-  								mem_hash_index_t * _index,
+  								mem_skiplist_index_t * _index,
   								rapidjson::Value& _json,
   								rapidjson::Document * _Doc,
   								std::string& _relation_name,
   								std::string& _column_name,
   								std::string& _const_value,
   								std::string& _const_type,
-  								finded_Addr_t * _finded_Addr):scan_index_node(long _index_no,
+  								finded_Addr_t * _finded_Addr):scan_skiplist_index_node( _index_no,
   																				  _index_type,
   																					_mem_table,
   																					_index,
@@ -316,8 +557,7 @@ scan_skiplist_gt_node(long _index_no,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type,_finded_Addr),
-  																					plan_type(PLAN_TYPE_SKIPLIST_GT_INDXE_SCAN){}
+  																					_const_type,_finded_Addr){plan_type = PLAN_TYPE_SKIPLIST_GT_INDXE_SCAN;}
 
 virtual int execute( )
 {
@@ -332,25 +572,23 @@ if( const_type == "INTNUM" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
-                          			trans_no,//get_trans_no()                 //当前事务ID
-                          			*finded_Addr,
-																&ret_list	    //原始结果集
+                          		*finded_Addr,
+								ret_list	    //原始结果集
                         );
 }
 
 if( const_type == "STRING" )
 {
 	mem_skiplist_entry_t in;
-	in.ckey  = const_value.c_str();
+	strcpy(in.ckey , const_value.c_str());
 	
 	ret = mem_skiplist_index_scanAddr_str_G(  
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
-                          			trans_no,//get_trans_no()                 //当前事务ID
-                          			*finded_Addr,
-																&ret_list	    //原始结果集
+                          		*finded_Addr,
+								ret_list	    //原始结果集
                         );
 }
 			
@@ -359,20 +597,20 @@ if( const_type == "STRING" )
 }
 
 
-struct scan_skiplist_le_node:public scan_index_node
+struct scan_skiplist_le_node:public scan_skiplist_index_node
 {
 
 scan_skiplist_le_node(long _index_no,
   								int  _index_type,
   								mem_table_t *_mem_table,
-  								mem_hash_index_t * _index,
+  								mem_skiplist_index_t * _index,
   								rapidjson::Value& _json,
   								rapidjson::Document * _Doc,
   								std::string& _relation_name,
   								std::string& _column_name,
   								std::string& _const_value,
   								std::string& _const_type,
-  								finded_Addr_t * _finded_Addr):scan_index_node(long _index_no,
+  								finded_Addr_t * _finded_Addr):scan_skiplist_index_node( _index_no,
   																				  _index_type,
   																					_mem_table,
   																					_index,
@@ -381,8 +619,7 @@ scan_skiplist_le_node(long _index_no,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type,_finded_Addr),
-  																					plan_type(PLAN_TYPE_SKIPLIST_LE_INDXE_SCAN){}
+  																					_const_type,_finded_Addr){plan_type = PLAN_TYPE_SKIPLIST_LE_INDXE_SCAN;}
 
 virtual int execute( )
 {
@@ -397,25 +634,23 @@ if( const_type == "INTNUM" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
-                          			trans_no,//get_trans_no()                 //当前事务ID
-                          			*finded_Addr,
-																&ret_list	    //原始结果集
+                          		*finded_Addr,
+								ret_list	    //原始结果集
                         );
 }
 
 if( const_type == "STRING" )
 {
 	mem_skiplist_entry_t in;
-	in.ckey  = const_value.c_str();
+	strcpy(in.ckey , const_value.c_str());
 	
 	ret = mem_skiplist_index_scanAddr_str_LE(  
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
-                          			trans_no,//get_trans_no()                 //当前事务ID
-                          			*finded_Addr,
-																&ret_list	    //原始结果集
+                          		*finded_Addr,
+								ret_list	    //原始结果集
                         );
 }
 			
@@ -428,20 +663,20 @@ if( const_type == "STRING" )
 
 
 
-struct scan_skiplist_lt_node:public scan_index_node
+struct scan_skiplist_lt_node:public scan_skiplist_index_node
 {
 
 scan_skiplist_lt_node(long _index_no,
   								int  _index_type,
   								mem_table_t *_mem_table,
-  								mem_hash_index_t * _index,
+  								mem_skiplist_index_t * _index,
   								rapidjson::Value& _json,
   								rapidjson::Document * _Doc,
   								std::string& _relation_name,
   								std::string& _column_name,
   								std::string& _const_value,
   								std::string& _const_type,
-  								finded_Addr_t * _finded_Addr):scan_index_node(long _index_no,
+  								finded_Addr_t * _finded_Addr):scan_skiplist_index_node( _index_no,
   																				  _index_type,
   																					_mem_table,
   																					_index,
@@ -450,8 +685,7 @@ scan_skiplist_lt_node(long _index_no,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type,_finded_Addr),
-  																					plan_type(PLAN_TYPE_SKIPLIST_LT_INDXE_SCAN){}
+  																					_const_type,_finded_Addr){plan_type = PLAN_TYPE_SKIPLIST_LT_INDXE_SCAN;}
 
 virtual int execute( )
 {
@@ -466,25 +700,23 @@ if( const_type == "INTNUM" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
-                          			trans_no,//get_trans_no()                 //当前事务ID
-                          			*finded_Addr,
-																&ret_list	    //原始结果集
+                          		*finded_Addr,
+								ret_list	    //原始结果集
                         );
 }
 
 if( const_type == "STRING" )
 {
 	mem_skiplist_entry_t in;
-	in.ckey  = const_value.c_str();
+	strcpy(in.ckey , const_value.c_str());
 	
 	ret = mem_skiplist_index_scanAddr_str_L(  
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
-                          			trans_no,//get_trans_no()                 //当前事务ID
-                          			*finded_Addr,
-																&ret_list	    //原始结果集
+                          		*finded_Addr,
+								ret_list	    //原始结果集
                         );
 }
 			
@@ -496,20 +728,24 @@ if( const_type == "STRING" )
 };
 
 
-struct scan_skiplist_btw_node:public scan_index_node
+struct scan_skiplist_btw_node:public scan_skiplist_index_node
 {
-
+std::string const_value_array[2];
+std::string const_type_array[2];
+	
 scan_skiplist_btw_node(long _index_no,
   								int  _index_type,
   								mem_table_t *_mem_table,
-  								mem_hash_index_t * _index,
+  								mem_skiplist_index_t * _index,
   								rapidjson::Value& _json,
   								rapidjson::Document * _Doc,
   								std::string& _relation_name,
   								std::string& _column_name,
-  								std::string& _const_value,
-  								std::string& _const_type,
-  								finded_Addr_t * _finded_Addr):scan_index_node(long _index_no,
+  								std::string& _const_value1,
+  								std::string& _const_type1,
+  								std::string& _const_value2,
+  								std::string& _const_type2,
+  								finded_Addr_t * _finded_Addr):scan_skiplist_index_node( _index_no,
   																				  _index_type,
   																					_mem_table,
   																					_index,
@@ -517,9 +753,13 @@ scan_skiplist_btw_node(long _index_no,
   																					_Doc,
   																					_relation_name,
   																					_column_name,
-  																					_const_value,
-  																					_const_type,_finded_Addr),
-  																					plan_type(PLAN_TYPE_SKIPLIST_BTW_INDXE_SCAN){}
+  																					_const_value1,
+  																					_const_type1,_finded_Addr){
+  																						const_value_array[0] = _const_value1;
+  																						const_value_array[1] = _const_value2;
+  																						const_type_array[0]  =  _const_type1;
+  																						const_type_array[0]  =  _const_type2;
+  																						plan_type =PLAN_TYPE_SKIPLIST_BTW_INDXE_SCAN ;}
 
 virtual int execute( )
 {
@@ -527,34 +767,32 @@ int ret = 0;
 if( const_type == "INTNUM" )
 {
 	mem_skiplist_entry_t min,max;
-	min.lkey  = atol(const_value[0].c_str());
-	max.lkey  = atol(const_value[1].c_str());
+	min.lkey  = atol(const_value_array[0].c_str());
+	max.lkey  = atol(const_value_array[1].c_str());
 	
 	ret = mem_skiplist_index_scanAddr_long_btw(  
                                 mem_table,
                         /* in */index,
-                        /* in */&min,max,
+                        /* in */&min,&max,
                                 NULL,
-                          			trans_no,//get_trans_no()                 //当前事务ID
-                          			*finded_Addr,
-																&ret_list	    //原始结果集
+                          		*finded_Addr,
+															 ret_list	    //原始结果集
                         );
 }
 
 if( const_type == "STRING" )
 {
 	mem_skiplist_entry_t min,max;
-	min.ckey  = const_value[0].c_str();
-	max.ckey  = const_value[1].c_str();
+	strcpy(min.ckey  , const_value_array[0].c_str() );
+	strcpy(max.ckey  , const_value_array[1].c_str() );
 	
 	ret = mem_skiplist_index_scanAddr_str_btw(  
                                 mem_table,
                         /* in */index,
-                        /* in */&min,max            ,
+                        /* in */&min,&max            ,
                                 NULL,
-                          			trans_no,//get_trans_no()                 //当前事务ID
-                          			*finded_Addr,
-																&ret_list	    //原始结果集
+                          		*finded_Addr,
+																ret_list	    //原始结果集
                         );
 }
 			
@@ -573,22 +811,21 @@ finded_Addr_t * finded_Addr;
 std::list<generic_result>* ret_list;
 	
 mem_table_t *mem_table;
-scan_skiplist_lt_node(
+merg_index_node(
   								mem_table_t *_mem_table,
   								rapidjson::Value& _json,
   								rapidjson::Document * _Doc,
-  								finded_Addr_t * _finded_Addr)::plan_node(_json,_Doc),mem_table(_mem_table),
-  																					finded_Addr(_finded_Addr),
-  																					plan_type(PLAN_TYPE_MERGE){}
+  								finded_Addr_t * _finded_Addr):plan_node(_json,_Doc),mem_table(_mem_table),
+  																					finded_Addr(_finded_Addr){plan_type =PLAN_TYPE_MERGE;}
 
 virtual int execute( )
 {
 int ret = 0;
 ret =  merg_index_result(  
                                 mem_table,
-																*finded_Addr, 
-                          			Tn,                 //当前事务ID
-																ret_list		    //原始结果集
+								*finded_Addr, 
+                 trans_no,                 //当前事务ID
+								ret_list		    //原始结果集
                         );
 			
 	return ret;
@@ -633,7 +870,7 @@ struct filter_node:public plan_node
 
 //保留相等的节点
 template<class T>
-struct filter_eq_node:public filter_node
+struct filter_eq_node:public filter_node<T>
 {
 filter_eq_node(T* _container,
 									field_t&  _field,
@@ -642,70 +879,33 @@ filter_eq_node(T* _container,
   								std::string& _relation_name,
   								std::string& _column_name,
   								std::string& _const_value,
-  								std::string& _const_type):filter_node(_container,
+  								std::string& _const_type):filter_node<T>(_container,
 																						_field,
 																						_json,
   																					_Doc,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type),
-  																					plan_type(PLAN_TYPE_EQ_FIELTER){}
+  																					_const_type){plan_type = PLAN_TYPE_EQ_FIELTER;}
   																					
 virtual int execute()
 {
 	int ret = 0;
-	container->erase(std::remove_if(container->begin(),  container->end(),
-		 [&](T::value_type & one ){
+	filter_node<T>::container->erase(std::remove_if(filter_node<T>::container->begin(),  filter_node<T>::container->end(),
+		 [&](typename T::value_type & one ){
 		 							// 不相等就删掉，保留相等的
-									return	!( cast_field<T::value_type,field.field_type>( &one , field ) ==  cast_condition<field.field_type>( _const_value , field ) );
+									return	!( cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) ==  cast_condition<filter_node<T>::field.field_type>( const_value , filter_node<T>::field ) );
 										} ), 
-									 container->end()); 
+									 filter_node<T>::container->end()); 
 	return 0;
 }
 
 };
 
 
-//保留相等的节点
-template<class T>
-struct filter_eq_node:public filter_node
-{
-filter_eq_node(T* _container,
-									field_t&  _field,
-									rapidjson::Value& _json,
-  								rapidjson::Document * _Doc,
-  								std::string& _relation_name,
-  								std::string& _column_name,
-  								std::string& _const_value,
-  								std::string& _const_type):filter_node(_container,
-																						_field,
-																						_json,
-  																					_Doc,
-  																					_relation_name,
-  																					_column_name,
-  																					_const_value,
-  																					_const_type),
-  																					plan_type(PLAN_TYPE_EQ_FIELTER){}
-  																					
-virtual int execute()
-{
-	int ret = 0;
-	container->erase(std::remove_if(container->begin(),  container->end(),
-		 [&](T::value_type & one ){
-		 							// 不相等就删掉，保留相等的
-								  return	!(cast_field<T::value_type,field.field_type>( &one , field ) ==  cast_condition<field.field_type>( _const_value , field ) );
-
-										} ), 
-									 container->end()); 
-	return 0;
-}
-
-};
-
 
 template<class T>
-struct filter_le_node:public filter_node
+struct filter_le_node:public filter_node<T>
 {
 filter_le_node(T* _container,
 									field_t&  _field,
@@ -714,25 +914,24 @@ filter_le_node(T* _container,
   								std::string& _relation_name,
   								std::string& _column_name,
   								std::string& _const_value,
-  								std::string& _const_type):filter_node(_container,
+  								std::string& _const_type):filter_node<T>(_container,
 																						_field,
 																						_json,
   																					_Doc,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type),
-  																					plan_type(PLAN_TYPE_LE_FIELTER){}
+  																					_const_type){plan_type =PLAN_TYPE_LE_FIELTER ;}
   																					
 virtual int execute()
 {
 	int ret = 0;
-	container->erase(std::remove_if(container->begin(),  container->end(),
-		 [&](T::value_type & one ){
+	filter_node<T>::container->erase(std::remove_if(filter_node<T>::container->begin(),  filter_node<T>::container->end(),
+		 [&](typename T::value_type & one ){
 		 							// 不相等就删掉，保留相等的
-									return	!(cast_field<T::value_type,field.field_type>( &one , field ) <=  cast_condition<field.field_type>( _const_value , field ) );
+									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) <=  cast_condition<filter_node<T>::field.field_type>( const_value , filter_node<T>::field ) );
 										} ), 
-									 container->end()); 
+									 filter_node<T>::container->end()); 
 	return 0;
 }
 
@@ -740,7 +939,7 @@ virtual int execute()
 
 
 template<class T>
-struct filter_lt_node:public filter_node
+struct filter_lt_node:public filter_node<T>
 {
 filter_lt_node(T* _container,
 									field_t&  _field,
@@ -749,26 +948,25 @@ filter_lt_node(T* _container,
   								std::string& _relation_name,
   								std::string& _column_name,
   								std::string& _const_value,
-  								std::string& _const_type):filter_node(_container,
+  								std::string& _const_type):filter_node<T>(_container,
 																						_field,
 																						_json,
   																					_Doc,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type),
-  																					plan_type(PLAN_TYPE_LT_FIELTER){}
+  																					_const_type){plan_type = PLAN_TYPE_LT_FIELTER;}
   																					
 virtual int execute()
 {
 	int ret = 0;
-	container->erase(std::remove_if(container->begin(),  container->end(),
-		 [&](T::value_type & one ){
+	filter_node<T>::container->erase(std::remove_if(filter_node<T>::container->begin(),  filter_node<T>::container->end(),
+		 [&](typename T::value_type & one ){
 		 							// 不相等就删掉，保留相等的
-									return	!(cast_field<T::value_type,field.field_type>( &one , field ) <  cast_condition<field.field_type>( _const_value , field ) );
+									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) <  cast_condition<filter_node<T>::field.field_type>( const_value , filter_node<T>::field ) );
 
 										} ), 
-									 container->end()); 
+									 filter_node<T>::container->end()); 
 	return 0;
 }
 
@@ -776,7 +974,7 @@ virtual int execute()
 
 
 template<class T>
-struct filter_ge_node:public filter_node
+struct filter_ge_node:public filter_node<T>
 {
 filter_ge_node(T* _container,
 									field_t&  _field,
@@ -785,33 +983,32 @@ filter_ge_node(T* _container,
   								std::string& _relation_name,
   								std::string& _column_name,
   								std::string& _const_value,
-  								std::string& _const_type):filter_node(_container,
+  								std::string& _const_type):filter_node<T>(_container,
 																						_field,
 																						_json,
   																					_Doc,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type),
-  																					plan_type(PLAN_TYPE_GE_FIELTER){}
+  																					_const_type){plan_type = PLAN_TYPE_GE_FIELTER;}
   																					
 virtual int execute()
 {
 	int ret = 0;
-	container->erase(std::remove_if(container->begin(),  container->end(),
-		 [&](T::value_type & one ){
+	filter_node<T>::container->erase(std::remove_if(filter_node<T>::container->begin(),  filter_node<T>::container->end(),
+		 [&](typename T::value_type & one ){
 		 							// 不相等就删掉，保留相等的
-									return	!(cast_field<T::value_type,field.field_type>( &one , field ) >=  cast_condition<field.field_type>( _const_value , field ) );
+									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) >=  cast_condition<filter_node<T>::field.field_type>( const_value , filter_node<T>::field ) );
 
 										} ), 
-									 container->end()); 
+									 filter_node<T>::container->end()); 
 	return 0;
 }
 
 };
 
 template<class T>
-struct filter_gt_node:public filter_node
+struct filter_gt_node:public filter_node<T>
 {
 filter_gt_node(T* _container,
 									field_t&  _field,
@@ -820,26 +1017,25 @@ filter_gt_node(T* _container,
   								std::string& _relation_name,
   								std::string& _column_name,
   								std::string& _const_value,
-  								std::string& _const_type):filter_node(_container,
+  								std::string& _const_type):filter_node<T>(_container,
 																						_field,
 																						_json,
   																					_Doc,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type),
-  																					plan_type(PLAN_TYPE_GT_FIELTER){}
+  																					_const_type){plan_type = PLAN_TYPE_GT_FIELTER;}
   																					
 virtual int execute()
 {
 	int ret = 0;
-	container->erase(std::remove_if(container->begin(),  container->end(),
-		 [&](T::value_type & one ){
+	filter_node<T>::container->erase(std::remove_if(filter_node<T>::container->begin(),  filter_node<T>::container->end(),
+		 [&](typename T::value_type & one ){
 		 							// 不相等就删掉，保留相等的
-									return	!(cast_field<T::value_type,field.field_type>( &one , field ) >  cast_condition<field.field_type>( _const_value , field ) );
+									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) >  cast_condition<filter_node<T>::field.field_type>( const_value , filter_node<T>::field ) );
 
 										} ), 
-									 container->end()); 
+									 filter_node<T>::container->end()); 
 	return 0;
 }
 
@@ -848,7 +1044,7 @@ virtual int execute()
 
 
 template<class T>
-struct filter_ne_node:public filter_node
+struct filter_ne_node:public filter_node<T>
 {
 filter_ne_node(T* _container,
 									field_t&  _field,
@@ -857,26 +1053,25 @@ filter_ne_node(T* _container,
   								std::string& _relation_name,
   								std::string& _column_name,
   								std::string& _const_value,
-  								std::string& _const_type):filter_node(_container,
+  								std::string& _const_type):filter_node<T>(_container,
 																						_field,
 																						_json,
   																					_Doc,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type),
-  																					plan_type(PLAN_TYPE_GT_FIELTER){}
+  																					_const_type){plan_type =PLAN_TYPE_GT_FIELTER ;}
   																					
 virtual int execute()
 {
 	int ret = 0;
-	container->erase(std::remove_if(container->begin(),  container->end(),
-		 [&](T::value_type & one ){
+	filter_node<T>::container->erase(std::remove_if(filter_node<T>::container->begin(),  filter_node<T>::container->end(),
+		 [&](typename T::value_type & one ){
 		 							// 不相等就删掉，保留相等的
-									return	!(cast_field<T::value_type,field.field_type>( &one , field ) !=  cast_condition<field.field_type>( _const_value , field ) );
+									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) !=  cast_condition<filter_node<T>::field.field_type>( const_value , filter_node<T>::field ) );
 
 										} ), 
-									 container->end()); 
+									 filter_node<T>::container->end()); 
 	return 0;
 }
 
@@ -909,8 +1104,7 @@ scan_normal_node(mem_table_t * _mem_table ,
   																					relation_name(_relation_name),
   																					column_name(_column_name),
   																					const_value(_const_value),
-  																					const_type(_const_type),
-  																					plan_type(PLAN_TYPE_SCAN_NORMAL){}
+  																					const_type(_const_type){plan_type = PLAN_TYPE_SCAN_NORMAL;}
   																					
 virtual int execute()
 {
@@ -933,10 +1127,10 @@ struct full_scan_node:public plan_node
  	mem_table_t * mem_table;
   std::list<generic_result> ret_list;//结果集
 									
-scan_normal_node(mem_table_t * _mem_table , 
+full_scan_node(mem_table_t * _mem_table , 
 									rapidjson::Value& _json,
-  								rapidjson::Document * _Doc,
-):plan_node(_json,_Doc),mem_table(_mem_table),plan_type(PLAN_TYPE_FULL_SCAN){}
+  								rapidjson::Document * _Doc
+):plan_node(_json,_Doc),mem_table(_mem_table){plan_type = PLAN_TYPE_FULL_SCAN;}
   																					
 virtual int execute()
 {
@@ -950,15 +1144,75 @@ virtual int execute()
 
 };
 
-// 是最终工作的函数 __hash_inner_join 1 
+
+struct do_join_node:public plan_node
+{
+	
+std::string table_name1; 
+std::string table_name2;
+std::string column_name1;
+std::string column_name2;
+mem_table_t *mem_table1 ;
+mem_table_t *mem_table2 ;
+
+std::list<generic_result>* ret_list1 ;
+std::list<generic_result>* ret_list2 ;
+
+field_t field1;
+field_t field2;
+int is_first;
+shared_ptr<std::list<generic_result> > pre;
+shared_ptr<std::list<generic_result> > ret_list;
+
+// 为了防止循环编译依赖，暂时加的模板
+template<class join_eq_condition_struct>
+do_join_node( std::string &_table_name1 ,
+							std::string &_table_name2 ,
+							std::string &_column_name1,
+							std::string &_column_name2,
+							mem_table_t *_mem_table1  ,
+							mem_table_t *_mem_table2  ,
+							std::list<generic_result>* _ret_list1,
+							std::list<generic_result>* _ret_list2,
+							shared_ptr<std::list<generic_result> > _pre,
+							rapidjson::Value& _json,
+  						rapidjson::Document * _Doc,
+  						int _is_first
+  									
+):plan_node(_json,_Doc),	
+		//table_name1(join_eq_condition_origin.relation_name[0]),
+		//table_name2(join_eq_condition_origin.relation_name[1]),
+		//column_name1(join_eq_condition_origin.column_name[0]),
+		//column_name2(join_eq_condition_origin.column_name[1]),
+		//mem_table1(join_eq_condition_origin.mem_table[0]),
+		//mem_table2(join_eq_condition_origin.mem_table[1]),
+		//ret_list1(table_ret_map[table_name1]),
+		//ret_list2(table_ret_map[table_name2]),
+		table_name1 (_table_name1), 
+		table_name2 (_table_name2),
+		column_name1(_column_name1),
+		column_name2(_column_name2),
+		mem_table1  (_mem_table1),
+		mem_table2  (_mem_table2),
+		ret_list1(_ret_list1),
+		ret_list2(_ret_list2),
+		is_first(_is_first){
+plan_type = PLAN_TYPE_DO_JOIN;		
+get_field(mem_table1 ,column_name1, field1);
+get_field(mem_table2 ,column_name2, field2);
+pre = _pre;
+}
+
+
+// 内关联函数
 template<typename fun_type1,typename fun_type2>
-shared_ptr<std::list<generic_result> >
+shared_ptr<std::vector<generic_result> >
 ret_hash_inner_join_ctl( std::list<generic_result> & container1, std::list<generic_result> &container2,fun_type1 key_fun1,fun_type2 key_fun2)
 {
 typedef typename std::result_of<fun_type1(generic_result )>::type  key_type1; 
 typedef typename std::result_of<fun_type2(generic_result )>::type  key_type2; 
-typedef unordered_map<key_type1,vector<generic_result > hash_map_type;
-typedef std::list<generic_result> ret_type;
+typedef std::unordered_map<key_type1,std::vector<generic_result> > hash_map_type;
+typedef std::vector<generic_result> ret_type;
         
 shared_ptr<hash_map_type>  hash_container (make_shared<hash_map_type>());
 shared_ptr<ret_type     >  ret (make_shared<ret_type>());
@@ -976,7 +1230,7 @@ for(typename std::list<generic_result>::const_iterator	it = container2.begin();i
 	 key_type2 key = key_fun2(*it);
 	 for(auto it2 = (*hash_container)[key].begin();it2!=(*hash_container)[key].end();++it2) 
    {
-   			auto row = make_pair((*it2), (*it);
+   			//auto row = make_pair((*it2), (*it) );
   
   generic_result return_record;
   return_record.set_row_size( it2->get_row_size() + it->get_row_size() );
@@ -990,83 +1244,45 @@ for(typename std::list<generic_result>::const_iterator	it = container2.begin();i
   return ret;
 
 }
-
-struct do_join_node:public plan_node
-{
-	
-std::string table_name1; 
-std::string table_name2;
-std::string column_name1;
-std::string column_name2;
-	
-mem_table_t *mem_table1 ;
-mem_table_t *mem_table2 ;
-
-std::list<generic_result>* ret_list1 ;
-std::list<generic_result>* ret_list2 ;
-
-field_t field1;
-field_t field2;
-int is_first;
-shared_ptr<std::list<generic_result> > pre;
-shared_ptr<std::list<generic_result> > ret_list;
-
-scan_normal_node( join_eq_condition_struct & _join_eq_condition_struct, 
-									shared_ptr<std::list<generic_result> > _pre,
-									rapidjson::Value& _json,
-  								rapidjson::Document * _Doc,
-  								int _is_first
-  									
-):plan_node(_json,_Doc),	
-		table_name1(join_eq_condition_origin.relation_name[0]),
-		table_name2(join_eq_condition_origin.relation_name[1]),
-		column_name1(join_eq_condition_origin.column_name[0]),
-		column_name2(join_eq_condition_origin.column_name[1]),
-		mem_table1(join_eq_condition_origin.mem_table[0]),
-		mem_table2(join_eq_condition_origin.mem_table[1]),
-		ret_list1(table_ret_map[table_name1]),
-		ret_list2(table_ret_map[table_name2]),
-		is_first(_is_first),
-		plan_type(PLAN_TYPE_DO_JOIN){
-get_field(mem_table1 ,column_name1, field1);
-get_field(mem_table2 ,column_name2, field2);
-pre = _pre;
-}
-
 	
 virtual int execute()
 {
 
-char buf[field1.field_size+1];
+char buf1[field1.field_size+1];
 buf1[field1.field_size+1];	
 buf1[field1.field_size]='\0';
 
-char buf[field2.field_size+1];
+char buf2[field2.field_size+1];	
 buf2[field2.field_size+1];	
 buf2[field2.field_size]='\0';	
 
+int field1_type = field1.field_type;
+int field2_type = field2.field_type;
+
 if(is_first){
 	ret_list =ret_hash_inner_join_ctl(*ret_list1,*ret_list2,
-	[&](record_type& x){	
-	memcpy(buf1,x.get_date(),field1.field_size);
-	return *cast_ptr_by_field<field1.field_no>( buf1 , field1 );
+	[&](generic_result& x){	
+	memcpy(buf1,x.get_data(),field1.field_size);
+	//return cast_ptr_by_field<field1_type>( buf1 , field1 );
+	return field_compare( buf1 , field1 , field1.field_size );
 	},
-	[&](record_type& x){
-	memcpy(buf2,x.get_date(),field2.field_size);
-	return *cast_ptr_by_field<field2.field_no>( buf2 , field2 );
+	[&](generic_result& x){
+	memcpy(buf2,x.get_data(),field2.field_size);
+	return field_compare( buf2 , field2 , field2.field_size );
 	});
 		
 }
 else
 {
   ret_list =ret_hash_inner_join_ctl(*pre,*ret_list2,
-	[&](record_type& x){	
-	memcpy(buf1,x.get_date()+x.get_row_size() - mem_table1->record_size + field1.field_dis,field1.field_size);
-	return *cast_ptr_by_field<field1.field_no>( buf1 , field1 );
+	[&](generic_result& x){	
+	memcpy(buf1,x.get_data(),field1.field_size);
+	//return cast_ptr_by_field<field1_type>( buf1 , field1 );
+	return field_compare( buf1 , field1 , field1.field_size );
 	},
-	[&](record_type& x){
-	memcpy(buf2,x.get_date(),field2.field_size);
-	return *cast_ptr_by_field<field2.field_no>( buf2 , field2 );
+	[&](generic_result& x){
+	memcpy(buf2,x.get_data(),field2.field_size);
+	return field_compare( buf2 , field2 , field2.field_size );
 	});
 
 }
