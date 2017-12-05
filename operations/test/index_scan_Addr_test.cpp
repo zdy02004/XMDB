@@ -393,7 +393,6 @@ std::list<test_table_t> ret_vector2;
 //                        /* in */&in                 ,
 //                        /* in */&in2                ,
 //                          			&last_find_entry,
-//                          			trans_no,                 //当前事务ID
 //																&ret_vector2      		    //原始结果集
 //                        );
 
@@ -406,7 +405,6 @@ int ret = mem_skiplist_index_scanAddr_long_GE(
                         /* in */       mem_skiplist_index ,
                         /* in */ 			 &in             ,
                           						 &last_find_entry,
-                          			       trans_no,            //当前事务ID
                           			       finded_Addr,
 																       ret_addr  		    //原始结果集
                         );        
@@ -416,7 +414,6 @@ ret = mem_skiplist_index_scanAddr_long_LE(
                         /* in */       mem_skiplist_index ,
                         /* in */ 			 &in2             ,
                           						 &last_find_entry,
-                          			       trans_no,            //当前事务ID
                           			       ret_addr,
 																       ret_addr2  		    //原始结果集
                         );                 
