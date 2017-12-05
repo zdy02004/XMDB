@@ -145,7 +145,7 @@ inline int mem_hash_index_scan_str(
                                 mem_table_t *mem_table,
                         /* in */struct mem_hash_index_t * mem_hash_index ,
                         /* in */char                    * key              ,
-                        /* in */int (*hash_fun)(unsigned  long      ,    /*返回哈希表的行号*/struct  mem_block_t *,unsigned  long      *),
+                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*返回哈希表的行号*/unsigned  long      *),
                           			unsigned long long  Tn,                 //当前事务ID
 																std::list<record_type>* ret_list		    //原始结果集
                         )
