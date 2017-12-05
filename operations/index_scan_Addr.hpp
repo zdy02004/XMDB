@@ -51,7 +51,6 @@ inline int mem_skiplist_index_scanAddr_long(
                         /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
                         /* in */mem_skiplist_entry_t *in             ,
                                 mem_skiplist_entry_t **last_find_entry,
-                          			unsigned long long  Tn,                 //当前事务ID
                           			finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集
                         )
@@ -116,7 +115,6 @@ inline int mem_skiplist_index_scanAddr_str(
                         /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
                         /* in */mem_skiplist_entry_t *in             ,
                         		    mem_skiplist_entry_t **last_find_entry,
-                          			unsigned long long  Tn,                 //当前事务ID
                           			finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集
                         )
@@ -182,7 +180,6 @@ inline int mem_skiplist_LE_scanAddr(
  												mem_skiplist_entry_t *prev, 
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
- 												unsigned long long  Tn,                 //当前事务ID
  												finded_Addr_t & finded_Addr, 
 												finded_Addr_t& ret_list		    //原始结果集 
  											 )
@@ -261,7 +258,6 @@ inline int mem_skiplist_LE_scanAddr_str(
  												mem_skiplist_entry_t *prev, 
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
- 												unsigned long long  Tn,                 //当前事务ID
  												finded_Addr_t & finded_Addr, 
 												finded_Addr_t& ret_list		    //原始结果集 
  											 )
@@ -339,7 +335,6 @@ inline int mem_skiplist_L_scanAddr(
  												mem_skiplist_entry_t *prev, 
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
- 												unsigned long long  Tn,                 //当前事务ID
  												finded_Addr_t & finded_Addr, 
 												finded_Addr_t& ret_list		    //原始结果集 
  											 )
@@ -417,7 +412,6 @@ inline int mem_skiplist_L_scanAddr_str(
  												mem_skiplist_entry_t *prev, 
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
- 												unsigned long long  Tn,                 //当前事务ID
  												finded_Addr_t & finded_Addr, 
 												finded_Addr_t& ret_list		    //原始结果集 
  											 )
@@ -495,7 +489,6 @@ inline int mem_skiplist_G_scanAddr(mem_table_t *mem_table,
  												mem_skiplist_entry_t *prev, 
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
- 												unsigned long long  Tn,                 //当前事务ID
  												finded_Addr_t & finded_Addr, 
 												finded_Addr_t& ret_list		    //原始结果集 
  											 )
@@ -572,7 +565,6 @@ inline int mem_skiplist_GE_scanAddr(mem_table_t *mem_table,
  												mem_skiplist_entry_t *prev, 
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
- 												unsigned long long  Tn,                 //当前事务ID
  												finded_Addr_t & finded_Addr, 
 												finded_Addr_t& ret_list		    //原始结果集 
  											 )
@@ -652,7 +644,6 @@ inline int mem_skiplist_G_scanAddr_str(mem_table_t *mem_table,
  												mem_skiplist_entry_t *prev, 
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
- 												unsigned long long  Tn,                 //当前事务ID
  												finded_Addr_t & finded_Addr, 
 												finded_Addr_t& ret_list		    //原始结果集 
  											 )
@@ -729,7 +720,6 @@ inline int mem_skiplist_GE_scanAddr_str(mem_table_t *mem_table,
  												mem_skiplist_entry_t *prev, 
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
- 												unsigned long long  Tn,                 //当前事务ID
  												finded_Addr_t & finded_Addr, 
 												finded_Addr_t& ret_list		    //原始结果集 
  											 )
@@ -808,7 +798,6 @@ inline int mem_skiplist_index_scanAddr_long_btw(
                         /* in */mem_skiplist_entry_t *min             ,
                         /* in */mem_skiplist_entry_t *max             ,
                           			mem_skiplist_entry_t **last_find_entry,
-                          			unsigned long long  Tn,                 //当前事务ID
                           			finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集
                         )
@@ -818,7 +807,6 @@ if(!mem_skiplist_index_scanAddr_long(
                          				 mem_skiplist_index ,
                         				 min             ,
                         				 last_find_entry,
-                          			 Tn,                 										//当前事务ID
                           			 finded_Addr,
 																 ret_list		    //原始结果集
                         )
@@ -830,7 +818,6 @@ if(!mem_skiplist_index_scanAddr_long(
 											*last_find_entry,
 										  max,
 										  last_find_entry,
-										  Tn,                 //当前事务ID
 										  finded_Addr,
 										  ret_list		    //原始结果集 
 									 );
@@ -846,7 +833,6 @@ inline int mem_skiplist_index_scanAddr_str_btw(
                         /* in */mem_skiplist_entry_t *min             ,
                         /* in */mem_skiplist_entry_t *max             ,
                           			mem_skiplist_entry_t **last_find_entry,
-                          			unsigned long long  Tn,                 //当前事务ID
                           			finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集
                         )
@@ -856,7 +842,6 @@ if(!mem_skiplist_index_scanAddr_str(
                          				 mem_skiplist_index ,
                         				 min             ,
                         				 last_find_entry,
-                          			 Tn,                 										//当前事务ID
                           			 finded_Addr,
 																 ret_list		    //原始结果集
                         )
@@ -867,7 +852,6 @@ if(!mem_skiplist_index_scanAddr_str(
 											*last_find_entry,
 										  max,
 										  last_find_entry,
-										  Tn,                 //当前事务ID
 										  finded_Addr,
 										  ret_list		    //原始结果集 
 									 );
@@ -883,7 +867,6 @@ inline int mem_skiplist_index_scanAddr_long_L(
                         /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
-                          			unsigned long long  Tn,                 //当前事务ID
                           			finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集
                         )
@@ -943,7 +926,6 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 											*last_find_entry,
 										  in,
 										  last_find_entry,
-										  Tn,                 //当前事务ID
 										  finded_Addr,
 										  ret_list		    //原始结果集 
 									 );
@@ -957,7 +939,6 @@ inline int mem_skiplist_index_scanAddr_long_LE(
                         /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
-                          			unsigned long long  Tn,                 //当前事务ID
                           			finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集
                         )
@@ -998,7 +979,6 @@ inline int mem_skiplist_index_scanAddr_long_LE(
 											*last_find_entry,
 										  in,
 										  last_find_entry,
-										  Tn,                 //当前事务ID
 										  finded_Addr,
 										  ret_list		    //原始结果集 
 									 );
@@ -1012,7 +992,6 @@ inline int mem_skiplist_index_scanAddr_long_G(
                         /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
-                          			unsigned long long  Tn,                 //当前事务ID
                           			finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集
                         )
@@ -1063,7 +1042,6 @@ inline int mem_skiplist_index_scanAddr_long_G(
 											*last_find_entry,
 										  in,
 										  last_find_entry,
-										  Tn,                 //当前事务ID
 										  finded_Addr,
 										  ret_list		    //原始结果集 
 									 );
@@ -1077,7 +1055,6 @@ inline int mem_skiplist_index_scanAddr_long_GE(
                         /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
-                          			unsigned long long  Tn,                 //当前事务ID
                           			finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集
                         )
@@ -1128,7 +1105,6 @@ inline int mem_skiplist_index_scanAddr_long_GE(
 											*last_find_entry,
 										  in,
 										  last_find_entry,
-										  Tn,                 //当前事务ID
 										  finded_Addr,
 										  ret_list		    //原始结果集 
 									 );
@@ -1142,7 +1118,6 @@ inline int mem_skiplist_index_scanAddr_str_L(
                         /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
-                          			unsigned long long  Tn,                 //当前事务ID
                           			finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集
                         )
@@ -1183,7 +1158,6 @@ inline int mem_skiplist_index_scanAddr_str_L(
 											*last_find_entry,
 										  in,
 										  last_find_entry,
-										  Tn,                 //当前事务ID
 										  finded_Addr,
 										  ret_list		    //原始结果集 
 									 );
@@ -1197,7 +1171,6 @@ inline int mem_skiplist_index_scanAddr_str_LE(
                         /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
-                          			unsigned long long  Tn,                 //当前事务ID
                           			finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集
                         )
@@ -1238,7 +1211,6 @@ inline int mem_skiplist_index_scanAddr_str_LE(
 											*last_find_entry,
 										  in,
 										  last_find_entry,
-										  Tn,                 //当前事务ID
 										  finded_Addr,
 										  ret_list		    //原始结果集 
 									 );
@@ -1252,7 +1224,6 @@ inline int mem_skiplist_index_scanAddr_str_G(
                         /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
-                          			unsigned long long  Tn,                 //当前事务ID
                           			finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集
                         )
@@ -1304,7 +1275,6 @@ inline int mem_skiplist_index_scanAddr_str_G(
 											*last_find_entry,
 										  in,
 										  last_find_entry,
-										  Tn,                 //当前事务ID
 										  finded_Addr,
 										  ret_list		    //原始结果集 
 									 );
@@ -1318,7 +1288,6 @@ inline int mem_skiplist_index_scanAddr_str_GE(
                         /* in */struct mem_skiplist_index_t * mem_skiplist_index ,
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
-                          			unsigned long long  Tn,                 //当前事务ID
                           			finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集
                         )
@@ -1369,7 +1338,6 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 											*last_find_entry,
 										  in,
 										  last_find_entry,
-										  Tn,                 //当前事务ID
 										  finded_Addr,
 										  ret_list		    //原始结果集 
 									 );
@@ -1508,13 +1476,11 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 
 
 //插入一个整型索引的数据,保证每个桶相同的 val 相邻
-template<typename record_type >
 inline int mem_hash_index_scanAddr_str(
                                 mem_table_t *mem_table,
                         /* in */struct mem_hash_index_t * mem_hash_index ,
                         /* in */char                    * key              ,
-                        /* in */int (*hash_fun)(unsigned  long      ,    /*返回哈希表的行号*/struct  mem_block_t *,unsigned  long      *),
-                          			unsigned long long  Tn,                 //当前事务ID
+                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*杩斿洖鍝堝笇琛ㄧ殑琛屽彿*/unsigned  long      *),
 																finded_Addr_t & finded_Addr, 
 																finded_Addr_t& ret_list		    //原始结果集 
                         )
