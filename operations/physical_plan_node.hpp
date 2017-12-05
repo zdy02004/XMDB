@@ -164,6 +164,7 @@ char * buf;
 field_t field;
 size_t  size;
 field_compare(char * _buf,field_t &_field, size_t _size ):buf(_buf),field(_field),size(_size){}
+// 将复杂的类型比较转化为二进制上的比较，实现万能的 == 比较
 bool operator == ( const field_compare &a)
 {
 	if(a.field.field_type != field.field_type)return false;
@@ -808,7 +809,7 @@ if( const_type == "STRING" )
 struct merg_index_node:public plan_node
 {
 finded_Addr_t * finded_Addr;
-std::list<generic_result>* ret_list;
+std::list<generic_result> ret_list;
 	
 mem_table_t *mem_table;
 merg_index_node(
@@ -825,7 +826,7 @@ ret =  merg_index_result(
                                 mem_table,
 								*finded_Addr, 
                  trans_no,                 //当前事务ID
-								ret_list		    //原始结果集
+								&ret_list		    //原始结果集
                         );
 			
 	return ret;
