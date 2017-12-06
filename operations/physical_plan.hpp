@@ -32,7 +32,6 @@ SORT
 9.
 暂无
 
-
 没有优化的逻辑计划应按照上述顺序逐步生成或者逆向生成。转为逻辑计划算子则对应为： 
 FROM_CLAUSE.children.size() > 1 
 走这个
@@ -42,15 +41,10 @@ JOIN –> FILTER -> GROUP -> FILTER(HAVING) -> PROJECTION -> DIST -> UNION -> SO
 FROM 1, FROM 2
 2.
 同上
-
 */
 //  函数表
 // _map_stl _filter_stl __group_by_key_stl  __reduce_stl  _distinct_ctl   _union_all_ctl   _union_ctl  __hash_inner_join_ctl   __intersect_ctl   
 //    1          2              3                4             5                 6            7                   8                  9
-
-//  g++ -w -std=c++11 -C pyh_plan.hpp 
-//  g++ -w -std=c++11  pyh_plan.cpp  -o cc.exe  
-
 
 //->QueryOptimiser
 //0.检查表名是否存在
@@ -65,242 +59,30 @@ FROM 1, FROM 2
 //有索引
 // mem_skiplist_index_scan_long,mem_hash_index_scan_long )
  
- 
+/*
+g++ -w -lpthread -C -std=c++11 physical_plan.hpp 
+*/
  
  
 #ifndef PLAN_TAB_HPP  
 #define PLAN_TAB_HPP  
-#include "query_analyser.hpp"
 #include <functional>
 #include <stdlib.h>
 #include <algorithm>
 #include <ctype.h>
+#include "physical_plan_node.hpp"
 
-#define PHYSICY_PLAN_EMPTY_TABLE 10401
-#define FIELD_NAME_EMPTY 10402
-#define ERR_COLUMN_NULL  10403
+
+#define ERR_COLUMN_NULL  							10403
 #define ERR_PLEASE_MARK_TABLE_COLOUM  10404
-#define ERR_NOT_FOUND_COLOUM 10405
-#define ERR_UNNOMAL_DOUBLE_CONDITION 10406
-#define INFO_BROCKEN 10407
-#define ERR_NOT_FOUND_TABLE 10408
-#define ERR_JOIN_FIELD_TYPE_NOT_EQ 10409
-#define ERR_NOT_FOUND_LINK 10410
-template<int>
-struct get_field_type
-{
-	
-	typedef int value_type;
-};
+#define ERR_NOT_FOUND_COLOUM 					10405
+#define ERR_UNNOMAL_DOUBLE_CONDITION 	10406
+#define INFO_BROCKEN 									10407
+#define ERR_NOT_FOUND_TABLE 					10408
+#define ERR_JOIN_FIELD_TYPE_NOT_EQ 		10409
+#define ERR_NOT_FOUND_LINK 						10410
+#define INFO_BROCKEN 									10407
 
-template<>
-struct get_field_type<FIELD_TYPE_INT>
-{
-	
-	typedef FIELD_INT value_type;
-};
-
-template<>
-struct get_field_type<FIELD_TYPE_SHORT>
-{
-	
-	typedef FIELD_SHORT value_type;
-};
-
-template<>
-struct get_field_type<FIELD_TYPE_LONG>
-{
-	
-	typedef FIELD_LONG value_type;
-};
-
-template<>
-struct get_field_type<FIELD_TYPE_LONGLONG>
-{
-	
-	typedef FIELD_LONGLONG value_type;
-};
-
-template<>
-struct get_field_type<FIELD_TYPE_FLOAT>
-{
-	
-	typedef FIELD_FLOAT value_type;
-};
-
-template<>
-struct get_field_type<FIELD_TYPE_DOUBLE>
-{
-	
-	typedef FIELD_DOUBLE value_type;
-};
-
-template<>
-struct get_field_type<FIELD_TYPE_DATE>
-{
-	
-	typedef FIELD_DATE value_type;
-};
-
-template<>
-struct get_field_type<FIELD_TYPE_STR>
-{
-	
-	typedef char* value_type;
-};
-
-class QueryPlan;
-
-
-// 表中是否有该字段
-inline int has_field(mem_table_t *mem_table ,std::string field_name){  
-   
-   if( NULL == mem_table        )   return PHYSICY_PLAN_EMPTY_TABLE;
-   if( field_name.empty()       )   return FIELD_NAME_EMPTY;
-   for(int i = 0;i < mem_table->field_used_num; ++i  )
-   {
-   		field_t& field = mem_table->fields_table[i];
-   	  if (0 == strcmp(field.field_name,field_name.c_str()) ){
-   	  	return 1;
-   	  }
-   }
-   return 0;
-
-}
-// 表中是否有索引
-inline int field_has_index(mem_table_t *mem_table ,std::string field_name,long & index_no,int & index_type){  
-   int err = has_field( mem_table , field_name);
-   if( !err )return err;
-   	
-   for(int i = 0;i < mem_table->field_used_num; ++i  )
-   {
-   		field_t& field = mem_table->fields_table[i];
-   	  if (0 == strcmp(field.field_name,field_name.c_str()) ){
-   	  	if(field.index_nr > 0 ){
-   	  		index_no = field.relate_index[0];
-   	  		index_type = field.index_type;
-   	  		return 1;
-   	  	}
-   	  	
-   	  }
-   }
-   return 0;
-
-}
-
-// 将结果行中的字段析出
-template<class T,int T2>
-get_field_type<T2>::value_type cast_field( T * record , const field_t & field ){  
-    
-    switch( field.field_type )
-    {
-    	case FIELD_TYPE_INT:            return *(FIELD_INT *)( (char *)(record)+field.field_dis );
-			case FIELD_TYPE_SHORT:          return *(FIELD_SHORT *)( (char *)(record)+field.field_dis );
- 			case FIELD_TYPE_LONG:           return *(FIELD_LONG *)( (char *)(record)+field.field_dis );
-			case FIELD_TYPE_LONGLONG:       return *(FIELD_LONGLONG *)( (char *)(record)+field.field_dis );
-			case FIELD_TYPE_FLOAT:          return *(FIELD_FLOAT *)( (char *)(record)+field.field_dis );
-			case FIELD_TYPE_DOUBLE:         return *(FIELD_DOUBLE *)( (char *)(record)+field.field_dis );
- 			case FIELD_TYPE_DATE:           return *(FIELD_DATE *)( (char *)(record)+field.field_dis );
- 			//case FIELD_TYPE_HASH_ENTRY:       return *(FIELD_INT *)( (char *)(record)+field.field_dis ); 
- 			//case FIELD_TYPE_RBTREE_ENTRY:     return *(FIELD_INT *)( (char *)(record)+field.field_dis );
- 			//case FIELD_TYPE_SKIPLIST_ENTRY:   return *(FIELD_INT *)( (char *)(record)+field.field_dis );
- 			case FIELD_TYPE_STR:            return *(char *)( (char *)(record)+field.field_dis );
-    		
-    }
-   	
-   return 0;
-}
-
-template<int T>
-get_field_type<T>::value_type cast_condition( std::string& condition , const field_t & field ){  
-    
-    switch( field.field_type )
-    {
-    	case FIELD_TYPE_INT:            return  (FIELD_INT)atoi(condition.c_str() );
-			case FIELD_TYPE_SHORT:          return  (FIELD_SHORT)atoi(condition.c_str() );
- 			case FIELD_TYPE_LONG:           return  (FIELD_LONG )atol(condition.c_str() );
-			case FIELD_TYPE_LONGLONG:       return  (FIELD_LONGLONG)atoll(condition.c_str() );
-			case FIELD_TYPE_FLOAT:          return  (FIELD_FLOAT *)atof(condition.c_str() );
-			case FIELD_TYPE_DOUBLE:         return  (FIELD_DOUBLE *)atof(condition.c_str() );
-				
- 			case FIELD_TYPE_DATE:           return  (FIELD_DATE )atol(condition.c_str() );
- 			//case FIELD_TYPE_HASH_ENTRY:       return *(FIELD_INT *)( (char *)(record)+field.field_dis ); 
- 			//case FIELD_TYPE_RBTREE_ENTRY:     return *(FIELD_INT *)( (char *)(record)+field.field_dis );
- 			//case FIELD_TYPE_SKIPLIST_ENTRY:   return *(FIELD_INT *)( (char *)(record)+field.field_dis );
- 			case FIELD_TYPE_STR:         		return  (char *)(condition.c_str() );
-    		
-    }
-   	
-   return 0;
-}
-
-// 将结果行中的字段析出
-template<int T>
-get_field_type<T>::value_type* cast_ptr_by_field( std:string const_value , const field_t & field ){  
-    
-    get_field_type<T>::value_type* ret = new get_field_type<T>::value_type;
-    
-    switch( field.field_type )
-    {
-    	case FIELD_TYPE_INT:             *ret = (FIELD_INT 	 		)( atoi( const_value.c_str() ) ); break;
-			case FIELD_TYPE_SHORT:           *ret = (FIELD_SHORT 		)( atoi( const_value.c_str() ) ); break;
- 			case FIELD_TYPE_LONG:            *ret = (FIELD_LONG  		)( atol( const_value.c_str() ) ); break;
-			case FIELD_TYPE_LONGLONG:        *ret = (FIELD_LONGLONG )( atoll( const_value.c_str() ) ); break;
-			case FIELD_TYPE_FLOAT:           *ret = (FIELD_FLOAT 		)( atof( const_value.c_str() ) ); break;
-			case FIELD_TYPE_DOUBLE:          *ret = (FIELD_DOUBLE 	)( atof( const_value.c_str() ) ); break;
- 			case FIELD_TYPE_DATE:            *ret = (FIELD_DATE 		)( atol( const_value.c_str() ) ); break;
- 			//case FIELD_TYPE_HASH_ENTRY:       return *(FIELD_INT *)( (char *)(record)+field.field_dis );  break;
- 			//case FIELD_TYPE_RBTREE_ENTRY:     return *(FIELD_INT *)( (char *)(record)+field.field_dis ); break;
- 			//case FIELD_TYPE_SKIPLIST_ENTRY:   return *(FIELD_INT *)( (char *)(record)+field.field_dis ); break;
- 			case FIELD_TYPE_STR:             *ret = (char *)( const_value.c_str()  ); break;
-    		
-    }
-   	
-   return ret;
-}
-
-// 将结果行中的字段析出
-template<int T>
-get_field_type<T>::value_type* cast_ptr_by_field( char *const_value  , const field_t & field ){  
-    
-    get_field_type<T>::value_type* ret = new get_field_type<T>::value_type;
-    
-    switch( field.field_type )
-    {
-    	case FIELD_TYPE_INT:             *ret = (FIELD_INT 	 		)( atoi( const_value ) ); break;
-			case FIELD_TYPE_SHORT:           *ret = (FIELD_SHORT 		)( atoi( const_value ) ); break;
- 			case FIELD_TYPE_LONG:            *ret = (FIELD_LONG  		)( atol( const_value ) ); break;
-			case FIELD_TYPE_LONGLONG:        *ret = (FIELD_LONGLONG )( atoll( const_value ) ); break;
-			case FIELD_TYPE_FLOAT:           *ret = (FIELD_FLOAT 		)( atof( const_value ) ); break;
-			case FIELD_TYPE_DOUBLE:          *ret = (FIELD_DOUBLE 	)( atof( const_value) ); break;
- 			case FIELD_TYPE_DATE:            *ret = (FIELD_DATE 		)( atol( const_value ) ); break;
- 			//case FIELD_TYPE_HASH_ENTRY:       return *(FIELD_INT *)( (char *)(record)+field.field_dis );  break;
- 			//case FIELD_TYPE_RBTREE_ENTRY:     return *(FIELD_INT *)( (char *)(record)+field.field_dis ); break;
- 			//case FIELD_TYPE_SKIPLIST_ENTRY:   return *(FIELD_INT *)( (char *)(record)+field.field_dis ); break;
- 			case FIELD_TYPE_STR:             *ret = (char *)( const_value  ); break;
-    		
-    }
-   	
-   return ret;
-}
-
-// 从表中获得字段
-inline int get_field(mem_table_t *mem_table ,std::string field_name,field_t & field){  
-   int err = has_field( mem_table , field_name);
-   if( !err )return err;
-   	
-   for(int i = 0;i < mem_table->field_used_num; ++i  )
-   {
-   		field_t& _field = mem_table->fields_table[i];
-   	  if (0 == strcmp(_field.field_name,field_name.c_str()) ){
- 			 field = _field;
- 			 return 0;
-   	  	
-   	  }
-   }
-   return NOT_FOUND_FIELD;
-
-}
 
 //常量条件解析结构体
 //主要解析表名、列名，操作类型
@@ -310,9 +92,9 @@ struct const_condition_struct{
 	std::string const_value;
   std::string const_type;
   rapidjson::Value *  context_ ;
-	QueryPlan        *  query_plan_;
+	QueryAnalyser    *  query_plan_;
   
-  const_condition_struct(rapidjson::Value *  context, QueryPlan * query_plan ):context_(context),query_plan_(query_plan){
+  const_condition_struct(rapidjson::Value *  context, QueryAnalyser * query_plan ):context_(context),query_plan_(query_plan){
 		tag = (*context_)["tag"].GetInt();
 		//直接获得常量
 		if( (*context_)["children"][0].HasMember("str_value_") ){
@@ -332,7 +114,7 @@ struct const_condition_struct{
 		else return 0;
 	}
 	
-}
+};
 
 //单条件解析结构体
 //主要解析表名、列名，操作类型
@@ -341,12 +123,12 @@ struct normal_single_condition_struct{
 	std::string relation_name;
 	std::string column_name;
 	rapidjson::Value *  context_ ;
-	QueryPlan        *  query_plan_;
+	QueryAnalyser    *  query_plan_;
 	int has_index;
 	int index_type;
 	long index_no;
 	
-	normal_single_condition_struct(rapidjson::Value *  context, QueryPlan * query_plan ):context_(context),query_plan_(query_plan),has_index(0){
+	normal_single_condition_struct(rapidjson::Value *  context, QueryAnalyser * query_plan ):context_(context),query_plan_(query_plan),has_index(0){
 		tag = (*context_)["tag"].GetInt();
 		
 		//直接获得表名
@@ -383,14 +165,14 @@ int get_name(){
 				int err = 0;
 				// 对于原始表检查该表是否存在
 				if(!table.table_name_.empty()){
-					 err = search_table_name(table.table_name_.c_str(),&table_no);
+					 err = search_table_name(const_cast<char *>(table.table_name_.c_str()),&table_no);
 					
 					 if( 0 == err){
 					 	 err = get_table_no_addr(table_no,(void **)(&mem_table));
 					 	 if( 0 == err){
 					 	 		if( has_field( mem_table ,column_name ) ){
 					 	 			++field_num;
-					 	 			relation_name = std::string(mem_table->table_name);
+					 	 			relation_name = std::string(mem_table->config.table_name);
 					 	 		}
 					 		}
 					 }
@@ -419,7 +201,7 @@ struct normal_double_condition_struct:public normal_single_condition_struct{
   std::string const_value;
   std::string const_type;
 
-		normal_double_condition_struct(rapidjson::Value *  context, QueryPlan * query_plan ):normal_single_condition_struct(context,query_plan){
+		normal_double_condition_struct(rapidjson::Value *  context, QueryAnalyser * query_plan ):normal_single_condition_struct(context,query_plan){
 	  }
 	  
 	 bool operator < (const normal_double_condition_struct &a) const
@@ -432,7 +214,7 @@ int get_name(){
 		int j = 0; // 代表有列名的序号
 		
 		if( (*context_)["children"][0].HasMember("COLUMN_NAME") && (*context_)["children"][1].HasMember("CONST_TYPE") ) {i = 0; j = 1;}
-		else ( (*context_)["children"][1].HasMember("COLUMN_NAME") &&(*context_)["children"][0].HasMember("CONST_TYPE") ) {i = 1; j = 0;}
+		else if ( (*context_)["children"][1].HasMember("COLUMN_NAME") &&(*context_)["children"][0].HasMember("CONST_TYPE") ) {i = 1; j = 0;}
 		else return ERR_UNNOMAL_DOUBLE_CONDITION;		
 		
 		//直接获得常量
@@ -464,7 +246,7 @@ struct normal_btw_condition_struct:public normal_single_condition_struct{
   std::string const_value[2];
   std::string const_type;
 
-		normal_btw_condition_struct(rapidjson::Value *  context, QueryPlan * query_plan ):normal_single_condition_struct(context,query_plan){
+		normal_btw_condition_struct(rapidjson::Value *  context, QueryAnalyser * query_plan ):normal_single_condition_struct(context,query_plan){
 	  }
 	  
 	 bool operator < (const normal_double_condition_struct &a) const
@@ -510,13 +292,13 @@ struct join_eq_condition_struct{
   mem_table_t *mem_table[2];
   
 	rapidjson::Value *  context_ ;
-	QueryPlan        *  query_plan_;
+	QueryAnalyser    *  query_plan_;
 	int has_index[2];
 	int index_type[2];
 	long index_no[2];
 	
 	
-	join_eq_condition_struct(rapidjson::Value *  context, QueryPlan * query_plan ):context_(context),query_plan_(query_plan){
+	join_eq_condition_struct(rapidjson::Value *  context, QueryAnalyser * query_plan ):context_(context),query_plan_(query_plan){
 		tag = (*context_)["tag"].GetInt();
 		
 		//直接获得表名
@@ -556,8 +338,10 @@ struct join_eq_condition_struct{
 	inline int get_link_seq( join_eq_condition_struct & linker,int & self, int & next )
 	{
 		int k = 0;
-		for(int i = 0; i<2; ++i){
-			for(int j = 0; j<2 ; ++j){
+		int i = 0;
+		int j = 0;
+		for( ; i<2; ++i){
+			for( ; j<2 ; ++j){
 				if( relation_name[i] == linker.relation_name[j] && column_name[i] == linker.column_name[j] )++k;
 			}
 		}
@@ -567,7 +351,7 @@ struct join_eq_condition_struct{
 		
 	}
 	
-	bool operator < (const join_eq_condition_struct &a) const
+	bool operator < ( join_eq_condition_struct &a) 
 	{
 		return get_weight () < a.get_weight ();	
 	}	
@@ -579,7 +363,7 @@ struct join_eq_condition_struct{
 	}	
 	
 int get_name(){	
-		if( 0 == column_name1.size() || 0 == column_name2.size() || 0 == relation_name1.size() || 0 == relation_name2.size() ) 
+		if( 0 == column_name[0].size() || 0 == column_name[1].size() || 0 == relation_name[0].size() || 0 == relation_name[1].size() ) 
 			{
 				// 未获取正常的列
 				return ERR_COLUMN_NULL;
@@ -608,7 +392,7 @@ int get_name(){
 			
 		// 检查表中的字段是否存在
 				for(int i = 0; i<2; ++i){
-					 err = search_table_name(relation_name[i].c_str(),&table_no);
+					 err = search_table_name(const_cast<char *>(relation_name[i].c_str()),&table_no);
 					
 					 if( 0 == err){
 					 	 err = get_table_no_addr(table_no,(void **)(&(mem_table[i])));
@@ -617,7 +401,7 @@ int get_name(){
 					 	 			return ERR_NOT_FOUND_COLOUM; 	
 					 	 		}
 					 	 		else
-					 	 			get_field( mem_table[i] , column_name[i], field_t &(field[i]) )
+					 	 			get_field( mem_table[i] , column_name[i], field[i] );
 					 		}
 					 }
 					}
@@ -630,14 +414,12 @@ int get_name(){
 };
 
 
-
-
 class QueryPlan : public QueryAnalyser
 {
 //是否快速短路
 int is_broken;
 // 对应每个单表的结果集
-std::map(std::string,std::list<record_type>* ret_list) table_ret_name;
+std::map<std::string,std::list<generic_result>* > table_ret_name;
 
 public:
 QueryPlan(rapidjson::Value & value ,rapidjson::Document & doc_ , QueryAnalyser * up_stmt_ = NULL ):QueryAnalyser(value,doc_,up_stmt_),is_broken(0){}
@@ -650,11 +432,11 @@ int queryPlanClassify(){
 //if(doc->)
 if( 1 == tables.size() )
 {
-	return querySimpalPlan(0);
+	//return querySimpalPlan(0);
 }
 else if ( 1 < tables.size() )
 {
-	return queryComplexPlan();
+	//return queryComplexPlan();
 }
 
 
@@ -666,28 +448,28 @@ else if ( 1 < tables.size() )
  // 先单表过滤再 join
 int getSinglTableFilter(
 											/*in*/  int i,
-											/*out*/ mem_table_t **mem_table
+											/*out*/ mem_table_t **mem_table,
   										/*out*/ std::list<normal_single_condition_struct>& normal_single_condition_list,
   										/*out*/ std::list<normal_double_condition_struct>& normal_double_condition_list,
   										/*out*/ std::list<normal_double_condition_struct>& normal_index_double_condition_list,											
 											/*out*/ std::list<const_condition_struct>&				 const_condition_list
 										)
 {
-	if( mem_table == NULL) return PHYSICY_PLAN_EMPTY_TABLE
-	string table_name;  // 表名
-  string alias_name;  // 表别名
-  string sub_select_alias_name; //子查询表别名
+	if( mem_table == NULL) return PHYSICY_PLAN_EMPTY_TABLE;
+	std::string table_name;  // 表名
+  std::string alias_name;  // 表别名
+  std::string sub_select_alias_name; //子查询表别名
   
-  if( (*v).HasMember("RELATION") ) 				 table_name= tables[i].table_name_; 	// 表名				
-  if( (*v).HasMember("RELATION_ALIAS") )	 alias_name= tables[i].alias_name_		//表别名
-  if( (*v).HasMember("SUB_SELECT_ALIAS") ) sub_select_alias_name=tables[i].sub_select_alias_name_; //子查询表别名
+  table_name = tables[i].table_name_; 	// 表名				
+  alias_name = tables[i].alias_name_;		//表别名
+  sub_select_alias_name = tables[i].sub_select_alias_name_; //子查询表别名
   
   long long table_no;
   int err = 0;
 
   // 对于原始表检查该表是否存在
   if(!table_name.empty()){
-  	 err = search_table_name(table_name.c_str(),&table_no);
+  	 err = search_table_name(const_cast<char *>(table_name.c_str()),&table_no);
   	}
   	else if(!sub_select_alias_name.empty()){
   		// 递归处理子查询的逻辑
@@ -701,8 +483,8 @@ int getSinglTableFilter(
   				for(auto &nomal_single_condition : nomal_single_conditions ){//查找单条件列表中，使用该表字段的一元条件
   					normal_single_condition_struct nscs(nomal_single_condition,this);
   					err = nscs.get_name();
-  					if( err == 0 && 0 == strcmp( nscs.relation_name.c_str(),(*mem_table)->table_name ) ){
-  						  normal_index_single_condition_list.push_back(nscs);
+  					if( err == 0 && 0 == strcmp( nscs.relation_name.c_str(),(*mem_table)->config.table_name ) ){
+  						  normal_single_condition_list.push_back(nscs);
   					}
   				}
   				if(!err)return err;
@@ -710,11 +492,11 @@ int getSinglTableFilter(
   				normal_single_condition_list.sort();
   				
   				for(auto &nomal_double_condition : nomal_double_conditions ){//查找双条件列表中，使用该表字段的二元条件
-  					nomal_double_condition_struct ndcs(nomal_double_condition,this);
+  					normal_double_condition_struct ndcs(nomal_double_condition,this);
   					err = ndcs.get_name();
-  					if( err == 0 && 0 == strcmp( ndcs.relation_name.c_str(),(*mem_table)->table_name ) ){
+  					if( err == 0 && 0 == strcmp( ndcs.relation_name.c_str(),(*mem_table)->config.table_name ) ){
   						normal_double_condition_list.push_back(ndcs);
-  						  if(nscs.has_index) normal_double_condition_list.push_back(ndcs);
+  						  if(ndcs.has_index) normal_double_condition_list.push_back(ndcs);
   						 	else 							 normal_index_double_condition_list.push_back(ndcs);
   					}
   				}
@@ -729,15 +511,11 @@ int getSinglTableFilter(
   						const_condition_list.push_back(ccs);
   					}
   					else if(err == INFO_BROCKEN ){
-  						if_broken = 1;
+  						is_broken = 1;
   						break;
   					}
   				}
   				if(!err)return err;
-  					
-  				
-  				
-  			
   			}
   		}
   }
@@ -747,10 +525,10 @@ int getSinglTableFilter(
 // 过滤后的结果尽量小，再进行关联
  
 int getSinglTableSource(
-											/*in */ mem_table_t *mem_table
+											/*in */ mem_table_t *mem_table,
   										/*out*/ std::list<normal_single_condition_struct>& normal_single_condition_list,
   										/*out*/ std::list<normal_double_condition_struct>& normal_double_condition_list,
-  										/*out*/ std::list<normal_double_condition_struct>& normal_index_double_condition_list
+  										/*out*/ std::list<normal_double_condition_struct>& normal_index_double_condition_list,
   										/*out*/ std::list<plan_node *>									 & plan_node_list
 										)
 {
@@ -766,7 +544,6 @@ int getSinglTableSource(
 		is_indxe_scan = 1;
 		is_origin_scan = 0;
 		
-		plan_node * node ;
 		err = handl_double_con_index( mem_table , 
 														normal_index_double_condition_list,
 														normal_double_condition_list,
@@ -781,9 +558,9 @@ int getSinglTableSource(
 		
 		if(is_indxe_scan){ //在索引结果上filter
 			
-					plan_node * node ;
-					err = handl_double_con_from_index( ret , 
-														mem_table
+	  			merg_index_node * node = dynamic_cast<merg_index_node*>(*( plan_node_list.rbegin() ) );
+					err = handl_double_con_from_index(  &(node->ret_list) , 
+														mem_table,
 														normal_double_condition_list,
 														plan_node_list 
 													);
@@ -805,8 +582,8 @@ int getSinglTableSource(
 	if( normal_single_condition_list.size()>0 ){
 		if( !is_origin_scan ){ //在索引结果上filter
 			
-			  plan_node * node ;
-			 	err = handl_single_con_from_index( &((plan_node_list.end()-1)->ret_list) , 
+	  		merg_index_node * node = dynamic_cast<merg_index_node*>(*( plan_node_list.rbegin() ) );
+			 	err = handl_single_con_from_index(   &(node->ret_list) , 
 															normal_single_condition_list,
 															plan_node_list
 														);
@@ -815,8 +592,6 @@ int getSinglTableSource(
 		}
 		else //原表扫描
 			{
-				
-				plan_node * node ;
 				err = handl_single_con_normal( mem_table , 
 															normal_single_condition_list,
 															plan_node_list  
@@ -826,18 +601,19 @@ int getSinglTableSource(
 			}
 	}
 	
-	 //无条件全表扫
-if( normal_single_condition_list.size() == 0 &&  normal_double_condition_list.size() == 0 && normal_index_double_condition_list == 0 )
-{
-		    plan_node * node ;
-				err = handl_no_con_normal( mem_table , 
-															plan_node_list 
-														);
-			//	if(!err)plan_node_list.push_back(node);
-}
+//无条件全表扫 暂时归并到双条件里
+//if( normal_single_condition_list.size() == 0 &&  normal_double_condition_list.size() == 0 && normal_index_double_condition_list.size() == 0 )
+//{
+//		    plan_node * node ;
+//				err = handl_no_con_normal( mem_table , 
+//															plan_node_list 
+//														);
+//			//	if(!err)plan_node_list.push_back(node);
+//}
 
 // 将该表的结果级插入到 map
-table_ret_name.insert(std::pair<std::string,std::list<record_type>*>(std::string(mem_table->table_name ), (plan_node_list.end()-1 )->ret_list ) );
+merg_index_node * node = dynamic_cast<merg_index_node*>(*( plan_node_list.rbegin() ) );
+table_ret_name.insert(std::pair<std::string,std::list<generic_result>*>(std::string(mem_table->config.table_name ),  &(node->ret_list) ) );
 
 											
 }
@@ -852,8 +628,9 @@ int handl_double_con_index( mem_table_t *mem_table ,
 {
 int err = 0;
 int first = 1;
-std::shared<finded_Addr_t> finded_Addr_t (new finded_Addr );
+std::shared_ptr<finded_Addr_t> finded_Addr (new finded_Addr_t );
 finded_Addr_t *pre_Addr = finded_Addr.get();
+
 for(auto& v : index_list)
 {
   int tag = v.tag;
@@ -869,7 +646,6 @@ for(auto& v : index_list)
 	std::string const_value   = v.const_value;
   std::string const_type    = v.const_type;
 
-	plan_node * node;  
 	
 if( INDEX_TYPE_HASH == index_type)
 {
@@ -877,12 +653,12 @@ mem_hash_index_t * index = (mem_hash_index_t *) addr;
 switch(tag)
 {
 case T_OP_EQ :{
-node = new scan_index_hash_node(index_no,
+scan_index_hash_node *node = new scan_index_hash_node(index_no,
   								               index_type,
   								               mem_table,
   								               index,
-  								               v->context_,
-  								               &(v->Doc),
+  								               *(v.context_),
+  								               v.query_plan_->doc,
   								               relation_name,
   								               column_name,
   								               const_value,
@@ -904,12 +680,12 @@ if( INDEX_TYPE_SKIP == index_type)
   switch(tag)
   {
   case T_OP_EQ :{
-	node = new scan_skiplist_eq_node(index_no,
+	scan_skiplist_eq_node *node = new scan_skiplist_eq_node(index_no,
 	  								              	index_type,
 	  								              	mem_table,
 	  								              	index,
-	  								              	v->context_,
-	  								              	&(v->Doc),
+	  								              	*(v.context_),
+	  								              	v.query_plan_->doc,
 	  								              	relation_name,
 	  								              	column_name,
 	  								              	const_value,
@@ -922,12 +698,12 @@ if( INDEX_TYPE_SKIP == index_type)
 	break;
 }      
   case T_OP_LE :{
-	node = new scan_skiplist_le_node(index_no,
+	scan_skiplist_le_node *node = new scan_skiplist_le_node(index_no,
 	  								              	index_type,
 	  								              	mem_table,
 	  								              	index,
-	  								              	v->context_,
-	  								              	&(v->Doc),
+	  								              	*(v.context_),
+	  								              	v.query_plan_->doc,
 	  								              	relation_name,
 	  								              	column_name,
 	  								              	const_value,
@@ -939,12 +715,12 @@ if( INDEX_TYPE_SKIP == index_type)
 	break;
 }  
   case T_OP_LT :{
-	node = new scan_skiplist_lt_node(index_no,
+	scan_skiplist_lt_node *node = new scan_skiplist_lt_node(index_no,
 	  								              	index_type,
 	  								              	mem_table,
 	  								              	index,
-	  								              	v->context_,
-	  								              	&(v->Doc),
+	  								              	*(v.context_),
+	  								              	v.query_plan_->doc,
 	  								              	relation_name,
 	  								              	column_name,
 	  								              	const_value,
@@ -955,12 +731,12 @@ if( INDEX_TYPE_SKIP == index_type)
 	break;
 }  
   case T_OP_GE :{
-	node = new scan_skiplist_ge_node(index_no,
+	scan_skiplist_ge_node *node = new scan_skiplist_ge_node(index_no,
 	  								              	index_type,
 	  								              	mem_table,
 	  								              	index,
-	  								              	v->context_,
-	  								              	&(v->Doc),
+	  								              	*(v.context_),
+	  								              	v.query_plan_->doc,
 	  								              	relation_name,
 	  								              	column_name,
 	  								              	const_value,
@@ -972,12 +748,12 @@ if( INDEX_TYPE_SKIP == index_type)
 	break;
 }  
   case T_OP_GT :{
-	node = new scan_skiplist_gt_node(index_no,
+	scan_skiplist_gt_node *node = new scan_skiplist_gt_node(index_no,
 	  								              	index_type,
 	  								              	mem_table,
 	  								              	index,
-	  								              	v->context_,
-	  								              	&(v->Doc),
+	  								              	*(v.context_),
+	  								              	v.query_plan_->doc,
 	  								              	relation_name,
 	  								              	column_name,
 	  								              	const_value,
@@ -988,7 +764,7 @@ if( INDEX_TYPE_SKIP == index_type)
 	break;
 }  
 //  case T_OP_BTW: {
-//	*node = new scan_skiplist_btw_node(index_no,
+//	scan_skiplist_btw_node *node = new scan_skiplist_btw_node(index_no,
 //	  								              	index_type,
 //	  								              	mem_table,
 //	  								              	index_min,
@@ -1012,11 +788,11 @@ if( INDEX_TYPE_SKIP == index_type)
 
 }
 
+rapidjson::Value merg_json;
 // 合并index 结果集
-node = new merg_index_node(        	mem_table,
-	  								              	index,
-	  								              	v->context_,
-	  								              	&(v->Doc),
+merg_index_node *node = new merg_index_node( mem_table,
+	  								              	merg_json,
+	  								              	index_list.begin()->query_plan_->doc,
 	  								              	pre_Addr
 	  								              	);
 plan_node_list.push_back(node);
@@ -1045,17 +821,14 @@ for(auto& v : index_list)
   field_t  field;
   err = get_field(mem_table ,column_name, field);
   if( err != 0 )return err;
-  plan_node * node;  
-
-  	
   	
   switch(tag)
   {
   case T_OP_EQ :{
-	node = new filter_eq_node(container,
-	  								              	field,
-	  								             v->context_,
-  								               &(v->Doc),
+	filter_eq_node<std::list<generic_result> > *node = new filter_eq_node<std::list<generic_result> >(container,
+	  								             field,
+	  								             *(v.context_),
+  								               v.query_plan_->doc,
   								               relation_name,
   								               column_name,
 	  								             const_value,
@@ -1064,10 +837,10 @@ for(auto& v : index_list)
 	break;
 }      
   case T_OP_LE :{
-	node = new filter_le_node(container,
+	filter_le_node<std::list<generic_result> >* node = new filter_le_node<std::list<generic_result> >(container,
 	  								              	field,
-	  								             v->context_,
-  								               &(v->Doc),
+	  								             *(v.context_),
+  								               v.query_plan_->doc,
   								               relation_name,
   								               column_name,
 	  								             const_value,
@@ -1076,10 +849,10 @@ for(auto& v : index_list)
 	break;
 }  
   case T_OP_LT :{
-	node = new filter_lt_node(container,
+	filter_lt_node<std::list<generic_result> > *node = new filter_lt_node<std::list<generic_result> >(container,
 	  								              	field,
-	  								             v->context_,
-  								               &(v->Doc),
+	  								             *(v.context_),
+  								               v.query_plan_->doc,
   								               relation_name,
   								               column_name,
 	  								             const_value,
@@ -1088,10 +861,10 @@ for(auto& v : index_list)
 	break;
 }  
   case T_OP_GE :{
-	node = new filter_ge_node(container,
+	filter_ge_node<std::list<generic_result> >* node = new filter_ge_node<std::list<generic_result> >(container,
 	  								              	field,
-	  								             v->context_,
-  								               &(v->Doc),
+	  								             *(v.context_),
+  								               v.query_plan_->doc,
   								               relation_name,
   								               column_name,
 	  								             const_value,
@@ -1100,10 +873,10 @@ for(auto& v : index_list)
 	break;
 }  
   case T_OP_GT :{
-	node = new filter_gt_node(container,
+	filter_gt_node<std::list<generic_result> >* node = new filter_gt_node<std::list<generic_result> >(container,
 	  								              	field,
-	  								             v->context_,
-  								               &(v->Doc),
+	  								             *(v.context_),
+  								               v.query_plan_->doc,
   								               relation_name,
   								               column_name,
 	  								             const_value,
@@ -1112,10 +885,10 @@ for(auto& v : index_list)
 	break;
 }   
   case T_OP_NE :{
-	node = new filter_ne_node(container,
+	filter_ne_node<std::list<generic_result> > *node = new filter_ne_node<std::list<generic_result> >(container,
 	  								              	field,
-	  								             v->context_,
-  								               &(v->Doc),
+	  								             *(v.context_),
+  								               v.query_plan_->doc,
   								               relation_name,
   								               column_name,
 	  								             const_value,
@@ -1125,19 +898,20 @@ for(auto& v : index_list)
 }   
   
   case T_OP_LIKE :{
-	node = new filter_like_node(container,
-	  								              	field,
-	  								             v->context_,
-  								               &(v->Doc),
-  								               relation_name,
-  								               column_name,
-	  								             const_value,
-	  								             const_type);
-	plan_node_list.push_back(node);
+  // 暂时不支持 like
+	//filter_like_node<std::list<generic_result> > *node = new filter_like_node<std::list<generic_result> >(container,
+	//  								              	field,
+	//  								             *(v.context_),
+  //								               v.query_plan_->doc,
+  //								               relation_name,
+  //								               column_name,
+	//  								             const_value,
+	//  								             const_type);
+	//plan_node_list.push_back(node);
 	break;
 }  
   	
-  default :// 其他情况，交给全表scan
+  default : break;// 其他情况，交给全表scan
   //nomal_list.push_back(v);
   
   }
@@ -1191,7 +965,8 @@ for(auto& v : normal_double_condition_list)
 	 if(pre)pre->next					 	= cmp1.get();
 	 pre = cmp1.get();
 	 // 后面要记着 delete掉 cmp_field_value
-	 cmp1->cmp_field_value 			=  cast_ptr_by_field<field.field_type>( const_value ,  field );
+	 
+	 cmp1->cmp_field_value 			=  cast_ptr_by_field( const_value ,  field );
 
 	 
 	break;
@@ -1204,7 +979,7 @@ for(auto& v : normal_double_condition_list)
 	 if(pre)pre->next					 	= cmp1.get();
 	 pre = cmp1.get();
 	 // 后面要记着 delete掉 cmp_field_value
-	 cmp1->cmp_field_value 			=  cast_ptr_by_field<field.field_type>( const_value ,  field );
+	 cmp1->cmp_field_value 			=  cast_ptr_by_field( const_value ,  field );
 	
 	break;
 }  
@@ -1216,7 +991,7 @@ for(auto& v : normal_double_condition_list)
 	 if(pre)pre->next					 	= cmp1.get();
 	 pre = cmp1.get();
 	 // 后面要记着 delete掉 cmp_field_value
-	 cmp1->cmp_field_value 			=  cast_ptr_by_field<field.field_type>( const_value ,  field );
+	 cmp1->cmp_field_value 			=  cast_ptr_by_field( const_value ,  field );
 	
 	break;
 }  
@@ -1228,7 +1003,7 @@ for(auto& v : normal_double_condition_list)
 	 if(pre)pre->next					 	= cmp1.get();
 	 pre = cmp1.get();
 	 // 后面要记着 delete掉 cmp_field_value
-	 cmp1->cmp_field_value 			=  cast_ptr_by_field<field.field_type>( const_value ,  field );
+	 cmp1->cmp_field_value 			=  cast_ptr_by_field( const_value ,  field );
 	
 	break;
 }  
@@ -1240,7 +1015,7 @@ for(auto& v : normal_double_condition_list)
 	 if(pre)pre->next					 	= cmp1.get();
 	 pre = cmp1.get();
 	 // 后面要记着 delete掉 cmp_field_value
-	 cmp1->cmp_field_value 			=  cast_ptr_by_field<field.field_type>( const_value ,  field );
+	 cmp1->cmp_field_value 			=  cast_ptr_by_field( const_value ,  field );
 	
 	break;
 }   
@@ -1252,7 +1027,7 @@ for(auto& v : normal_double_condition_list)
 	 if(pre)pre->next					 	= cmp1.get();
 	 pre = cmp1.get();
 	 // 后面要记着 delete掉 cmp_field_value
-	 cmp1->cmp_field_value 			=  cast_ptr_by_field<field.field_type>( const_value ,  field );
+	 cmp1->cmp_field_value 			=  cast_ptr_by_field( const_value ,  field );
 	
 	break;
 }   
@@ -1262,27 +1037,24 @@ for(auto& v : normal_double_condition_list)
 	break;
 }  
   	
-  default :// 其他情况，交给全表scan
+  default : break;// 其他情况，交给全表scan
   //nomal_list.push_back(v);
   
   }	
   	
   	if(pre != NULL){
-  		node = new scan_normal_node(
+  	scan_normal_node*	node = new scan_normal_node(
   															mem_table,
 	  								            field,
 	  								            pre,//compare_list * pre
-	  								            v->context_,
-  								              &(v->Doc),
+	  								            *(v.context_),
+  								              v.query_plan_->doc,
   								              relation_name,
   								              column_name,
 	  								            const_value,
 	  								            const_type);
 	  								}
 	 	plan_node_list.push_back(node);
-
-  	
-  	
   }
 
 return 0;
@@ -1317,30 +1089,30 @@ int handl_single_con_normal( mem_table_t * mem_table ,
 //4 剩下的关联为0 ，成功，否则失败
 
 // 对关联条件进行排序
-int order_join_condtions(std::list<join_eq_condition_struct> &join_eq_condition_origin)// 原始关联条件
+int order_join_condtions(std::vector<join_eq_condition_struct> &join_eq_condition_origin)// 原始关联条件
 {	
 	
 // 构造 原始关联条件
-for( auto v : join_conditions )
+for( auto& v : join_conditions )
 {
-join_eq_condition_struct join_eq_condition;
+join_eq_condition_struct join_eq_condition( v ,this );
 
 if( (*v)["tag"].GetInt() == T_OP_EQ )
 {
-join_eq_condition.context_ = v;
 join_eq_condition.get_name();
-join_eq_condition_origin.push_back(join_eq_condition_struct);
+join_eq_condition_origin.push_back(join_eq_condition);
 }
 }
 
 // 先按高水位线排序
-join_eq_condition_origin.sort();
+//join_eq_condition_origin.sort();
+std::sort (join_eq_condition_origin.begin(),join_eq_condition_origin.end() );
 // 先用最少的关联关系 去关联 剩下的能关联的最小关联关系  min(last.filter)
-for(std::list<join_eq_condition_struct>::iterator iter= join_eq_condition_origin.begin();
-	iter!=join_eq_condition_origin.end()-1;++iter
+for(std::vector<join_eq_condition_struct>::iterator iter= join_eq_condition_origin.begin();
+	iter != join_eq_condition_origin.end()-1 ;++iter
 )
 {
-	for(std::list<join_eq_condition_struct>::iterator iter2 = iter+1;
+	for(std::vector<join_eq_condition_struct>::iterator iter2 = iter+1;
 		iter2!=join_eq_condition_origin.end();++iter2)
 		{
 			int ret = iter->can_link_or_delete(*iter2);
@@ -1449,29 +1221,32 @@ return 0;
 
 int handl_join_condtions(std::list<plan_node *>		& plan_node_list)
 {
-std::list<join_eq_condition_struct>  join_eq_condition_struct_list;
+std::vector<join_eq_condition_struct>  join_eq_condition_struct_list;
 
 for(auto v : join_conditions )
 {
-  join_eq_condition_struct_list.emplace_back( v.context, this );
+  join_eq_condition_struct_list.emplace_back( v, this );
   
 }
 		
 int ret = order_join_condtions( join_eq_condition_struct_list );// 原始关联条件
 if(!ret)return ret;
 
-plan_node * node;  
 int is_first = 1;
-shared_ptr<std::list<generic_result> > pre = new (<std::list<generic_result> );
+shared_ptr<std::list<generic_result> > pre ( new std::list<generic_result> );
 for(auto & v : join_eq_condition_struct_list)
 {
-		if(!is_first) pre = *( plan_node_list.end() -1  ).ret_list;
-		node = new do_join_node(
-  															v,
+		//if(!is_first) pre =  (*(plan_node_list.rbegin()))->get_ret_list();
+		do_join_node *node = new do_join_node(
+  															v.relation_name[0],v.relation_name[1],
+  															v.column_name[0],v.column_name[1],
+  															v.mem_table[0],v.mem_table[1],
+  															table_ret_name[v.relation_name[0]],table_ret_name[v.relation_name[1]],
   															pre,
-	  								            v->context_,
-  								              &(v->Doc)
+	  								            *(v.context_),
+  								              v.query_plan_->doc,
   								              is_first);
+  	pre  = node->ret_list ;
   	plan_node_list.push_back(node);							            
 		if( is_first == 1)is_first = 0;
 }
@@ -1484,4 +1259,4 @@ for(auto & v : join_eq_condition_struct_list)
 };
 
 
-#endif	 	 	 	 	 	 	 	 	 
+#endif
