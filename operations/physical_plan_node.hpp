@@ -43,11 +43,6 @@ g++ -w -lpthread -C -std=c++11 physical_plan_node.hpp
 #include "index_scan_Addr.hpp"
 
 
-
-//暂时为了编译成功
-int trans_no = 1;
-
-
 template<int>
 struct get_field_type
 {
@@ -157,6 +152,27 @@ typename get_field_type<T>::value_type cast_condition( std::string& condition , 
    return 0;
 }
 
+void * cast_ptr_by_field( std::string& condition , const field_t & field ){  
+	   switch( field.field_type )
+    {
+    	case FIELD_TYPE_INT:     {       int *ret =  new int; 	    *ret =  (int)atoi(condition.c_str() );				return (void *)ret;    }
+			case FIELD_TYPE_SHORT:   {     short *ret =  new short;     *ret =  (short)atoi(condition.c_str() );			return (void *)ret;    }
+ 			case FIELD_TYPE_LONG:    {      long *ret =  new long; 		  *ret =  (long )atol(condition.c_str() );		  return (void *)ret;    }
+			case FIELD_TYPE_LONGLONG:{ long long *ret =  new long long; *ret =  (long long)atoll(condition.c_str() );	return (void *)ret;    }
+			case FIELD_TYPE_FLOAT:   {    float  *ret =  new float;     *ret =   atof(condition.c_str() );		return (void *)ret;    }
+			case FIELD_TYPE_DOUBLE:  {    double *ret =  new double;    *ret =  (double)atof(condition.c_str() );		return (void *)ret;    }
+
+				
+ 			case FIELD_TYPE_DATE:    {       FIELD_INT *ret =  new FIELD_INT; *ret =  (FIELD_DATE )atol(condition.c_str() ); 	return (void *)ret; }
+ 			//case FIELD_TYPE_HASH_ENTRY:       return *(FIELD_INT *)( (char *)(record)+field.field_dis ); 
+ 			//case FIELD_TYPE_RBTREE_ENTRY:     return *(FIELD_INT *)( (char *)(record)+field.field_dis );
+ 			//case FIELD_TYPE_SKIPLIST_ENTRY:   return *(FIELD_INT *)( (char *)(record)+field.field_dis );
+ 			case FIELD_TYPE_STR:     {  char *ret =  new char[sizeof(condition.c_str())]; strncpy(ret,condition.c_str(),sizeof(condition.c_str()) ); return (void *)ret; }
+    		
+    }
+		
+}
+
 // 字段比较辅助结构
 struct field_compare
 {
@@ -261,9 +277,16 @@ plan_node(rapidjson::Value& _json,rapidjson::Document * _Doc):Doc(_Doc)
 		json.CopyFrom( _json,Doc->GetAllocator() );
 }
 
+int get_plan_type() {return plan_type;}
+
 virtual void make_json() = 0;
 virtual std::string to_sring () = 0;
-virtual int execute() = 0;
+virtual int execute( unsigned long long  trans_no  ) = 0;
+virtual std::list<generic_result>* get_ret_list()
+{
+	
+	return (std::list<generic_result>*)NULL;
+}
 };
 
 struct scan_hash_index_node:public plan_node
@@ -303,7 +326,7 @@ ret_size = mem_table->record_size - RECORD_HEAD_SIZE;
 
 virtual void make_json() ;
 virtual std::string to_sring () ;
-virtual int execute() ;
+virtual int execute( unsigned long long  trans_no  ) ;
 	
 };
 
@@ -345,7 +368,7 @@ ret_size = mem_table->record_size - RECORD_HEAD_SIZE;
 
 virtual void make_json() ;
 virtual std::string to_sring () ;
-virtual int execute() ;
+virtual int execute( unsigned long long  trans_no  ) ;
 	
 };
 
@@ -596,6 +619,8 @@ if( const_type == "STRING" )
 	return ret;
 	
 }
+	
+};
 
 
 struct scan_skiplist_le_node:public scan_skiplist_index_node
@@ -819,7 +844,7 @@ merg_index_node(
   								finded_Addr_t * _finded_Addr):plan_node(_json,_Doc),mem_table(_mem_table),
   																					finded_Addr(_finded_Addr){plan_type =PLAN_TYPE_MERGE;}
 
-virtual int execute( )
+virtual int execute( unsigned long long trans_no  )
 {
 int ret = 0;
 ret =  merg_index_result(  
@@ -833,9 +858,24 @@ ret =  merg_index_result(
 	
 }
 
+virtual std::list<generic_result>* get_ret_list()
+{
+	return &ret_list;
+}
+
+virtual void make_json()
+{
+	return ;
+}
+
+virtual std::string to_sring()
+{
+	//return 0;
+}
+
+
 
 };
-
 
 
 // 过滤类节点父类
@@ -864,7 +904,13 @@ struct filter_node:public plan_node
   																					const_value(_const_value),
   																					const_type(_const_type){}
 
-	virtual int execute();
+	virtual int execute( unsigned long long  trans_no  );
+
+// 这里不安全 暂时先这么写
+virtual std::list<generic_result>* get_ret_list()
+{
+	return container;
+}
 	
 };
 
@@ -887,15 +933,15 @@ filter_eq_node(T* _container,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type){plan_type = PLAN_TYPE_EQ_FIELTER;}
+  																					_const_type){filter_node<T>::plan_type = PLAN_TYPE_EQ_FIELTER;}
   																					
-virtual int execute()
+virtual int execute( unsigned long long  trans_no  )
 {
 	int ret = 0;
 	filter_node<T>::container->erase(std::remove_if(filter_node<T>::container->begin(),  filter_node<T>::container->end(),
 		 [&](typename T::value_type & one ){
 		 							// 不相等就删掉，保留相等的
-									return	!( cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) ==  cast_condition<filter_node<T>::field.field_type>( const_value , filter_node<T>::field ) );
+									return	!( cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) ==  cast_condition<filter_node<T>::field.field_type>( filter_node<T>::const_value , filter_node<T>::field ) );
 										} ), 
 									 filter_node<T>::container->end()); 
 	return 0;
@@ -922,15 +968,15 @@ filter_le_node(T* _container,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type){plan_type =PLAN_TYPE_LE_FIELTER ;}
+  																					_const_type){filter_node<T>::plan_type =PLAN_TYPE_LE_FIELTER ;}
   																					
-virtual int execute()
+virtual int execute( unsigned long long  trans_no  )
 {
 	int ret = 0;
 	filter_node<T>::container->erase(std::remove_if(filter_node<T>::container->begin(),  filter_node<T>::container->end(),
 		 [&](typename T::value_type & one ){
 		 							// 不相等就删掉，保留相等的
-									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) <=  cast_condition<filter_node<T>::field.field_type>( const_value , filter_node<T>::field ) );
+									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) <=  cast_condition<filter_node<T>::field.field_type>( filter_node<T>::const_value , filter_node<T>::field ) );
 										} ), 
 									 filter_node<T>::container->end()); 
 	return 0;
@@ -956,15 +1002,15 @@ filter_lt_node(T* _container,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type){plan_type = PLAN_TYPE_LT_FIELTER;}
+  																					_const_type){filter_node<T>::plan_type = PLAN_TYPE_LT_FIELTER;}
   																					
-virtual int execute()
+virtual int execute( unsigned long long  trans_no  )
 {
 	int ret = 0;
 	filter_node<T>::container->erase(std::remove_if(filter_node<T>::container->begin(),  filter_node<T>::container->end(),
 		 [&](typename T::value_type & one ){
 		 							// 不相等就删掉，保留相等的
-									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) <  cast_condition<filter_node<T>::field.field_type>( const_value , filter_node<T>::field ) );
+									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) <  cast_condition<filter_node<T>::field.field_type>( filter_node<T>::const_value , filter_node<T>::field ) );
 
 										} ), 
 									 filter_node<T>::container->end()); 
@@ -991,15 +1037,15 @@ filter_ge_node(T* _container,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type){plan_type = PLAN_TYPE_GE_FIELTER;}
+  																					_const_type){filter_node<T>::plan_type = PLAN_TYPE_GE_FIELTER;}
   																					
-virtual int execute()
+virtual int execute( unsigned long long  trans_no  )
 {
 	int ret = 0;
 	filter_node<T>::container->erase(std::remove_if(filter_node<T>::container->begin(),  filter_node<T>::container->end(),
 		 [&](typename T::value_type & one ){
 		 							// 不相等就删掉，保留相等的
-									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) >=  cast_condition<filter_node<T>::field.field_type>( const_value , filter_node<T>::field ) );
+									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) >=  cast_condition<filter_node<T>::field.field_type>( filter_node<T>::const_value , filter_node<T>::field ) );
 
 										} ), 
 									 filter_node<T>::container->end()); 
@@ -1025,15 +1071,15 @@ filter_gt_node(T* _container,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type){plan_type = PLAN_TYPE_GT_FIELTER;}
+  																					_const_type){filter_node<T>::plan_type = PLAN_TYPE_GT_FIELTER;}
   																					
-virtual int execute()
+virtual int execute( unsigned long long  trans_no  )
 {
 	int ret = 0;
 	filter_node<T>::container->erase(std::remove_if(filter_node<T>::container->begin(),  filter_node<T>::container->end(),
 		 [&](typename T::value_type & one ){
 		 							// 不相等就删掉，保留相等的
-									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) >  cast_condition<filter_node<T>::field.field_type>( const_value , filter_node<T>::field ) );
+									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) >  cast_condition<filter_node<T>::field.field_type>( filter_node<T>::const_value , filter_node<T>::field ) );
 
 										} ), 
 									 filter_node<T>::container->end()); 
@@ -1061,15 +1107,15 @@ filter_ne_node(T* _container,
   																					_relation_name,
   																					_column_name,
   																					_const_value,
-  																					_const_type){plan_type =PLAN_TYPE_GT_FIELTER ;}
+  																					_const_type){filter_node<T>::plan_type =PLAN_TYPE_GT_FIELTER ;}
   																					
-virtual int execute()
+virtual int execute( unsigned long long  trans_no  )
 {
 	int ret = 0;
 	filter_node<T>::container->erase(std::remove_if(filter_node<T>::container->begin(),  filter_node<T>::container->end(),
 		 [&](typename T::value_type & one ){
 		 							// 不相等就删掉，保留相等的
-									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) !=  cast_condition<filter_node<T>::field.field_type>( const_value , filter_node<T>::field ) );
+									return	!(cast_field<T::value_type,filter_node<T>::field.field_type>( &one , filter_node<T>::field ) !=  cast_condition<filter_node<T>::field.field_type>( filter_node<T>::const_value , filter_node<T>::field ) );
 
 										} ), 
 									 filter_node<T>::container->end()); 
@@ -1107,7 +1153,7 @@ scan_normal_node(mem_table_t * _mem_table ,
   																					const_value(_const_value),
   																					const_type(_const_type){plan_type = PLAN_TYPE_SCAN_NORMAL;}
   																					
-virtual int execute()
+virtual int execute( unsigned long long  trans_no  )
 {
 	int ret = 0;
   ret = full_table_scan_with_conlist(
@@ -1117,6 +1163,21 @@ virtual int execute()
 													 	 &ret_list  	  //原始结果集
 );
 	return ret;
+}
+
+virtual std::list<generic_result>* get_ret_list()
+{
+	return &ret_list;
+}
+
+virtual void make_json()
+{
+	return ;
+}
+
+virtual std::string to_sring()
+{
+	//return 0;
 }
 
 };
@@ -1133,7 +1194,7 @@ full_scan_node(mem_table_t * _mem_table ,
   								rapidjson::Document * _Doc
 ):plan_node(_json,_Doc),mem_table(_mem_table){plan_type = PLAN_TYPE_FULL_SCAN;}
   																					
-virtual int execute()
+virtual int execute( unsigned long long  trans_no  )
 {
 	int ret = 0;
   ret = full_table_scan( mem_table,       //表
@@ -1141,6 +1202,11 @@ virtual int execute()
 												 &ret_list  	  //原始结果集
 );
 	return ret;
+}
+
+virtual std::list<generic_result>* get_ret_list()
+{
+	return &ret_list;
 }
 
 };
@@ -1166,7 +1232,6 @@ shared_ptr<std::list<generic_result> > pre;
 shared_ptr<std::list<generic_result> > ret_list;
 
 // 为了防止循环编译依赖，暂时加的模板
-template<class join_eq_condition_struct>
 do_join_node( std::string &_table_name1 ,
 							std::string &_table_name2 ,
 							std::string &_column_name1,
@@ -1197,7 +1262,8 @@ do_join_node( std::string &_table_name1 ,
 		mem_table2  (_mem_table2),
 		ret_list1(_ret_list1),
 		ret_list2(_ret_list2),
-		is_first(_is_first){
+		is_first(_is_first)
+{
 plan_type = PLAN_TYPE_DO_JOIN;		
 get_field(mem_table1 ,column_name1, field1);
 get_field(mem_table2 ,column_name2, field2);
@@ -1246,7 +1312,7 @@ for(typename std::list<generic_result>::const_iterator	it = container2.begin();i
 
 }
 	
-virtual int execute()
+virtual int execute( unsigned long long  trans_no  )
 {
 
 char buf1[field1.field_size+1];
@@ -1290,7 +1356,21 @@ else
 
 }
 
-};
-	
+virtual std::list<generic_result>* get_ret_list()
+{
+	return ret_list.get();
+}
+
+virtual void make_json()
+{
+	return ;
+}
+
+virtual std::string to_sring()
+{
+	//return 0;
+}
+
+
 };
 #endif
