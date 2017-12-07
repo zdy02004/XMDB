@@ -1236,7 +1236,33 @@ int is_first = 1;
 shared_ptr<std::list<generic_result> > pre ( new std::list<generic_result> );
 for(auto & v : join_eq_condition_struct_list)
 {
-		//if(!is_first) pre =  (*(plan_node_list.rbegin()))->get_ret_list();
+		if(v.context_->HasMember("SEMI_JOIN_LEVEL")){
+		do_semi_join_node *node = new do_semi_join_node(
+  															v.relation_name[0],v.relation_name[1],
+  															v.column_name[0],v.column_name[1],
+  															v.mem_table[0],v.mem_table[1],
+  															table_ret_name[v.relation_name[0]],table_ret_name[v.relation_name[1]],
+  															pre,
+	  								            *(v.context_),
+  								              v.query_plan_->doc,
+  								              is_first);
+  	pre  = node->ret_list ;
+  	plan_node_list.push_back(node);	
+  	}
+  	else	if(v.context_->HasMember("ANTI_JOIN_LEVEL")){
+		do_anti_join_node *node = new do_anti_join_node(
+  															v.relation_name[0],v.relation_name[1],
+  															v.column_name[0],v.column_name[1],
+  															v.mem_table[0],v.mem_table[1],
+  															table_ret_name[v.relation_name[0]],table_ret_name[v.relation_name[1]],
+  															pre,
+	  								            *(v.context_),
+  								              v.query_plan_->doc,
+  								              is_first);
+  	pre  = node->ret_list ;
+  	plan_node_list.push_back(node);	
+  	}
+  	else {
 		do_join_node *node = new do_join_node(
   															v.relation_name[0],v.relation_name[1],
   															v.column_name[0],v.column_name[1],
@@ -1247,7 +1273,10 @@ for(auto & v : join_eq_condition_struct_list)
   								              v.query_plan_->doc,
   								              is_first);
   	pre  = node->ret_list ;
-  	plan_node_list.push_back(node);							            
+  	plan_node_list.push_back(node);	
+  	}
+  	
+  							            
 		if( is_first == 1)is_first = 0;
 }
 		
@@ -1259,4 +1288,4 @@ for(auto & v : join_eq_condition_struct_list)
 };
 
 
-#endif
+#endif	 	 	 	 	 	 	 	 	
