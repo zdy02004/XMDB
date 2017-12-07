@@ -403,7 +403,46 @@ void set_sub_query_father(rapidjson::Value  * v){
 	sub_query_father = v;
 	
 }
+	// 特殊关联关系打标签
+int mark_special_join(rapidjson::Value  * v0,int tag,int level){
+int tmp[2] = {0};
+int i = 0;
+CPP_DEBUG<< " mark_special_join in" <<endl;
+rapidjson::Value  * v = v0;
+if ( v0->HasMember("JOIN_CONDITION") ) v = &(*v0)["JOIN_CONDITION"];
+rapidjson_log( v );
+if ( v->HasMember("children") && (*v)["children"].GetArray().Size()== 2 ){
+for (auto& vv : (*v)["children"].GetArray()) 
+{
+	tmp[i++] = vv["tag"].GetInt() ;
+	cout<<vv["tag"].GetInt()<<endl;
+}
+CPP_DEBUG<< " Resolve_Two_Oper_condition " <<endl;
 
+// 关联条件
+if( check_if_join_condition(tmp[0]) && check_if_join_condition(tmp[1]) && (*v)["tag"].GetInt() == T_OP_EQ ){
+	 CPP_DEBUG<< "特殊关联条件 " <<endl;
+	 if(tag == T_SEMI_JOIN_LIST)v->AddMember("SEMI_JOIN_LEVEL",level,doc->GetAllocator());
+	 if(tag == T_ANTI_JOIN_LIST)v->AddMember("ANTI_JOIN_LEVEL",level,doc->GetAllocator());
+
+	 join_conditions.emplace_back( v );
+	 return 0;
+}
+// 逻辑关系 相连的两个条件 --> 可继续细分
+if(  check_if_logic_predication( (*v)["tag"].GetInt() ) )
+{
+
+	// 递归细分
+	 mark_special_join( &((*v)["children"][0]), tag,level );
+	 mark_special_join( &((*v)["children"][0]), tag,level );
+	
+	return 0;
+}
+
+}
+	 	
+}
+				
     //0. in 子链接转换成 exists 子链接
 			// in 替换成 exists
 			// 并把 x in （select y ）转换成 exists 中的where 条件
@@ -591,11 +630,16 @@ void   pull_up_sublinks(QueryAnalyser *qa,int level = 0 ){
 		//区分 semi join 和 anti join	,并挂到 father 上
 		if((*(qa->sub_link_father))["tag"].GetInt() == T_OP_EXISTS    ){
 		  semi_join_list["tag"].SetInt(T_SEMI_JOIN_LIST);
+		  //qa->where_list->AddMember("SEMI_JOIN_LEVEL",level,doc->GetAllocator());
+		  mark_special_join(qa->where_list,T_SEMI_JOIN_LIST, level);
+
 		//  semi_join_list.AddMember("SEMI_JOIN_LEVEL",level,doc->GetAllocator());
 			
 		}
 		if((*(qa->sub_link_father))["tag"].GetInt() == T_OP_NOT_EXISTS){
 			semi_join_list["tag"].SetInt(T_ANTI_JOIN_LIST);
+      //qa->where_list->AddMember("ANTI_JOIN_LEVEL",level,doc->GetAllocator());
+		  mark_special_join(qa->where_list,T_ANTI_JOIN_LIST, level);
 		//	semi_join_list.AddMember("ANTI_JOIN_LEVEL",level,doc->GetAllocator());
 		}
    
