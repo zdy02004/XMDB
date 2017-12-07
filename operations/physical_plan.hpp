@@ -1112,6 +1112,8 @@ for(std::vector<join_eq_condition_struct>::iterator iter= join_eq_condition_orig
 	iter != join_eq_condition_origin.end()-1 ;++iter
 )
 {
+	//交换次数
+	int i = 0;
 	for(std::vector<join_eq_condition_struct>::iterator iter2 = iter+1;
 		iter2!=join_eq_condition_origin.end();++iter2)
 		{
@@ -1120,9 +1122,11 @@ for(std::vector<join_eq_condition_struct>::iterator iter= join_eq_condition_orig
 				case NEED_DELETE:continue; //先不处理重复的
 				case 0:continue;
 				case 1:{ // 交换位置
-					if(iter2 == iter+1)continue;
+					if(iter2 == iter+i)continue;
 						else {
-							std::swap( *(iter+1),*iter2 );
+						  ++i;	
+							std::swap( *(iter+i),*iter2 );
+							
 						}
 					
 				}
@@ -1131,7 +1135,8 @@ for(std::vector<join_eq_condition_struct>::iterator iter= join_eq_condition_orig
 		}
 		
 		if( 1 != iter->can_link_or_delete( *(iter+1)) )return ERR_NOT_FOUND_LINK;
-	
+		iter += i;
+
 }
 
 return 0;
