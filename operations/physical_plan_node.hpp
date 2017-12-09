@@ -256,6 +256,15 @@ struct generic_result
 {
 	char* data;
 	size_t row_size;
+	bool operator == (const generic_result& other) {
+	if( row_size == 0 || other.row_size == 0 )return false;
+	else if(row_size != other.row_size )return false;
+	else {
+		return strncmp(data,other.data,row_size); 
+	}
+
+  }
+  
 	int allocate(size_t s){data =(char*)malloc(s); }
 	int allocate(){data =(char*)malloc(row_size); }
 	int deallocate(){free(data);}
@@ -263,6 +272,93 @@ struct generic_result
 	void set_row_size( size_t s){row_size =s; }
 	size_t get_row_size()const {return row_size; }
 }	;	
+
+struct table_field_t
+{
+	field_t           field;
+	mem_table_t      *mem_table;
+	
+	size_t size(){ return field.field_size;  }
+	
+  table_field_t(mem_table_t *_mem_table ,std::string _field_name,int _field_order,off_t _field_dis):mem_table(_mem_table)
+  {
+  		get_field(mem_table ,_field_name,field);
+  		field.field_order 		= _field_order;   //字段在记录中排第几个
+  		field.field_dis 			= _field_dis;			//该字段距离数据启始地址的距离
+  }
+       
+};
+
+struct record_meta
+{
+	std::vector<table_field_t>  						table_fields;
+	std::unordered_map<std::string,int>			field_index_map; //根据字段名到vector的索引
+  off_t																		size;	
+	
+	record_meta():size(0){}
+	
+	  //复制元数据
+  void operator = (const record_meta & other)
+  {
+  	table_fields = other.table_fields;
+  	field_index_map = other.field_index_map;
+  	size = other.size;
+  }
+  
+    //插入字段元信息
+  void push_field(mem_table_t *_mem_table ,std::string _field_name)
+  {  
+  	std::string total_name 		=  std::string( _mem_table->config.table_name ) + std::string(".")+_field_name;	
+  	field_index_map[total_name] =  table_fields.size() ;
+
+  	table_fields.emplace_back(_mem_table,_field_name,table_fields.size(),size );
+  	size += table_fields.rbegin()->field.field_size;  	
+  }
+  
+  
+};
+
+
+// 带描述的 record
+// 帮助类，用于赋值,和比较
+struct record_tuple
+{
+  record_meta    *    meta;
+  generic_result *		result;	
+  
+  bool operator ==(const record_tuple & other)
+  {
+  	return *(result) == *(other.result);
+  }
+  
+  record_tuple(record_meta  * _meta,generic_result *	_result):meta(_meta),result(_result){allocate();}
+  int allocate(){return result->allocate(meta->size); }
+  
+  //插入字段值
+  int set_field(mem_table_t *_mem_table ,std::string _field_name,const char * src)
+  {
+  	std::string total_name = std::string( _mem_table->config.table_name ) + std::string(".") + _field_name;
+    	
+    if( meta->field_index_map.find(total_name) != meta->field_index_map.end() ){
+    	  int n = meta->field_index_map[total_name];
+    	  field_t &field = meta->table_fields[n].field;
+     		strncpy( result->data + field.field_dis , src , field.field_size );
+    		return 0;
+    	}
+    	return -1;
+    	
+  }
+  
+};
+
+// 带描述的 record 数组
+struct record_tuple_array
+{
+	record_meta    							*    meta;
+  std::vector<generic_result>			 result_array;	
+};
+
+
 
 
 struct plan_node
