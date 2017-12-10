@@ -143,18 +143,20 @@ struct RawTarget
 
 struct GroupTarget
 {
-	  std::string    relation_name;  
+	std::string    relation_name; 
+	std::string    alias_name; 
     std::string    column_name;  
-  GroupTarget (std::string & _relation_name,  std::string & _column_name ):relation_name(_relation_name),column_name(_column_name){}
+	GroupTarget (std::string & _relation_name,  std::string & _column_name ):relation_name(_relation_name),column_name(_column_name){}
 	GroupTarget (const char * _column_name ):column_name(_column_name){}
 
 };
 
 struct OrderTarget
 {
-	  std::string    relation_name;  
+	std::string    relation_name; 
+	std::string    alias_name;
     std::string    column_name;  
-  OrderTarget (std::string & _relation_name,  std::string & _column_name ):relation_name(_relation_name),column_name(_column_name){}
+	OrderTarget (std::string & _relation_name,  std::string & _column_name ):relation_name(_relation_name),column_name(_column_name){}
 	OrderTarget (const char * _column_name ):column_name(_column_name){}
 
 };
