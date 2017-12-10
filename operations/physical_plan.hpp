@@ -288,6 +288,7 @@ struct join_eq_condition_struct{
 	int tag;
 	std::string relation_name[2];
 	std::string column_name[2];
+	std::string	alias_name[2];
 	field_t field[2];
   mem_table_t *mem_table[2];
   
@@ -380,8 +381,9 @@ int get_name(){
 			{
 				
 				for(int i = 0; i<2; ++i){
-					if( relation_name[i] == table.alias_name_ )relation_name[i] = table.table_name_;
+					if( relation_name[i] == table.alias_name_ ){relation_name[i] = table.table_name_;}
 					if( relation_name[i] == table.table_name_ ) ++finded;
+					alias_name[i] = table.alias_name_;
 				}
 				
 			 }
@@ -479,7 +481,8 @@ int getSinglTableFilter(
   			
   			err = get_table_no_addr( table_no,(void **)(mem_table) );
   			if( err == 0 ){ // 找到该表的地址
-  				
+
+				tables[i].mem_table = *mem_table;
   				for(auto &nomal_single_condition : nomal_single_conditions ){//查找单条件列表中，使用该表字段的一元条件
   					normal_single_condition_struct nscs(nomal_single_condition,this);
   					err = nscs.get_name();
@@ -1142,86 +1145,8 @@ for(std::vector<join_eq_condition_struct>::iterator iter= join_eq_condition_orig
 return 0;
 }
 
-
-
-
-//int do_join_condtions(std::list<join_eq_condition_struct> &join_eq_condition_origin,std::list<generic_result> * ret_list )// 原始关联条件
-//{	
-//
-//std::string table_name1 = join_eq_condition_origin.relation_name[0];
-//std::string table_name2 = join_eq_condition_origin.relation_name[1];
-//std::string column_name1 = join_eq_condition_origin.column_name[0];
-//std::string column_name2 = join_eq_condition_origin.column_name[1];
-//	
-//mem_table_t *mem_table1  = join_eq_condition_origin.mem_table[0];
-//mem_table_t *mem_table2  = join_eq_condition_origin.mem_table[1];
-//
-//std::list<generic_result>* ret_list1 =  table_ret_map[table_name1];
-//std::list<generic_result>* ret_list2 =  table_ret_map[table_name2];
-//
-//field_t field1;
-//get_field(mem_table1 ,column_name1, field1);
-//char buf[field1.field_size+1];
-//buf1[field1.field_size+1];	
-//buf1[field1.field_size]='\0';
-//
-//field_t field2;
-//get_field(mem_table2 ,column_name2, field2);
-//char buf[field2.field_size+1];
-//buf2[field2.field_size+1];	
-//buf2[field2.field_size]='\0';
-//
-//
-//shared_ptr<std::list<generic_result> > first_ret =ret_hash_inner_join_ctl(*ret_list1,*ret_list2,
-//	[&](record_type& x){	
-//	memcpy(buf1,x.get_date(),field1.field_size);
-//	return *cast_ptr_by_field<field1.field_no>( buf1 , field1 );
-//	},
-//	[&](record_type& x){
-//	memcpy(buf2,x.get_date(),field2.field_size);
-//	return *cast_ptr_by_field<field2.field_no>( buf2 , field2 );
-//	});
-//	
-//shared_ptr<std::list<generic_result> > pre = first_ret;
-//	
-//for( std::list<join_eq_condition_struct>::iterator iter =join_eq_condition_origin.begin()+1;iter!=join_eq_condition_origin.end() ;++iter )
-//{
-//std::string table_name1 = iter->relation_name[0];
-//std::string table_name2 = iter->relation_name[1];
-//std::string column_name1 = iter->column_name[0];
-//std::string column_name2 = iter->column_name[1];
-//mem_table_t *mem_table1  = iter->mem_table[0];
-//mem_table_t *mem_table2  = iter->mem_table[1];
-//std::list<generic_result>* ret_list1 =  table_ret_map[table_name1];
-//std::list<generic_result>* ret_list2 =  table_ret_map[table_name2];
-//// 关联的字段不是通用的
-//field_t field1;
-//get_field(mem_table1 ,column_name1, field1);
-//char buf[field1.field_size+1];
-//buf1[field1.field_size+1];	
-//buf1[field1.field_size]='\0';
-//
-//field_t field2;
-//get_field(mem_table2 ,column_name2, field2);
-//char buf[field2.field_size+1];
-//buf2[field2.field_size+1];	
-//buf2[field2.field_size]='\0';
-//
-//pre =ret_hash_inner_join_ctl(*pre,*ret_list2,
-//	[&](record_type& x){	
-//	memcpy(buf1,x.get_date()+x.get_row_size() - mem_table1->record_size + field1.field_dis,field1.field_size);
-//	return *cast_ptr_by_field<field1.field_no>( buf1 , field1 );
-//	},
-//	[&](record_type& x){
-//	memcpy(buf2,x.get_date(),field2.field_size);
-//	return *cast_ptr_by_field<field2.field_no>( buf2 , field2 );
-//	});
-//
-//}
-//ret_list = pre.get();
-//return 0;
-//}
-
+// 对排序后的关联关系，去除 semi_join 和 anti_join 的结果
+std::vector<join_eq_condition_struct>  join_eq_condition_only_inner_join_list;
 
 
 int handl_join_condtions(std::list<plan_node *>		& plan_node_list)
@@ -1268,6 +1193,8 @@ for(auto & v : join_eq_condition_struct_list)
   	plan_node_list.push_back(node);	
   	}
   	else {
+  	join_eq_condition_only_inner_join_list.push_back(v);	
+  	
 		do_join_node *node = new do_join_node(
   															v.relation_name[0],v.relation_name[1],
   															v.column_name[0],v.column_name[1],
@@ -1290,7 +1217,93 @@ for(auto & v : join_eq_condition_struct_list)
 }
 
 
+int get_record_meta_from_join(std::vector<join_eq_condition_struct>		& inner_join_list,record_meta & meta)
+{
+	bool is_first = true;
+	for(auto &v:inner_join_list )
+	{
+		if(is_first){
+			is_first = false;
+			meta.from_table(v.mem_table[0]);
+		}
+		else
+			meta.from_table(v.mem_table[1]);
+
+	if(is_first)return -1;
+	else return 0;
+
+		}
+}
+
+int handl_groupby(std::list<plan_node *>	& plan_node_list)
+{
+	if(group_target.empty())return 0;
+	
+	std::vector<std::string>	table_names; 
+	std::vector<std::string>	column_names; 
+	std::vector<mem_table_t *>	mem_tables; 
+	std::vector<std::string>	alias_names;
+	std::map<std::string, off_t>table_name_dis;
+	std::list<generic_result>*  input ;	
+
+	// 对齐别名和真实表名
+    for(auto &v :group_target){
+	auto s  = std::find_if(tables.begin(),tables.end(),[&](TableItem& s){return v.relation_name == s.alias_name_;});
+	   if( tables.end() != s )
+	   	{
+			v.relation_name == s->table_name_;
+			v.alias_name 	== s->alias_name_;			
+	   	}
+
+	    //填充入参
+	    table_names .push_back(v.relation_name);
+		column_names.push_back(v.column_name  );
+		alias_names .push_back(v.alias_name   );
+		mem_tables	.push_back( std::find_if(tables.begin(),tables.end(),[&](TableItem& s){return v.relation_name == s.table_name_;})->mem_table);
+	 
+	   
+    }
+
+	//中间结果的元数据描述
+	record_meta  meta;
+	int err =  0;
+	if(is_join)	err = get_record_meta_from_join(join_eq_condition_only_inner_join_list, meta);
+	else err = meta.from_table( tables.begin()->mem_table );
+
+	//设置 table_name_dis
+	off_t dis = 0;
+	bool  is_first_for = true;
+	for(auto &v : (join_eq_condition_only_inner_join_list) ){
+		 //dis_index.push_back( dis );
+		 
+		if(is_first_for){
+			if( !v.alias_name[0].empty() ) table_name_dis[v.alias_name[0]] = dis;
+			else table_name_dis[v.relation_name[0]] = dis;
+			
+		 	dis += v.mem_table[0]->record_size;
+		 	is_first_for = false;
+		}
+		else {
+			if( !v.alias_name[1].empty() ) table_name_dis[v.alias_name[1]] = dis;
+			else table_name_dis[v.relation_name[1]] = dis;
+			dis += v.mem_table[1]->record_size;
+		}
+	}
+
+	do_groupby_node *node = new do_groupby_node(
+												table_names,
+												column_names,
+												alias_names,
+												mem_tables,
+												&table_name_dis,
+								   (*(plan_node_list.rbegin()))->get_ret_list(),			
+												is_join,
+												*group_list,
+  												this->doc
+												);
+	plan_node_list.push_back(node); 
+	return 0;
+}
+
 };
-
-
-#endif	 	 	 	 	 	 	 	 	
+#endif	 	 	 	 	 	 	 	 	 
