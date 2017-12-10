@@ -30,6 +30,7 @@ g++ -w -lpthread -C -std=c++11 physical_plan_node.hpp
 #define PLAN_TYPE_DO_JOIN										20
 #define PLAN_TYPE_DO_SEMI_JOIN							21
 #define PLAN_TYPE_DO_ANTI_JOIN							22
+#define PLAN_TYPE_DO_GROUPBY 								23
 
 
 #define PHYSICY_PLAN_EMPTY_TABLE 			10501
@@ -110,7 +111,7 @@ struct get_field_type<FIELD_TYPE_STR>
 
 // 将结果行中的字段析出
 template<class T,int T2>
-typename get_field_type<T2>::value_type cast_field( T * record , const field_t & field ){  
+inline typename get_field_type<T2>::value_type cast_field( T * record , const field_t & field ){  
     
     switch( field.field_type )
     {
@@ -132,7 +133,7 @@ typename get_field_type<T2>::value_type cast_field( T * record , const field_t &
 }
 
 template<int T>
-typename get_field_type<T>::value_type cast_condition( std::string& condition , const field_t & field ){  
+inline typename get_field_type<T>::value_type cast_condition( std::string& condition , const field_t & field ){  
     
     switch( field.field_type )
     {
@@ -154,7 +155,7 @@ typename get_field_type<T>::value_type cast_condition( std::string& condition , 
    return 0;
 }
 
-void * cast_ptr_by_field( std::string& condition , const field_t & field ){  
+inline void * cast_ptr_by_field( std::string& condition , const field_t & field ){  
 	   switch( field.field_type )
     {
     	case FIELD_TYPE_INT:     {       int *ret =  new int; 	    *ret =  (int)atoi(condition.c_str() );				return (void *)ret;    }
@@ -175,6 +176,48 @@ void * cast_ptr_by_field( std::string& condition , const field_t & field ){
 		
 }
 
+inline bool compare_lt_field( const char * a, const char * b , const field_t & field ){  
+	   switch( field.field_type )
+    {
+    	case FIELD_TYPE_INT:     {      return ((int)(*a))<((int)(*b));    }
+			case FIELD_TYPE_SHORT:   {      return ((short)(*a))<((short)(*b));    }
+ 			case FIELD_TYPE_LONG:    {      return ((long)(*a))<((long)(*b));    }
+			case FIELD_TYPE_LONGLONG:{      return ((long long)(*a))<((long long)(*b));    }
+			case FIELD_TYPE_FLOAT:   {      return ((float)(*a))<((float)(*b));    }
+			case FIELD_TYPE_DOUBLE:  {      return ((double)(*a))<((double)(*b));    }
+
+				
+ 			case FIELD_TYPE_DATE:    {      return ((long)(*a))<((long)(*b));       }
+ 			//case FIELD_TYPE_HASH_ENTRY:       return *(FIELD_INT *)( (char *)(record)+field.field_dis ); 
+ 			//case FIELD_TYPE_RBTREE_ENTRY:     return *(FIELD_INT *)( (char *)(record)+field.field_dis );
+ 			//case FIELD_TYPE_SKIPLIST_ENTRY:   return *(FIELD_INT *)( (char *)(record)+field.field_dis );
+ 			case FIELD_TYPE_STR:      {      return strncmp(a,b,field.field_size)<0;  }
+    		
+    }
+		
+}
+
+inline bool compare_gt_field( const char * a, const char * b , const field_t & field ){  
+	   switch( field.field_type )
+    {
+    	case FIELD_TYPE_INT:     {      return ((int)(*a))>((int)(*b));    }
+			case FIELD_TYPE_SHORT:   {      return ((short)(*a))>((short)(*b));    }
+ 			case FIELD_TYPE_LONG:    {      return ((long)(*a))>((long)(*b));    }
+			case FIELD_TYPE_LONGLONG:{      return ((long long)(*a))>((long long)(*b));    }
+			case FIELD_TYPE_FLOAT:   {      return ((float)(*a))>((float)(*b));    }
+			case FIELD_TYPE_DOUBLE:  {      return ((double)(*a))>((double)(*b));    }
+
+				
+ 			case FIELD_TYPE_DATE:    {      return ((long)(*a))>((long)(*b));       }
+ 			//case FIELD_TYPE_HASH_ENTRY:       return *(FIELD_INT *)( (char *)(record)+field.field_dis ); 
+ 			//case FIELD_TYPE_RBTREE_ENTRY:     return *(FIELD_INT *)( (char *)(record)+field.field_dis );
+ 			//case FIELD_TYPE_SKIPLIST_ENTRY:   return *(FIELD_INT *)( (char *)(record)+field.field_dis );
+ 			case FIELD_TYPE_STR:      {      return strncmp(a,b,field.field_size)>0;  }
+    		
+    }
+		
+}
+
 // 字段比较辅助结构
 struct field_compare
 {
@@ -189,6 +232,11 @@ bool operator == ( const field_compare &a)
 	if(a.size != size)return false;
 	if( 0!=strncmp(a.buf,buf,size) )return false;
 	return true;
+}
+
+bool operator != ( const field_compare &a)
+{
+	return !operator == ( a );
 }
 };
 
@@ -331,6 +379,34 @@ struct record_tuple
   	return *(result) == *(other.result);
   }
   
+   bool operator < (const record_tuple & other)
+  {
+  	for (auto &v : other.meta->table_fields)
+  	{
+  		if(field_compare(result->data+v.field.field_dis , v.field, v.field.field_size )!=field_compare(other.result->data+v.field.field_dis , v.field, v.field.field_size ) )
+  			{
+  				return compare_lt_field( result->data+v.field.field_dis, other.result->data+v.field.field_dis , v.field );
+  			}
+        else continue;
+  		
+  	}
+  	return false;
+  }
+  
+   bool operator > (const record_tuple & other)
+  {
+  	for (auto &v : other.meta->table_fields)
+  	{
+  		if(field_compare(result->data+v.field.field_dis , v.field, v.field.field_size )!=field_compare(other.result->data+v.field.field_dis , v.field, v.field.field_size ) )
+  			{
+  				return compare_gt_field( result->data+v.field.field_dis, other.result->data+v.field.field_dis , v.field );
+  			}
+        else continue;
+  		
+  	}
+  	return false;
+  }
+  
   record_tuple(record_meta  * _meta,generic_result *	_result):meta(_meta),result(_result){allocate();}
   int allocate(){return result->allocate(meta->size); }
   
@@ -343,6 +419,21 @@ struct record_tuple
     	  int n = meta->field_index_map[total_name];
     	  field_t &field = meta->table_fields[n].field;
      		strncpy( result->data + field.field_dis , src , field.field_size );
+    		return 0;
+    	}
+    	return -1;
+    	
+  }
+  
+  //返回字段首地址
+  int get_field(mem_table_t *_mem_table ,std::string _field_name, char ** target)
+  {
+  	std::string total_name = std::string( _mem_table->config.table_name ) + std::string(".") + _field_name;
+    	
+    if( meta->field_index_map.find(total_name) != meta->field_index_map.end() ){
+    	  int n = meta->field_index_map[total_name];
+    	  field_t &field = meta->table_fields[n].field;
+     		*target = (char *)(result->data + field.field_dis);
     		return 0;
     	}
     	return -1;
@@ -1801,5 +1892,159 @@ virtual std::string to_sring()
 }
 
 
+};
+
+
+// groupby 函数
+template<class T1,class fun_type1,class key_type = record_tuple>
+shared_ptr<std::map<key_type,std::list<typename T1::value_type> > >
+ret_group_by_key_stl(const T1 & container1,fun_type1 key_fun1)
+{
+std::shared_ptr<std::map<key_type,std::list<typename T1::value_type> > > ret(std::make_shared<std::map<key_type,std::list<typename T1::value_type> > >());
+
+for(typename T1::const_iterator	it = container1.begin();it!=container1.end();++it) 
+{
+	 key_type key = key_fun1(*it);
+   (*ret)[key].push_back(*it);
+}
+
+  return ret;
+
+}
+
+//record_meta.push 原始值            x
+//record_meta.push order by 的值     y
+//get -> set
+//key func 构造 结果集的 record_tuple
+struct do_groupby_node:public plan_node
+{
+	
+std::vector<std::string>    table_names; 
+std::vector<std::string>    column_names; 
+std::vector<mem_table_t *>  mem_tables; 
+std::vector<std::string>    alias_names;
+std::map<std::string, off_t > *table_name_dis;
+std::vector<field_t> 				fields; 
+std::list<generic_result>* input ;
+	
+std::shared_ptr<std::map<record_tuple,std::list<generic_result> > > ret_list;
+// groupby 字段描述
+record_meta meta;
+//是否是单表
+int is_original;
+
+// 为了防止循环编译依赖，暂时加的模板
+do_groupby_node( 
+							std::vector<std::string>    &_table_names,
+							std::vector<std::string>    &_column_names,
+							std::vector<std::string>    &_alias_names,
+							std::vector<mem_table_t *>  &_mem_tables,
+							std::map<std::string, off_t > *_table_name_dis,
+							std::list<generic_result>* _input ,			
+							int	_is_original,
+							rapidjson::Value& _json,
+  						        rapidjson::Document * _Doc
+  									
+):plan_node(_json,_Doc),	
+		table_names (_table_names), 
+		column_names (_column_names),
+		alias_names  (_alias_names),
+		mem_tables  (_mem_tables),
+		table_name_dis(_table_name_dis),
+		is_original(_is_original),
+		input(_input)
+{
+plan_type = PLAN_TYPE_DO_GROUPBY;		
+
+for(int i = 0; i<table_names.size(); ++i){
+
+field_t field;
+get_field(mem_tables[i] ,column_names[i], field);
+fields.push_back(field);
+
+meta.push_field( mem_tables[i] , column_names[i] );
+}
+
+}
+	
+virtual int execute( unsigned long long  trans_no  )
+{
+	// 原始表无关联，无子查询
+if(is_original)
+{				
+		  ret_list = ret_group_by_key_stl(*input, [&](generic_result& v)->record_tuple{
+			std::shared_ptr<generic_result> result(new generic_result);
+			record_tuple tuple_one( &meta, result.get()  );
+			
+			//设置 tuple_one
+			for(int i = 0; i<table_names.size(); ++i){
+			field_t ori_field;
+			get_field( mem_tables[i] , column_names[i] , ori_field );
+			tuple_one.set_field( mem_tables[i] ,column_names[i], v.data+ori_field.field_dis );
+		  }
+			return tuple_one;
+			});
+	
+}
+else{
+	//先构造每个表的开始位置 快查表
+	//std::vector<off_t > dis_index;
+	// 有别名 关联别名
+	
+	//这段逻辑设置 table_name_dis
+	//std::map<std::string, off_t > table_name_dis;		
+	//off_t dis = 0;
+	//bool  is_first_for = true;
+	//for(auto &v : (*join_eq_condition_only_inner_join_list) ){
+	//	 //dis_index.push_back( dis );
+	//	 
+	//	if(is_first_for){
+	//		if( !v.alias_names[0].empty() ) table_name_dis[v.alias_names[0]] = dis;
+	//		else table_name_dis[v.relation_name[0]] = dis;
+	//		
+	//	 	dis += v.mem_table[0]->record_size;
+	//	 	is_first_for = false;
+	//	}
+	//	else {
+	//		if( !v.alias_names[1].empty() ) table_name_dis[v.alias_names[1]] = dis;
+	//		else table_name_dis[v.relation_name[1]] = dis;
+	//		dis += v.mem_table[1]->record_size;
+	//	}
+	//}
+	
+		  ret_list = ret_group_by_key_stl(*input, [&](generic_result &v)->record_tuple{
+			std::shared_ptr<generic_result> result(new generic_result);
+			record_tuple tuple_one( &meta, result.get()  );
+			
+			//设置 tuple_one
+			for(int i = 0; i<table_names.size(); ++i){
+			field_t ori_field;
+			get_field( mem_tables[i] , column_names[i] , ori_field );
+			
+			//有别名用别名锁定位置。否则用表名
+			if( !alias_names[i].empty() ) tuple_one.set_field( mem_tables[i] ,column_names[i], v.data + (*table_name_dis)[alias_names[i]]  +ori_field.field_dis );
+			else tuple_one.set_field( mem_tables[i] ,column_names[i], v.data + (*table_name_dis)[table_names[i]]  +ori_field.field_dis );
+		  }
+			return tuple_one;
+			});
+	
+}
+
+}
+
+std::map<record_tuple,std::list<generic_result> >* get_ret_map()
+{
+	return ret_list.get();
+}
+
+virtual void make_json()
+{
+	return ;
+}
+
+virtual std::string to_sring()
+{
+	//return 0;
+}
 };
 #endif
