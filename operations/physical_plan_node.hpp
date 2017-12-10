@@ -337,11 +337,12 @@ struct table_field_t
        
 };
 
+//中间结果的recored 描述
 struct record_meta
 {
-	std::vector<table_field_t>  						table_fields;
+	std::vector<table_field_t>  				table_fields;
 	std::unordered_map<std::string,int>			field_index_map; //根据字段名到vector的索引
-  off_t																		size;	
+ 	off_t										size;	
 	
 	record_meta():size(0){}
 	
@@ -354,13 +355,29 @@ struct record_meta
   }
   
     //插入字段元信息
-  void push_field(mem_table_t *_mem_table ,std::string _field_name)
+  int push_field(mem_table_t *_mem_table ,std::string _field_name)
   {  
+  
+  	if( NULL == _mem_table )return PHYSICY_PLAN_EMPTY_TABLE;
   	std::string total_name 		=  std::string( _mem_table->config.table_name ) + std::string(".")+_field_name;	
   	field_index_map[total_name] =  table_fields.size() ;
 
   	table_fields.emplace_back(_mem_table,_field_name,table_fields.size(),size );
-  	size += table_fields.rbegin()->field.field_size;  	
+  	size += table_fields.rbegin()->field.field_size; 
+	return 0;
+  }
+  
+   //从mem_table 中转化过来 
+  int from_table(mem_table_t * mem_table )
+  {  
+  	if( NULL == mem_table )return PHYSICY_PLAN_EMPTY_TABLE;
+	for(int i = 0;i < mem_table->config.field_used_num; ++i  )
+   {
+      field_t& field = mem_table->config.fields_table[i];
+   	  push_field(mem_table ,std::string(field.field_name ) );
+	  
+   }
+	return 0;
   }
   
   
@@ -586,7 +603,7 @@ scan_index_hash_node(long _index_no,
   																					_const_value,
   																					_const_type,_finded_Addr){plan_type = PLAN_TYPE_HASH_INDXE_SCAN;}
 
-virtual int execute( )
+virtual int execute(unsigned long long  trans_no  )
 {
 int ret = 0;
 if( const_type == "INTNUM" )
@@ -644,7 +661,7 @@ scan_skiplist_eq_node(long _index_no,
   																					_const_value,
   																					_const_type,_finded_Addr){ plan_type = PLAN_TYPE_SKIPLIST_EQ_INDXE_SCAN; }
 
-virtual int execute( )
+virtual int execute(unsigned long long  trans_no  )
 {
 int ret = 0;
 if( const_type == "INTNUM" )
@@ -708,7 +725,7 @@ scan_skiplist_ge_node(long _index_no,
   																					_const_value,
   																					_const_type,_finded_Addr){plan_type = PLAN_TYPE_SKIPLIST_GE_INDXE_SCAN;}
 
-virtual int execute( )
+virtual int execute( unsigned long long  trans_no )
 {
 int ret = 0;
 if( const_type == "INTNUM" )
@@ -772,7 +789,7 @@ scan_skiplist_gt_node(long _index_no,
   																					_const_value,
   																					_const_type,_finded_Addr){plan_type = PLAN_TYPE_SKIPLIST_GT_INDXE_SCAN;}
 
-virtual int execute( )
+virtual int execute(unsigned long long  trans_no  )
 {
 int ret = 0;
 if( const_type == "INTNUM" )
@@ -836,7 +853,7 @@ scan_skiplist_le_node(long _index_no,
   																					_const_value,
   																					_const_type,_finded_Addr){plan_type = PLAN_TYPE_SKIPLIST_LE_INDXE_SCAN;}
 
-virtual int execute( )
+virtual int execute(unsigned long long  trans_no  )
 {
 int ret = 0;
 if( const_type == "INTNUM" )
@@ -902,7 +919,7 @@ scan_skiplist_lt_node(long _index_no,
   																					_const_value,
   																					_const_type,_finded_Addr){plan_type = PLAN_TYPE_SKIPLIST_LT_INDXE_SCAN;}
 
-virtual int execute( )
+virtual int execute(unsigned long long  trans_no  )
 {
 int ret = 0;
 if( const_type == "INTNUM" )
@@ -976,7 +993,7 @@ scan_skiplist_btw_node(long _index_no,
   																						const_type_array[0]  =  _const_type2;
   																						plan_type =PLAN_TYPE_SKIPLIST_BTW_INDXE_SCAN ;}
 
-virtual int execute( )
+virtual int execute(unsigned long long  trans_no  )
 {
 int ret = 0;
 if( const_type == "INTNUM" )
@@ -1402,18 +1419,18 @@ virtual std::list<generic_result>* get_ret_list()
 
 // 内关联函数
 template<class T1,class T2,typename fun_type1,typename fun_type2>
-shared_ptr<std::vector<generic_result> >
+shared_ptr<std::list<generic_result> >
 ret_hash_inner_join_ctl(const T1 & container1,const T2 &container2,fun_type1 key_fun1,fun_type2 key_fun2)
 {
 typedef typename std::result_of<fun_type1(typename T1::value_type )>::type  key_type1; 
 typedef typename std::result_of<fun_type2(typename T2::value_type )>::type  key_type2; 
 typedef std::unordered_map<key_type1,std::vector<typename T1::value_type> > hash_map_type;
-typedef std::vector<generic_result> ret_type;
+typedef std::list<generic_result> ret_type;
         
 shared_ptr<hash_map_type>  hash_container (make_shared<hash_map_type>());
 shared_ptr<ret_type     >  ret (make_shared<ret_type>());
 
-ret->reserve(1.6*container1.size());
+//ret->reserve(1.6*container1.size());
 
 for(typename T1::const_iterator	it = container1.begin();it!=container1.end();++it) 
 {
@@ -1444,21 +1461,21 @@ for(typename T2::const_iterator	it = container2.begin();it!=container2.end();++i
 
 // 半内关联函数
 template<class T1,class T2,typename fun_type1,typename fun_type2>
-shared_ptr<std::vector<generic_result> >
+shared_ptr<std::list<generic_result> >
 ret_hash_inner_semi_join_ctl(const T1 & container1,const T2 &container2,fun_type1 key_fun1,fun_type2 key_fun2)
 {
 typedef typename std::result_of<fun_type1(typename T1::value_type )>::type  key_type1; 
 typedef typename std::result_of<fun_type2(typename T2::value_type )>::type  key_type2; 
 typedef std::unordered_map<key_type1,std::vector<typename T1::value_type> > hash_map_type;
 typedef std::unordered_map<key_type2,std::vector<typename T2::value_type> > hash_map_type2;
-typedef std::vector<generic_result> ret_type;
+typedef std::list<generic_result> ret_type;
         
 shared_ptr<hash_map_type>  hash_container (make_shared<hash_map_type>());
 shared_ptr<hash_map_type>  hash_container2 (make_shared<hash_map_type2>());
 
 shared_ptr<ret_type     >  ret (make_shared<ret_type>());
 
-ret->reserve(1*container1.size());
+//ret->reserve(1*container1.size());
 
 for(typename T1::const_iterator	it = container1.begin();it!=container1.end();++it) 
 {
@@ -1489,21 +1506,21 @@ for(typename T2::const_iterator	it = container2.begin();it!=container2.end();++i
 }
 // 反内关联函数
 template<class T1,class T2,typename fun_type1,typename fun_type2>
-shared_ptr<std::vector<generic_result> >
+shared_ptr<std::list<generic_result> >
 ret_hash_inner_anti_join_ctl(const T1 & container1,const T2 &container2,fun_type1 key_fun1,fun_type2 key_fun2)
 {
 typedef typename std::result_of<fun_type1(typename T1::value_type )>::type  key_type1; 
 typedef typename std::result_of<fun_type2(typename T2::value_type )>::type  key_type2; 
 typedef std::unordered_map<key_type1,std::vector<typename T1::value_type> > hash_map_type;
 typedef std::unordered_map<key_type2,std::vector<typename T2::value_type> > hash_map_type2;
-typedef std::vector<generic_result> ret_type;
+typedef std::list<generic_result> ret_type;
         
 shared_ptr<hash_map_type>  hash_container (make_shared<hash_map_type>());
 shared_ptr<hash_map_type>  hash_container2 (make_shared<hash_map_type2>());
 
 shared_ptr<ret_type     >  ret (make_shared<ret_type>());
 
-ret->reserve(1*container1.size());
+//ret->reserve(1*container1.size());
 
 for(typename T1::const_iterator	it = container2.begin();it!=container2.end();++it) 
 {
@@ -1926,8 +1943,9 @@ std::vector<std::string>    alias_names;
 std::map<std::string, off_t > *table_name_dis;
 std::vector<field_t> 				fields; 
 std::list<generic_result>* input ;
-	
-std::shared_ptr<std::map<record_tuple,std::list<generic_result> > > ret_list;
+shared_ptr<std::list<generic_result> > ret_list;	
+
+std::shared_ptr<std::map<record_tuple,std::list<generic_result> > > ret_map;
 // groupby 字段描述
 record_meta meta;
 //是否是单表
@@ -1943,7 +1961,7 @@ do_groupby_node(
 							std::list<generic_result>* _input ,			
 							int	_is_original,
 							rapidjson::Value& _json,
-  						        rapidjson::Document * _Doc
+  						rapidjson::Document * _Doc
   									
 ):plan_node(_json,_Doc),	
 		table_names (_table_names), 
@@ -1972,7 +1990,7 @@ virtual int execute( unsigned long long  trans_no  )
 	// 原始表无关联，无子查询
 if(is_original)
 {				
-		  ret_list = ret_group_by_key_stl(*input, [&](generic_result& v)->record_tuple{
+		  ret_map = ret_group_by_key_stl(*input, [&](generic_result& v)->record_tuple{
 			std::shared_ptr<generic_result> result(new generic_result);
 			record_tuple tuple_one( &meta, result.get()  );
 			
@@ -2012,7 +2030,7 @@ else{
 	//	}
 	//}
 	
-		  ret_list = ret_group_by_key_stl(*input, [&](generic_result &v)->record_tuple{
+		  ret_map = ret_group_by_key_stl(*input, [&](generic_result &v)->record_tuple{
 			std::shared_ptr<generic_result> result(new generic_result);
 			record_tuple tuple_one( &meta, result.get()  );
 			
@@ -2034,8 +2052,17 @@ else{
 
 std::map<record_tuple,std::list<generic_result> >* get_ret_map()
 {
+	return ret_map.get();
+}
+virtual std::list<generic_result>* get_ret_list()
+{
+   if(ret_list->empty()){
+		for ( auto& one : *ret_map )ret_list->push_back( *(one.first.result ));
+  }
+  
 	return ret_list.get();
 }
+
 
 virtual void make_json()
 {
