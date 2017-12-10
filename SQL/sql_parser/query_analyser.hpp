@@ -119,13 +119,14 @@ void rapidjson_log(rapidjson::Value  * v)
         T_INNER,
       };
     };
-        
+class  mem_table_t;   
 struct TableItem  
 {  
     string    table_name_;  
     string    alias_name_;  
     string    sub_select_alias_name_;
-    TableItem(string & table_name , string & alias_name, string & sub_select_alias_name ):table_name_(table_name),alias_name_(alias_name),sub_select_alias_name_(sub_select_alias_name){}
+	mem_table_t *mem_table;
+    TableItem(string & table_name , string & alias_name, string & sub_select_alias_name ):table_name_(table_name),alias_name_(alias_name),sub_select_alias_name_(sub_select_alias_name),mem_table(NULL){}
 };  
 
 struct RawTarget
