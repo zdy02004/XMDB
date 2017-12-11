@@ -133,10 +133,11 @@ struct RawTarget
 {
 	  std::string    relation_name;  
     std::string    column_name;  
-    std::string    project_alias;   
-  RawTarget (const char * _relation_name,  const char * _column_name ):relation_name(_relation_name),column_name(_column_name){}
-	RawTarget (const char * _column_name ):column_name(_column_name){}
-  RawTarget (std::string & _relation_name, std::string & _column_name ):relation_name(_relation_name),column_name(_column_name){}
+    std::string    project_alias;
+    int     			 index;						//原始位置
+  RawTarget (const char * _relation_name,  const char * _column_name,int _index ):relation_name(_relation_name),column_name(_column_name),index(_index){}
+	RawTarget (const char * _column_name,int _index ):column_name(_column_name),index(_index){}
+  RawTarget (std::string & _relation_name, std::string & _column_name,int _index):relation_name(_relation_name),column_name(_column_name),index(_index){}
 
 
 };
@@ -182,6 +183,8 @@ int is_distinct;
 int is_join;
 int sub_links_count;
 int is_select_all;
+
+int cur_index; //projection 当前解析位置
 // 原始要素
 rapidjson::Value  * project_lists;
 rapidjson::Value  * from_list;
@@ -193,7 +196,7 @@ rapidjson::Value  * hints_list;
 
 // select_list 解析要素
 vector<rapidjson::Value *> aggregat_funs; 					// 聚合函数
-vector<RawTarget> raw_target_list;         // 不可再分的非常量目标 
+vector<RawTarget> raw_target_list;         					// 不可再分的非常量目标 
 vector<rapidjson::Value *> project_opers;           // 作用于目标列的操作
 vector<rapidjson::Value *> nomal_funs;							// 非聚合普通函数
 
@@ -207,7 +210,7 @@ vector<rapidjson::Value *> single_fromlists;  // from  中的子查询
 // where 条件要素
 vector<QueryAnalyser> sub_links; 	   					// where 中的子链接
 rapidjson::Value  * sub_link_father;          // 当自己就是自连接中的 子查询时，sub_link_father  指向 SUB_LINK_BODY 的上一层
-QueryAnalyser  *   up_stmt; 					//如果是子连接 则还要存一个上层 where
+QueryAnalyser  *   up_stmt; 									//如果是子连接 则还要存一个上层 where
 
 vector<rapidjson::Value *> join_conditions;   				// 关联条件
 vector<rapidjson::Value *> const_conditions;         	// 常数不可再分条件
@@ -330,6 +333,7 @@ QueryAnalyser(rapidjson::Value & value ,rapidjson::Document & doc_ , QueryAnalys
 																																		order_list	(NULL),
 																																		hints_list	(NULL),
 																																		sub_links_count ( 0 ),
+																																		cur_index			(0),
 																																		order_by_tag ( 0 ),
 																																		is_select_all ( 0 )
 {
@@ -870,17 +874,20 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 		if ( v->HasMember("PROJECT") )
 			vv = &(*v)["PROJECT"];
 		else vv = v;
-
+		
+		
 		if ( vv->HasMember(rapidjson::StringRef("FUN_TYPE") )   ) {
 				if (check_if_aggregation_fun( (*vv)["tag"].GetInt()) ) {	
 					CPP_DEBUG<< "聚合函数 in"  <<endl;
 					//聚合函数	
 					aggregat_funs.emplace_back( vv );
+					vv->AddMember("INDEX",cur_index , doc->GetAllocator() );
 					vv->AddMember("IS_AGGREGATE", 1, doc->GetAllocator());
 				}
 				else {
 					//普通函数函数	
 					nomal_funs.emplace_back( vv );
+					vv->AddMember("INDEX",cur_index++ , doc->GetAllocator() );
 					vv->AddMember("IS_NOMAL_FUN", 1, doc->GetAllocator());
 				}
 			if ( vv->HasMember("children") )resolve_project_list( &(*vv)["children"],level);
@@ -890,6 +897,7 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 			if ( vv->HasMember("OP_TYPE")   ) {
 			//目标上的运算	
 			project_opers.emplace_back( vv );
+			if ( !vv->HasMember("INDEX") )vv->AddMember("INDEX",cur_index++ , doc->GetAllocator() );
 			vv->AddMember("IS_PROJECT_OPER", 1, doc->GetAllocator());
 			if ( vv->HasMember("children") )resolve_project_list(  &(*vv)["children"] ,level);
 			return;
@@ -897,8 +905,9 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 
 			// raw project column
 			if ( (*vv)["tag"] == T_OP_NAME_FIELD  ){
-				if( vv->HasMember("RELATION_NAME") ) raw_target_list.emplace_back( RawTarget ( (*vv)["RELATION_NAME"]["str_value_"].GetString(),(*vv)["COLUMN_NAME"]["str_value_"].GetString() ) );
-				else raw_target_list.emplace_back( RawTarget ( (*vv)["COLUMN_NAME"]["str_value_"].GetString() ) );
+				if( vv->HasMember("RELATION_NAME") ) {raw_target_list.emplace_back(  (*vv)["RELATION_NAME"]["str_value_"].GetString(),(*vv)["COLUMN_NAME"]["str_value_"].GetString(),cur_index  );	if ( !vv->HasMember("INDEX") )vv->AddMember("INDEX",cur_index++ , doc->GetAllocator() ); }
+				else { raw_target_list.emplace_back(  (*vv)["COLUMN_NAME"]["str_value_"].GetString() ,cur_index );if ( !vv->HasMember("INDEX") )vv->AddMember("INDEX",cur_index++ , doc->GetAllocator() ); }
+
 				return;
 			}
 			
@@ -914,6 +923,8 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 				is_select_all = 1;
 			return;
 		  }
+		  
+		  ++cur_index;
 			
 }
 
@@ -927,7 +938,9 @@ void resolve_project_list( rapidjson::Value  * projectlist,int level = 0 ){
   				resolve_project_list( &(v),level);
          }//end for
     }
-    else if(NULL != projectlist)resolve_project_list_help(projectlist,level);
+    else if(NULL != projectlist){
+    	resolve_project_list_help(projectlist,level);
+    }
          
 } // end 
 
