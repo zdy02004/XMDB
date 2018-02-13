@@ -351,9 +351,25 @@ for(;j<tnum;++j){
  std::list<test_table_t> ret_vector;
  char field_name[32] = {"id"};
  char field_name2[32] = {"try_num"};
- int  com_value = 1;
- int  try_value = 1;
+ int  com_value = 2;
+ int  try_value = 2;
 //DEBUG("Start to skiplist_index_scan\n");
+ 
+compare_list cmp1;
+compare_list cmp2;
+
+cmp1.mem_table       			= mem_table;
+cmp1.field_name      			= field_name;
+cmp1.cmp_field_value 			= &com_value;
+cmp1.next 					 			= &cmp2;
+cmp1.fun 								  = (void *)cmp_int ;
+
+cmp2.mem_table       			= mem_table;
+cmp2.field_name      			= field_name2;
+cmp2.cmp_field_value 			= &try_value;
+cmp2.next 					 			= NULL;
+cmp2.fun                  = (void *)cmp_int ;
+ 
  
 DEBUG("Start to skiplist_index_scan_str\n");
 const char str_date[] ="abvvcdef\n";
@@ -418,12 +434,28 @@ ret = mem_skiplist_index_scanAddr_long_LE(
 																       ret_addr2  		    //原始结果集
                         );                 
                         
-ret = merg_index_result(  
-                                mem_table,
-																ret_addr2, 
-                          			trans_no,                 //当前事务ID
-																&ret_vector2		    //原始结果集
-                        );
+//ret = merg_index_result(  
+//                                mem_table,
+//																ret_addr2, 
+//                          			trans_no,                 //当前事务ID
+//																&ret_vector2		    //原始结果集
+//                        );
+ 
+//投影列表
+std::list<std::string> prolist;
+	prolist.push_back("id");
+	prolist.push_back("try_num");
+	prolist.push_back("try_time");
+	
+ ret =  merg_index_result_with_prolist_and_conlist(
+                               				 mem_table,
+							 ret_addr2, 
+							 //NULL,
+							 &cmp1,	  //比较函数链
+							 prolist, //投影列表
+                          			         trans_no,//当前事务ID
+							 &ret_vector2  //原始结果集
+ );
 
 //打印结果集 
 std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++\n"<<std::endl;
