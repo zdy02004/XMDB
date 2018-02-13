@@ -297,32 +297,43 @@ cmp2.cmp_field_value 			= &try_value;
 cmp2.next 					 			= NULL;
 cmp2.fun                  = (void *)cmp_int ;
 
-int ret =full_table_scan_with_conlist(
+//int ret =full_table_scan_with_conlist(
+//														 mem_table,       //表
+//														 &cmp1,           //比较函数链
+//														 trans_no,			  //事务ID
+//													 	 &ret_vector  	  //原始结果集
+//);
+
+//投影列表
+std::list<std::string> prolist;
+	prolist.push_back("id");
+	prolist.push_back("try_num");
+	
+int ret =full_table_scan_with_prolist_and_conlist(
 														 mem_table,       //表
 														 &cmp1,           //比较函数链
+														 prolist,					//投影列表
 														 trans_no,			  //事务ID
 													 	 &ret_vector  	  //原始结果集
 );
 
 
-
 //打印结果集 
-//std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++\n"<<std::endl;
-//std::for_each(ret_vector.begin(),ret_vector.end(),[](test_table_t& x){
+//std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++\n"<<std::endl; 
+	
+//	for(auto& x : ret_vector){
 //	std::cout<<"========================="<<std::endl;
 //	std::cout<<"id="<<x.id<<std::endl;
 //	std::cout<<"try_num="<<x.try_num<<std::endl;
 //	std::cout<<"try_time="<<x.try_time<<std::endl;
-//	
-//	});  
+//	}
 	
-	for(auto& x : ret_vector){
-	std::cout<<"========================="<<std::endl;
-	std::cout<<"id="<<x.id<<std::endl;
-	std::cout<<"try_num="<<x.try_num<<std::endl;
-	std::cout<<"try_time="<<x.try_time<<std::endl;
-	
-	}
+for(auto& x : ret_vector){
+std::cout<<"========================="<<std::endl;
+std::cout<<"id="<<x.id<<std::endl;
+std::cout<<"try_num="<<x.try_num<<std::endl;
+
+}
 
 // 回滚事务
 //if(0!=(err=rollback_trans(trans_no)))ERROR("rollback_trans failed,trans_no is %d\n",err);
