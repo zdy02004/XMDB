@@ -10,6 +10,7 @@ g++ -w -lpthread -C -std=c++11 index_scan_Addr.hpp
 #include <algorithm>
 #include"skiplist_index_scan.h"
 #include"hash_index_scan.h"
+#include"ops.hpp"
 
 
 struct index_Addr{
@@ -1631,6 +1632,113 @@ inline int merg_index_result(
  	
  }
  
+}
+
+
+
+template<typename record_type >
+inline int merg_index_result_with_prolist_and_conlist(
+                                mem_table_t *mem_table,
+																finded_Addr_t & finded_Addr, 
+																compare_list*com_list,                  //比较函数链
+																std::list<std::string>& field_list,     //原始投影字段
+                          			unsigned long long  Tn,                 //当前事务ID
+																std::list<record_type>* ret_list		    //原始结果集
+                        )
+{
+  DEBUG("merg_index_result() start!\n");
+  int ret = 0;
+  struct    record_t   *  return_record_ptr    = 0;
+  
+   //条件字段需要的变量
+   	int j = -1;
+	  int is_ok = 0;
+	  compare_list * com_list_iter = com_list;
+  
+	  struct field_t  *fields_table =  mem_table->config.fields_table;
+	  int  field_used_num = 0;
+	  field_used_num =  mem_table->config.field_used_num;
+
+    //抽取字段需要的变量
+    
+    //构造抽取字段列表
+    std::list<field_t> pro_fields;
+    //抽取字段总长度
+    size_t  pro_size = 0;
+    int k;
+    for(auto &one : field_list){
+    	
+    	k = get_field_index(const_cast<char *>(one.c_str() ) , mem_table );
+			if( k>=0 && k< field_used_num ){
+				 //field = ( field_type * )( (char *)(record_ptr) + RECORD_HEAD_SIZE + fields_table[k].field_dis );
+				 pro_fields.push_back(fields_table[k]);
+				 pro_size += fields_table[k].field_size;
+			}
+    	
+    }
+   
+   //
+    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+    
+    record_type return_record;
+		return_record.set_row_size(pro_size);	
+    return_record.allocate(pro_size);
+  
+  
+ for(auto &v : finded_Addr ){
+ 	  ret = get_record( mem_table, v.block_no, v.record_num,  &return_record_ptr);
+   	if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
+		{
+						// 已经删除的行不处理
+						if(return_record_ptr->is_used != 1)continue;
+					  DEBUG("return_record_ptr addr is %0x,return_record_ptr->is_used = %d\n",return_record_ptr,return_record_ptr->is_used);
+
+						is_ok = 1;	
+						while(com_list_iter)
+						{
+						//获得字段在字段表中的排序位置
+						j = -1;
+	          j = get_field_index(com_list_iter->field_name,mem_table/*,field*/ );
+						DEBUG("get_field_index is %d \n",j);
+						//处理每一行记录
+						if( -1 != j && field_used_num != j )//条件判断
+						{		
+							  int field_type_nr = fields_table[j].field_type;
+							  //int const field_type_const_nr = const_cast<int >(field_type_nr);
+							  //auto field = get_field_by_index<field_type_nr>::get(mem_table, record_ptr, j,field_type_nr ) ;
+							  int get_field_ret = get_field_by_index_help(com_list_iter,mem_table, return_record_ptr, j,field_type_nr );
+							  DEBUG("get_field_ret is %d \n",get_field_ret);
+
+							  if( get_field_ret != 0 )
+									{
+									  is_ok = 0 ;
+										break;
+									}
+						}
+		
+						if(com_list_iter)com_list_iter = com_list_iter->next;
+					}
+					com_list_iter = com_list;
+					
+					 if( is_ok )/*!mem_table_read_record(mem_table , record_ptr, (char *)buf )*/ 
+						{
+							 // memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+							 size_t pos = 0;
+							 for(auto &one_field : pro_fields){
+							 	memcpy(return_record.get_date()+pos,buf+one_field.field_dis,one_field.field_size );
+							 	pos += one_field.field_size;
+							 }
+								
+								DEBUG("Get one record!\n");
+				
+							ret_list->emplace_back(return_record );
+		}
+ 	
+ 	
+ }
+ 
+}
+
 }
 
 #endif
