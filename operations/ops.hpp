@@ -1,3 +1,5 @@
+//g++ -w -C   ops.hpp   -g   -lpthread -std=c++11 
+
 #ifndef BASIC_OPS
 #define BASIC_OPS
 
@@ -318,6 +320,130 @@ __get_field_help__(7)
 __get_field_help__(11)
 }
 return -1;
+}
+
+
+//fun 遍历函数
+//param 函数参数
+template<typename record_type >
+inline int full_table_scan_with_prolist_and_conlist(
+														struct mem_table_t *mem_table,    //表
+														compare_list*com_list,            //比较函数链
+														std::list<std::string>& field_list, //原始投影字段
+														unsigned long long  Tn,           //当前事务ID
+														std::list<record_type>* ret		    //原始结果集
+														
+) 
+{
+	  //如果原始投影字段为空则走全表全字段扫描
+	  if(field_list.empty()){
+	  	return full_table_scan_with_conlist(
+														mem_table,    //表
+														com_list,     //比较函数链
+														Tn,           //当前事务ID
+														ret		        //原始结果集
+														);
+	  	
+	  }
+	  
+	  
+	  //条件字段需要的变量
+   	int j = -1;
+	  int is_ok = 0;
+	  compare_list * com_list_iter = com_list;
+  
+	  struct field_t  *fields_table =  mem_table->config.fields_table;
+	  int  field_used_num = 0;
+	  field_used_num =  mem_table->config.field_used_num;
+
+    //抽取字段需要的变量
+    
+    //构造抽取字段列表
+    std::list<field_t> pro_fields;
+    //抽取字段总长度
+    size_t  pro_size = 0;
+    int k;
+    for(auto &one : field_list){
+    	
+    	k = get_field_index(const_cast<char *>(one.c_str() ) , mem_table );
+			if( k>=0 && k< field_used_num ){
+				 //field = ( field_type * )( (char *)(record_ptr) + RECORD_HEAD_SIZE + fields_table[k].field_dis );
+				 pro_fields.push_back(fields_table[k]);
+				 pro_size += fields_table[k].field_size;
+			}
+    	
+    }
+   
+   //
+    char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+    
+    record_type return_record;
+		return_record.set_row_size(pro_size);	
+    return_record.allocate(pro_size);
+    
+    int __i = 0;									 
+    struct record_t     * record_ptr = NULL;
+    struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;	
+     
+	for(;__i<mem_table->config.mem_block_used;++__i)//遍历所有块																
+	{
+			unsigned  long  __high_level_temp = 0;
+
+				for(; //遍历所有行
+				__mem_block_temp->space_start_addr + (__high_level_temp)* (mem_table->record_size) < __mem_block_temp->space_end_addr - mem_table->record_size ;
+				++__high_level_temp
+				   )		 															
+				{
+					//DEBUG("__high_level_temp = %ld\n",__high_level_temp);
+						// 找到可用的记录位置
+						record_ptr = (struct record_t *) ( (char *)__mem_block_temp->space_start_addr + (__high_level_temp) * (mem_table->record_size) );
+						// 已经删除的行不处理
+						if(record_ptr->is_used != 1)continue;
+					  DEBUG("record_ptr addr is %0x,record_ptr->is_used = %d\n",record_ptr,record_ptr->is_used);
+
+						is_ok = 1;	
+						while(com_list_iter)
+						{
+						//获得字段在字段表中的排序位置
+						j = -1;
+	          j = get_field_index(com_list_iter->field_name,mem_table/*,field*/ );
+						DEBUG("get_field_index is %d \n",j);
+						//处理每一行记录
+						if( -1 != j && field_used_num != j )//条件判断
+						{		
+							  int field_type_nr = fields_table[j].field_type;
+							  //int const field_type_const_nr = const_cast<int >(field_type_nr);
+							  //auto field = get_field_by_index<field_type_nr>::get(mem_table, record_ptr, j,field_type_nr ) ;
+							  int get_field_ret = get_field_by_index_help(com_list_iter,mem_table, record_ptr, j,field_type_nr );
+							  DEBUG("get_field_ret is %d \n",get_field_ret);
+
+							  if( get_field_ret != 0 )
+									{
+									  is_ok = 0 ;
+										break;
+									}
+						}
+		
+						if(com_list_iter)com_list_iter = com_list_iter->next;
+					}
+					com_list_iter = com_list;
+					
+					 if( is_ok && !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn )/*!mem_table_read_record(mem_table , record_ptr, (char *)buf )*/ )
+						{
+							 // memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+							 size_t pos = 0;
+							 for(auto &one_field : pro_fields){
+							 	memcpy(return_record.get_date()+pos,buf+one_field.field_dis,one_field.field_size );
+							 	pos += one_field.field_size;
+							 }
+								
+								DEBUG("Find one record!\n");
+								ret->emplace_back( return_record );
+						}
+				}
+			__mem_block_temp = __mem_block_temp->next;      //下一个块
+	}
+	return 0;
 }
 
 
