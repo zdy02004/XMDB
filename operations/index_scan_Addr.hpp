@@ -1636,12 +1636,12 @@ inline int merg_index_result(
 
 
 
-template<typename record_type >
+template<typename record_type,typename field_list_type >
 inline int merg_index_result_with_prolist_and_conlist(
                                 mem_table_t *mem_table,
 																finded_Addr_t & finded_Addr, 
 																compare_list*com_list,                  //比较函数链
-																std::list<std::string>& field_list,     //原始投影字段
+																field_list_type & field_list,           //原始投影字段列表
                           			unsigned long long  Tn,                 //当前事务ID
 																std::list<record_type>* ret_list		    //原始结果集
                         )
