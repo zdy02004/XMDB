@@ -325,11 +325,11 @@ return -1;
 
 //fun 遍历函数
 //param 函数参数
-template<typename record_type >
+template<typename record_type,typename field_list_type >
 inline int full_table_scan_with_prolist_and_conlist(
 														struct mem_table_t *mem_table,    //表
 														compare_list*com_list,            //比较函数链
-														std::list<std::string>& field_list, //原始投影字段
+														field_list_type& field_list,      //原始投影字段
 														unsigned long long  Tn,           //当前事务ID
 														std::list<record_type>* ret		    //原始结果集
 														
