@@ -1624,7 +1624,7 @@ inline int merg_index_result(
  	  ret = get_record( mem_table, v.block_no, v.record_num,  &return_record_ptr);
    	if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 		{
-				  memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+				  memcpy(return_record.get_data(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 					DEBUG("Find one skiplist record in skiplist_space!\n");
 					ret_list->emplace_back(return_record );
 		}
@@ -1722,10 +1722,10 @@ inline int merg_index_result_with_prolist_and_conlist(
 					
 					 if( is_ok )/*!mem_table_read_record(mem_table , record_ptr, (char *)buf )*/ 
 						{
-							 // memcpy(return_record.get_date(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+							 // memcpy(return_record.get_data(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 							 size_t pos = 0;
 							 for(auto &one_field : pro_fields){
-							 	memcpy(return_record.get_date()+pos,buf+one_field.field_dis,one_field.field_size );
+							 	memcpy(return_record.get_data()+pos,buf+one_field.field_dis,one_field.field_size );
 							 	pos += one_field.field_size;
 							 }
 								
