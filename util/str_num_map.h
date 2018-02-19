@@ -29,10 +29,10 @@ extern "C" {
 // 扩展策略
 #define    DOUBLE_EXTEND           1
 
-#define ERR_STR_NUM_IS_NULL         410010
+#define ERR_STR_NUM_IS_NULL     410010
 #define ERR_STR_NUM_MAP_NULL 		410020
-#define ERR_STR_NUM_BAD_ADDR			      410030
-
+#define ERR_STR_NUM_BAD_ADDR		410030
+#define MAX_IS_ZERO             410040
 typedef struct str_num_t
 {
 char __str[256];
@@ -179,6 +179,11 @@ inline int get_str_num_map_addr(str_num_map_t *str_num_map_manager,char * str,st
 		ERROR("ERR_STR_NUM_IS_NULL\n");
 		return ERR_STR_NUM_IS_NULL;
 	} 
+	if ( 0 == str_num_map_manager->max_num ){
+		ERROR("Max is Zero\n");
+		return MAX_IS_ZERO;
+	
+	}
   
   long long str_num_map = ___str_hash_fun_for_file(str,str_num_map_manager->max_num);
 
