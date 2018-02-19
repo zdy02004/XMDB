@@ -1,4 +1,4 @@
-﻿#ifndef STR_NUM_MAP_T
+#ifndef STR_NUM_MAP_T
 #define STR_NUM_MAP_T
 
 #ifdef __cplusplus
@@ -73,11 +73,16 @@ static inline unsigned int ___BKDRHashForFile(char *str)
 //字符串 hash 函数
 static inline unsigned int ___str_hash_fun_for_file(char * key,long max)
 {
-	if( NULL == key        )
+	if( NULL == key       )
 		{
 			ERROR("ERR_STR_NUM_IS_NULL\n");
 			return ERR_STR_NUM_IS_NULL;
 		}
+		if(   0 == max      )
+		{
+			ERROR("There is no table registed! \n");
+			return ERR_STR_NUM_IS_NULL;
+		}	
 
 	//先平均分布，再取余数	
 	return  ___BKDRHashForFile(key) % ( max ) ;
