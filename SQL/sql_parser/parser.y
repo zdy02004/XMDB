@@ -1445,31 +1445,31 @@ column_definition:
 
 data_type:
     TINYINT
-    { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INTEGER );*/ 
-      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INTEGER);
+    { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INT );*/ 
+      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INT);
       $$->AddMember("str_value_","TINYINT", result->Doc.GetAllocator() );
 
     }
   | SMALLINT
-    { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INTEGER);*/ 
-      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INTEGER);
+    { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_SHORT);*/ 
+      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_SHORT);
       $$->AddMember("str_value_","SMALLINT", result->Doc.GetAllocator() );
 
     }
   | MEDIUMINT
-    { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INTEGER);*/ 
-      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INTEGER);
-      $$->AddMember("str_value_","MEDIUMINT", result->Doc.GetAllocator() );
+    { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INT);*/ 
+      malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INT);
+      $$->AddMember("str_value_","INT", result->Doc.GetAllocator() );
     }
   | INTEGER
-    { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INTEGER);*/ 
-       malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INTEGER);
-       $$->AddMember("str_value_","INTEGER", result->Doc.GetAllocator() );
+    { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INT);*/ 
+       malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INT);
+       $$->AddMember("str_value_","INT", result->Doc.GetAllocator() );
 
     }
   | BIGINT
-    { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_INTEGER);*/
-       malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_INTEGER);
+    { /* malloc_terminal_node($$, result->malloc_pool_, T_TYPE_LONGLONG);*/
+       malloc_terminal_node($$, result->Doc.GetAllocator(), T_TYPE_LONGLONG);
        $$->AddMember("str_value_","BIGINT", result->Doc.GetAllocator() );
 
      }
