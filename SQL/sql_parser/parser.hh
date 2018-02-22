@@ -281,7 +281,11 @@ typedef enum NodeType
   T_TYPE_VARCHAR = 50,
   T_TYPE_CREATETIME = 51,
   T_TYPE_MODIFYTIME = 52,
-
+  T_TYPE_SHORT = 53,
+  T_TYPE_INT   = 54,
+  T_TYPE_LONG  = 55,
+  T_TYPE_LONGLONG  = 56,
+  
   // @note !! the order of the following tags between T_MIN_OP and T_MAX_OP SHOULD NOT be changed
   /* Operator tags */
   T_MIN_OP = 100,
@@ -565,4 +569,3 @@ extern int parse_sql(ParseResult* p, const char* buf, size_t len);
 extern int parse_init(ParseResult* p);
 extern int parse_terminate(ParseResult* p);
 #endif
-
