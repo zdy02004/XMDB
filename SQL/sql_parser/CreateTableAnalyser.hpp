@@ -87,7 +87,7 @@ int get_elemets()
 						{
 							field_name = std::string( v0["str_value_"].GetString() );
 						}
-						if( v0.HasMember("tag") && v0["tag"].GetInt() == T_IDENT )
+						if( v0.HasMember("tag") && v0["tag"].GetInt() >= T_TYPE_INTEGER &&  v0["tag"].GetInt() <= T_TYPE_LONGLONG )
 						{
 							field_type =  v0["tag"].GetInt() ;
 						}
@@ -143,7 +143,4 @@ int get_all()
 
 
 };
-
-
-
 #endif
