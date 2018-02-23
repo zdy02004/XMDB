@@ -22,30 +22,6 @@ struct FieldDesc
 	int field_type;
 	FieldDesc(){}
 	FieldDesc(std::string &_field_name, int _field_type   ):field_name(_field_name),field_type(_field_type){  }
-	//field_t field;
-	
-	//void fill_field()
-	//{
-	//	strcpy(field.field_name, const_cast<char *>(field_name.c_str() ) );
-	//	switch(  field_type )
-	//	{
-	//		case T_TYPE_INTEGER:						field.field_type = FIELD_TYPE_INT;break;
-  //		case T_TYPE_FLOAT :						field.field_type = FIELD_TYPE_FLOAT;break;
-  //		case T_TYPE_DOUBLE :						field.field_type = FIELD_TYPE_DOUBLE;break;
-  //		case T_TYPE_DECIMAL :					field.field_type = FIELD_TYPE_DOUBLE;break;
-  //		case T_TYPE_BOOLEAN :					field.field_type = FIELD_TYPE_SHORT;break;
-  //		case T_TYPE_DATE :					    field.field_type = FIELD_TYPE_LONG;break;
-  //		case T_TYPE_TIME :break;
-  //		case T_TYPE_DATETIME :					field.field_type = FIELD_TYPE_LONG;break;
-  //		case T_TYPE_TIMESTAMP :break;
-  //		case T_TYPE_CHARACTER:					field.field_type = FIELD_TYPE_STR;break;
-  //		case T_TYPE_VARCHAR :					field.field_type = FIELD_TYPE_STR;break;
-  //		case T_TYPE_CREATETIME :break;
-  //		case T_TYPE_MODIFYTIME :break;
-  //
-	//  }
-	//  fill_field_info ( &field ) ;
-	//}
 	
 };
 
@@ -59,16 +35,19 @@ size_t table_block_size;  //TABLET_BLOCK_SIZE
 size_t extern_size;       //EXTERN_SIZE
 
 std::string table_name;
-vector<FieldDesc> elements; //ËùÓÐ×Ö¶Î
+std::vector<FieldDesc> elements; //æ‰€æœ‰å­—æ®µ
 
-// Ä¬ÈÏ 4M
-CrateTableAnalyser():table_block_size(4*1024*1024),extern_size(4*1024*1024){}
+// é»˜è®¤ 16M
+CrateTableAnalyser(rapidjson::Value    *_root,rapidjson::Document *_doc):root(_root),doc(_doc),table_block_size(16*1024*1024),extern_size(16*1024*1024){get_all();}
+CrateTableAnalyser(rapidjson::Value    *_root,rapidjson::Document *_doc,size_t _table_block_size,size_t _extern_size):root(_root),doc(_doc),table_block_size(_table_block_size),extern_size(_extern_size){get_all();}
 
 int get_table_name()
 {
+	 CPP_DEBUG <<"before get_name \n";
+   rapidjson_log( root );
 	if( root->HasMember("TABLE_NAME") )
 		{
-			table_name = const_cast<char *>( (*root)["TABLE_NAME"].GetString() );
+			table_name = const_cast<char *>( (*root)["TABLE_NAME"]["str_value_"].GetString() );
 		}
 		else
 		{
@@ -137,11 +116,11 @@ int get_create_info()
 		{
 		  if( v["tag"].GetInt() != T_TABLET_BLOCK_SIZE || !v.HasMember("TABLET_BLOCK_SIZE") ) 
 			{
-				table_block_size = atol( v["TABLET_BLOCK_SIZE"]["str_value_"].GetString() )*1024*1024; // Ä¬ÈÏÊÇÕ×
+				table_block_size = atol( v["TABLET_BLOCK_SIZE"]["str_value_"].GetString() )*1024*1024; // é»˜è®¤æ˜¯å…†
 			}
 			if( v["tag"].GetInt() != T_TABLET_BLOCK_SIZE || !v.HasMember("EXTERN_SIZE") ) 
 			{
-				extern_size = atol( v["EXTERN_SIZE"]["str_value_"].GetString() )*1024*1024; // Ä¬ÈÏÊÇÕ×
+				extern_size = atol( v["EXTERN_SIZE"]["str_value_"].GetString() )*1024*1024; // é»˜è®¤æ˜¯å…†
 			}
 			
 		}
@@ -149,7 +128,18 @@ int get_create_info()
 		
 }
 
+int get_all()
+{
+	int ret = 0;
+	ret =get_table_name() ;
+	if( !ret )return ret;
+	ret =get_elemets() ;
+	if( !ret )return ret;
+	ret =get_create_info() ;
+	if( !ret )return ret;
+	return 0;
 
+}
 
 
 };
