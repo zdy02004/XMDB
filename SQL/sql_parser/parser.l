@@ -324,6 +324,7 @@ BTREE               { return BTREE;  }
 SKIPLIST            { return SKIPLIST;  }
 INDEX               { return INDEX;  }
 EXTERN_SIZE         { return EXTERN_SIZE;  }
+SKIP_LEVEL             { return SKIP_LEVEL;  }
 
 MASTER            { return MASTER; }
 SLAVE             { return SLAVE;  }
