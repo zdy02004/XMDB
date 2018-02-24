@@ -23,7 +23,7 @@ const char *sql_str = ""
 
 //"create table test_table ( id INT , name INT ) TABLET_BLOCK_SIZE = 512 , EXTERN_SIZE = 512 ";     
 //"create index test_table_inx on  test_table ( id )";
-//"create unique index test_table_inx on test_table USING hash ( id ,name )";
+//"create unique index test_table_inx on test_table USING hash ( id ,name ) SKIP_LEVEL = 4 ";
 //"drop table test_table";
 //"insert into test_table values (A,B)";
 //"insert into test_table select a from b";
