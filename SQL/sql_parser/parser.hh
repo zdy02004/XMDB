@@ -213,12 +213,13 @@ using namespace std;
      TABLET_BLOCK_SIZE = 451,
      TABLET_MAX_SIZE = 452,
      EXTERN_SIZE = 453,
-     UNLOCKED = 454,
-     UPDATESERVER = 455,
-     USE_BLOOM_FILTER = 456,
-     VARIABLES = 457,
-     VERBOSE = 458,
-     WARNINGS = 459
+     SKIP_LEVEL  = 454,
+     UNLOCKED = 455,
+     UPDATESERVER = 456,
+     USE_BLOOM_FILTER = 457,
+     VARIABLES = 458,
+     VERBOSE = 459,
+     WARNINGS = 460
    };
 
 typedef enum ObPrivilegeType
@@ -500,7 +501,8 @@ typedef enum NodeType
   T_INDEX_HASH				= 259,
   T_INDEX_BTREE				= 260,
   T_INDEX_SKIPLIST		= 261,
-  T_EXTERN_SIZE        = 262
+  T_EXTERN_SIZE        = 262,
+  T_SKIP_LEVEL				= 263
 } NodeType;
   
   
