@@ -551,13 +551,13 @@ else
 %token UNION  UPDATE USER USING 
 %token VALUES VARCHAR VARBINARY
 %token WHERE WHEN WITH WORK PROCESSLIST QUERY CONNECTION WEAK 
-%token UNIQUE FULLTEXT SPATIAL HASH BTREE INDEX SKIPLIST
+%token UNIQUE FULLTEXT SPATIAL HASH BTREE INDEX SKIPLIST 
 
 %token <non_reserved_keyword>
        AUTO_INCREMENT CHUNKSERVER COMPRESS_METHOD CONSISTENT_MODE
        EXPIRE_INFO GRANTS JOIN_INFO
        MERGESERVER REPLICA_NUM ROOTSERVER ROW_COUNT SERVER SERVER_IP
-       SERVER_PORT SERVER_TYPE STATUS TABLE_ID TABLET_BLOCK_SIZE TABLET_MAX_SIZE EXTERN_SIZE
+       SERVER_PORT SERVER_TYPE STATUS TABLE_ID TABLET_BLOCK_SIZE TABLET_MAX_SIZE EXTERN_SIZE SKIP_LEVEL
        UNLOCKED UPDATESERVER USE_BLOOM_FILTER VARIABLES VERBOSE WARNINGS
 
 %type <node> sql_stmt stmt_list stmt
@@ -1751,6 +1751,13 @@ table_option:
    		malloc_terminal_node($$,result->Doc.GetAllocator(), T_EXTERN_SIZE);
    		if($3)$$->AddMember("EXTERN_SIZE",*$3, result->Doc.GetAllocator() );
     }
+    | SKIP_LEVEL opt_equal_mark INTNUM
+    {
+      (void)($2) ; /* make bison mute */
+      /*malloc_non_terminal_node($$, result->/*malloc_pool_, T_TABLET_MAX_SIZE, 1, $3);*/
+	     malloc_terminal_node($$,result->Doc.GetAllocator(), T_SKIP_LEVEL);
+   		if($3)$$->AddMember("SKIP_LEVEL",*$3, result->Doc.GetAllocator() ); 
+    }
   | TABLET_BLOCK_SIZE opt_equal_mark INTNUM
     {
       (void)($2) ; /* make bison mute */
@@ -1796,6 +1803,7 @@ table_option:
     $$->AddMember("value_", val_val_, result->Doc.GetAllocator());
     
     }
+ 
   | COMMENT opt_equal_mark STRING
     {
       (void)($2); /*  make bison mute*/
