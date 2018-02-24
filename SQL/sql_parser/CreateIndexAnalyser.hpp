@@ -20,7 +20,7 @@ g++ -C  -std=c++11 CreateIndexAnalyser.hpp
 
 
 
-class CrateIndexAnalyser
+class CreateIndexAnalyser
 {
 public:
 rapidjson::Value    *root;
@@ -35,8 +35,8 @@ int index_type;					 //索引类型
 int constraint_type;		 //约束类型
 int skip_level;					 //跳表层级
 // 默认 16M
-CrateIndexAnalyser(rapidjson::Value    *_root,rapidjson::Document *_doc):root(_root),doc(_doc),index_type(0),constraint_type(0),table_block_size(16*1024*1024),extern_size(16*1024*1024),skip_level(4){get_all();}
-CrateIndexAnalyser(rapidjson::Value    *_root,rapidjson::Document *_doc,int _index_type,int _constraint_type,size_t _table_block_size,size_t _extern_size):root(_root),doc(_doc),index_type(_index_type),skip_level(4),constraint_type(_constraint_type),table_block_size(_table_block_size),extern_size(_extern_size){get_all();}
+CreateIndexAnalyser(rapidjson::Value    *_root,rapidjson::Document *_doc):root(_root),doc(_doc),index_type(0),constraint_type(0),table_block_size(16*1024*1024),extern_size(16*1024*1024),skip_level(4){get_all();}
+CreateIndexAnalyser(rapidjson::Value    *_root,rapidjson::Document *_doc,int _index_type,int _constraint_type,size_t _table_block_size,size_t _extern_size):root(_root),doc(_doc),index_type(_index_type),skip_level(4),constraint_type(_constraint_type),table_block_size(_table_block_size),extern_size(_extern_size){get_all();}
 
 int get_table_name()
 {
