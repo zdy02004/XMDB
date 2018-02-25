@@ -107,7 +107,7 @@ create_table_node(
   						rapidjson::Document * _Doc
   									
 ):plan_node(_json,_Doc),	
-		table_name(_table_name),
+		table_name(_table_name+".dat"),
 		field_vector(_field_vector),
 		block_size(_block_size),
 		extend_block_size(_extend_block_size),
