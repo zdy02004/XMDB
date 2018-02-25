@@ -112,7 +112,7 @@ int get_elemets()
 	}
 	else 
 		{
-		if( (*field_list)["tag"].GetInt() != T_COLUMN_DEFINITION  ) 
+		if( (*field_list)["tag"].GetInt() != T_IDENT  ) 
 			{
 				CPP_ERROR<<" FIELD DEFINATION FAILED !\n";
 				return CREATE_INDEX_FIELD_DEFINATION_FAILED;
