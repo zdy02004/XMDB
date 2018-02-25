@@ -93,7 +93,7 @@ plan_type = PLAN_TYPE_CREATE_HASH_INDEX;
 
 void set_div(int _div)
 {
-	div = _div;
+	if( _div!=0 )	div = _div;
 }
 
 void set_path( std::string _path )
@@ -154,7 +154,9 @@ int check_field()
 		}
 	}
 	else {
-				CPP_ERROR<<"Field Empty !\n";
+				if(!field_vector.empty() )CPP_ERROR<<"In Create Index Statment, Fields is Empty !\n";
+				else if(mem_table == NULL)CPP_ERROR<<"In Create Index, Table ptr is Empty !\n";
+				else if(mem_hash_index == NULL)CPP_ERROR<<"In Create Index, Index ptr is Empty !\n";
 				return CREATE_HASH_INDEX_NO_FIELD;
 			}
 	return 0;
@@ -185,7 +187,7 @@ if(0!=(err=mem_hash_index_create(&mem_hash_index,mem_table,hash_config)))
 	}
 
 //检查失败，回滚元数据
-if(!check_field())
+if( check_field() )
 {
 	if(0!=(err=mem_hash_index_close(mem_hash_index)))
 		{
