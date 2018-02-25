@@ -127,6 +127,7 @@ inline int init_str_num_map_manager(str_num_map_t *str_num_map_manager)
 	DEBUG("in init_str_num_map_manager()\n");
 	STR_NUM_MAP_LOCK_INIT(&(str_num_map_manager->locker));
 	str_num_map_manager->str_num_map_table = (str_num_t**)malloc(INIT_NO_MAP*STR_NUM_MAP_SIZE);
+	memset(str_num_map_manager->str_num_map_table,0,INIT_NO_MAP*STR_NUM_MAP_SIZE);
 	str_num_map_manager->max_num            = INIT_NO_MAP;
 	str_num_map_manager->cur_num            = 0;
 	str_num_map_manager->extend_police      = DOUBLE_EXTEND;
@@ -228,15 +229,15 @@ inline int set_str_num_map_addr(str_num_map_t *str_num_map_manager,char * str,st
 	 else
 	 	{
 	 		str_num_t * temp = str_num_map_manager->str_num_map_table[str_num_map];
-	 			
+      ERROR("str is %s\n",str);   
+	    ERROR("temp->__str is %s\n",temp->__str);
 	 			if( 0 == strcmp(str,temp->__str) )
 	 			{
 	 					STR_NUM_MAP_UNLOCK(&(str_num_map_manager->locker));  //解锁
 						return 0;
 	 			}	 	
 	 			
-	    ERROR("str is %s\n",str);   
-	    ERROR("temp->__str is %s\n",temp->__str);
+	   
 	 
 	 struct str_num_t * __pre = temp;
 	 while(NULL != temp )
