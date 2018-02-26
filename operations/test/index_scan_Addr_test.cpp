@@ -32,7 +32,7 @@ typedef struct test_table_t
 	char       try_str[32];
 	size_t     row_size;
 	int allocate(size_t s){return 0;}
-	char * get_date(){return (char *)this;}
+	char * get_data(){return (char *)this;}
 	void set_row_size(size_t s){row_size =s; }
 	size_t get_row_size(){return row_size; }
 
@@ -448,13 +448,13 @@ std::list<std::string> prolist;
 	prolist.push_back("try_time");
 	
  ret =  merg_index_result_with_prolist_and_conlist(
-                               				 mem_table,
-							 ret_addr2, 
-							 //NULL,
-							 &cmp1,	  //比较函数链
-							 prolist, //投影列表
-                          			         trans_no,//当前事务ID
-							 &ret_vector2  //原始结果集
+                                mem_table,
+																ret_addr2, 
+																//NULL,
+																&cmp1,							////比较函数链
+																prolist,						//投影列表
+                          			trans_no,           //当前事务ID
+																&ret_vector2		    //原始结果集
  );
 
 //打印结果集 
