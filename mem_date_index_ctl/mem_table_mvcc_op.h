@@ -464,6 +464,9 @@ inline int mem_mvcc_read_record(struct mem_table_t *mem_table ,
     //如果读到可见版本号之后的行数据，要读最近的一次回滚段，否则不能读
 	if( record_ptr->scn !=0  && transaction_manager.transaction_tables[Tn].view_scn < record_ptr->scn )
 	{
+		DEBUG("view_scn is %d\n",transaction_manager.transaction_tables[Tn].view_scn);
+		DEBUG("record_ptr->scn is %d\n",record_ptr->scn  );
+		
 		mem_trans_data_entry_t *undo_info_ptr = (mem_trans_data_entry_t *)(record_ptr->undo_info_ptr) ;
 		
 		//找到本事务的回滚栈
@@ -815,7 +818,12 @@ err =  mem_hash_index_insert_l(
                          /* out */&block_no,
                         &mem_table_no
                         ) ;  
-
+//获得事务槽中的 scn
+	long  scn ;
+	if( 0!=(err = get_trans_scn( Tn, &scn) ) )
+	{
+		return err;
+	}
 //get_hash_block_no_by_record_ptr(*record_ptr,block_no);
 
  	if(is_lock)row_wlock   (  &((*record_ptr)->row_lock) );
@@ -859,7 +867,7 @@ err =  mem_hash_index_insert_l(
     (*record_ptr)->undo_info_ptr = undo_info_ptr;
   
   //修改为本次的事务ID
-  (*record_ptr)->scn = Tn;
+  (*record_ptr)->scn = scn;
   if(is_lock)row_wunlock   (  &((*record_ptr)->row_lock) );
 	return 0;
 }
