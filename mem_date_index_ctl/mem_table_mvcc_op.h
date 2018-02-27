@@ -2515,6 +2515,205 @@ inline int mem_skiplist_mvcc_update_str(mem_skiplist_index_t *mem_skiplist_index
  												);
 } 		
 
+/////下面的代码，主要用于 ceate_index_online 时 调用
+
+//支持事务的mvcc插入一个记录的数据
+inline int mem_hash_index_mvcc_insert_l_scn(                        
+                        /* in */ struct mem_hash_index_t * mem_hash_index ,
+                        				 struct mem_hash_index_input_long * input,
+                        /* out */struct    record_t   **  record_ptr,
+                          unsigned long long Tn,                       //事务ID
+                          unsigned long long scn                       //事务ID
+                          )
+{
+int err;
+	DEBUG(" ----- Enter __mem_hash_index_mvcc_insert_long() ----- \n");
+long mem_table_no;
+long block_no;
+err =  mem_hash_index_insert_l(
+                        /* in */mem_hash_index ,
+                        				input,
+                        /* out */record_ptr,
+                         /* out */&block_no,
+                        &mem_table_no
+                        ) ;  
+//get_hash_block_no_by_record_ptr(*record_ptr,block_no);
+
+ 	row_wlock   (  &((*record_ptr)->row_lock) );
+
+	//回滚信息
+  mem_trans_data_entry_t * undo_info_ptr;
+  //构造一个事务
+  mem_transaction_entry_t  trans_entry ;
+  
+  trans_entry.trans_no       			  = Tn;       							//当前事物槽号
+  trans_entry.redo_type             = OPT_INDEX_HASH_INSERT;				//redo 操作类型
+  trans_entry.undo_type						  = OPT_INDEX_HASH_INSERT;				//undo 操作类型 insert update delete truncate index_op
+  trans_entry.ori_data_start        = (void *)((char *)(*record_ptr) + RECORD_HEAD_SIZE)                    ;	//原始数据起始地址
+  trans_entry.redo_data_length      = MEM_HASH_ENTRY_SIZE; // redo 数据长度
+  trans_entry.undo_data_length      = MEM_HASH_ENTRY_SIZE; // undo 数据长度	
+  trans_entry.block_no              = block_no;
+  trans_entry.record_num            = (*record_ptr)->record_num; 
+  trans_entry.object_no 						=  mem_hash_index->config.index_no;//联系空间或连接空间的 no      							
+  
+  mem_table_t * mem_table;
+  get_table_no_addr(mem_table_no,(void ** )(&mem_table));
+  strcpy(trans_entry.name,mem_table->config.table_name );
+
+  mem_block_t * mem_block_ptr;
+  get_block_no_addr(block_no,(void **)(&mem_block_ptr));
+  strcpy(trans_entry.block_name,mem_block_ptr->file_name );
+
+  DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
+  
+  if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
+    //修改为本次的事务ID
+  (*record_ptr)->scn = scn;
+  //保留上一次回滚栈信息
+  undo_info_ptr->next = (mem_trans_data_entry_t*)((*record_ptr)->undo_info_ptr);
+   // 指向回滚信息
+  (*record_ptr)->undo_info_ptr = undo_info_ptr;
+  row_wunlock   (  &((*record_ptr)->row_lock) );
+	return 0;
+}
+
+inline int mem_hash_index_mvcc_insert_str_scn(                        
+                        /* in */ struct mem_hash_index_t * mem_hash_index ,
+                        				 struct mem_hash_index_input_str * input,
+                        /* out */struct    record_t   **  record_ptr,
+                          unsigned long long Tn,                       //事务ID
+                          unsigned long long scn
+                          )
+{
+int err;
+	DEBUG(" ----- Enter __mem_hash_index_mvcc_insert_strong() ----- \n");
+long mem_table_no;
+long block_no;
+err =  mem_hash_index_insert_s(
+                        /* in */mem_hash_index ,
+                        				input,
+                        /* out */record_ptr,
+                         /* out */&block_no,
+                        &mem_table_no
+                        ) ;  
+	
+
+
+ 	row_wlock   (  &((*record_ptr)->row_lock) );
+	//回滚信息
+  mem_trans_data_entry_t * undo_info_ptr;
+  //构造一个事务
+  mem_transaction_entry_t  trans_entry ;
+  
+  trans_entry.trans_no       			  = Tn;       							//当前事物槽号
+  trans_entry.redo_type             = OPT_INDEX_HASH_INSERT_STR;				//redo 操作类型
+  trans_entry.undo_type						  = OPT_INDEX_HASH_INSERT_STR;				//undo 操作类型 insert update delete truncate index_op
+  trans_entry.ori_data_start        = (void *)((char *)(*record_ptr) + RECORD_HEAD_SIZE)                    ;	//原始数据起始地址
+  trans_entry.redo_data_length      = MEM_HASH_ENTRY_SIZE; // redo 数据长度
+  trans_entry.undo_data_length      = MEM_HASH_ENTRY_SIZE; // undo 数据长度	
+  trans_entry.block_no              = block_no;
+  trans_entry.record_num            = (*record_ptr)->record_num; 
+  trans_entry.object_no 						= mem_hash_index->config.index_no;;//联系空间或连接空间的 no      							
+  
+  mem_table_t * mem_table;
+  get_table_no_addr(mem_table_no,(void **)(&mem_table));
+  strcpy(trans_entry.name,mem_table->config.table_name );
+  
+  mem_block_t * mem_block_ptr;
+  get_block_no_addr(block_no,(void **) mem_block_ptr);
+  strcpy(trans_entry.block_name,mem_block_ptr->file_name );
+
+  
+  DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
+    //修改为本次的事务ID
+  (*record_ptr)->scn = scn;
+  
+  if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
+  
+    //保留上一次回滚栈信息
+    undo_info_ptr->next = (mem_trans_data_entry_t*)((*record_ptr)->undo_info_ptr);
+     // 指向回滚信息
+    (*record_ptr)->undo_info_ptr = undo_info_ptr;
+
+  row_wunlock   (  &((*record_ptr)->row_lock) );
+
+	return 0;
+}
+
+
+int mem_skiplist_mvcc_insert_scn(mem_skiplist_index_t *mem_skiplist_index, 
+												mem_skiplist_entry_t *in,
+ 												struct  record_t **  inserted,
+ 												unsigned long long Tn ,
+ 												unsigned long long scn 
+ 												)
+{
+	int err = 0;
+	
+  //构造一个事务
+  mem_transaction_entry_t  trans_entry ;
+   mem_trans_data_entry_t * undo_info_ptr;
+   
+  trans_entry.trans_no       			  = Tn;       							//当前事物槽号
+  trans_entry.redo_type             = OPT_INDEX_SKIPLIST_INSERT;				//redo 操作类型
+  trans_entry.undo_type						  = OPT_INDEX_SKIPLIST_INSERT;				//undo 操作类型 insert update delete truncate index_op
+  trans_entry.ori_data_start        = (void *)((char *)(in));                    ;	//原始数据起始地址
+  trans_entry.redo_data_length      = FIELD_SKIPLIST_ENTRY_SIZE; // redo 数据长度
+  trans_entry.undo_data_length      = FIELD_SKIPLIST_ENTRY_SIZE; // undo 数据长度	
+  trans_entry.object_no 					  = mem_skiplist_index->config.index_no;//联系空间或连接空间的 no      							
+
+	int maxLevel = mem_skiplist_index->config.max_level;
+	//int level    = mem_random_next(&(mem_skiplist_index->config.random) );
+	
+	do{
+	err = mem_skiplist_mvcc_insert_help(mem_skiplist_index,																	);
+	if(err == SKIPLIST_INDEX_ERR_GETDOWN_FAILED)ERROR("SKIPLIST_INDEX_ERR_GETDOWN_FAILED\n");	
+	if(err == SKIPLIST_INDEX_ERR_GETGE_FAILED  )ERROR("SKIPLIST_INDEX_ERR_GETGE_FAILED\n");	
+															
+	}while(err == SKIPLIST_INDEX_ERR_GETDOWN_FAILED || err == SKIPLIST_INDEX_ERR_GETGE_FAILED );
+	if(*inserted)(*inserted)->scn = scn;
+	  DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
+  if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
+ 
+	return err;
+} 										
+
+int mem_skiplist_mvcc_insert_str_scn(mem_skiplist_index_t *mem_skiplist_index, 
+												mem_skiplist_entry_t *in,
+ 												struct  record_t **  inserted,
+ 												unsigned long long Tn ,
+ 												unsigned long long scn
+ 												)
+{
+	int err = 0;
+  //构造一个事务
+  mem_transaction_entry_t  trans_entry ;
+  mem_trans_data_entry_t * undo_info_ptr;
+   
+  trans_entry.trans_no       			  = Tn;       							//当前事物槽号
+  trans_entry.redo_type             = OPT_INDEX_SKIPLIST_INSERT_STR;				//redo 操作类型
+  trans_entry.undo_type						  = OPT_INDEX_SKIPLIST_INSERT_STR;				//undo 操作类型 insert update delete truncate index_op
+  trans_entry.ori_data_start        = (void *)((char *)(in));                    ;	//原始数据起始地址
+  trans_entry.redo_data_length      = FIELD_SKIPLIST_ENTRY_SIZE; // redo 数据长度
+  trans_entry.undo_data_length      = FIELD_SKIPLIST_ENTRY_SIZE; // undo 数据长度	
+  trans_entry.object_no 					  = mem_skiplist_index->config.index_no;//联系空间或连接空间的 no      							
+
+	int maxLevel = mem_skiplist_index->config.max_level;
+	//int level    = mem_random_next(&(mem_skiplist_index->config.random) );
+	
+	do{
+	err = mem_skiplist_mvcc_insert_help_str(mem_skiplist_index,															);
+	if(err == SKIPLIST_INDEX_ERR_GETDOWN_FAILED)ERROR("SKIPLIST_INDEX_ERR_GETDOWN_FAILED\n");	
+	if(err == SKIPLIST_INDEX_ERR_GETGE_FAILED  )ERROR("SKIPLIST_INDEX_ERR_GETGE_FAILED\n");	
+															
+	}while(err == SKIPLIST_INDEX_ERR_GETDOWN_FAILED || err == SKIPLIST_INDEX_ERR_GETGE_FAILED );
+	if(*inserted)(*inserted)->scn = scn;
+	DEBUG("mem_transaction_entry_t ori_data_start is %0x \n",trans_entry.ori_data_start );
+	if(0!=(err=fill_trans_entry_to_write(&trans_entry,&undo_info_ptr)))ERROR("fill_trans_entry_to_write failed,trans_no is %d\n",err);
+	return err;
+} 				
+
+
 #ifdef __cplusplus
 
 }
