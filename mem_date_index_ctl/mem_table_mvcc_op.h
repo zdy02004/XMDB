@@ -1185,6 +1185,79 @@ return __mem_hash_index_mvcc_del_str(
 }
 
 
+inline int __mem_hash_index_mvcc_update(mem_hash_index_t *mem_hash_index, 
+												mem_hash_index_input_long *in,
+ 												struct  record_t **  inserted,
+ 												unsigned long long Tn,
+ 												short is_lock
+ 												)
+{
+  int err = 0;
+  if( 0 != (err = __mem_hash_index_mvcc_del_l(mem_hash_index ,in,inserted,Tn,is_lock ))){	
+	err = __mem_hash_index_mvcc_insert_l(mem_hash_index, 
+												  in,
+ 												  inserted,
+ 												  Tn,
+ 												  is_lock
+ 												);
+ 	}	
+	return err;
+} 		
+
+
+inline int mem_hash_index_mvcc_update(mem_hash_index_t *mem_hash_index, 
+												mem_hash_index_input_long *in,
+ 												struct  record_t **  inserted,
+ 												unsigned long long Tn
+ 												)
+{
+  
+	return __mem_hash_index_mvcc_update(mem_hash_index, 
+												in,
+ 												inserted,
+ 												Tn,
+ 												1
+ 												);
+} 		
+
+
+
+inline int __mem_hash_index_mvcc_update_str(mem_hash_index_t *mem_hash_index, 
+												mem_hash_index_input_str *in,
+ 												struct  record_t **  inserted,
+ 												unsigned long long Tn,
+ 												short is_lock
+ 												)
+{
+  int err = 0;
+  if( 0 != (err = __mem_hash_index_mvcc_del_str(mem_hash_index,in ,inserted,Tn,is_lock ))){	
+	err = __mem_hash_index_mvcc_insert_str(mem_hash_index, 
+												  in,
+ 												  inserted,
+ 												  Tn,
+ 												  is_lock
+ 												);
+ 	}	
+	return err;
+} 		
+
+
+inline int mem_hash_index_mvcc_update_str(mem_hash_index_t *mem_hash_index_index, 
+												mem_hash_index_input_str *in,
+ 												struct  record_t **  inserted,
+ 												unsigned long long Tn
+ 												)
+{
+  
+	return __mem_hash_index_mvcc_update_str(mem_hash_index_index, 
+												in,
+ 												inserted,
+ 												Tn,
+ 												1
+ 												);
+} 		
+
+
 /*插入一个结点*/
 inline int  __mem_rbtree_mvcc_insert(mem_rbtree_index_t *mem_rbtree_index, 
 																			mem_rbtree_entry_t *root,
@@ -2666,7 +2739,13 @@ int mem_skiplist_mvcc_insert_scn(mem_skiplist_index_t *mem_skiplist_index,
 	//int level    = mem_random_next(&(mem_skiplist_index->config.random) );
 	
 	do{
-	err = mem_skiplist_mvcc_insert_help(mem_skiplist_index,																	);
+	err = mem_skiplist_mvcc_insert_help(mem_skiplist_index,
+																	NULL,	mem_skiplist_randlevel(mem_skiplist_index) ,
+																	in,
+																	inserted,
+																	Tn,
+																	1
+																	);
 	if(err == SKIPLIST_INDEX_ERR_GETDOWN_FAILED)ERROR("SKIPLIST_INDEX_ERR_GETDOWN_FAILED\n");	
 	if(err == SKIPLIST_INDEX_ERR_GETGE_FAILED  )ERROR("SKIPLIST_INDEX_ERR_GETGE_FAILED\n");	
 															
@@ -2702,7 +2781,13 @@ int mem_skiplist_mvcc_insert_str_scn(mem_skiplist_index_t *mem_skiplist_index,
 	//int level    = mem_random_next(&(mem_skiplist_index->config.random) );
 	
 	do{
-	err = mem_skiplist_mvcc_insert_help_str(mem_skiplist_index,															);
+	err = mem_skiplist_mvcc_insert_help_str(mem_skiplist_index,
+																	NULL,	mem_skiplist_randlevel(mem_skiplist_index) ,
+																	in,
+																	inserted,
+																	Tn,
+																	1
+																	);
 	if(err == SKIPLIST_INDEX_ERR_GETDOWN_FAILED)ERROR("SKIPLIST_INDEX_ERR_GETDOWN_FAILED\n");	
 	if(err == SKIPLIST_INDEX_ERR_GETGE_FAILED  )ERROR("SKIPLIST_INDEX_ERR_GETGE_FAILED\n");	
 															
