@@ -76,7 +76,7 @@ if(0!=(error=start_trans(Tn)))ERROR("start_trans failed,Tn is %d\n",error);
 }
 
 
-sys_transaction_manager_t transaction_manager;
+//sys_transaction_manager_t transaction_manager;
 
 //建索引那一时刻的 《未提交的 scn  list<record_t> 
 std::map<unsigned  long long, std::list<struct record_t*> > un_commit_map;
