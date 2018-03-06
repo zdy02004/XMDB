@@ -489,11 +489,14 @@ int              index_type;
 //mem_skiplist_entry_t skiplist_index;
 INDEX_ENTERY_TYPE     index_entry; // 索引项
 bool is_init;
+generic_result return_record;
 
 index_dml_t( mem_table_t *_mem_table, std::string _field_name , int _index_type ):field_name(_field_name),mem_table(_mem_table),index_type( _index_type ),is_init(0)
 {
 		meta.from_table(_mem_table);
 		tuple_one.meta = &meta;
+		tuple_one.result = &return_record;
+		return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);
 		
   	
 }
@@ -501,11 +504,13 @@ index_dml_t( mem_table_t *_mem_table, std::string _field_name , int _index_type 
 //	if( INDEX_TYPE_HASH == index_type )ret = set_hash_index_entry_key( addr ,field , hash_index );
 //  if( INDEX_TYPE_SKIP == index_type )ret = set_skiplist_entry_key  ( addr ,field , skiplist_index );
 
-inline int fill_index_help( record_t * record_ptr  )
+inline int fill_index_help( record_t * record_ptr,char * buf  )
 {
 	if(NULL == record_ptr)return RECORD_PTR_IS_NULL;
 	int ret = 0;
-	tuple_one.result = record_ptr;
+	//tuple_one.result = record_ptr;
+	memcpy(return_record.get_data(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
+	
   char * addr = NULL;
   //mem_hash_entry_t out; 
   
@@ -530,7 +535,7 @@ int init()
 
 
 
-int fill_index( record_t * record_ptr   )
+int fill_index( record_t * record_ptr,char * buf   )
 {
 int ret = 0;
 if( !is_init ){
@@ -539,7 +544,7 @@ if( !is_init ){
 	is_init = !is_init;
 }
 		
-return fill_index_help(  record_ptr ,index_entry );
+return fill_index_help(  record_ptr, buf  );
 return -1;
 }
 
@@ -548,11 +553,12 @@ return -1;
 template<class MEM_INDEX_TYPE>
 int insert_into_index_scn(MEM_INDEX_TYPE * mem_index_prt, //索引指针
 												record_t * record_ptr,       //对应表上的原始数据 行指针
+												char * buf,
 												record_t ** out_record_ptr,	
 												unsigned long long Tn ,
  												unsigned long long scn  )
 {
-	fill_index(  record_ptr  );	
+	fill_index(  record_ptr,buf  );	
 return  insert_index_scn( mem_index_prt, //索引指针
 												 index_entry,
 												field,
@@ -568,10 +574,11 @@ return  insert_index_scn( mem_index_prt, //索引指针
 template<class MEM_INDEX_TYPE>
 int insert_into_index(MEM_INDEX_TYPE * mem_index_prt,
 												record_t * record_ptr,
+												char * buf,
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
 {
-fill_index(  record_ptr  );	
+	fill_index(  record_ptr,buf  );	
 return insert_index(mem_index_prt,
 									record_ptr,
 									out_record_ptr,	
@@ -584,10 +591,11 @@ return 0;
 template<class MEM_INDEX_TYPE>
 int delete_from_index(MEM_INDEX_TYPE * mem_index_prt,
 												record_t * record_ptr,
+												char * buf,
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
 {
-fill_index(  record_ptr  );	
+	fill_index(  record_ptr,buf  );	
 return del_index(mem_index_prt,
 									record_ptr,
 									out_record_ptr,	
@@ -599,10 +607,11 @@ return 0;
 template<class MEM_INDEX_TYPE>
 int update_from_index(MEM_INDEX_TYPE * mem_index_prt,
 												record_t * record_ptr,
+												char * buf,
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
 {
-fill_index(  record_ptr  );	
+fill_index(  record_ptr,buf  );	
 return update_index(mem_index_prt,
 									record_ptr,
 									out_record_ptr,	
@@ -612,4 +621,5 @@ return 0;
 }
 
 };
+
 #endif
