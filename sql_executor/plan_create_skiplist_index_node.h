@@ -8,6 +8,7 @@ g++ -C -std=c++11 plan_create_skiplist_index_node.h -w
 #include "plan_node.h"
 #include "../mem_date_index_ctl/mem_skiplist_index.h"
 #include "../SQL/sql_parser/CreateIndexAnalyser.hpp"
+#include "create_index_online.h"
 
 #define PLAN_TYPE_CREATE_SKIPLIST_INDEX 								700
 #define CREATE_SKIPLIST_INDEX_NO_FIELD 								  701
@@ -30,19 +31,19 @@ int create_mem_skiplist_config(mem_skiplist_index_config_t** skiplist_config,
 }
 
 
-//key func ¹¹Ôì ½á¹û¼¯µÄ record_tuple
+//key func æ„é€  ç»“æœé›†çš„ record_tuple
 struct create_skiplist_index_node:public plan_node
 {
-std::string table_name;                //±íÃû
-std::string index_name;                //±íÃû
-std::vector<std::string> field_vector ;  //×Ö¶ÎÁĞ±í
-size_t 	block_size;										 //Ò»¸ö¿é´óĞ¡
-size_t 	extend_block_size;             //¿éµÄÀ©Õ¹´óĞ¡
-std::string path;											 //Â·¾¶
-struct mem_table_t*                    mem_table;   //±íÖ¸Õë
-mem_skiplist_index_t	*                mem_skiplist_index; //skiplist Ë÷ÒıÖ¸Õë
-int index_type;												// index ÀàĞÍ
-int skip_level;														//Ìø±í²ãÊı,Ä¬ÈÏ4²ã
+std::string table_name;                //è¡¨å
+std::string index_name;                //è¡¨å
+std::vector<std::string> field_vector ;  //å­—æ®µåˆ—è¡¨
+size_t 	block_size;										 //ä¸€ä¸ªå—å¤§å°
+size_t 	extend_block_size;             //å—çš„æ‰©å±•å¤§å°
+std::string path;											 //è·¯å¾„
+struct mem_table_t*                    mem_table;   //è¡¨æŒ‡é’ˆ
+mem_skiplist_index_t	*                mem_skiplist_index; //skiplist ç´¢å¼•æŒ‡é’ˆ
+int index_type;												// index ç±»å‹
+int skip_level;														//è·³è¡¨å±‚æ•°,é»˜è®¤4å±‚
 
 create_skiplist_index_node( 
 							std::string& _table_name,
@@ -124,7 +125,7 @@ _path = path;
 int get_table_ptr()
 {
 	int err = 0;
-	// ¶ÔÓÚÔ­Ê¼±í¼ì²é¸Ã±íÊÇ·ñ´æÔÚ
+	// å¯¹äºåŸå§‹è¡¨æ£€æŸ¥è¯¥è¡¨æ˜¯å¦å­˜åœ¨
 				if(!table_name.empty()){
 					long long table_no;
 					 err = search_table_name( const_cast<char *>(table_name.c_str()) , &table_no);
@@ -147,7 +148,7 @@ int get_table_ptr()
 	return err;
 }
 	
-//¼ì²é¸Ã±íÖĞÊÇ·ñ´æÔÚÄ³¸ö×Ö¶Î,²¢ÔÚ±íµÄ×Ö¶ÎÉÏ±ê¼ÇË÷Òıid
+//æ£€æŸ¥è¯¥è¡¨ä¸­æ˜¯å¦å­˜åœ¨æŸä¸ªå­—æ®µ,å¹¶åœ¨è¡¨çš„å­—æ®µä¸Šæ ‡è®°ç´¢å¼•id
 int check_field()
 {
 	if(!field_vector.empty() && mem_table != NULL && mem_skiplist_index != NULL ){
@@ -157,7 +158,7 @@ int check_field()
 					CPP_ERROR<<"The Field "<<v<<" Not Exists in Table "<<table_name<<" \n";
 				  return CREATE_SKIPLIST_INDEX_WRONG_FIELD;
 				}
-				else { // Ìí¼ÓË÷Òı±ê¼Ç
+				else { // æ·»åŠ ç´¢å¼•æ ‡è®°
 					 for(int i = 0;i < mem_table->config.field_used_num; ++i  )
  						{
  								field_t& field = mem_table->config.fields_table[i];
@@ -182,29 +183,29 @@ int check_field()
 	
 virtual int execute( unsigned long long  trans_no  )
 {
-//  »ñµÃ±íÖ¸Õë
+//  è·å¾—è¡¨æŒ‡é’ˆ
 int err = get_table_ptr();
 if( err )return err;
 	
 if( path !="./")index_name = path + index_name;
 
-//½¨ skiplist Ë÷ÒıÅäÖÃ
+//å»º skiplist ç´¢å¼•é…ç½®
 mem_skiplist_index_config_t * skiplist_config		= NULL;
-//½¨ skiplist ÅäÖÃĞÅÏ¢
+//å»º skiplist é…ç½®ä¿¡æ¯
 if(0!=(err=create_mem_skiplist_config(&skiplist_config, block_size, const_cast<char *>(index_name.c_str())  ,skip_level ) ) )
 {
 	ERROR("mem_skiplist_index_create err is %d\n",err);
 	return err;
 }
 	
-//½¨ skiplist Ë÷Òı
+//å»º skiplist ç´¢å¼•
 if(0!=(err=mem_skiplist_create(&mem_skiplist_index,mem_table,skiplist_config)))
 	{
 		ERROR("mem_skiplist_index_create err is %d\n",err);
 		return err;
 	}
 
-//¼ì²éÊ§°Ü£¬»Ø¹öÔªÊı¾İ
+//æ£€æŸ¥å¤±è´¥ï¼Œå›æ»šå…ƒæ•°æ®
 if( check_field() )
 {
 	if(0!=(err=mem_skiplist_index_close(mem_skiplist_index)))
@@ -215,6 +216,26 @@ if( check_field() )
   
 }	
 
+
+//  ç›®å‰åªæ”¯æŒå•è¯»å»ºç´¢å¼•
+if( 0 < field_vector.size() ){
+	
+	for( auto &v : field_vector  )
+	{
+	 online_create_index<mem_skiplist_entry_t> online_create_indexer( mem_table , v , index_type );
+	 err = online_create_indexer.execute(  mem_skiplist_index );
+	}
+}
+else
+	{
+	  ERROR("has no filed name to create index on \n");		
+	}
+if(err)
+	{
+		ERROR("online_create_index err is %d\n",err);
+		return err;
+		
+	}
 
 return 0;
 
@@ -238,21 +259,4 @@ virtual std::string to_sring()
 	//return 0;
 }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif 
