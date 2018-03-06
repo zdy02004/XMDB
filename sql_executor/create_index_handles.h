@@ -1,5 +1,5 @@
 /*
- g++ -C -w -std=c++11 create_index_plan.h   
+ g++ -C -w -std=c++11 create_index_handls.h   
 */
 
 #ifndef CREATE_INDEX_HANDLES  
@@ -11,10 +11,10 @@
 
 
 
-// ´Ó normal_double_condition_list ÖĞ»ñµÃ¹ıÂËÁĞ±í
+// ä» normal_double_condition_list ä¸­è·å¾—è¿‡æ»¤åˆ—è¡¨
 int handle_create_index(
-													/*in*/CreateIndexAnalyser 			  *qia,			      //ĞèÒªÉ¨ÃèµÄË÷ÒıÌõ¼ş       
-													/*in&&out*/std::list<plan_node *>	&plan_node_list //Êä³öµÄÖ´ĞĞ¼Æ»®    
+													/*in*/CreateIndexAnalyser 			  *qia,			      //éœ€è¦æ‰«æçš„ç´¢å¼•æ¡ä»¶       
+													/*in&&out*/std::list<plan_node *>	&plan_node_list //è¾“å‡ºçš„æ‰§è¡Œè®¡åˆ’    
 													)
 {
 		CPP_DEBUG<<"handle_create_index() \n"<<"qia->index_type is "<<qia->index_type<<endl;
