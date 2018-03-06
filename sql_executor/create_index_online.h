@@ -59,9 +59,6 @@ typedef typename get_mem_index_type_from_entry_type<INDEX_ENTERY_TYPE>::type  me
 online_create_index(mem_table_t * _mem_table , std::string& _field_name ,int _index_type ):mem_table(_mem_table),field_name(_field_name),error(0),
 																																													 index_type(_index_type),index_dml( mem_table, field_name , index_type  )
 {
-if(0!=(error=allocate_trans(&Tn)))ERROR("allocate_trans[%d] failed,Tn is %d\n",Tn,error); 
-// 开始一个事务
-if(0!=(error=start_trans(Tn)))ERROR("start_trans failed,Tn is %d\n",error); 
 }
 
 ~online_create_index()
@@ -87,41 +84,66 @@ long end_block_no;
 
 int get_un_commit_scn( long long& un_commit_scn , long long& commit_scn,long & end_block_no, long long&  high_level )
 {
+CPP_DEBUG<<"START get_un_commit_scn() \n";
+
 	int err = 0;
 	record_t * record_ptr;
 	long  block_no;
 	
 // 修改 字段索引标识
 MEM_TRANSACTION_LOCK(&(transaction_manager.locker));    //上锁 
-
-error = mem_table_allocate_record( mem_table ,&record_ptr,&block_no);
-if(error){
-	CPP_ERROR<<"mem_table_allocate_record failed \n";
-	return error;
-	
+int is_ok = 1;
+while(is_ok)
+{
+int i = 0;
+	struct  mem_block_t * mem_block_temp = mem_table->config.mem_blocks_table;
+	for(;i<mem_table->config.mem_block_used-1;++i)
+		{
+			mem_block_temp = mem_block_temp->next; 
+		}
+			if( 0!= (HIGH_LEVEL_TRYLOCK(&(mem_block_temp->high_level_lock))) )
+			{
+				//IMPORTANT_INFO("HIGH_LEVEL_TRYLOCK =0\n");
+				return HIGH_LEVEL_TRY_LOCK;  //高水位线上锁
+			}		
+		unsigned  long  high_level_temp = mem_block_temp->high_level;  
+    if(mem_block_temp->space_start_addr + mem_block_temp->high_level* mem_table->record_size < mem_block_temp->space_end_addr - mem_table->record_size )
+    {		
+    	 DEBUG("----- try to get record  high level -----\n");
+    	 //返回块的逻辑号
+    	 end_block_no = mem_block_temp->block_no;
+       high_level=high_level_temp;
+       is_ok = 0;
+       //DEBUG(" ----- try to allocate record by high level end -----\n");
+    }	
+	 HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //高水位线解锁 		
 }
-record_ptr->is_used    =  0;
-end_block_no = block_no;
-high_level = record_ptr->record_num;
+
 un_commit_scn = transaction_manager.scn;						 		//获得未分配最小 scn，后面的 scn 插入时 ，就插入索引
 commit_scn    = transaction_manager.commit_scn;				  //获得已提交最大 scn 
 MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker)); //解锁
-mem_table_force_del_record( mem_table , record_ptr);
+//mem_table_force_del_record( mem_table , record_ptr);
+CPP_DEBUG<<"End get_un_commit_scn() \n";
+
 return 0;
 }
 
 //获得当前时刻 commit_scn
 unsigned  long long get_commit_scn(  )
 {
+CPP_DEBUG<<"START get_commit_scn() \n";
 MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //上锁 
 long long commit_scn      = transaction_manager.commit_scn;			 //获得已提交最大 scn 
 MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker)); //解锁
+CPP_DEBUG<<"END get_commit_scn() \n";
+
 return commit_scn;
 }
 
 // 第一次全表扫
 int scan_all_row_to_create_index( mem_table_t *mem_table,mem_index_ptr_t*  mem_index_ptr ){
-	
+		CPP_DEBUG<<"START scan_all_row_to_create_index() \n";
+
 if(error){
 	CPP_ERROR<<"SOME ERROR HAPPEND BEFORE scan_all_row_to_create_index \n";
 	return error;
@@ -134,7 +156,18 @@ int __i = 0;
 struct record_t     * record_ptr;
 struct record_t * out_record_ptr = NULL;
 
-struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;	
+//分配一个事务，必须在 get_un_commit_scn 之后
+if(0!=(error=allocate_trans(&Tn))){
+	ERROR("allocate_trans[%d] failed,Tn is %d\n",Tn,error); 
+	 return error;
+}
+// 开始一个事务
+if(0!=(error=start_trans(Tn))){
+	ERROR("start_trans failed,Tn is %d\n",error); 
+  return error;
+}
+
+  struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;	
  
 	for(;__i<mem_table->config.mem_block_used;++__i)//遍历所有块																
 	{
@@ -163,6 +196,8 @@ struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;
 									if ( record_ptr->scn <= commit_scn ){
 									   			if ( record_ptr->is_used == 0 ) {
 									   				row_wunlock   (  &(record_ptr->row_lock ) );
+									   		  	DEBUG("record_ptr->scn is %d,commit_scn is %d , un_commit_scn is %d,record_ptr->is_used is %d \n",record_ptr->scn,commit_scn, un_commit_scn,record_ptr->is_used);
+
 									   				continue;
 									   			}
 									   else { 
@@ -186,9 +221,11 @@ struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;
 									int scn;
 									if ( record_ptr->scn > commit_scn && record_ptr->scn < un_commit_scn ){
 									   unsigned  long long  commit_scn2  = get_commit_scn();
-										 
+										 	DEBUG("record_ptr->scn is %d,commit_scn is %d , un_commit_scn is %d,commit_scn2 is %d \n",record_ptr->scn,commit_scn, un_commit_scn,commit_scn2);
+
 											// 已提交
 											if( record_ptr->scn <= commit_scn2 ){
+												
 									   			if ( record_ptr->is_used == 0 ) {
 									   				row_wunlock   (  &(record_ptr->row_lock ) );
 									   				continue;
@@ -218,16 +255,16 @@ struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;
 				}
 			__mem_block_temp = __mem_block_temp->next;      //下一个块
 	}
+	CPP_DEBUG<<"END scan_all_row_to_create_index() \n";
+
 	return 0;
 }
-
-
-
 
 // 等待间隔事务处理完
 int deal_uncommit_scn( mem_index_ptr_t*  mem_index_ptr )
 {
-	
+	CPP_DEBUG<<"START deal_uncommit_scn() \n";
+
 	if(error){
 	CPP_ERROR<<"SOME ERROR HAPPEND BEFORE deal_uncommit_scn \n";
 	return error;
@@ -239,8 +276,13 @@ struct record_t * out_record_ptr = NULL;
 char buf[mem_table->record_size - RECORD_HEAD_SIZE];
 record_t * record_ptr = NULL;
 
-while( last_scn <= un_commit_scn )
+//long scn;
+//error = get_trans_scn( Tn, &scn);
+
+//  last_scn < un_commit_scn && scn != un_commit_scn 当全表扫开始那一时刻的未提交事务都提交的时候，把他们插入索引，否则等待他们执行完
+while( last_scn < un_commit_scn  )
 {
+	DEBUG("last_scn: %d <= un_commit_scn : %d \n",last_scn, un_commit_scn );
 usleep(1000000); // 现在还有 create index 时没有提交的事务就等待1s再重试
 last_scn = get_commit_scn();
 
@@ -286,6 +328,8 @@ for( std::map<unsigned  long long, std::list<struct record_t * > >::iterator  i 
 }
 
 if(0!=(error=commit_trans(Tn)))ERROR("commit_trans failed,Tn is %d\n",error); 
+		CPP_DEBUG<<"END deal_uncommit_scn() \n";
+
 return error;
 }
 
@@ -310,4 +354,6 @@ int execute(  mem_index_ptr_t*  mem_index_ptr  )
 }
 
 };
+   	
+   	
 #endif
