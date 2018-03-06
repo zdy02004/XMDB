@@ -281,7 +281,7 @@ return error;
 }
 
 
-int execute( mem_table_t *mem_table , mem_index_ptr_t*  mem_index_ptr  )
+int execute( mem_index_ptr_t*  mem_index_ptr  )
 {
 	int ret = scan_all_row_to_create_index( mem_table,   mem_index_ptr ) ;
 	if(ret)
