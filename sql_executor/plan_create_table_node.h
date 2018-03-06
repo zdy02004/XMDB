@@ -44,13 +44,13 @@ int create_block(mem_block_t **mb,char * file_name,size_t block_size)
 {
 	DEBUG("in create_block\n");
 
-	//´´½¨¿é
+	//åˆ›å»ºå—
 	*mb =(mem_block_t *) malloc(MEM_BLOCK_HEAD_SIZE);
 	DEBUG("create_block %0x\n",*mb);
 
-	//ÅäÖÃ¿éÃèÊö·û
+	//é…ç½®å—æè¿°ç¬¦
 	mem_block_config( *mb  ,block_size , file_name );
-		//³õÊ¼»¯¿é
+		//åˆå§‹åŒ–å—
 	INIT_MEM_BLOCK(*mb)
 	
 	DEBUG("fd = %d\n",(*mb)->fd);
@@ -88,14 +88,14 @@ int create_mem_table_config(mem_table_config_t ** mem_config,mem_block_t *mb,cha
 }
 
 
-//key func ¹¹Ôì ½á¹û¼¯µÄ record_tuple
+//key func æ„é€  ç»“æœé›†çš„ record_tuple
 struct create_table_node:public plan_node
 {
-std::string table_name;                //±íÃû
-std::vector<FieldDesc> field_vector ;  //×Ö¶ÎÁĞ±í
-size_t 	block_size;										 //Ò»¸ö¿é´óĞ¡
-size_t 	extend_block_size;             //¿éµÄÀ©Õ¹´óĞ¡
-std::string path;											 //Â·¾¶
+std::string table_name;                //è¡¨å
+std::vector<FieldDesc> field_vector ;  //å­—æ®µåˆ—è¡¨
+size_t 	block_size;										 //ä¸€ä¸ªå—å¤§å°
+size_t 	extend_block_size;             //å—çš„æ‰©å±•å¤§å°
+std::string path;											 //è·¯å¾„
 struct mem_table_t*                    mem_table;
 
 create_table_node( 
@@ -107,7 +107,7 @@ create_table_node(
   						rapidjson::Document * _Doc
   									
 ):plan_node(_json,_Doc),	
-		table_name(_table_name+".dat"),
+		table_name(_table_name),
 		field_vector(_field_vector),
 		block_size(_block_size),
 		extend_block_size(_extend_block_size),
@@ -125,12 +125,12 @@ _path = path;
 	
 virtual int execute( unsigned long long  trans_no  )
 {
-// ½¨ÎïÀí¿é
+// å»ºç‰©ç†å—
 mem_block_t *mb = NULL;
-std::string total_path = path + table_name;
+std::string total_path = path + table_name+".dat";
 
 create_block( &mb,const_cast<char *>(total_path.c_str() ),block_size );
-//½¨Âß¼­±íÅäÖÃ
+//å»ºé€»è¾‘è¡¨é…ç½®
 mem_table_config_t * mem_config = NULL;
 int err;
 if(0!=(err=create_mem_table_config(&mem_config,mb,const_cast<char *>( table_name.c_str() ),extend_block_size, field_vector ) ))
@@ -140,7 +140,7 @@ if(0!=(err=create_mem_table_config(&mem_config,mb,const_cast<char *>( table_name
 }
 
 
-//½¨Âß¼­±í
+//å»ºé€»è¾‘è¡¨
 
 if(0!=(err=mem_table_create(&mem_table,mem_config)))
 {
@@ -171,21 +171,4 @@ virtual std::string to_sring()
 	//return 0;
 }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif 
