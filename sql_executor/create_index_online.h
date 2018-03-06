@@ -50,7 +50,7 @@ struct online_create_index
 mem_table_t *mem_table;
 std::string field_name;  // 建索引的字段名
 int         index_type;
-unsigned long long Tn;   // 建索引时申请的事务槽
+long long   Tn;   // 建索引时申请的事务槽
 index_dml_t<INDEX_ENTERY_TYPE>  index_dml;
 int          error;
 
@@ -80,12 +80,12 @@ if(0!=(error=start_trans(Tn)))ERROR("start_trans failed,Tn is %d\n",error);
 
 //建索引那一时刻的 《未提交的 scn  list<record_t> 
 std::map<unsigned  long long, std::list<struct record_t*> > un_commit_map;
-unsigned  long long commit_scn ;
-unsigned  long long un_commit_scn ;
-unsigned  long long high_level ;
+long long commit_scn ;
+long long un_commit_scn ;
+long long high_level ;
 long end_block_no;
 
-int get_un_commit_scn( unsigned  long long& un_commit_scn , unsigned  long long& commit_scn,long & end_block_no,unsigned  long long&  high_level )
+int get_un_commit_scn( long long& un_commit_scn , long long& commit_scn,long & end_block_no, long long&  high_level )
 {
 	int err = 0;
 	record_t * record_ptr;
@@ -114,7 +114,7 @@ return 0;
 unsigned  long long get_commit_scn(  )
 {
 MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //上锁 
-unsigned  long long commit_scn      = transaction_manager.commit_scn;			 //获得已提交最大 scn 
+long long commit_scn      = transaction_manager.commit_scn;			 //获得已提交最大 scn 
 MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker)); //解锁
 return commit_scn;
 }
@@ -127,7 +127,7 @@ if(error){
 	return error;
 	}	
 	
-int ret = get_un_commit_scn( &commit_scn , &un_commit_scn, &end_block_no, &high_level );
+int ret = get_un_commit_scn( commit_scn , un_commit_scn, end_block_no, high_level );
 char buf[mem_table->record_size - RECORD_HEAD_SIZE];
 
 int __i = 0;											 
@@ -169,6 +169,7 @@ struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;
 									   	
 									   	  ret = index_dml.insert_into_index_scn(mem_index_ptr, //索引指针
 												record_ptr,       //对应表上的原始数据 行指针
+												buf,
 												&out_record_ptr,	
 												Tn ,
  												record_ptr->scn  );
@@ -196,6 +197,7 @@ struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;
 									   				scn = record_ptr->scn;
 									   				ret = index_dml.insert_into_index_scn(mem_index_ptr, //索引指针
 														record_ptr,       //对应表上的原始数据 行指针
+														buf,
 														&out_record_ptr,	
 														Tn ,
  														record_ptr->scn  );
@@ -231,8 +233,11 @@ int deal_uncommit_scn( mem_index_ptr_t*  mem_index_ptr )
 	return error;
 	}	
 	
+	
 unsigned  long long last_scn= get_commit_scn();
 struct record_t * out_record_ptr = NULL;
+char buf[mem_table->record_size - RECORD_HEAD_SIZE];
+record_t * record_ptr = NULL;
 
 while( last_scn <= un_commit_scn )
 {
@@ -245,30 +250,34 @@ for( std::map<unsigned  long long, std::list<struct record_t * > >::iterator  i 
 {
 	for(auto &v : i->second )
 		{
-			record_t * record_ptr = v;
-			row_wlock   (  &(record_ptr->row_lock ) );
-			//记录未使用或者回滚被删掉了
-			if( 0 == record_ptr->is_used )
+			record_ptr = v;
+			if( !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn) )
 			{
-				row_wunlock (  &(record_ptr->row_lock )    );
-				continue;
-			}
-	
-			//获得事务槽中的 scn
-			if( record_ptr->scn > commit_scn && record_ptr->scn < un_commit_scn )
-				{ 
-									   				error = index_dml.insert_into_index_scn(mem_index_ptr, //索引指针
-														record_ptr,       //对应表上的原始数据 行指针
-														&out_record_ptr,	
-														Tn ,
- 														record_ptr->scn  );
-														if(error){
-															row_wunlock   (  &(record_ptr->row_lock ) );
-															return error;
-														       }
-				}
-		
-			row_wunlock   (  &(record_ptr->row_lock ) );
+			  row_wlock   (  &(record_ptr->row_lock ) );
+			  //记录未使用或者回滚被删掉了
+			  if( 0 == record_ptr->is_used )
+			  {
+			  	row_wunlock (  &(record_ptr->row_lock )    );
+			  	continue;
+			  }
+	      
+			  //获得事务槽中的 scn
+			  if( record_ptr->scn > commit_scn && record_ptr->scn < un_commit_scn )
+			  	{ 
+			  						   				error = index_dml.insert_into_index_scn(mem_index_ptr, //索引指针
+			  											record_ptr,       //对应表上的原始数据 行指针
+			  											buf,
+			  											&out_record_ptr,	
+			  											Tn ,
+ 			  											record_ptr->scn  );
+			  											if(error){
+			  												row_wunlock   (  &(record_ptr->row_lock ) );
+			  												return error;
+			  											       }
+			  	}
+		    
+			  row_wunlock   (  &(record_ptr->row_lock ) );
+			 }
 
 		}
 		i = un_commit_map.erase(i); //所以最上面 for 不用 ++ 
@@ -281,7 +290,7 @@ return error;
 }
 
 
-int execute( mem_index_ptr_t*  mem_index_ptr  )
+int execute(  mem_index_ptr_t*  mem_index_ptr  )
 {
 	int ret = scan_all_row_to_create_index( mem_table,   mem_index_ptr ) ;
 	if(ret)
