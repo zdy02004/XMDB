@@ -5,3 +5,4 @@
 *   queryOptimiser.hpp sql查询语句逻辑优化
 *   CreateTableAnalyser.hpp sql建表语句分析
 *   CreateIndexAnalyser.hpp sql建索引语句分析
+*   InsertTableAnalyser.hpp sql插入语句分析
