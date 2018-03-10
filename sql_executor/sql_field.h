@@ -52,18 +52,6 @@ else if(n == FIELD_TYPE_FLOAT )return *CAST_FIELD_PTR_5( __ptr );\
 else if(n == FIELD_TYPE_DOUBLE )return *CAST_FIELD_PTR_6( __ptr );\
 else if(n == FIELD_TYPE_STR )return CAST_FIELD_PTR_7( __ptr ); 
 
-
-
-#define SET_CAST_FIELD( ret , tuple_one , field_name , n , __ptr )\
-if(n == FIELD_TYPE_INT )(ret) = (tuple_one).set_field( (field_name) , *CAST_FIELD_PTR_1( __ptr ) );\
-else if(n == FIELD_TYPE_SHORT )(ret) = (tuple_one).set_field( (field_name) , *CAST_FIELD_PTR_2( __ptr ) );\
-else if(n == FIELD_TYPE_LONG )(ret) = (tuple_one).set_field( (field_name) , *CAST_FIELD_PTR_3( __ptr ) );\
-else if(n == FIELD_TYPE_LONGLONG )(ret) = (tuple_one).set_field( (field_name) , *CAST_FIELD_PTR_4( __ptr ) );\
-else if(n == FIELD_TYPE_FLOAT )(ret) = (tuple_one).set_field( (field_name) , *CAST_FIELD_PTR_5( __ptr ) );\
-else if(n == FIELD_TYPE_DOUBLE )(ret) = (tuple_one).set_field( (field_name) , *CAST_FIELD_PTR_6( __ptr ) );\
-else if(n == FIELD_TYPE_STR )(ret) = (tuple_one).set_field( (field_name) , *CAST_FIELD_PTR_7( __ptr ) );
-
-
 // 表中是否有该字段
 inline int has_field(mem_table_t *mem_table ,std::string field_name){  
    
