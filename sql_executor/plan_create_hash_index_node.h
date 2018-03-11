@@ -139,6 +139,7 @@ int check_field()
 				  return CREATE_HASH_INDEX_WRONG_FIELD;
 				}
 				else { // 添加索引标记
+					mem_table_lock( &( mem_table->table_locker ) );
 					 for(int i = 0;i < mem_table->config.field_used_num; ++i  )
  						{
  								field_t& field = mem_table->config.fields_table[i];
@@ -151,6 +152,8 @@ int check_field()
  							    }
  							  }
  						}
+ 				 mem_table_unlock( &( mem_table->table_locker ) );
+
 				}
 		}
 	}
@@ -240,4 +243,5 @@ virtual std::string to_sring()
 	//return 0;
 }
 };
+
 #endif 
