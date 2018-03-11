@@ -249,7 +249,7 @@ int                field_order;               //字段在记录中排第几个
 off_t              field_dis;                 //该字段距离数据启始地址的距离
 short              index_nr;                  //相关的索引个数，0 表示没有索引，
 long               relate_index[8];           //相关的索引id，一个字段最多被8个索引关联
-int                index_type;								//索引类型 1 hash 2 skiplist 
+int                index_type[8];								//索引类型 1 hash 2 skiplist 
 } __attribute__ ((packed, aligned (64)));
 
 #define FIELD_SIZE  sizeof(struct  field_t)
