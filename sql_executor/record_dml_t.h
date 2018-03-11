@@ -164,6 +164,13 @@ record_dml_t(
 		init();  	
 }
 
+inline void change_value(std::vector<std::string>& _field_values)
+																											 
+{
+		field_values = _field_values;
+}
+
+
 record_dml_t( mem_table_t *_mem_table):mem_table(_mem_table)
 {
 		init();  	
