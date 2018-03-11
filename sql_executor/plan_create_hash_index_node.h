@@ -145,7 +145,7 @@ int check_field()
  								field_t& field = mem_table->config.fields_table[i];
  							  if (0 == strcmp(field.field_name,v.c_str()) ){
  							  	
- 							  	for(int j = 0; j< 8; ++j )
+ 							  	for(int j = 0; j< MAX_FIELD_INDEX_NO; ++j )
  							  	{
  							  		if(field.relate_index[j]!=0 ){
  							  		field.index_type[j] = index_type;
@@ -245,5 +245,4 @@ virtual std::string to_sring()
 	//return 0;
 }
 };
-
 #endif 
