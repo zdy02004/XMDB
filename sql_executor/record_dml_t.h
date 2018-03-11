@@ -2,10 +2,11 @@
 #define RECORD_DML
 #include"../mem_date_index_ctl/mem_table_mvcc_op.h"
 #include "record_tuple.h"
+#include "index_dml_t.h"
 
 /*
 
- g++ -C -w -std=c++11 record_dml_t.h
+ g++ -C -w -lpthread  -std=c++11 record_dml_t.h 
 
 
 */
@@ -17,27 +18,147 @@
 #define RECORD_KEY_INT_TYPE  70003
 #define RECORD_KEY_STR_TYPE  70004
 
+struct index_selector_t
+{
+	std::vector< index_dml_t<mem_hash_entry_t>     > hash_index_dml_vector;
+	std::vector< mem_hash_index_t *                > hash_index_vector;
+  std::vector< index_dml_t<mem_skiplist_entry_t> > skiplist_index_dml_vector;
+  std::vector< mem_skiplist_index_t *            > skiplist_index_vector;
+  	
+  int insert_index_dml(int index_type, void * addr,mem_table_t *mem_table, std::string& field_name )
+  {				
+		switch(index_type)
+		{
+			case INDEX_TYPE_HASH :{
+			hash_index_dml_vector.emplace_back(mem_table,field_name,index_type);
+			hash_index_vector.emplace_back( (mem_hash_index_t *)addr);
+			}
+		  case INDEX_TYPE_SKIP :{
+			skiplist_index_dml_vector.emplace_back(mem_table,field_name,index_type);
+			skiplist_index_vector.emplace_back( (mem_skiplist_index_t *)addr);
+			}
+							
+		}
+  	return 0;
+  }
+  
+int insert_into_index(
+												record_t * record_ptr,
+												record_t ** out_record_ptr,	
+												unsigned long long Tn  )
+	{
+		int ret = 0;
+		for(size_t i = 0 ; i< hash_index_dml_vector.size();++i){
+			ret = hash_index_dml_vector[i].insert_into_index(
+																								hash_index_vector[i],
+																								record_ptr,
+																								(char *)record_ptr + RECORD_HEAD_SIZE,
+																								out_record_ptr,
+																								Tn);
+				if(ret)return ret;
+		}
+		for(size_t i = 0 ; i< skiplist_index_dml_vector.size();++i){
+			ret = skiplist_index_dml_vector[i].insert_into_index(
+																								skiplist_index_vector[i],
+																								record_ptr,
+																								(char *)record_ptr + RECORD_HEAD_SIZE,
+																								out_record_ptr,
+																								Tn);
+			if(ret)return ret;
+		}
+		
+	}
+	
+	
+int delete_from_index(
+												record_t * record_ptr,
+												record_t ** out_record_ptr,	
+												unsigned long long Tn  )
+	{
+		int ret = 0;
+		for(size_t i = 0 ; i< hash_index_dml_vector.size();++i){
+			ret = hash_index_dml_vector[i].delete_from_index(
+																								hash_index_vector[i],
+																								record_ptr,
+																								(char *)record_ptr + RECORD_HEAD_SIZE,
+																								out_record_ptr,
+																								Tn);
+				if(ret)return ret;
+		}
+		for(size_t i = 0 ; i< skiplist_index_dml_vector.size();++i){
+			ret = skiplist_index_dml_vector[i].delete_from_index(
+																								skiplist_index_vector[i],
+																								record_ptr,
+																								(char *)record_ptr + RECORD_HEAD_SIZE,
+																								out_record_ptr,
+																								Tn);
+			if(ret)return ret;
+		}
+		
+	}
+	
+	
+int update_from_index(
+												record_t * record_ptr,
+												record_t ** out_record_ptr,	
+												unsigned long long Tn  )
+	{
+		int ret = 0;
+		for(size_t i = 0 ; i< hash_index_dml_vector.size();++i){
+			ret = hash_index_dml_vector[i].update_from_index(
+																								hash_index_vector[i],
+																								record_ptr,
+																								(char *)record_ptr + RECORD_HEAD_SIZE,
+																								out_record_ptr,
+																								Tn);
+				if(ret)return ret;
+		}
+		for(size_t i = 0 ; i< skiplist_index_dml_vector.size();++i){
+			ret = skiplist_index_dml_vector[i].update_from_index(
+																								skiplist_index_vector[i],
+																								record_ptr,
+																								(char *)record_ptr + RECORD_HEAD_SIZE,
+																								out_record_ptr,
+																								Tn);
+			if(ret)return ret;
+		}
+		
+	}
+};
+
+
 struct record_dml_t
 {
-mem_table_t *mem_table; // ÄÇ¸ö±íµÄË÷Òı
+mem_table_t *mem_table; // é‚£ä¸ªè¡¨çš„ç´¢å¼•
 record_meta       meta;
 record_tuple tuple_one;
 
 std::vector<field_t>     field_vector;
-std::vector<std::string> field_names; // ½¨Ë÷ÒıµÄ×Ö¶ÎÃû
-std::vector<std::string> field_values; // ½¨Ë÷ÒıµÄ×Ö¶ÎÃû
+std::vector<std::string> field_names; // å»ºç´¢å¼•çš„å­—æ®µå
+std::vector<std::string> field_values; // å»ºç´¢å¼•çš„å­—æ®µå
 
 generic_result return_record;
-
-//±íÖ¸Õë
-//×Ö¶ÎÃûÏòÁ¿
-//×Ö¶ÎÖµÏòÁ¿
-//Ö÷ÒªÊÊÓÃÓÚ insert into table ( xx,xx,xx ) values (xx,xx,xx);
-//ºÍ update talbe set xx = xx, xx=xx where ;
+index_selector_t index_selector;
+bool has_index; 
+ 
+//è¡¨æŒ‡é’ˆ
+//å­—æ®µåå‘é‡
+//å­—æ®µå€¼å‘é‡
+//ä¸»è¦é€‚ç”¨äº insert into table ( xx,xx,xx ) values (xx,xx,xx);
+//å’Œ update talbe set xx = xx, xx=xx where ;
 record_dml_t( mem_table_t *_mem_table, 
 							std::vector<std::string>& _field_names,
 							std::vector<std::string>& _field_values):field_names(_field_names),
 																											 mem_table(_mem_table),
+																											 field_values(_field_values),
+																											 has_index(0)
+{
+		init();  	
+}
+
+record_dml_t(
+							std::vector<std::string>& _field_names,
+							std::vector<std::string>& _field_values):field_names(_field_names),
 																											 field_values(_field_values)
 {
 		init();  	
@@ -49,23 +170,43 @@ record_dml_t( mem_table_t *_mem_table):mem_table(_mem_table)
 }
 
 inline void init()
-{
-	
+{	
+	  int ret = 0 ;
 		meta.from_table( mem_table );
 		tuple_one.meta = &meta;
 		tuple_one.result = &return_record;
 		return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);		
 		
 		field_t field;
+		mem_table_lock( &( mem_table->table_locker ) );// ç¡®ä¿ create_index_online ä¸æ¼æ•°æ®
 		for( size_t i = 0; i< field_names.size() ;  ++i )
 		{
-			tuple_one.get_field_desc( mem_table ,field_names[i], field );
+			tuple_one.get_field_desc( mem_table ,field_names[i], field );//è·å–å­—æ®µæè¿°
+			field_vector.emplace_back(field);
+			if( field.relate_index[0] != 0 ){	//æœ‰ç´¢å¼•å°±å»ºç«‹ç´¢å¼•æ“çºµç±»
+				has_index = true;			                 
+				long relate_index = 0;           
+				int  index_type = 0;				
+				for( int j = 0 ; j< MAX_FIELD_INDEX_NO ; ++j )
+				{
+					relate_index = field.relate_index[j];
+					index_type   = field.index_type[j];
+					
+					void * addr = NULL;
+					ret = get_index_no_addr( relate_index , &addr );
+					
+					if( addr != NULL && ret == 0 ){
+						index_selector.insert_index_dml( index_type , addr,mem_table , field_names[i]  );
+					}
+				}
+			}
 		}
-		field_vector.emplace_back(field);
+		mem_table_unlock( &( mem_table->table_locker ) );// ç¡®ä¿ create_index_online ä¸æ¼æ•°æ®
+  	
   	
 }
 
-// °ÑÖµÌî³äÈë tuple ÖĞ
+// æŠŠå€¼å¡«å……å…¥ tuple ä¸­
 inline int fill_record( )
 {
 	int ret = 0;
@@ -74,52 +215,81 @@ inline int fill_record( )
   {
   ret = tuple_one.set_field( field_names[i] , (char *)cast_ptr_by_field( field_values[i] , field_vector[i] ) );
   if( ret )return ret;
+  
   }
   
   return 0;
 }
 
-// ÓÃÓÚÊµÊ±²åÈëÊ±½¨Ë÷Òı
-//Ö÷ÒªÊÊÓÃÓÚ insert into table ( xx,xx,xx ) values (xx,xx,xx);
+// ç”¨äºå®æ—¶æ’å…¥æ—¶å»ºç´¢å¼•
+//ä¸»è¦é€‚ç”¨äº insert into table ( xx,xx,xx ) values (xx,xx,xx);
 inline int insert_one_into_table(
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
 {
 fill_record();	
 long block_no;
-return mem_mvcc_insert_record( mem_table ,
+int ret  = 0;
+int ret1 = 0;
+record_t * out_index_record_ptr = NULL;
+ret = mem_mvcc_insert_record( mem_table ,
                           out_record_ptr,
                           &block_no, /* in */
                           return_record.get_data(),
-                          Tn        //ÊÂÎñID
+                          Tn        //äº‹åŠ¡ID
                           );
+if(ret )return ret;
+if(has_index)ret = index_selector.insert_into_index(
+												*out_record_ptr,
+												&out_index_record_ptr,	
+												Tn  );
+return ret;
+
 
 }
 
-// ÓÃÓÚÊµÊ±É¾³ıÊ±É¾Ë÷Òı
+// ç”¨äºå®æ—¶åˆ é™¤æ—¶åˆ ç´¢å¼•
 inline int delete_one_from_table(
 												record_t * in_record_ptr,	
 												unsigned long long Tn  )
 {
-return mem_mvcc_delete_record( mem_table ,
+int ret = 0;
+int ret1 = 0;
+record_t * out_index_record_ptr = NULL;
+ret =  mem_mvcc_delete_record( mem_table ,
 																				in_record_ptr,
-																				Tn               // ±¾ÊÂÎñID
+																				Tn               // æœ¬äº‹åŠ¡ID
 																				);
+if(ret )return ret;
+if(has_index)ret = index_selector.delete_from_index(
+												in_record_ptr,
+												&out_index_record_ptr,	
+												Tn  );
+return ret;
 }
-// ÓÃÓÚÊµÊ±¸üĞÂÊ±¸üĞÂË÷Òı
-//Ö÷ÒªÊÊÓÃÓÚ //ºÍ update talbe set xx = xx, xx=xx where ;
+// ç”¨äºå®æ—¶æ›´æ–°æ—¶æ›´æ–°ç´¢å¼•
+//ä¸»è¦é€‚ç”¨äº //å’Œ update talbe set xx = xx, xx=xx where ;
 inline int update_one_from_table(
 												record_t * in_record_ptr,	
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
 {
 fill_record( );	
-return mem_mvcc_update_record( mem_table ,
+int ret = 0;
+int ret1 = 0;
+record_t * out_index_record_ptr = NULL;
+ret =  mem_mvcc_update_record( mem_table ,
 															in_record_ptr,
 															return_record.get_data(),
-															Tn,               // ±¾ÊÂÎñID
+															Tn,               // æœ¬äº‹åŠ¡ID
 															out_record_ptr
 															);
+if(ret )return ret;
+if(has_index)ret = index_selector.update_from_index(
+												*out_record_ptr,
+												&out_index_record_ptr,	
+												Tn  );
+return ret;
 }
 
 };
