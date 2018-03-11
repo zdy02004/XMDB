@@ -579,10 +579,12 @@ int insert_into_index(MEM_INDEX_TYPE * mem_index_prt,
 												unsigned long long Tn  )
 {
 	fill_index(  record_ptr,buf  );	
-return insert_index(mem_index_prt,
-									record_ptr,
-									out_record_ptr,	
-									Tn  );
+return insert_index(mem_index_prt, //索引指针
+												 index_entry,
+												field,
+												 record_ptr,       //对应表上的原始数据 行指针
+												 out_record_ptr,	
+												 Tn  );
 return 0;
 
 }
@@ -596,10 +598,12 @@ int delete_from_index(MEM_INDEX_TYPE * mem_index_prt,
 												unsigned long long Tn  )
 {
 	fill_index(  record_ptr,buf  );	
-return del_index(mem_index_prt,
-									record_ptr,
-									out_record_ptr,	
-									Tn  );
+return del_index(mem_index_prt, //索引指针
+												 index_entry,
+												field,
+												 record_ptr,       //对应表上的原始数据 行指针
+												 out_record_ptr,	
+												 Tn   );
 return 0;
 
 }
@@ -612,14 +616,15 @@ int update_from_index(MEM_INDEX_TYPE * mem_index_prt,
 												unsigned long long Tn  )
 {
 fill_index(  record_ptr,buf  );	
-return update_index(mem_index_prt,
-									record_ptr,
-									out_record_ptr,	
-									Tn  );
+return update_index(mem_index_prt, //索引指针
+												 index_entry,
+												field,
+												 record_ptr,       //对应表上的原始数据 行指针
+												 out_record_ptr,	
+												 Tn   );
 return 0;
 
 }
 
 };
-
 #endif
