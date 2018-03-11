@@ -39,7 +39,7 @@
 #define CAST_FIELD_PTR_5( __ptr )    (reinterpret_cast<FIELD_FLOAT 	 *  >(__ptr))
 #define CAST_FIELD_PTR_6( __ptr )    (reinterpret_cast<FIELD_DOUBLE 	 *>(__ptr))
 #define CAST_FIELD_PTR_9( __ptr )    (reinterpret_cast<FIELD_DATE 		 *>(__ptr))
-#define CAST_FIELD_PTR_7( __ptr )    (reinterpret_cast<char  				   * >(__ptr))
+#define CAST_FIELD_PTR_7( __ptr )    (reinterpret_cast<char  				   *>(__ptr))
 
 #define CAST_FIELD_PTR( n, __ptr )   CAST_FIELD_PTR_##n( __ptr )  
 
@@ -78,7 +78,7 @@ inline int field_has_index(mem_table_t *mem_table ,std::string field_name,long &
    	  if (0 == strcmp(field.field_name,field_name.c_str()) ){
    	  	if(field.index_nr > 0 ){
    	  		index_no = field.relate_index[0];
-   	  		index_type = field.index_type;
+   	  		index_type = field.index_type[0];
    	  		return 1;
    	  	}
    	  	
