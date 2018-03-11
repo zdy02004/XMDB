@@ -380,6 +380,8 @@ MEM_TABLE_LOCK_INIT(&(mem_table->table_locker ));													\
 table_rwlock_init(&(mem_table->rwlocker ));																\
 (mem_table)->is_externing													=     0;                \
 (mem_table)->writer_trans_no											=			-1;								\
+(mem_table)->relate_index													=			{0};								\
+(mem_table)->index_type														=			{0};								\
 //(mem_table)->record_used_num                      =    0;								\
 //(mem_table)->config.index_used_num             =    0;									\
 (mem_table)->lock_manager.row_lock_counter        =    0;
