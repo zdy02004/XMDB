@@ -144,11 +144,13 @@ int check_field()
  						{
  								field_t& field = mem_table->config.fields_table[i];
  							  if (0 == strcmp(field.field_name,v.c_str()) ){
- 							  	field.index_type = index_type;
+ 							  	
  							  	for(int j = 0; j< 8; ++j )
  							  	{
- 							  		if(field.relate_index[j]!=0 )
+ 							  		if(field.relate_index[j]!=0 ){
+ 							  		field.index_type[j] = index_type;
  							  		field.relate_index[j] = mem_hash_index->config.index_no;  
+ 							  	  }
  							    }
  							  }
  						}
