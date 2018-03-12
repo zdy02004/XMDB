@@ -147,7 +147,7 @@ if(0!=(err=mem_table_create(&mem_table,mem_config)))
 		ERROR("mem_table_create err is %d\n",err);
 		return err;
 }
-
+MEM_TABLE_LOCK_INIT(&(mem_table->table_locker ));		// 原因不明，再初始化一次
 DEBUG("RECORD_HEAD_SIZE is %d\n",RECORD_HEAD_SIZE);
 return 0;
 
@@ -171,4 +171,21 @@ virtual std::string to_sring()
 	//return 0;
 }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif 
