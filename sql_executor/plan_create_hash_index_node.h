@@ -132,14 +132,18 @@ int get_table_ptr()
 int check_field()
 {
 	if(!field_vector.empty() && mem_table != NULL && mem_hash_index != NULL ){
+		CPP_DEBUG<<"mem_table_lock "<<" \n";
+		mem_table_lock( &( mem_table->table_locker ) );
 		for( auto &v : field_vector )
 		{
 			if( !has_field( mem_table , v ) ){
 					CPP_ERROR<<"The Field "<<v<<" Not Exists in Table "<<table_name<<" \n";
+					CPP_DEBUG<<"mem_table_unlock "<<" \n";		
+ 		      mem_table_unlock( &( mem_table->table_locker ) );
 				  return CREATE_HASH_INDEX_WRONG_FIELD;
 				}
 				else { // 添加索引标记
-					mem_table_lock( &( mem_table->table_locker ) );
+
 					 for(int i = 0;i < mem_table->config.field_used_num; ++i  )
  						{
  								field_t& field = mem_table->config.fields_table[i];
@@ -153,11 +157,15 @@ int check_field()
  							  	  }
  							    }
  							  }
- 						}
- 				 mem_table_unlock( &( mem_table->table_locker ) );
+ 			
+ 				 
+
 
 				}
 		}
+					}
+ 		CPP_DEBUG<<"mem_table_unlock "<<" \n";		
+ 		mem_table_unlock( &( mem_table->table_locker ) );
 	}
 	else {
 				if(!field_vector.empty() )CPP_ERROR<<"In Create Index Statment, Fields is Empty !\n";
@@ -245,4 +253,5 @@ virtual std::string to_sring()
 	//return 0;
 }
 };
+
 #endif 
