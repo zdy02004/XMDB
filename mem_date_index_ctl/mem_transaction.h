@@ -1,4 +1,4 @@
-#ifndef TRANSACTION_H
+fndef TRANSACTION_H
 #define TRANSACTION_H
 
 #ifdef __cplusplus
@@ -773,6 +773,7 @@ inline int get_trans_scn( long long  trans_no, long * scn)
 	mem_transaction_t * trans = &(transaction_manager.transaction_tables[trans_no]);
 	
   *scn = trans->scn;
+	DEBUG("get_trans_scn return scn = %ld\n",*scn);
 
 	return 0;
 }
@@ -811,6 +812,7 @@ inline int inc_trans_ref( long long  trans_no)
 TRANS_REF_WLOCK(&(trans->ref_locker));  //上锁
 // 事务结束时间
 ++trans->ref;
+DEBUG("trans_no[%ld] ++ref = %ld\n",trans_no , trans->ref );
 TRANS_REF_WUNLOCK(&(trans->ref_locker));  //解锁
 	return 0;
 }
@@ -828,6 +830,7 @@ inline int dec_trans_ref( long long  trans_no)
 TRANS_REF_WLOCK(&(trans->ref_locker));  //上锁
 // 事务结束时间
 --trans->ref;
+DEBUG("trans_no[%ld] --ref = %ld\n",trans_no , trans->ref );
 TRANS_REF_WUNLOCK(&(trans->ref_locker));  //解锁
 	return 0;
 }
@@ -916,7 +919,7 @@ inline int de_trans_data_queue(trans_data_queue_t * trans_data_queue, mem_trans_
     trans_data_queue->front = (trans_data_queue->front + 1) % trans_data_queue->max;  
     //出队列就减少事务的引用计数，表示已写入日志的action
     //DEBUG("dec_trans_ref(%d)\n",item->trans.trans_no	);
-    dec_trans_ref(item->trans.trans_no);
+    //dec_trans_ref(item->trans.trans_no);
     TRANS_QUEUE_UNLOCK(&(trans_data_queue->locker)); 
     return 0;  
 }  
@@ -969,8 +972,8 @@ inline int de_trans_data_queue_unsafe(trans_data_queue_t * trans_data_queue, mem
     //DEBUG("de trans_data_queue->front is %d, item->redo_data_start is %ld ,item->undo_data_start is %ld \n",trans_data_queue->front,item->trans->redo_data_start , item->trans->undo_data_start );
     trans_data_queue->front = (trans_data_queue->front + 1) % trans_data_queue->max;  
     //出队列就减少事务的引用计数，表示已写入日志的action
-    DEBUG("dec_trans_ref(%d)\n",item->trans.trans_no	);
-    dec_trans_ref(item->trans.trans_no);
+    //DEBUG("dec_trans_ref(%d)\n",item->trans.trans_no	);
+    //dec_trans_ref(item->trans.trans_no);
     return 0;  
 }  
 
@@ -1064,7 +1067,8 @@ inline int de_trans_data_queue(trans_data_queue_t * trans_data_queue, mem_trans_
     } while (!ok);
 
     memcpy(item,&(trans_data_queue->item[tail & mask]),sizeof(mem_trans_data_entry_t));
-    dec_trans_ref(item->trans.trans_no);
+    //DEBUG("dec_trans_ref(%ld)\n", item->trans.trans_no );
+    //dec_trans_ref(item->trans.trans_no);
     asm volatile ("":::"memory");
 
     while (unlikely((trans_data_queue->tail.second != tail)))
@@ -1438,8 +1442,8 @@ inline int fill_trans_entry_to_write(mem_transaction_entry_t * trans_entry,mem_t
 // 这里还要细化——————————————————————————————————————————————————————————————————————————————
 inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 {
-	//DEBUG("redo_file_write_data\n");
-	//DEBUG("trans_entry->object_no=%ld\n",trans_entry->object_no);
+	DEBUG("redo_file_write_data\n");
+	DEBUG("trans_entry->scn=%ld\n",trans_entry->scn);
 	switch(trans_entry->redo_type)
 	{
 	case OPT_DATA_UPDATE:
@@ -1457,7 +1461,7 @@ inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 	case OPT_INDEX_SKIPLIST_INSERT_STR:
 	case OPT_INDEX_SKIPLIST_DELETE_STR:
 	
-	//DEBUG("redo_write:pos is %ld,len is %ld,fd is %ld,ori is %0x\n",trans_entry->redo_data_start,trans_entry->redo_data_length,fd,trans_entry->ori_data_start);
+	DEBUG("redo_write:pos is %ld,len is %ld,fd is %ld,ori is %0x\n",trans_entry->redo_data_start,trans_entry->redo_data_length,fd,trans_entry->ori_data_start);
 	fseek(fd,trans_entry->redo_data_start,SEEK_SET);
 	fwrite(trans_entry->ori_data_start,1,trans_entry->redo_data_length,fd);
 	break;
@@ -1535,6 +1539,9 @@ inline int redo_file_write_data(mem_transaction_entry_t * trans_entry,FILE * fd)
 			ERROR("trans_entry->undo_type not found,trans_entry->undo_type is %d\n",trans_entry->undo_type);
 
 }
+  DEBUG("dec_trans_ref(%ld)\n", trans_entry->trans_no );
+  dec_trans_ref(trans_entry->trans_no);
+  
 	if( 1 == trans_entry->is_close ) 
 		{
 			IMPORTANT_INFO("trans_entry->redo_data_start  = %ld ，fclose(fd),fd = %ld\n",trans_entry->redo_data_start ,fd);
@@ -1689,6 +1696,7 @@ inline int commit_trans( long long  trans_no)
 	 usleep(sys_trans_redo_data_writer.sleep_micro_seconds);
   }
   // 将当前未刷盘的 fwrite 缓冲区，刷盘
+  DEBUG("fflush_redo_log_manager()\n");
  fflush_redo_log_manager();
  // 同步数据
  
@@ -2503,3 +2511,4 @@ int redo(char * path,char * start_str_in)
 #endif
 
 #endif 
+
