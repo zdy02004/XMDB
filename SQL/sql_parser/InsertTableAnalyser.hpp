@@ -24,8 +24,8 @@ rapidjson::Value    *root;
 rapidjson::Document *doc;
 int                  is_replace;
 std::string table_name;
-std::vector<std::string> elements; //ËùÓĞ×Ö¶ÎÃû³Æ
-std::vector<std::string> values;   //ËùÓĞ×Ö¶ÎÖµ
+std::vector<std::string> elements; //æ‰€æœ‰å­—æ®µåç§°
+std::vector<std::string> values;   //æ‰€æœ‰å­—æ®µå€¼
 
 
 InsertTableAnalyser(rapidjson::Value *_root,rapidjson::Document *_doc):root(_root),doc(_doc),is_replace(0){get_all();}
@@ -83,12 +83,13 @@ return 0;
 
 int get_values()
 {
-	CPP_DEBUG<<" get_elemets \n";
+	CPP_DEBUG<<" get_values() \n";
+
 
 	rapidjson::Value    *valus = NULL;
 	if( root->HasMember("VALUE_LIST") )
 		{
-			valus =  &(*root)["VALUE_LIST"]["children"];
+			valus =  &(*root)["VALUE_LIST"]["children"][0]["children"][0];
 		}
 		else
 		{
@@ -97,11 +98,13 @@ int get_values()
 		}
 		
 
+
 		std::string value_str;
 			for ( auto &v0 : valus->GetArray() )	
 			{
+				//rapidjson_log( v0 );
 				if( !v0.IsObject() )continue;
-				if( v0.HasMember("tag") && v0["tag"].GetInt() == T_OP_NAME_FIELD )
+				if( v0.HasMember("tag") /*&& v0["tag"].GetInt() == T_OP_NAME_FIELD*/ )
 					{
 						value_str = std::string( v0["str_value_"].GetString() );
 						CPP_DEBUG<<" value_str " << value_str <<std::endl;
@@ -118,20 +121,26 @@ return 0;
 
 int get_insert_info()
 {
+	CPP_DEBUG<<" get_insert_info() \n";
+
 	rapidjson::Value    *info = NULL;
 	if( root->HasMember("REPLACE_OR_INSERT") )
 		{
 			info =  &(*root)["REPLACE_OR_INSERT"];
+			CPP_DEBUG<<" Has REPLACE_OR_INSERT " <<std::endl;
+
 		}
 		else
 		{
 			return 0;
 		}
 		
-		std::string is_replace_str = (*info)["value_"].GetString();
-		if( is_replace_str == "1" )is_replace = 1;
-		
-		
+		//rapidjson_log( info );
+		if (info->HasMember("value_") )		is_replace = ( (*info)["value_"]).GetInt() ;		
+			
+	 CPP_DEBUG<<" get_insert_info() end \n";
+
+		return 0;
 }
 
 int check_values_num()
@@ -156,13 +165,12 @@ int get_all()
 	if( ret )return ret;
 	ret =get_insert_info() ;
 	if( ret )return ret;
+	CPP_DEBUG<<"get_all end "<<std::endl;
+
 	return 0;
 
 }
 
 
 };
-
-
-
 #endif
