@@ -45,7 +45,7 @@ bool	find_Addr(finded_Addr_t & mapAddr,long block_no,long long record_num)
 		
 }
 
-//æ’å…¥ä¸€ä¸ªæ•´å‹ç´¢å¼•çš„æ•°æ®,ä¿è¯æ¯ä¸ªæ¡¶ç›¸åŒçš„ val ç›¸é‚»
+//²åÈëÒ»¸öÕûĞÍË÷ÒıµÄÊı¾İ,±£Ö¤Ã¿¸öÍ°ÏàÍ¬µÄ val ÏàÁÚ
 
 inline int mem_skiplist_index_scanAddr_long(  
                                 mem_table_t *mem_table,
@@ -53,7 +53,7 @@ inline int mem_skiplist_index_scanAddr_long(
                         /* in */mem_skiplist_entry_t *in             ,
                                 mem_skiplist_entry_t **last_find_entry,
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›†
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
   DEBUG("mem_skiplist_index_scanAddr_long() start!\n");
@@ -67,7 +67,7 @@ inline int mem_skiplist_index_scanAddr_long(
  												 							&finded_entry))
  	{
  		DEBUG("Pass in lowest level in skiplist_space!\n");
- 		//æ’å…¥ç»“æœé›†
+ 		//²åÈë½á¹û¼¯
  		ret = get_record( mem_table, finded_entry->block_no, finded_entry->record_num,  &return_record_ptr);
    	if(!ret)
 		{
@@ -86,7 +86,7 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
  			in,
  			&finded_entry ))
  			{
- 				//æ’å…¥ç»“æœé›†
+ 				//²åÈë½á¹û¼¯
  				ret = get_record( mem_table, finded_entry->block_no, finded_entry->record_num,  &return_record_ptr);
    			if(!ret)
 				{
@@ -109,7 +109,7 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 
 
 
-//æ’å…¥ä¸€ä¸ªæ•´å‹ç´¢å¼•çš„æ•°æ®,ä¿è¯æ¯ä¸ªæ¡¶ç›¸åŒçš„ val ç›¸é‚»
+//²åÈëÒ»¸öÕûĞÍË÷ÒıµÄÊı¾İ,±£Ö¤Ã¿¸öÍ°ÏàÍ¬µÄ val ÏàÁÚ
 
 inline int mem_skiplist_index_scanAddr_str(  
                                 mem_table_t *mem_table,
@@ -117,7 +117,7 @@ inline int mem_skiplist_index_scanAddr_str(
                         /* in */mem_skiplist_entry_t *in             ,
                         		    mem_skiplist_entry_t **last_find_entry,
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›†
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
   DEBUG("mem_skiplist_index_scanAddr_str() start!\n");
@@ -134,7 +134,7 @@ inline int mem_skiplist_index_scanAddr_str(
  												 							&finded_entry))
  	{
  		DEBUG("Pass in lowest level in skiplist_space!\n");
- 		//æ’å…¥ç»“æœé›†
+ 		//²åÈë½á¹û¼¯
  		ret = get_record( mem_table, finded_entry->block_no, finded_entry->record_num,  &return_record_ptr);
    	if(!ret)
 		{
@@ -153,7 +153,7 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
  			in,
  			&finded_entry ))
  			{
- 				//æ’å…¥ç»“æœé›†
+ 				//²åÈë½á¹û¼¯
  				ret = get_record( mem_table, finded_entry->block_no, finded_entry->record_num,  &return_record_ptr);
    			if(!ret)
 				{
@@ -173,7 +173,7 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 	return 0;
 }
 
-//  å°†æœ¬å±‚ prevåˆ°  <= in->lkey çš„èŠ‚ç‚¹ï¼Œæ‰«æå‡ºæ¥
+//  ½«±¾²ã prevµ½  <= in->lkey µÄ½Úµã£¬É¨Ãè³öÀ´
 
 inline int mem_skiplist_LE_scanAddr(
 												mem_table_t *mem_table,
@@ -182,10 +182,10 @@ inline int mem_skiplist_LE_scanAddr(
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
  												finded_Addr_t & finded_Addr, 
-												finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›† 
+												finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯ 
  											 )
 {
-	//å³æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
+	//ÓÒÖ¸Õë ºÍ ËüµÄÊı¾İÖ¸Õë 
 	 record_t 						* right_record = NULL;
 	 mem_skiplist_entry_t * right_entry  = NULL;
 	 record_t 						* prev_record = NULL;
@@ -225,7 +225,7 @@ inline int mem_skiplist_LE_scanAddr(
 	 			right_entry->lkey <= in->lkey            )
 	 			{
 	 				prev_entry = right_entry ;
-	 					//æ’å…¥ç»“æœé›†
+	 					//²åÈë½á¹û¼¯
  					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
  					mem_skiplist_entry_t * finded_entry = right_entry;
    				if(!ret)
@@ -251,7 +251,7 @@ inline int mem_skiplist_LE_scanAddr(
 }
 
 
-//  å°†æœ¬å±‚ prevåˆ°  <= in->lkey çš„èŠ‚ç‚¹ï¼Œæ‰«æå‡ºæ¥
+//  ½«±¾²ã prevµ½  <= in->lkey µÄ½Úµã£¬É¨Ãè³öÀ´
 
 inline int mem_skiplist_LE_scanAddr_str(
 												mem_table_t *mem_table,
@@ -260,10 +260,10 @@ inline int mem_skiplist_LE_scanAddr_str(
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
  												finded_Addr_t & finded_Addr, 
-												finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›† 
+												finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯ 
  											 )
 {
-	//å³æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
+	//ÓÒÖ¸Õë ºÍ ËüµÄÊı¾İÖ¸Õë 
 	 record_t 						* right_record = NULL;
 	 mem_skiplist_entry_t * right_entry  = NULL;
 	 record_t 						* prev_record = NULL;
@@ -302,7 +302,7 @@ inline int mem_skiplist_LE_scanAddr_str(
 	 			strcmp( right_entry->ckey,in->ckey ) <= 0            )
 	 			{
 	 				prev_entry = right_entry ;
-	 					//æ’å…¥ç»“æœé›†
+	 					//²åÈë½á¹û¼¯
  					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
  					mem_skiplist_entry_t * finded_entry = right_entry;
 
@@ -328,7 +328,7 @@ inline int mem_skiplist_LE_scanAddr_str(
 }
 
 
-//  å°†æœ¬å±‚ prevåˆ°  < in->lkey çš„èŠ‚ç‚¹ï¼Œæ‰«æå‡ºæ¥
+//  ½«±¾²ã prevµ½  < in->lkey µÄ½Úµã£¬É¨Ãè³öÀ´
 
 inline int mem_skiplist_L_scanAddr(
 												mem_table_t *mem_table,
@@ -337,10 +337,10 @@ inline int mem_skiplist_L_scanAddr(
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
  												finded_Addr_t & finded_Addr, 
-												finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›† 
+												finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯ 
  											 )
 {
-	//å³æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
+	//ÓÒÖ¸Õë ºÍ ËüµÄÊı¾İÖ¸Õë 
 	 record_t 						* right_record = NULL;
 	 mem_skiplist_entry_t * right_entry  = NULL;
 	 record_t 						* prev_record = NULL;
@@ -379,7 +379,7 @@ inline int mem_skiplist_L_scanAddr(
 	 			right_entry->lkey < in->lkey            )
 	 			{
 	 				prev_entry = right_entry ;
-	 					//æ’å…¥ç»“æœé›†
+	 					//²åÈë½á¹û¼¯
  					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
  					mem_skiplist_entry_t * finded_entry = right_entry;
 
@@ -405,7 +405,7 @@ inline int mem_skiplist_L_scanAddr(
 }
 
 
-//  å°†æœ¬å±‚ prevåˆ°  < in->ckey çš„èŠ‚ç‚¹ï¼Œæ‰«æå‡ºæ¥
+//  ½«±¾²ã prevµ½  < in->ckey µÄ½Úµã£¬É¨Ãè³öÀ´
 
 inline int mem_skiplist_L_scanAddr_str(
 												mem_table_t *mem_table,
@@ -414,10 +414,10 @@ inline int mem_skiplist_L_scanAddr_str(
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
  												finded_Addr_t & finded_Addr, 
-												finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›† 
+												finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯ 
  											 )
 {
-	//å³æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
+	//ÓÒÖ¸Õë ºÍ ËüµÄÊı¾İÖ¸Õë 
 	 record_t 						* right_record = NULL;
 	 mem_skiplist_entry_t * right_entry  = NULL;
 	 record_t 						* prev_record = NULL;
@@ -456,7 +456,7 @@ inline int mem_skiplist_L_scanAddr_str(
 	 			strcmp( right_entry->ckey,in->ckey ) < 0            )
 	 			{
 	 				prev_entry = right_entry ;
-	 					//æ’å…¥ç»“æœé›†
+	 					//²åÈë½á¹û¼¯
  					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
  					mem_skiplist_entry_t * finded_entry = right_entry;
 
@@ -483,7 +483,7 @@ inline int mem_skiplist_L_scanAddr_str(
 
 //__________________________________________________________________________________
 
-//  è·å¾—æœ¬å±‚ > lkeyçš„å‰ç»§èŠ‚ç‚¹
+//  »ñµÃ±¾²ã > lkeyµÄÇ°¼Ì½Úµã
 
 inline int mem_skiplist_G_scanAddr(mem_table_t *mem_table,
 												mem_skiplist_index_t *mem_skiplist_index, 
@@ -491,10 +491,10 @@ inline int mem_skiplist_G_scanAddr(mem_table_t *mem_table,
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
  												finded_Addr_t & finded_Addr, 
-												finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›† 
+												finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯ 
  											 )
 {
-	//å³æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
+	//ÓÒÖ¸Õë ºÍ ËüµÄÊı¾İÖ¸Õë 
 	 record_t 						* right_record = NULL;
 	 mem_skiplist_entry_t * right_entry  = NULL;
 	 record_t 						* prev_record = NULL;
@@ -534,7 +534,7 @@ inline int mem_skiplist_G_scanAddr(mem_table_t *mem_table,
 	 			right_entry->lkey > in->lkey            )
 	 			{
 	 				prev_entry = right_entry ;
-	 					//æ’å…¥ç»“æœé›†
+	 					//²åÈë½á¹û¼¯
  					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
  					mem_skiplist_entry_t * finded_entry = right_entry;
 
@@ -559,7 +559,7 @@ inline int mem_skiplist_G_scanAddr(mem_table_t *mem_table,
 	  return 0;
 }
 
-//  è·å¾—æœ¬å±‚ >= lkeyçš„å‰ç»§èŠ‚ç‚¹
+//  »ñµÃ±¾²ã >= lkeyµÄÇ°¼Ì½Úµã
 
 inline int mem_skiplist_GE_scanAddr(mem_table_t *mem_table,
 												mem_skiplist_index_t *mem_skiplist_index, 
@@ -567,10 +567,10 @@ inline int mem_skiplist_GE_scanAddr(mem_table_t *mem_table,
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
  												finded_Addr_t & finded_Addr, 
-												finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›† 
+												finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯ 
  											 )
 {
-	//å³æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
+	//ÓÒÖ¸Õë ºÍ ËüµÄÊı¾İÖ¸Õë 
 	 record_t 						* right_record = NULL;
 	 mem_skiplist_entry_t * right_entry  = NULL;
 	 record_t 						* prev_record = NULL;
@@ -609,7 +609,7 @@ inline int mem_skiplist_GE_scanAddr(mem_table_t *mem_table,
 	 			right_entry->lkey >= in->lkey            )
 	 			{
 	 				prev_entry = right_entry ;
-	 					//æ’å…¥ç»“æœé›†
+	 					//²åÈë½á¹û¼¯
  					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
  					mem_skiplist_entry_t * finded_entry = right_entry;
 
@@ -638,7 +638,7 @@ inline int mem_skiplist_GE_scanAddr(mem_table_t *mem_table,
 
 
 
-//  è·å¾—æœ¬å±‚ > ckeyçš„å‰ç»§èŠ‚ç‚¹
+//  »ñµÃ±¾²ã > ckeyµÄÇ°¼Ì½Úµã
 
 inline int mem_skiplist_G_scanAddr_str(mem_table_t *mem_table,
 												mem_skiplist_index_t *mem_skiplist_index, 
@@ -646,10 +646,10 @@ inline int mem_skiplist_G_scanAddr_str(mem_table_t *mem_table,
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
  												finded_Addr_t & finded_Addr, 
-												finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›† 
+												finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯ 
  											 )
 {
-	//å³æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
+	//ÓÒÖ¸Õë ºÍ ËüµÄÊı¾İÖ¸Õë 
 	 record_t 						* right_record = NULL;
 	 mem_skiplist_entry_t * right_entry  = NULL;
 	 record_t 						* prev_record = NULL;
@@ -688,7 +688,7 @@ inline int mem_skiplist_G_scanAddr_str(mem_table_t *mem_table,
 	 			strcmp( right_entry->ckey , in->ckey ) > 0   )
 	 			{
 	 				prev_entry = right_entry ;
-	 					//æ’å…¥ç»“æœé›†
+	 					//²åÈë½á¹û¼¯
  					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
    				mem_skiplist_entry_t * finded_entry = right_entry;
    				if(!ret)
@@ -714,7 +714,7 @@ inline int mem_skiplist_G_scanAddr_str(mem_table_t *mem_table,
 }
 
 
-//  è·å¾—æœ¬å±‚ >= ckeyçš„å‰ç»§èŠ‚ç‚¹
+//  »ñµÃ±¾²ã >= ckeyµÄÇ°¼Ì½Úµã
 
 inline int mem_skiplist_GE_scanAddr_str(mem_table_t *mem_table,
 												mem_skiplist_index_t *mem_skiplist_index, 
@@ -722,10 +722,10 @@ inline int mem_skiplist_GE_scanAddr_str(mem_table_t *mem_table,
  												mem_skiplist_entry_t *in,
  												mem_skiplist_entry_t **last_find_entry,
  												finded_Addr_t & finded_Addr, 
-												finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›† 
+												finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯ 
  											 )
 {
-	//å³æŒ‡é’ˆ å’Œ å®ƒçš„æ•°æ®æŒ‡é’ˆ 
+	//ÓÒÖ¸Õë ºÍ ËüµÄÊı¾İÖ¸Õë 
 	 record_t 						* right_record = NULL;
 	 mem_skiplist_entry_t * right_entry  = NULL;
 	 record_t 						* prev_record = NULL;
@@ -764,7 +764,7 @@ inline int mem_skiplist_GE_scanAddr_str(mem_table_t *mem_table,
 	 			strcmp( right_entry->ckey , in->ckey ) >= 0   )
 	 			{
 	 				prev_entry = right_entry ;
-	 					//æ’å…¥ç»“æœé›†
+	 					//²åÈë½á¹û¼¯
  					ret = get_record( mem_table, right_entry->block_no, right_entry->record_num,  &return_record_ptr);
  					mem_skiplist_entry_t * finded_entry = right_entry;
 
@@ -800,7 +800,7 @@ inline int mem_skiplist_index_scanAddr_long_btw(
                         /* in */mem_skiplist_entry_t *max             ,
                           			mem_skiplist_entry_t **last_find_entry,
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›†
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
 if(!mem_skiplist_index_scanAddr_long(  
@@ -809,7 +809,7 @@ if(!mem_skiplist_index_scanAddr_long(
                         				 min             ,
                         				 last_find_entry,
                           			 finded_Addr,
-																 ret_list		    //åŸå§‹ç»“æœé›†
+																 ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 ){
 		DEBUG("return  mem_skiplist_LE_scan,last_find_entry is %0x \n",*last_find_entry	);
@@ -820,7 +820,7 @@ if(!mem_skiplist_index_scanAddr_long(
 										  max,
 										  last_find_entry,
 										  finded_Addr,
-										  ret_list		    //åŸå§‹ç»“æœé›† 
+										  ret_list		    //Ô­Ê¼½á¹û¼¯ 
 									 );
 }
 
@@ -835,7 +835,7 @@ inline int mem_skiplist_index_scanAddr_str_btw(
                         /* in */mem_skiplist_entry_t *max             ,
                           			mem_skiplist_entry_t **last_find_entry,
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›†
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
 if(!mem_skiplist_index_scanAddr_str(  
@@ -844,7 +844,7 @@ if(!mem_skiplist_index_scanAddr_str(
                         				 min             ,
                         				 last_find_entry,
                           			 finded_Addr,
-																 ret_list		    //åŸå§‹ç»“æœé›†
+																 ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 ){
 		return  mem_skiplist_LE_scanAddr_str(
@@ -854,14 +854,14 @@ if(!mem_skiplist_index_scanAddr_str(
 										  max,
 										  last_find_entry,
 										  finded_Addr,
-										  ret_list		    //åŸå§‹ç»“æœé›† 
+										  ret_list		    //Ô­Ê¼½á¹û¼¯ 
 									 );
 }
 
 }
 
 //-------------------------------------------------------------------------------------------
-//æ‰«ææ‰€æœ‰ < æŸä¸ªæ•°çš„ç»“æœé›†
+//É¨ÃèËùÓĞ < Ä³¸öÊıµÄ½á¹û¼¯
 
 inline int mem_skiplist_index_scanAddr_long_L(  
                                 mem_table_t *mem_table,
@@ -869,10 +869,10 @@ inline int mem_skiplist_index_scanAddr_long_L(
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›†
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
-//1.ä»æœ€ä½å±‚å¼€å§‹æ‰¾
+//1.´Ó×îµÍ²ã¿ªÊ¼ÕÒ
 	mem_skiplist_entry_t * prev_entry;
 	struct record_t *      prev_record;
 	int err = 0;
@@ -883,7 +883,7 @@ inline int mem_skiplist_index_scanAddr_long_L(
    	
 	 
 
-	//è·å¾—æœ€ä½å±‚å¤´èŠ‚ç‚¹
+	//»ñµÃ×îµÍ²ãÍ·½Úµã
 	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index, 1 );
 	  prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE );
 	
@@ -905,7 +905,7 @@ inline int mem_skiplist_index_scanAddr_long_L(
 	 	//if( mem_skiplist_index->nil != prev_entry && 
 	 	//	 prev_entry->lkey < in->lkey   )
 	 	//	{
-	 	//			//æ’å…¥ç»“æœé›†
+	 	//			//²åÈë½á¹û¼¯
    	//		if(!ret)
 		//		{
 		//				  
@@ -919,7 +919,7 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 		//		}
 	 	//	
 	 	//	}							 	 						
-// èŒƒå›´æ‰«å…¥
+// ·¶Î§É¨Èë
 		DEBUG("return  mem_skiplist_index_L_scanAddr_long,last_find_entry is %0x \n",*last_find_entry	);
 		return  mem_skiplist_L_scanAddr(
 											mem_table,
@@ -928,12 +928,12 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 										  in,
 										  last_find_entry,
 										  finded_Addr,
-										  ret_list		    //åŸå§‹ç»“æœé›† 
+										  ret_list		    //Ô­Ê¼½á¹û¼¯ 
 									 );
 
 }
 
-//æ‰«ææ‰€æœ‰ <= æŸä¸ªæ•°çš„ç»“æœé›†
+//É¨ÃèËùÓĞ <= Ä³¸öÊıµÄ½á¹û¼¯
 
 inline int mem_skiplist_index_scanAddr_long_LE(  
                                 mem_table_t *mem_table,
@@ -941,10 +941,10 @@ inline int mem_skiplist_index_scanAddr_long_LE(
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›†
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
-//1.ä»æœ€ä½å±‚å¼€å§‹æ‰¾
+//1.´Ó×îµÍ²ã¿ªÊ¼ÕÒ
 	mem_skiplist_entry_t * prev_entry;
 	struct record_t *      prev_record;
 	int err = 0;
@@ -955,7 +955,7 @@ inline int mem_skiplist_index_scanAddr_long_LE(
    	
 	 
 
-	//è·å¾—æœ€ä½å±‚å¤´èŠ‚ç‚¹
+	//»ñµÃ×îµÍ²ãÍ·½Úµã
 	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index, 1 );
 	  prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE );
 	  
@@ -972,7 +972,7 @@ inline int mem_skiplist_index_scanAddr_long_LE(
 	 	*last_find_entry = prev_entry;
 	 	DEBUG("Prepare Serach one %ld\n",in->lkey );	
 	 							 	 						
-// èŒƒå›´æ‰«å…¥
+// ·¶Î§É¨Èë
 		DEBUG("return  mem_skiplist_index_L_scanAddr_long,last_find_entry is %0x \n",*last_find_entry	);
 		return  mem_skiplist_LE_scanAddr(
 											mem_table,
@@ -981,12 +981,12 @@ inline int mem_skiplist_index_scanAddr_long_LE(
 										  in,
 										  last_find_entry,
 										  finded_Addr,
-										  ret_list		    //åŸå§‹ç»“æœé›† 
+										  ret_list		    //Ô­Ê¼½á¹û¼¯ 
 									 );
 
 }
 
-//æ‰«ææ‰€æœ‰ > æŸä¸ªæ•°çš„ç»“æœé›†
+//É¨ÃèËùÓĞ > Ä³¸öÊıµÄ½á¹û¼¯
 
 inline int mem_skiplist_index_scanAddr_long_G(  
                                 mem_table_t *mem_table,
@@ -994,10 +994,10 @@ inline int mem_skiplist_index_scanAddr_long_G(
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›†
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
-//1.ä»æœ€ä½å±‚å¼€å§‹æ‰¾
+//1.´Ó×îµÍ²ã¿ªÊ¼ÕÒ
 	mem_skiplist_entry_t * prev_entry;
 	struct record_t *      prev_record;
 	int err = 0;
@@ -1008,7 +1008,7 @@ inline int mem_skiplist_index_scanAddr_long_G(
    	
 	 
 
-	//è·å¾—å¯¹åº”èŠ‚ç‚¹
+	//»ñµÃ¶ÔÓ¦½Úµã
 	 err = mem_skiplist_search( mem_skiplist_index,
  												in,
  												last_find_entry
@@ -1023,7 +1023,7 @@ inline int mem_skiplist_index_scanAddr_long_G(
 	 	 if( (*last_find_entry)->lkey > in->lkey   )
 	 			{
 	 				mem_skiplist_entry_t *finded_entry = *last_find_entry;
-	 					//æ’å…¥ç»“æœé›†
+	 					//²åÈë½á¹û¼¯
    				if(!ret)
 					{
 							  
@@ -1035,7 +1035,7 @@ inline int mem_skiplist_index_scanAddr_long_G(
 					}
 	 			
 	 			}							 	 						
-// èŒƒå›´æ‰«å…¥
+// ·¶Î§É¨Èë
 		DEBUG("return  mem_skiplist_index_L_scanAddr_long,last_find_entry is %0x \n",*last_find_entry	);
 		return  mem_skiplist_G_scanAddr(
 											mem_table,
@@ -1044,12 +1044,12 @@ inline int mem_skiplist_index_scanAddr_long_G(
 										  in,
 										  last_find_entry,
 										  finded_Addr,
-										  ret_list		    //åŸå§‹ç»“æœé›† 
+										  ret_list		    //Ô­Ê¼½á¹û¼¯ 
 									 );
 
 }
 
-//æ‰«ææ‰€æœ‰ >= æŸä¸ªæ•°çš„ç»“æœé›†
+//É¨ÃèËùÓĞ >= Ä³¸öÊıµÄ½á¹û¼¯
 
 inline int mem_skiplist_index_scanAddr_long_GE(  
                                 mem_table_t *mem_table,
@@ -1057,10 +1057,10 @@ inline int mem_skiplist_index_scanAddr_long_GE(
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›†
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
-//1.ä»æœ€ä½å±‚å¼€å§‹æ‰¾
+//1.´Ó×îµÍ²ã¿ªÊ¼ÕÒ
 	mem_skiplist_entry_t * prev_entry;
 	struct record_t *      prev_record;
 	int err = 0;
@@ -1071,7 +1071,7 @@ inline int mem_skiplist_index_scanAddr_long_GE(
    	
 	 
 
-	//è·å¾—å¯¹åº”èŠ‚ç‚¹
+	//»ñµÃ¶ÔÓ¦½Úµã
 	 err = mem_skiplist_search( mem_skiplist_index,
  												in,
  												last_find_entry
@@ -1086,7 +1086,7 @@ inline int mem_skiplist_index_scanAddr_long_GE(
 	 	 if( (*last_find_entry)->lkey >= in->lkey   )
 	 			{
 	 				mem_skiplist_entry_t *finded_entry = *last_find_entry;
-	 					//æ’å…¥ç»“æœé›†
+	 					//²åÈë½á¹û¼¯
    				if(!ret)
 					{
 							  
@@ -1098,7 +1098,7 @@ inline int mem_skiplist_index_scanAddr_long_GE(
 					}
 	 			
 	 			}							 	 						
-// èŒƒå›´æ‰«å…¥
+// ·¶Î§É¨Èë
 		DEBUG("return  mem_skiplist_index_L_scanAddr_long,last_find_entry is %0x \n",*last_find_entry	);
 		return  mem_skiplist_GE_scanAddr(
 											mem_table,
@@ -1107,12 +1107,12 @@ inline int mem_skiplist_index_scanAddr_long_GE(
 										  in,
 										  last_find_entry,
 										  finded_Addr,
-										  ret_list		    //åŸå§‹ç»“æœé›† 
+										  ret_list		    //Ô­Ê¼½á¹û¼¯ 
 									 );
 
 }
 
-//æ‰«ææ‰€æœ‰ < æŸä¸ªæ•°çš„ç»“æœé›†
+//É¨ÃèËùÓĞ < Ä³¸öÊıµÄ½á¹û¼¯
 
 inline int mem_skiplist_index_scanAddr_str_L(  
                                 mem_table_t *mem_table,
@@ -1120,10 +1120,10 @@ inline int mem_skiplist_index_scanAddr_str_L(
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›†
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
-//1.ä»æœ€ä½å±‚å¼€å§‹æ‰¾
+//1.´Ó×îµÍ²ã¿ªÊ¼ÕÒ
 	mem_skiplist_entry_t * prev_entry;
 	struct record_t *      prev_record;
 	int err = 0;
@@ -1134,7 +1134,7 @@ inline int mem_skiplist_index_scanAddr_str_L(
    	
 	 
 
-	//è·å¾—æœ€ä½å±‚å¤´èŠ‚ç‚¹
+	//»ñµÃ×îµÍ²ãÍ·½Úµã
 	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index, 1 );
 	  prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE );
 	  
@@ -1151,7 +1151,7 @@ inline int mem_skiplist_index_scanAddr_str_L(
 	 	*last_find_entry = prev_entry;
 	 	DEBUG("Prepare Serach one %ld\n",in->lkey );	
 						 	 						
-// èŒƒå›´æ‰«å…¥
+// ·¶Î§É¨Èë
 		DEBUG("return  mem_skiplist_index_L_scanAddr_long,last_find_entry is %0x \n",*last_find_entry	);
 		return  mem_skiplist_L_scanAddr_str(
 											mem_table,
@@ -1160,12 +1160,12 @@ inline int mem_skiplist_index_scanAddr_str_L(
 										  in,
 										  last_find_entry,
 										  finded_Addr,
-										  ret_list		    //åŸå§‹ç»“æœé›† 
+										  ret_list		    //Ô­Ê¼½á¹û¼¯ 
 									 );
 
 }
 
-//æ‰«ææ‰€æœ‰ <= æŸä¸ªæ•°çš„ç»“æœé›†
+//É¨ÃèËùÓĞ <= Ä³¸öÊıµÄ½á¹û¼¯
 
 inline int mem_skiplist_index_scanAddr_str_LE(  
                                 mem_table_t *mem_table,
@@ -1173,10 +1173,10 @@ inline int mem_skiplist_index_scanAddr_str_LE(
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›†
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
-//1.ä»æœ€ä½å±‚å¼€å§‹æ‰¾
+//1.´Ó×îµÍ²ã¿ªÊ¼ÕÒ
 	mem_skiplist_entry_t * prev_entry;
 	struct record_t *      prev_record;
 	int err = 0;
@@ -1187,7 +1187,7 @@ inline int mem_skiplist_index_scanAddr_str_LE(
    	
 	 
 
-	//è·å¾—æœ€ä½å±‚å¤´èŠ‚ç‚¹
+	//»ñµÃ×îµÍ²ãÍ·½Úµã
 	  prev_entry = mem_skiplist_getlevel_head( mem_skiplist_index, 1 );
 	  prev_record = (struct record_t *)( (char *)prev_entry - RECORD_HEAD_SIZE );
 	  
@@ -1204,7 +1204,7 @@ inline int mem_skiplist_index_scanAddr_str_LE(
 	 	*last_find_entry = prev_entry;
 	 	DEBUG("Prepare Serach one %ld\n",in->lkey );	
 	 							 	 						
-// èŒƒå›´æ‰«å…¥
+// ·¶Î§É¨Èë
 		DEBUG("return  mem_skiplist_index_L_scanAddr_long,last_find_entry is %0x \n",*last_find_entry	);
 		return  mem_skiplist_LE_scanAddr_str(
 											mem_table,
@@ -1213,12 +1213,12 @@ inline int mem_skiplist_index_scanAddr_str_LE(
 										  in,
 										  last_find_entry,
 										  finded_Addr,
-										  ret_list		    //åŸå§‹ç»“æœé›† 
+										  ret_list		    //Ô­Ê¼½á¹û¼¯ 
 									 );
 
 }
 
-//æ‰«ææ‰€æœ‰ > æŸä¸ªæ•°çš„ç»“æœé›†
+//É¨ÃèËùÓĞ > Ä³¸öÊıµÄ½á¹û¼¯
 
 inline int mem_skiplist_index_scanAddr_str_G(  
                                 mem_table_t *mem_table,
@@ -1226,10 +1226,10 @@ inline int mem_skiplist_index_scanAddr_str_G(
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›†
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
-//1.ä»æœ€ä½å±‚å¼€å§‹æ‰¾
+//1.´Ó×îµÍ²ã¿ªÊ¼ÕÒ
 	mem_skiplist_entry_t * prev_entry;
 	struct record_t *      prev_record;
 	int err = 0;
@@ -1240,7 +1240,7 @@ inline int mem_skiplist_index_scanAddr_str_G(
    	
 	 
 
-	//è·å¾—å¯¹åº”èŠ‚ç‚¹
+	//»ñµÃ¶ÔÓ¦½Úµã
 	 err = mem_skiplist_search_str( mem_skiplist_index,
  												in,
  												last_find_entry
@@ -1256,7 +1256,7 @@ inline int mem_skiplist_index_scanAddr_str_G(
 	 			{
 	 				mem_skiplist_entry_t *finded_entry = *last_find_entry;
 
-	 					//æ’å…¥ç»“æœé›†
+	 					//²åÈë½á¹û¼¯
    				if(!ret)
 					{
 							  
@@ -1268,7 +1268,7 @@ inline int mem_skiplist_index_scanAddr_str_G(
 					}
 	 			
 	 			}							 	 						
-// èŒƒå›´æ‰«å…¥
+// ·¶Î§É¨Èë
 		DEBUG("return  mem_skiplist_index_L_scanAddr_long,last_find_entry is %0x \n",*last_find_entry	);
 		return  mem_skiplist_G_scanAddr_str(
 											mem_table,
@@ -1277,12 +1277,12 @@ inline int mem_skiplist_index_scanAddr_str_G(
 										  in,
 										  last_find_entry,
 										  finded_Addr,
-										  ret_list		    //åŸå§‹ç»“æœé›† 
+										  ret_list		    //Ô­Ê¼½á¹û¼¯ 
 									 );
 
 }
 
-//æ‰«ææ‰€æœ‰ >= æŸä¸ªæ•°çš„ç»“æœé›†
+//É¨ÃèËùÓĞ >= Ä³¸öÊıµÄ½á¹û¼¯
 
 inline int mem_skiplist_index_scanAddr_str_GE(  
                                 mem_table_t *mem_table,
@@ -1290,10 +1290,10 @@ inline int mem_skiplist_index_scanAddr_str_GE(
                         /* in */mem_skiplist_entry_t *in             ,
                           			mem_skiplist_entry_t **last_find_entry,
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›†
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
-//1.ä»æœ€ä½å±‚å¼€å§‹æ‰¾
+//1.´Ó×îµÍ²ã¿ªÊ¼ÕÒ
 	mem_skiplist_entry_t * prev_entry;
 	struct record_t *      prev_record;
 	int err = 0;
@@ -1304,7 +1304,7 @@ inline int mem_skiplist_index_scanAddr_str_GE(
    	
 	 
 
-	//è·å¾—å¯¹åº”èŠ‚ç‚¹
+	//»ñµÃ¶ÔÓ¦½Úµã
 	 err = mem_skiplist_search_str( mem_skiplist_index,
  												in,
  												last_find_entry
@@ -1319,7 +1319,7 @@ inline int mem_skiplist_index_scanAddr_str_GE(
 	 	 if( strcmp( (*last_find_entry)->ckey , in->ckey ) >= 0    )
 	 			{
 	 				mem_skiplist_entry_t *finded_entry = *last_find_entry;
-	 					//æ’å…¥ç»“æœé›†
+	 					//²åÈë½á¹û¼¯
    				if(!ret)
 					{
 							  
@@ -1331,7 +1331,7 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 					}
 	 			
 	 			}							 	 						
-// èŒƒå›´æ‰«å…¥
+// ·¶Î§É¨Èë
 		DEBUG("return  mem_skiplist_index_L_scanAddr_long,last_find_entry is %0x \n",*last_find_entry	);
 		return  mem_skiplist_GE_scanAddr_str(
 											mem_table,
@@ -1340,29 +1340,29 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 										  in,
 										  last_find_entry,
 										  finded_Addr,
-										  ret_list		    //åŸå§‹ç»“æœé›† 
+										  ret_list		    //Ô­Ê¼½á¹û¼¯ 
 									 );
 
 }
 
 
 
-	//æ’å…¥ä¸€ä¸ªæ•´å‹ç´¢å¼•çš„æ•°æ®,ä¿è¯æ¯ä¸ªæ¡¶ç›¸åŒçš„ val ç›¸é‚»
+	//²åÈëÒ»¸öÕûĞÍË÷ÒıµÄÊı¾İ,±£Ö¤Ã¿¸öÍ°ÏàÍ¬µÄ val ÏàÁÚ
 inline int mem_hash_index_scanAddr_long(
                                 mem_table_t *mem_table,
                         /* in */struct mem_hash_index_t * mem_hash_index ,
                         /* in */unsigned  long          key              ,
-                        /* in */int (*hash_fun)(unsigned  long      ,    /*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/struct  mem_block_t *,unsigned  long      *),
+                        /* in */int (*hash_fun)(unsigned  long      ,    /*·µ»Ø¹şÏ£±íµÄĞĞºÅ*/struct  mem_block_t *,unsigned  long      *),
                           			finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›† 
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯ 
                         )
 {
 	if( NULL == hash_fun  )  return INSERT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	
 	DEBUG("Enter mem_hash_index_scan_long(),key = %ld\n",key);
 
-	//1 array_space ä¸å­˜åœ¨æ•°æ®ï¼Œåˆ™å­˜å…¥æ•°æ®
-	//2 array_space å­˜åœ¨æ•°æ®ï¼Œlink_space ä¸å­˜åœ¨æ•°æ®ï¼Œæ’å…¥link_space
-	//3 å­˜åœ¨æ•°æ®ï¼Œlink_space  å­˜åœ¨æ•°æ®ï¼Œæ’å…¥link_spaceæœ€è¿‘çš„åœ°æ–¹
+	//1 array_space ²»´æÔÚÊı¾İ£¬Ôò´æÈëÊı¾İ
+	//2 array_space ´æÔÚÊı¾İ£¬link_space ²»´æÔÚÊı¾İ£¬²åÈëlink_space
+	//3 ´æÔÚÊı¾İ£¬link_space  ´æÔÚÊı¾İ£¬²åÈëlink_space×î½üµÄµØ·½
   unsigned  long          record_num_temp      = 0;
   long                    block_no_temp        = 0;
   long                    mem_table_no         = 0;
@@ -1393,16 +1393,16 @@ inline int mem_hash_index_scanAddr_long(
     
    switch(ret)
    {
-   //è¿ç»­ç©ºé—´å†…æ²¡æ‰¾åˆ°ï¼Œå°±ä¸å­˜åœ¨
+   //Á¬Ğø¿Õ¼äÄÚÃ»ÕÒµ½£¬¾Í²»´æÔÚ
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_NOT_FOUND:
    	    {
    	    return ret;
    	    break;
    	  }
-   //è¿ç»­ç©ºé—´å†…æ‰¾åˆ°
+   //Á¬Ğø¿Õ¼äÄÚÕÒµ½
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND:
-   			 //é€šè¿‡ç´¢å¼•è·å¾—æœ€ç»ˆçš„æ•°æ®
-   	    //é€šè¿‡ç´¢å¼•è·å¾—æœ€ç»ˆçš„æ•°æ®
+   			 //Í¨¹ıË÷Òı»ñµÃ×îÖÕµÄÊı¾İ
+   	    //Í¨¹ıË÷Òı»ñµÃ×îÖÕµÄÊı¾İ
    	    ret2 = get_record( mem_table, entry->block_no,  entry->record_num,  &return_record_ptr);
    	    if(!ret2 )
 				{
@@ -1412,7 +1412,7 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 		ret_list.insert( index_Addr(finded_entry->block_no, finded_entry->record_num  ));
 }
 				}
-   //é“¾æ¥ç©ºé—´å†…æ‰¾åˆ°    
+   //Á´½Ó¿Õ¼äÄÚÕÒµ½    
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND:
    	    {
    	    DEBUG("case SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND:\n");
@@ -1437,10 +1437,10 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
    	    );
         if( !record_ptr || record_ptr->is_used == 0)break;
         
-        row_rlock(&(record_ptr->row_lock));                       //ä¸Šè¡Œé”
-        entry = (struct  mem_hash_entry_t *) ((char *)(record_ptr) + RECORD_HEAD_SIZE); //ç›¸ç­‰å°±ä¸€ç›´æ‰¾ä¸‹å»
+        row_rlock(&(record_ptr->row_lock));                       //ÉÏĞĞËø
+        entry = (struct  mem_hash_entry_t *) ((char *)(record_ptr) + RECORD_HEAD_SIZE); //ÏàµÈ¾ÍÒ»Ö±ÕÒÏÂÈ¥
         if(entry->hash_lkey == key) {
-        	//é€šè¿‡ç´¢å¼•è·å¾—æœ€ç»ˆçš„æ•°æ®
+        	//Í¨¹ıË÷Òı»ñµÃ×îÖÕµÄÊı¾İ
    	    ret2 = get_record( mem_table, entry->block_no,  entry->record_num,  &return_record_ptr);
    	    if(!ret2  )
 				{
@@ -1450,17 +1450,17 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 }
 				}
         }
-        else																																						 //å¦åˆ™å°±ä¸æ‰¾äº†
+        else																																						 //·ñÔò¾Í²»ÕÒÁË
         	{
-        	row_runlock(&(record_ptr->row_lock));                        //è§£è¡Œé” 
+        	row_runlock(&(record_ptr->row_lock));                        //½âĞĞËø 
         	break;
           }
-   	    row_runlock(&(record_ptr->row_lock));                        //è§£è¡Œé”
+   	    row_runlock(&(record_ptr->row_lock));                        //½âĞĞËø
         
        }
    	    break;
    	  }
-   //é“¾æ¥ç©ºé—´å†…æ²¡æ‰¾åˆ°ï¼Œå°±æ’å…¥åˆ°è¿ç»­ç©ºé—´åé¢,array_space_entry æ­¤æ—¶æŒ‡å‘å¯¹åº”è¿ç»­ç©ºé—´çš„ä½ç½®
+   //Á´½Ó¿Õ¼äÄÚÃ»ÕÒµ½£¬¾Í²åÈëµ½Á¬Ğø¿Õ¼äºóÃæ,array_space_entry ´ËÊ±Ö¸Ïò¶ÔÓ¦Á¬Ğø¿Õ¼äµÄÎ»ÖÃ
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND:
    	    {
    	    return ret;
@@ -1476,22 +1476,22 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 }
 
 
-//æ’å…¥ä¸€ä¸ªæ•´å‹ç´¢å¼•çš„æ•°æ®,ä¿è¯æ¯ä¸ªæ¡¶ç›¸åŒçš„ val ç›¸é‚»
+//²åÈëÒ»¸öÕûĞÍË÷ÒıµÄÊı¾İ,±£Ö¤Ã¿¸öÍ°ÏàÍ¬µÄ val ÏàÁÚ
 inline int mem_hash_index_scanAddr_str(
                                 mem_table_t *mem_table,
                         /* in */struct mem_hash_index_t * mem_hash_index ,
                         /* in */char                    * key              ,
-                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*æ©æ–¿æ´–éå ç¬‡ç›ã„§æ®‘ç›å±½å½¿*/unsigned  long      *),
+                        /* in */int (*hash_fun)(char *,struct  mem_block_t *,/*è¿”å›å“ˆå¸Œè¡¨çš„è¡Œå·*/unsigned  long      *),
 																finded_Addr_t & finded_Addr, 
-																finded_Addr_t& ret_list		    //åŸå§‹ç»“æœé›† 
+																finded_Addr_t& ret_list		    //Ô­Ê¼½á¹û¼¯ 
                         )
 {
 	if( NULL == hash_fun  )  return INSERT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	
 	DEBUG("Enter mem_hash_index_scan_str(),key = %s\n",key);
 
-	//1 array_space ä¸å­˜åœ¨æ•°æ®ï¼Œåˆ™å­˜å…¥æ•°æ®
-	//2 array_space å­˜åœ¨æ•°æ®ï¼Œlink_space ä¸å­˜åœ¨æ•°æ®ï¼Œæ’å…¥link_space
-	//3 å­˜åœ¨æ•°æ®ï¼Œlink_space  å­˜åœ¨æ•°æ®ï¼Œæ’å…¥link_spaceæœ€è¿‘çš„åœ°æ–¹
+	//1 array_space ²»´æÔÚÊı¾İ£¬Ôò´æÈëÊı¾İ
+	//2 array_space ´æÔÚÊı¾İ£¬link_space ²»´æÔÚÊı¾İ£¬²åÈëlink_space
+	//3 ´æÔÚÊı¾İ£¬link_space  ´æÔÚÊı¾İ£¬²åÈëlink_space×î½üµÄµØ·½
   unsigned  long          record_num_temp = 0;
   long                    block_no_temp   = 0;
   long                    mem_table_no    = 0;
@@ -1523,16 +1523,16 @@ inline int mem_hash_index_scanAddr_str(
     
     switch(ret)
    {
-   //è¿ç»­ç©ºé—´å†…æ²¡æ‰¾åˆ°ï¼Œå°±ä¸å­˜åœ¨
+   //Á¬Ğø¿Õ¼äÄÚÃ»ÕÒµ½£¬¾Í²»´æÔÚ
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_NOT_FOUND:
    	    {
    	    return ret;
    	    break;
    	  }
-   //è¿ç»­ç©ºé—´å†…æ‰¾åˆ°
+   //Á¬Ğø¿Õ¼äÄÚÕÒµ½
    case SELECT_MEM_HASH_INDEX_ARRAY_SPACE_FOUND:
-   			 //é€šè¿‡ç´¢å¼•è·å¾—æœ€ç»ˆçš„æ•°æ®
-   	    //é€šè¿‡ç´¢å¼•è·å¾—æœ€ç»ˆçš„æ•°æ®
+   			 //Í¨¹ıË÷Òı»ñµÃ×îÖÕµÄÊı¾İ
+   	    //Í¨¹ıË÷Òı»ñµÃ×îÖÕµÄÊı¾İ
    	    ret2 = get_record( mem_table, entry->block_no,  entry->record_num,  &return_record_ptr);
    	    if(!ret2  )
 				{
@@ -1541,7 +1541,7 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 		ret_list.insert( index_Addr(finded_entry->block_no, finded_entry->record_num  ));
 }
 				}
-   //é“¾æ¥ç©ºé—´å†…æ‰¾åˆ°    
+   //Á´½Ó¿Õ¼äÄÚÕÒµ½    
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND:
    	    {
    	    DEBUG("case SELECT_MEM_HASH_INDEX_LINKED_SPACE_FOUND:\n");
@@ -1566,10 +1566,10 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
    	    );
         if( !record_ptr || record_ptr->is_used == 0)break;
         
-        row_rlock(&(record_ptr->row_lock));                       //ä¸Šè¡Œé”
-        entry = (struct  mem_hash_entry_t *) ((char *)(record_ptr) + RECORD_HEAD_SIZE); //ç›¸ç­‰å°±ä¸€ç›´æ‰¾ä¸‹å»
+        row_rlock(&(record_ptr->row_lock));                       //ÉÏĞĞËø
+        entry = (struct  mem_hash_entry_t *) ((char *)(record_ptr) + RECORD_HEAD_SIZE); //ÏàµÈ¾ÍÒ»Ö±ÕÒÏÂÈ¥
         if( strcmp( entry->hash_ckey , key) == 0  ) {
-        	//é€šè¿‡ç´¢å¼•è·å¾—æœ€ç»ˆçš„æ•°æ®
+        	//Í¨¹ıË÷Òı»ñµÃ×îÖÕµÄÊı¾İ
    	    ret2 = get_record( mem_table, entry->block_no,  entry->record_num,  &return_record_ptr);
    	    if(!ret2 )
 				{
@@ -1579,17 +1579,17 @@ if( ( !finded_Addr.empty() && find_Addr( finded_Addr,finded_entry->block_no, fin
 }
 				}
         }
-        else																																						 //å¦åˆ™å°±ä¸æ‰¾äº†
+        else																																						 //·ñÔò¾Í²»ÕÒÁË
         	{
-        	row_runlock(&(record_ptr->row_lock));                        //è§£è¡Œé” 
+        	row_runlock(&(record_ptr->row_lock));                        //½âĞĞËø 
         	break;
           }
-   	    row_runlock(&(record_ptr->row_lock));                        //è§£è¡Œé”
+   	    row_runlock(&(record_ptr->row_lock));                        //½âĞĞËø
         
        }
    	    break;
    	  }
-   //é“¾æ¥ç©ºé—´å†…æ²¡æ‰¾åˆ°ï¼Œå°±æ’å…¥åˆ°è¿ç»­ç©ºé—´åé¢,array_space_entry æ­¤æ—¶æŒ‡å‘å¯¹åº”è¿ç»­ç©ºé—´çš„ä½ç½®
+   //Á´½Ó¿Õ¼äÄÚÃ»ÕÒµ½£¬¾Í²åÈëµ½Á¬Ğø¿Õ¼äºóÃæ,array_space_entry ´ËÊ±Ö¸Ïò¶ÔÓ¦Á¬Ğø¿Õ¼äµÄÎ»ÖÃ
    case SELECT_MEM_HASH_INDEX_LINKED_SPACE_NOT_FOUND:
    	    {
    	    return ret;
@@ -1607,8 +1607,8 @@ template<typename record_type >
 inline int merg_index_result(  
                                 mem_table_t *mem_table,
 																finded_Addr_t & finded_Addr, 
-                          			unsigned long long  Tn,                 //å½“å‰äº‹åŠ¡ID
-																std::list<record_type>* ret_list		    //åŸå§‹ç»“æœé›†
+                          			unsigned long long  Tn,                 //µ±Ç°ÊÂÎñID
+																std::list<record_type>* ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
   DEBUG("merg_index_result() start!\n");
@@ -1640,17 +1640,17 @@ template<typename record_type,typename field_list_type >
 inline int merg_index_result_with_prolist_and_conlist(
                                 mem_table_t *mem_table,
 																finded_Addr_t & finded_Addr, 
-																compare_list*com_list,                  //æ¯”è¾ƒå‡½æ•°é“¾
-																field_list_type & field_list,           //åŸå§‹æŠ•å½±å­—æ®µåˆ—è¡¨
-                          			unsigned long long  Tn,                 //å½“å‰äº‹åŠ¡ID
-																std::list<record_type>* ret_list		    //åŸå§‹ç»“æœé›†
+																compare_list*com_list,                  //±È½Ïº¯ÊıÁ´
+																field_list_type & field_list,           //Ô­Ê¼Í¶Ó°×Ö¶ÎÁĞ±í
+                          			unsigned long long  Tn,                 //µ±Ç°ÊÂÎñID
+																std::list<record_type>* ret_list		    //Ô­Ê¼½á¹û¼¯
                         )
 {
   DEBUG("merg_index_result() start!\n");
   int ret = 0;
   struct    record_t   *  return_record_ptr    = 0;
   
-   //æ¡ä»¶å­—æ®µéœ€è¦çš„å˜é‡
+   //Ìõ¼ş×Ö¶ÎĞèÒªµÄ±äÁ¿
    	int j = -1;
 	  int is_ok = 0;
 	  compare_list * com_list_iter = com_list;
@@ -1659,11 +1659,11 @@ inline int merg_index_result_with_prolist_and_conlist(
 	  int  field_used_num = 0;
 	  field_used_num =  mem_table->config.field_used_num;
 
-    //æŠ½å–å­—æ®µéœ€è¦çš„å˜é‡
+    //³éÈ¡×Ö¶ÎĞèÒªµÄ±äÁ¿
     
-    //æ„é€ æŠ½å–å­—æ®µåˆ—è¡¨
+    //¹¹Ôì³éÈ¡×Ö¶ÎÁĞ±í
     std::list<field_t> pro_fields;
-    //æŠ½å–å­—æ®µæ€»é•¿åº¦
+    //³éÈ¡×Ö¶Î×Ü³¤¶È
     size_t  pro_size = 0;
     int k;
     for(auto &one : field_list){
@@ -1689,19 +1689,19 @@ inline int merg_index_result_with_prolist_and_conlist(
  	  ret = get_record( mem_table, v.block_no, v.record_num,  &return_record_ptr);
    	if( !mem_mvcc_read_record(mem_table ,return_record_ptr, (char *)buf,Tn ) )
 		{
-						// å·²ç»åˆ é™¤çš„è¡Œä¸å¤„ç†
+						// ÒÑ¾­É¾³ıµÄĞĞ²»´¦Àí
 						if(return_record_ptr->is_used != 1)continue;
 					  DEBUG("return_record_ptr addr is %0x,return_record_ptr->is_used = %d\n",return_record_ptr,return_record_ptr->is_used);
 
 						is_ok = 1;	
 						while(com_list_iter)
 						{
-						//è·å¾—å­—æ®µåœ¨å­—æ®µè¡¨ä¸­çš„æ’åºä½ç½®
+						//»ñµÃ×Ö¶ÎÔÚ×Ö¶Î±íÖĞµÄÅÅĞòÎ»ÖÃ
 						j = -1;
 	          j = get_field_index(com_list_iter->field_name,mem_table/*,field*/ );
 						DEBUG("get_field_index is %d \n",j);
-						//å¤„ç†æ¯ä¸€è¡Œè®°å½•
-						if( -1 != j && field_used_num != j )//æ¡ä»¶åˆ¤æ–­
+						//´¦ÀíÃ¿Ò»ĞĞ¼ÇÂ¼
+						if( -1 != j && field_used_num != j )//Ìõ¼şÅĞ¶Ï
 						{		
 							  int field_type_nr = fields_table[j].field_type;
 							  //int const field_type_const_nr = const_cast<int >(field_type_nr);

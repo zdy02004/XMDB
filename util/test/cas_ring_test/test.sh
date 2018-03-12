@@ -6,7 +6,7 @@ rm *.o
 rm *2017*
 rm redo*
 clear
-gcc partion_cas_ring.c -g  -I ../../  -lpthread -o partion_cas_ring_test.exe 
+gcc partion_cas_ring.c -g  -lpthread -o partion_cas_ring_test.exe 
 ./partion_cas_ring_test.exe 
 #gdb partion_cas_ring_test.exe  core.*
 

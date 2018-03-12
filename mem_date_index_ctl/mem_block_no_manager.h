@@ -222,6 +222,7 @@ if(NULL == block_name)
 	fe->no   = no;
 	strcpy(fe->__str,block_name);
 	fe->next = 0;
+	DEBUG("STR IS %s,no is %d\n",block_name,no);
 	return set_str_num_map_addr(&block_name_manager,block_name,fe);
 	  return 0;
 }

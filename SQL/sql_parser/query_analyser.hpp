@@ -5,7 +5,6 @@
 #include<string>
 #include "../../util/log/log_util.h"
 
-
 // 生成1个常数1
 rapidjson::Value  * create_const_value(rapidjson::Document::AllocatorType& Allocator){
 rapidjson::Value  * v = new rapidjson::Value;
@@ -125,7 +124,7 @@ struct TableItem
     string    table_name_;  
     string    alias_name_;  
     string    sub_select_alias_name_;
-	mem_table_t *mem_table;
+	  mem_table_t *mem_table;
     TableItem(string & table_name , string & alias_name, string & sub_select_alias_name ):table_name_(table_name),alias_name_(alias_name),sub_select_alias_name_(sub_select_alias_name),mem_table(NULL){}
 };  
 
@@ -147,7 +146,7 @@ struct GroupTarget
 {
 	std::string    relation_name; 
 	std::string    alias_name; 
-    std::string    column_name;  
+  std::string    column_name;  
 	GroupTarget (std::string & _relation_name,  std::string & _column_name ):relation_name(_relation_name),column_name(_column_name){}
 	GroupTarget (const char * _column_name ):column_name(_column_name){}
 
@@ -157,7 +156,7 @@ struct OrderTarget
 {
 	std::string    relation_name; 
 	std::string    alias_name;
-    std::string    column_name;  
+  std::string    column_name;  
 	OrderTarget (std::string & _relation_name,  std::string & _column_name ):relation_name(_relation_name),column_name(_column_name){}
 	OrderTarget (const char * _column_name ):column_name(_column_name){}
 
@@ -881,14 +880,14 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 					CPP_DEBUG<< "聚合函数 in"  <<endl;
 					//聚合函数	
 					aggregat_funs.emplace_back( vv );
-					vv->AddMember("INDEX",cur_index , doc->GetAllocator() );
-					vv->AddMember("IS_AGGREGATE", 1, doc->GetAllocator());
+					if( !vv->HasMember("INDEX") )vv->AddMember("INDEX",cur_index , doc->GetAllocator() );
+					if( !vv->HasMember("IS_AGGREGATE") )vv->AddMember("IS_AGGREGATE", 1, doc->GetAllocator());
 				}
 				else {
 					//普通函数函数	
 					nomal_funs.emplace_back( vv );
-					vv->AddMember("INDEX",cur_index++ , doc->GetAllocator() );
-					vv->AddMember("IS_NOMAL_FUN", 1, doc->GetAllocator());
+					if( !vv->HasMember("INDEX") )vv->AddMember("INDEX",cur_index++ , doc->GetAllocator() );
+					if( !vv->HasMember("IS_NOMAL_FUN") )vv->AddMember("IS_NOMAL_FUN", 1, doc->GetAllocator());
 				}
 			if ( vv->HasMember("children") )resolve_project_list( &(*vv)["children"],level);
 			return;
@@ -898,7 +897,7 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 			//目标上的运算	
 			project_opers.emplace_back( vv );
 			if ( !vv->HasMember("INDEX") )vv->AddMember("INDEX",cur_index++ , doc->GetAllocator() );
-			vv->AddMember("IS_PROJECT_OPER", 1, doc->GetAllocator());
+			if ( !vv->HasMember("IS_PROJECT_OPER") )vv->AddMember("IS_PROJECT_OPER", 1, doc->GetAllocator());
 			if ( vv->HasMember("children") )resolve_project_list(  &(*vv)["children"] ,level);
 			return;
 		}

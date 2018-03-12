@@ -10,7 +10,6 @@
 
 
 #ifdef __cplusplus
-//#include<iostream>
 extern "C" {
 
 #endif
@@ -66,6 +65,7 @@ int GetTimeForNAME(char *buffer)
 
 #ifdef __cplusplus
 #define CPP_DEBUG std::cout<<GetTime()<<" [ " <<__FILE__<<","<<__FUNCTION__<<" () Line: "<<__LINE__<<" ,tid: "<<pthread_self()<<" ] "
+#define CPP_ERROR std::cout<<GetTime()<<" [ " <<__FILE__<<","<<__FUNCTION__<<" () Line: "<<__LINE__<<" ,tid: "<<pthread_self()<<" ]:>>>>Err "
 #endif 
 
 #else  
@@ -74,9 +74,9 @@ int GetTimeForNAME(char *buffer)
 typdedef struct null_log
 {
 	template<class T>
-	void operator << (T a)
+	null_log& operator << (T a)
 	{
-		return;
+		return *this;
 	}
 }null_log;
 #define CPP_DEBUG null_log

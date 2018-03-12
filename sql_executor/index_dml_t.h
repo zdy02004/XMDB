@@ -36,8 +36,8 @@ int get_index_entry_key_type(const field_t & field)
 
 
 
-// å·¥å…·å‡½æ•°
-// è·å¾—ç´¢å¼•key
+// ¹¤¾ßº¯Êı
+// »ñµÃË÷Òıkey
 inline int set_index_entry_key( char * addr , const field_t & field ,mem_hash_entry_t& out ){  
     switch( field.field_type )
     {
@@ -66,8 +66,8 @@ inline int set_index_entry_key( char * addr , const field_t & field ,mem_hash_en
 }
 
 
-// å·¥å…·å‡½æ•°
-// è·å¾—ç´¢å¼•key
+// ¹¤¾ßº¯Êı
+// »ñµÃË÷Òıkey
 inline int set_index_entry_key( char * addr , const field_t & field ,mem_skiplist_entry_t& out ){  
     switch( field.field_type )
     {
@@ -95,7 +95,7 @@ inline int set_index_entry_key( char * addr , const field_t & field ,mem_skiplis
    return 0;
 }
 
-// ç»™ç´¢å¼•é¡¹èµ‹å€¼
+// ¸øË÷ÒıÏî¸³Öµ
 inline int set_index_entry_value(mem_table_t *mem_table, record_t * record_ptr ,mem_hash_entry_t& out ){  
   mem_block_t *mem_block = NULL;
   if(NULL == record_ptr)return RECORD_PTR_IS_NULL;
@@ -108,7 +108,7 @@ inline int set_index_entry_value(mem_table_t *mem_table, record_t * record_ptr ,
   return 0;
 }
 
-// ç»™ç´¢å¼•é¡¹èµ‹å€¼
+// ¸øË÷ÒıÏî¸³Öµ
 inline int set_index_entry_value(mem_table_t *mem_table, record_t * record_ptr ,mem_skiplist_entry_t& out ){  
   mem_block_t *mem_block = NULL;
   if(NULL == record_ptr)return RECORD_PTR_IS_NULL;
@@ -121,11 +121,11 @@ inline int set_index_entry_value(mem_table_t *mem_table, record_t * record_ptr ,
   return 0;
 }
 
-// insert_xxx_scn ç”¨äº online å»ºç´¢å¼•ç³»åˆ—
-int insert_index_scn(mem_hash_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
+// insert_xxx_scn ÓÃÓÚ online ½¨Ë÷ÒıÏµÁĞ
+int insert_index_scn(mem_hash_index_t * mem_index_prt, //Ë÷ÒıÖ¸Õë
 										    mem_hash_entry_t &index_entry, 
 												field_t &  field,
-												record_t * record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+												record_t * record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												record_t ** out_record_ptr,	
 												unsigned long long Tn ,
  												unsigned long long scn  )
@@ -147,8 +147,8 @@ int insert_index_scn(mem_hash_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
                             mem_index_prt ,
                         		&input,
                            out_record_ptr,
-                           Tn,                       //äº‹åŠ¡ID
-                           scn                       //äº‹åŠ¡ID
+                           Tn,                       //ÊÂÎñID
+                           scn                       //ÊÂÎñID
                           );
    }
    
@@ -164,7 +164,7 @@ int insert_index_scn(mem_hash_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
                            mem_index_prt ,
                            &input,
                            out_record_ptr,
-                           Tn,                       //äº‹åŠ¡ID
+                           Tn,                       //ÊÂÎñID
                            scn
                           );
 //  }
@@ -175,10 +175,10 @@ return -1;
 }
 
 
-int insert_index_scn(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
+int insert_index_scn(mem_skiplist_index_t * mem_index_prt, //Ë÷ÒıÖ¸Õë
 										    mem_skiplist_entry_t &index_entry, 
 												field_t &  field,
-												record_t * record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+												record_t * record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												record_t ** out_record_ptr,	
 												unsigned long long Tn ,
  												unsigned long long scn  )
@@ -193,8 +193,8 @@ int insert_index_scn(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
                            mem_index_prt ,
                         	 &index_entry,
                            out_record_ptr,
-                           Tn,                       //äº‹åŠ¡ID
-                           scn                       //äº‹åŠ¡ID
+                           Tn,                       //ÊÂÎñID
+                           scn                       //ÊÂÎñID
                           );
    }
    
@@ -204,8 +204,8 @@ int insert_index_scn(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
                            mem_index_prt ,
                         	 &index_entry,
                            	out_record_ptr,
-                           Tn,                       //äº‹åŠ¡ID
-                           scn                       //äº‹åŠ¡ID
+                           Tn,                       //ÊÂÎñID
+                           scn                       //ÊÂÎñID
                           );
   }
 	
@@ -216,11 +216,11 @@ return -1;
 
 
 
-// insert_xxx ç”¨äº insert æ—¶è§¦å‘å»ºç´¢å¼•
-int insert_index(mem_hash_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
+// insert_xxx ÓÃÓÚ insert Ê±´¥·¢½¨Ë÷Òı
+int insert_index(mem_hash_index_t * mem_index_prt, //Ë÷ÒıÖ¸Õë
 										    mem_hash_entry_t &index_entry, 
 												field_t &  field,
-												record_t * record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+												record_t * record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												record_t ** out_record_ptr,	
 												unsigned long long Tn )
 {
@@ -241,7 +241,7 @@ int insert_index(mem_hash_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
                             mem_index_prt ,
                         		&input,
                            out_record_ptr,
-                           Tn                       //äº‹åŠ¡ID
+                           Tn                       //ÊÂÎñID
                           );
    }
    
@@ -268,10 +268,10 @@ return -1;
 }
 
 
-int insert_index(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
+int insert_index(mem_skiplist_index_t * mem_index_prt, //Ë÷ÒıÖ¸Õë
 										    mem_skiplist_entry_t &index_entry, 
 												field_t &  field,
-												record_t * record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+												record_t * record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
 {
@@ -285,7 +285,7 @@ int insert_index(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
                            mem_index_prt ,
                         	 &index_entry,
                            out_record_ptr,
-                           Tn                       //äº‹åŠ¡ID
+                           Tn                       //ÊÂÎñID
                           );
    }
    
@@ -295,7 +295,7 @@ int insert_index(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
                            mem_index_prt ,
                         	 &index_entry,
                            	out_record_ptr,
-                           Tn                       //äº‹åŠ¡ID
+                           Tn                       //ÊÂÎñID
                           );
   }
 	
@@ -304,11 +304,11 @@ return -1;
 }
 
 
-// del_xxx ç”¨äº del æ—¶è§¦å‘å»ºç´¢å¼•
-int del_index(mem_hash_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
+// del_xxx ÓÃÓÚ del Ê±´¥·¢½¨Ë÷Òı
+int del_index(mem_hash_index_t * mem_index_prt, //Ë÷ÒıÖ¸Õë
 										    mem_hash_entry_t &index_entry, 
 												field_t &  field,
-												record_t * record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+												record_t * record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												record_t ** out_record_ptr,	
 												unsigned long long Tn )
 {
@@ -329,7 +329,7 @@ int del_index(mem_hash_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
                             mem_index_prt ,
                         		&input,
                            out_record_ptr,
-                           Tn,                       //äº‹åŠ¡ID
+                           Tn,                       //ÊÂÎñID
                            1
                           );
    }
@@ -356,10 +356,10 @@ return -1;
 }
 
 
-int del_index(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
+int del_index(mem_skiplist_index_t * mem_index_prt, //Ë÷ÒıÖ¸Õë
 										    mem_skiplist_entry_t &index_entry, 
 												field_t &  field,
-												record_t * record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+												record_t * record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
 {
@@ -372,7 +372,7 @@ int del_index(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
 		return  mem_skiplist_mvcc_delete(                        
                            mem_index_prt ,
                         	 &index_entry,
-                           Tn                       //äº‹åŠ¡ID
+                           Tn                       //ÊÂÎñID
                           );
    }
    
@@ -381,7 +381,7 @@ int del_index(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
 	return mem_skiplist_mvcc_delete_str(                        
                            mem_index_prt ,
                         	 &index_entry,
-                           Tn                       //äº‹åŠ¡ID
+                           Tn                       //ÊÂÎñID
                           );
   }
 	
@@ -389,11 +389,11 @@ int del_index(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
 return -1;
 }
 
-// del_xxx ç”¨äº del æ—¶è§¦å‘å»ºç´¢å¼•
-int update_index(mem_hash_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
+// del_xxx ÓÃÓÚ del Ê±´¥·¢½¨Ë÷Òı
+int update_index(mem_hash_index_t * mem_index_prt, //Ë÷ÒıÖ¸Õë
 										    mem_hash_entry_t &index_entry, 
 												field_t &  field,
-												record_t * record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+												record_t * record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												record_t ** out_record_ptr,	
 												unsigned long long Tn )
 {
@@ -414,7 +414,7 @@ int update_index(mem_hash_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
                             mem_index_prt ,
                         		&input,
                            out_record_ptr,
-                           Tn                       //äº‹åŠ¡ID                           
+                           Tn                       //ÊÂÎñID                           
                           );
    }
    
@@ -440,10 +440,10 @@ return -1;
 }
 
 
-int update_index(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
+int update_index(mem_skiplist_index_t * mem_index_prt, //Ë÷ÒıÖ¸Õë
 										    mem_skiplist_entry_t &index_entry, 
 												field_t &  field,
-												record_t * record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+												record_t * record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
 {
@@ -457,7 +457,7 @@ int update_index(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
                            mem_index_prt ,
                         	 &index_entry,
                         	 out_record_ptr,
-                           Tn                       //äº‹åŠ¡ID
+                           Tn                       //ÊÂÎñID
                           );
    }
    
@@ -467,7 +467,7 @@ int update_index(mem_skiplist_index_t * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
                            mem_index_prt ,
                         	 &index_entry,
                         	 out_record_ptr,
-                           Tn                       //äº‹åŠ¡ID
+                           Tn                       //ÊÂÎñID
                           );
   }
 	
@@ -479,15 +479,15 @@ return -1;
 template<class INDEX_ENTERY_TYPE>
 struct index_dml_t
 {
-mem_table_t *mem_table; // é‚£ä¸ªè¡¨çš„ç´¢å¼•
-std::string field_name;  // å»ºç´¢å¼•çš„å­—æ®µå
+mem_table_t *mem_table; // ÄÇ¸ö±íµÄË÷Òı
+std::string field_name;  // ½¨Ë÷ÒıµÄ×Ö¶ÎÃû
 record_meta       meta;
 record_tuple tuple_one;
 field_t          field;
 int              index_type;
 //mem_hash_entry_t hash_index;
 //mem_skiplist_entry_t skiplist_index;
-INDEX_ENTERY_TYPE     index_entry; // ç´¢å¼•é¡¹
+INDEX_ENTERY_TYPE     index_entry; // Ë÷ÒıÏî
 bool is_init;
 generic_result return_record;
 
@@ -549,27 +549,27 @@ return -1;
 }
 
 
-// ç”¨äºonline å»ºç´¢å¼•
+// ÓÃÓÚonline ½¨Ë÷Òı
 template<class MEM_INDEX_TYPE>
-int insert_into_index_scn(MEM_INDEX_TYPE * mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
-												record_t * record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+int insert_into_index_scn(MEM_INDEX_TYPE * mem_index_prt, //Ë÷ÒıÖ¸Õë
+												record_t * record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												char * buf,
 												record_t ** out_record_ptr,	
 												unsigned long long Tn ,
  												unsigned long long scn  )
 {
 	fill_index(  record_ptr,buf  );	
-return  insert_index_scn( mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
+return  insert_index_scn( mem_index_prt, //Ë÷ÒıÖ¸Õë
 												 index_entry,
 												field,
-												 record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+												 record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												 out_record_ptr,	
 												 Tn ,
  												 scn  );
 
 }
 
-// ç”¨äºå®æ—¶æ’å…¥æ—¶å»ºç´¢å¼•
+// ÓÃÓÚÊµÊ±²åÈëÊ±½¨Ë÷Òı
 
 template<class MEM_INDEX_TYPE>
 int insert_into_index(MEM_INDEX_TYPE * mem_index_prt,
@@ -579,17 +579,17 @@ int insert_into_index(MEM_INDEX_TYPE * mem_index_prt,
 												unsigned long long Tn  )
 {
 	fill_index(  record_ptr,buf  );	
-return insert_index(mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
+return insert_index(mem_index_prt, //Ë÷ÒıÖ¸Õë
 												 index_entry,
 												field,
-												 record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+												 record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												 out_record_ptr,	
 												 Tn  );
 return 0;
 
 }
 
-// ç”¨äºå®æ—¶åˆ é™¤æ—¶åˆ ç´¢å¼•
+// ÓÃÓÚÊµÊ±É¾³ıÊ±É¾Ë÷Òı
 template<class MEM_INDEX_TYPE>
 int delete_from_index(MEM_INDEX_TYPE * mem_index_prt,
 												record_t * record_ptr,
@@ -598,16 +598,16 @@ int delete_from_index(MEM_INDEX_TYPE * mem_index_prt,
 												unsigned long long Tn  )
 {
 	fill_index(  record_ptr,buf  );	
-return del_index(mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
+return del_index(mem_index_prt, //Ë÷ÒıÖ¸Õë
 												 index_entry,
 												field,
-												 record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+												 record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												 out_record_ptr,	
 												 Tn   );
 return 0;
 
 }
-// ç”¨äºå®æ—¶æ›´æ–°æ—¶æ›´æ–°ç´¢å¼•
+// ÓÃÓÚÊµÊ±¸üĞÂÊ±¸üĞÂË÷Òı
 template<class MEM_INDEX_TYPE>
 int update_from_index(MEM_INDEX_TYPE * mem_index_prt,
 												record_t * record_ptr,
@@ -616,10 +616,10 @@ int update_from_index(MEM_INDEX_TYPE * mem_index_prt,
 												unsigned long long Tn  )
 {
 fill_index(  record_ptr,buf  );	
-return update_index(mem_index_prt, //ç´¢å¼•æŒ‡é’ˆ
+return update_index(mem_index_prt, //Ë÷ÒıÖ¸Õë
 												 index_entry,
 												field,
-												 record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+												 record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												 out_record_ptr,	
 												 Tn   );
 return 0;
@@ -627,4 +627,8 @@ return 0;
 }
 
 };
+
+
+
+
 #endif

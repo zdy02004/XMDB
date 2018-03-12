@@ -24,8 +24,8 @@ rapidjson::Value    *root;
 rapidjson::Document *doc;
 int                  is_replace;
 std::string table_name;
-std::vector<std::string> elements; //æ‰€æœ‰å­—æ®µåç§°
-std::vector<std::string> values;   //æ‰€æœ‰å­—æ®µå€¼
+std::vector<std::string> elements; //ËùÓĞ×Ö¶ÎÃû³Æ
+std::vector<std::string> values;   //ËùÓĞ×Ö¶ÎÖµ
 
 
 InsertTableAnalyser(rapidjson::Value *_root,rapidjson::Document *_doc):root(_root),doc(_doc),is_replace(0){get_all();}
@@ -173,4 +173,7 @@ int get_all()
 
 
 };
+
+
+
 #endif

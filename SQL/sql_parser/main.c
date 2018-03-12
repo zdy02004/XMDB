@@ -13,7 +13,8 @@ const char *sql_str = ""
   //"select  user_name,  qty  as quantity from (select * from table_2 ) t where t.user_name = 'c' and not t.qty and '1' = '2' ";
   //  "select  user_name,  qty  as quantity from (select * from table_2 ) t where t.user_name = 'c' and not t.qty between 1 and 8 ";
  //  "select  user_name,  qty  as quantity from  table_2 t where t.user_name = 'c' and  t.ff is null and t.ee like '%cc'";
-      "select  user_name,  qty  as quantity from  table_2 t,table_3 t3 where t2.user_name = t3.user_name ";
+ //    "select  t.user_name,3 pp,  qty  as quantity,sum(e+f+1),f*2,t3.user_id + t4.user_id,max(1,2) from  table_2 t,table_3 t3 where t.user_name = t3.user_name ";
+ //     " and exists (select 1 from table_4 t4 where t3.user_id = t4.user_id)";
 
     
  //   " select  sum(c1) c1 , 2 - 4 * 3  t2  "
@@ -21,11 +22,11 @@ const char *sql_str = ""
      //" where 4 = 3   and not exists (select 1 from  table_name2 k3 where k3.aa in ( select uu from  table_name3 k4 where k4.aa = 1 ) ) and cc.e = 1";
     // " and c3 between 1 and 2 group by a.cc  , dd.kk having e.re = 1 order by cc.c11,dd.po "; exists ( select 1 from  table_name2 ) and
 
-//"create table test_table ( id INT , name INT ) TABLET_BLOCK_SIZE = 512 , EXTERN_SIZE = 512 ";     
-//"create index test_table_inx on  test_table ( id )";
+//"create table test_table ( id INT , name VARCHAR ) TABLET_BLOCK_SIZE = 512 , EXTERN_SIZE = 512 ";     
+//"create index test_table_inx on  test_table ( id ) TABLET_BLOCK_SIZE = 512 , EXTERN_SIZE = 512";
 //"create unique index test_table_inx on test_table USING hash ( id ,name ) SKIP_LEVEL = 4 ";
 //"drop table test_table";
-//"insert into test_table values (A,B)";
+"insert into test_table  ( field_1 ) values (A)";
 //"insert into test_table select a from b";
 //"delete from  test_table where a = b ";
 //"update test_table set k = 1 where a = b ";
@@ -65,52 +66,58 @@ ParseResult result;
 //优化前
   CPP_DEBUG <<"优化前 json"<< buffer.GetString() << std::endl;
 
- for (auto& v : result.Doc["ROOT"]["children"].GetArray() ){
-  		//QueryAnalyser qa( v ,result.Doc );
-  		if( v.HasMember("OPERATION_NAME") && v["OPERATION_NAME"] == "SELECT"  ){
-  		QueryAnalyser qa( v ,result.Doc );
-  		
-  		for(auto& name : qa.tables){
-  			CPP_DEBUG<<"Names: "<<name.table_name_<<" "<<name.alias_name_<<" "<<name.sub_select_alias_name_<<std::endl;
-  			
-  		}
-  		
-  		//上拉子链接
-  		qa.pull_up_sublinks();
-  		//上拉子查询
-  		qa.pull_up_subquerys();
-  		
-  		//逻辑优化器
-  		QueryOptimiser qo (qa);
-  		CPP_DEBUG<<"Begin Optimiser\n "<<std::endl;
-
-  		//优化between
-  		qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_btw,&qo,std::placeholders::_1,std::placeholders::_2) );
-		//优化 in
-		qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_in,&qo,std::placeholders::_1,std::placeholders::_2) );
-  		//优化 not 
-  		qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_not,&qo,std::placeholders::_1,std::placeholders::_2) );
-		//优化 const 
-  		qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_const,&qo,std::placeholders::_1,std::placeholders::_2) );
-		
-		//优化 const 表达式
-  		qo.optimiser_project_template( &(*(qa.project_lists))["children"] , 0 ,  std::bind(&QueryOptimiser::optimiser_project_const,&qo,std::placeholders::_1,std::placeholders::_2) );
-
-		//优化 const 条件
-		qo.optimiser_project_template( (qa.where_list) ,0,  std::bind(&QueryOptimiser::optimiser_project_const,&qo,std::placeholders::_1,std::placeholders::_2) );
-		
-		CPP_DEBUG <<"关联条件 json\n";
-  	for(auto v : qo.join_conditions )
-  	{
-  	rapidjson_log( v );
-		}
-		
-		}
-  }	
+//for (auto& v : result.Doc["ROOT"]["children"].GetArray() ){
+// 		//QueryAnalyser qa( v ,result.Doc );
+// 		if( v.HasMember("OPERATION_NAME") && v["OPERATION_NAME"] == "SELECT"  ){
+// 		QueryAnalyser qa( v ,result.Doc );
+// 		
+// 		for(auto& name : qa.tables){
+// 			CPP_DEBUG<<"Names: "<<name.table_name_<<" "<<name.alias_name_<<" "<<name.sub_select_alias_name_<<std::endl;
+// 			
+// 		}
+// 		
+// 		//上拉子链接
+// 		  qa.pull_up_sublinks();
+// 		//上拉子查询
+// 		  qa.pull_up_subquerys();
+// 		 CPP_DEBUG<<"Begin Optimiser\n "<<std::endl;
+//
+// 		//逻辑优化器
+// 		QueryOptimiser qo (qa);
+//		
+//		//上拉子链接
+// 		  //qo.pull_up_sublinks();
+// 		//上拉子查询
+// 		  //qo.pull_up_subquerys();
+//
+//
+// 		//优化between
+// 		qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_btw,&qo,std::placeholders::_1,std::placeholders::_2) );
+//	//优化 in
+//	qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_in,&qo,std::placeholders::_1,std::placeholders::_2) );
+// 		//优化 not 
+// 		qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_not,&qo,std::placeholders::_1,std::placeholders::_2) );
+//	//优化 const 
+// 		qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_const,&qo,std::placeholders::_1,std::placeholders::_2) );
+//	
+//	//优化 const 表达式
+// 		qo.optimiser_project_template( &(*(qa.project_lists))["children"] , 0 ,  std::bind(&QueryOptimiser::optimiser_project_const,&qo,std::placeholders::_1,std::placeholders::_2) );
+//
+//	//优化 const 条件
+//	qo.optimiser_project_template( (qa.where_list) ,0,  std::bind(&QueryOptimiser::optimiser_project_const,&qo,std::placeholders::_1,std::placeholders::_2) );
+//	
+//	CPP_DEBUG <<"关联条件 json\n";
+// 	for(auto v : qo.join_conditions )
+// 	{
+// 	rapidjson_log( v );
+//	}
+//	
+//	}
+// }	
   
   //优化后
-  CPP_DEBUG <<"优化后 json\n";
-  rapidjson_log( &result.Doc["ROOT"] );
+  //CPP_DEBUG <<"优化后 json\n";
+  //rapidjson_log( &result.Doc["ROOT"] );
   
   
   

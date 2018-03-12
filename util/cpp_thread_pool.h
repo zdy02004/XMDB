@@ -37,14 +37,14 @@ namespace cpp_thread_namespace{
  
 #define PThread_T   pthread_t
 #define PTHREAD_CREATE(a,b,c,d)    pthread_create(a,b,c,d)
-//æš‚æ—¶ç”¨äº’æ–¥é”è¡¨ç¤ºç¡çœ é”
+//ÔİÊ±ÓÃ»¥³âËø±íÊ¾Ë¯ÃßËø
 //#define THREAD_TASK_QUEUE_SLEEP_LOCK_T        std::mutex
 //#define THREAD_TASK_QUEUE_SLEEP_LOCK(x)       (x).lock()
 //#define THREAD_TASK_QUEUE_SLEEP_UNLOCK(x)     (x).unlock()
 //#define THREAD_TASK_QUEUE_SLEEP_LOCK_INIT(x)  
 //#define THREAD_TASK_QUEUE_SLEEP_LOCK_DEST(x)  
 //
-////æš‚æ—¶ç”¨äº’æ–¥é”æ¡ä»¶å˜é‡
+////ÔİÊ±ÓÃ»¥³âËøÌõ¼ş±äÁ¿
 //#define THREAD_TASK_QUEUE_SLEEP_COND_T              std::condition_variable  
 //#define THREAD_TASK_QUEUE_SLEEP_COND_INIT(x)        
 //#define THREAD_TASK_QUEUE_SLEEP_COND_DEST(x)        
@@ -54,14 +54,14 @@ namespace cpp_thread_namespace{
 //#define THREAD_TASK_QUEUE_SLEEP_COND_BROADCAST(x)   (x).notify_all()
  
  
-//æš‚æ—¶ç”¨äº’æ–¥é”è¡¨ç¤ºç¡çœ é”
+//ÔİÊ±ÓÃ»¥³âËø±íÊ¾Ë¯ÃßËø
 #define THREAD_TASK_QUEUE_SLEEP_LOCK_T        pthread_mutex_t
 #define THREAD_TASK_QUEUE_SLEEP_LOCK(x)       pthread_mutex_lock(&(x))
 #define THREAD_TASK_QUEUE_SLEEP_UNLOCK(x)     pthread_mutex_unlock(&(x))   
 #define THREAD_TASK_QUEUE_SLEEP_LOCK_INIT(x)  pthread_mutex_init(&(x),0)
 #define THREAD_TASK_QUEUE_SLEEP_LOCK_DEST(x)  pthread_mutex_destroy(&(x)) 
 
-//æš‚æ—¶ç”¨äº’æ–¥é”æ¡ä»¶å˜é‡
+//ÔİÊ±ÓÃ»¥³âËøÌõ¼ş±äÁ¿
 #define THREAD_TASK_QUEUE_SLEEP_COND_T              pthread_cond_t  
 #define THREAD_TASK_QUEUE_SLEEP_COND_INIT(x)        pthread_cond_init(&(x), NULL)
 #define THREAD_TASK_QUEUE_SLEEP_COND_DEST(x)        pthread_cond_destroy(&(x))
@@ -69,14 +69,14 @@ namespace cpp_thread_namespace{
 #define THREAD_TASK_QUEUE_SLEEP_COND_SIGN(x)        pthread_cond_signal(&(x))
 #define THREAD_TASK_QUEUE_SLEEP_COND_BROADCAST(x)   pthread_cond_broadcast(&(x))
 /* 
-*çº¿ç¨‹æ± é‡Œæ‰€æœ‰è¿è¡Œå’Œç­‰å¾…çš„ä»»åŠ¡éƒ½æ˜¯ä¸€ä¸ªCThread_worker 
-*æ”¾åœ¨å¾ªç¯ringä¸­ 
+*Ïß³Ì³ØÀïËùÓĞÔËĞĞºÍµÈ´ıµÄÈÎÎñ¶¼ÊÇÒ»¸öCThread_worker 
+*·ÅÔÚÑ­»·ringÖĞ 
 */  
 typedef struct thread_task_entry_t
 {  
-    /*å›è°ƒå‡½æ•°ï¼Œä»»åŠ¡è¿è¡Œæ—¶ä¼šè°ƒç”¨æ­¤å‡½æ•°ï¼Œæ³¨æ„ä¹Ÿå¯å£°æ˜æˆå…¶å®ƒå½¢å¼*/  
+    /*»Øµ÷º¯Êı£¬ÈÎÎñÔËĞĞÊ±»áµ÷ÓÃ´Ëº¯Êı£¬×¢ÒâÒ²¿ÉÉùÃ÷³ÉÆäËüĞÎÊ½*/  
     std::function<void * (void *)> process ;  
-    void *arg;/*å›è°ƒå‡½æ•°çš„å‚æ•°*/    
+    void *arg;/*»Øµ÷º¯ÊıµÄ²ÎÊı*/    
     thread_task_entry_t(){}
     thread_task_entry_t( thread_task_entry_t & _move)
     {
@@ -120,9 +120,9 @@ typedef struct thread_task_queue_t {
     char pad2[CACHE_LINE_SIZE - 4 * sizeof(uint32_t)];
     
     uint32_t max;
-    THREAD_TASK_QUEUE_SLEEP_LOCK_T  sleep_locker; //æ¶ˆè´¹è€…ç¡çœ é”
-    int                             is_sleeping;  //æ˜¯å¦åœ¨ç¡çœ 
-    THREAD_TASK_QUEUE_SLEEP_COND_T  sleep_cond;   //æ¶ˆè´¹è€…ç¡çœ æ¡ä»¶å˜é‡
+    THREAD_TASK_QUEUE_SLEEP_LOCK_T  sleep_locker; //Ïû·ÑÕßË¯ÃßËø
+    int                             is_sleeping;  //ÊÇ·ñÔÚË¯Ãß
+    THREAD_TASK_QUEUE_SLEEP_COND_T  sleep_cond;   //Ïû·ÑÕßË¯ÃßÌõ¼ş±äÁ¿
     thread_task_entry_t    * item;
 }thread_task_queue_t;
 //__________________________________________________________
@@ -138,18 +138,18 @@ inline void* thread_routine ( cpp_thread_pool_t * pool);
 //inline void thread_routine_once (const cpp_thread_pool_t * pool)  ;
   
 //__________________________________________________________
-/*çº¿ç¨‹æ± ç»“æ„*/  
+/*Ïß³Ì³Ø½á¹¹*/  
 class  cpp_thread_pool_t
 {  
-    /*æ˜¯å¦é”€æ¯çº¿ç¨‹æ± */  
+    /*ÊÇ·ñÏú»ÙÏß³Ì³Ø*/  
     int shutdown;  
     std::vector<std::thread>  thread_vector;
-    /*çº¿ç¨‹æ± ä¸­å…è®¸çš„æ´»åŠ¨çº¿ç¨‹æ•°ç›®*/  
+    /*Ïß³Ì³ØÖĞÔÊĞíµÄ»î¶¯Ïß³ÌÊıÄ¿*/  
     int max_thread_num;  
-    /*å½“å‰ç­‰å¾…é˜Ÿåˆ—çš„ä»»åŠ¡æ•°ç›®*/  
+    /*µ±Ç°µÈ´ı¶ÓÁĞµÄÈÎÎñÊıÄ¿*/  
     int cur_queue_size;  
 public:
-	/*ä»»åŠ¡é˜Ÿåˆ—*/  
+	/*ÈÎÎñ¶ÓÁĞ*/  
     thread_task_queue_t task_queue;  
     ~cpp_thread_pool_t()
     {
@@ -176,52 +176,52 @@ thread_pool_init (int max_thread_num,uint32_t max_task)
     }  
 }    
 
-/*å‘çº¿ç¨‹æ± ä¸­åŠ å…¥ä»»åŠ¡*/  
+/*ÏòÏß³Ì³ØÖĞ¼ÓÈëÈÎÎñ*/  
 inline int  
 add_task ( std::function<void * (void *)> &process, void *arg)  
 {  
 
-    /*æ„é€ ä¸€ä¸ªæ–°ä»»åŠ¡*/  
+    /*¹¹ÔìÒ»¸öĞÂÈÎÎñ*/  
     thread_task_entry_t item;  
     item.process =  process;  
     item.arg = arg;  
   
-    /*å°†ä»»åŠ¡åŠ å…¥åˆ°ç­‰å¾…é˜Ÿåˆ—ä¸­*/  
+    /*½«ÈÎÎñ¼ÓÈëµ½µÈ´ı¶ÓÁĞÖĞ*/  
     return en_thread_task_queue(&task_queue, item);  
 }  
   
-/*é”€æ¯çº¿ç¨‹æ± ï¼Œç­‰å¾…é˜Ÿåˆ—ä¸­çš„ä»»åŠ¡ä¸ä¼šå†è¢«æ‰§è¡Œï¼Œä½†æ˜¯æ­£åœ¨è¿è¡Œçš„çº¿ç¨‹ä¼šä¸€ç›´ 
-æŠŠä»»åŠ¡è¿è¡Œå®Œåå†é€€å‡º
-æ˜¾ç¤ºé”€æ¯
+/*Ïú»ÙÏß³Ì³Ø£¬µÈ´ı¶ÓÁĞÖĞµÄÈÎÎñ²»»áÔÙ±»Ö´ĞĞ£¬µ«ÊÇÕıÔÚÔËĞĞµÄÏß³Ì»áÒ»Ö± 
+°ÑÈÎÎñÔËĞĞÍêºóÔÙÍË³ö
+ÏÔÊ¾Ïú»Ù
 */  
 inline int  
 thread_pool_destroy ()  
 {  
     if (this->shutdown)  
-        return -1;/*é˜²æ­¢ä¸¤æ¬¡è°ƒç”¨*/  
+        return -1;/*·ÀÖ¹Á½´Îµ÷ÓÃ*/  
     this->shutdown = 1;  
    
    THREAD_TASK_QUEUE_SLEEP_LOCK((task_queue.sleep_locker));
    task_queue.is_sleeping = 2;
    THREAD_TASK_QUEUE_SLEEP_UNLOCK((task_queue.sleep_locker));
   
-    /*å”¤é†’æ‰€æœ‰ç­‰å¾…çº¿ç¨‹ï¼Œçº¿ç¨‹æ± è¦é”€æ¯äº†*/  
+    /*»½ĞÑËùÓĞµÈ´ıÏß³Ì£¬Ïß³Ì³ØÒªÏú»ÙÁË*/  
     THREAD_TASK_QUEUE_SLEEP_COND_BROADCAST((task_queue.sleep_cond));  
   
-    /*é˜»å¡ç­‰å¾…çº¿ç¨‹é€€å‡ºï¼Œå¦åˆ™å°±æˆåƒµå°¸äº†*/  
+    /*×èÈûµÈ´ıÏß³ÌÍË³ö£¬·ñÔò¾Í³É½©Ê¬ÁË*/  
     int i;  
     for (i = 0; i < this->max_thread_num; i++)  
          thread_vector[i].join();  
     thread_vector.clear();
          
-    /*é”€æ¯ç­‰å¾…é˜Ÿåˆ—*/  
+    /*Ïú»ÙµÈ´ı¶ÓÁĞ*/  
      destroy_task_queue(&task_queue);
     
-    /*æ¡ä»¶å˜é‡å’Œäº’æ–¥é‡ä¹Ÿåˆ«å¿˜äº†é”€æ¯*/  
+    /*Ìõ¼ş±äÁ¿ºÍ»¥³âÁ¿Ò²±ğÍüÁËÏú»Ù*/  
     //pthread_mutex_destroy(&(this->task_queue->queue_lock));  
     //pthread_cond_destroy(&(this->task_queue->queue_ready));  
   //  free (this->task_queue);
-    /*é”€æ¯åæŒ‡é’ˆç½®ç©ºæ˜¯ä¸ªå¥½ä¹ æƒ¯*/  
+    /*Ïú»ÙºóÖ¸ÕëÖÃ¿ÕÊÇ¸öºÃÏ°¹ß*/  
 
     return 0;  
 }  
@@ -235,7 +235,7 @@ thread_pool_destroy ()
        ret = de_thread_task_queue( &task_queue, item) ;
        if(1 == ret)return ;
        (item.process) (item.arg);  
-    /*å”¤é†’æ‰€æœ‰ç­‰å¾…çº¿ç¨‹ï¼Œçº¿ç¨‹æ± è¦é”€æ¯äº†*/  
+    /*»½ĞÑËùÓĞµÈ´ıÏß³Ì£¬Ïß³Ì³ØÒªÏú»ÙÁË*/  
   //    THREAD_TASK_QUEUE_SLEEP_COND_BROADCAST((task_queue.sleep_cond));  
     return ;
 }  
@@ -252,18 +252,18 @@ inline void* thread_routine (cpp_thread_pool_t * pool)
     while (1)  
     {  
        //THREAD_TASK_QUEUE_SLEEP_LOCK_T ((this->queue_lock));  
-       ///*å¦‚æœç­‰å¾…é˜Ÿåˆ—ä¸º0å¹¶ä¸”ä¸é”€æ¯çº¿ç¨‹æ± ï¼Œåˆ™å¤„äºé˜»å¡çŠ¶æ€; æ³¨æ„ 
-       //pthread_cond_waitæ˜¯ä¸€ä¸ªåŸå­æ“ä½œï¼Œç­‰å¾…å‰ä¼šè§£é”ï¼Œå”¤é†’åä¼šåŠ é”*/  
+       ///*Èç¹ûµÈ´ı¶ÓÁĞÎª0²¢ÇÒ²»Ïú»ÙÏß³Ì³Ø£¬Ôò´¦ÓÚ×èÈû×´Ì¬; ×¢Òâ 
+       //pthread_cond_waitÊÇÒ»¸öÔ­×Ó²Ù×÷£¬µÈ´ıÇ°»á½âËø£¬»½ĞÑºó»á¼ÓËø*/  
        //while (this->cur_queue_size == 0 && !this->shutdown)  
        //{  
        //    printf ("thread 0x%x is waiting\n", pthread_self ());  
        //    pthread_cond_wait (&(this->queue_ready), &(this->queue_lock));  
        //}  
   
-        /*çº¿ç¨‹æ± è¦é”€æ¯äº†*/  
+        /*Ïß³Ì³ØÒªÏú»ÙÁË*/  
        // if (((CThread_pool_t *)pool)->shutdown)  
         //{  
-            /*é‡åˆ°break,continue,returnç­‰è·³è½¬è¯­å¥ï¼Œåƒä¸‡ä¸è¦å¿˜è®°å…ˆè§£é”*/  
+            /*Óöµ½break,continue,returnµÈÌø×ªÓï¾ä£¬Ç§Íò²»ÒªÍü¼ÇÏÈ½âËø*/  
        //     pthread_mutex_unlock (&(this->queue_lock));  
             //DEBUG ("thread 0x%x will exit\n", pthread_self ());  
           //  return (void*)0;
@@ -271,16 +271,16 @@ inline void* thread_routine (cpp_thread_pool_t * pool)
   
         //printf ("thread 0x%x is starting to work\n", pthread_self ());  
   
-        /*assertæ˜¯è°ƒè¯•çš„å¥½å¸®æ‰‹*/  
+        /*assertÊÇµ÷ÊÔµÄºÃ°ïÊÖ*/  
        // assert (this->cur_queue_size != 0);  
        // assert (this->queue_head != NULL);  
           
-        /*ç­‰å¾…é˜Ÿåˆ—é•¿åº¦å‡å»1ï¼Œå¹¶å–å‡ºé“¾è¡¨ä¸­çš„å¤´å…ƒç´ */  
+        /*µÈ´ı¶ÓÁĞ³¤¶È¼õÈ¥1£¬²¢È¡³öÁ´±íÖĞµÄÍ·ÔªËØ*/  
         //this->cur_queue_size--; 
        
         ret = de_thread_task_queue( &(pool->task_queue), item) ;
         if(1 == ret)return (void*)0;
-        /*è°ƒç”¨å›è°ƒå‡½æ•°ï¼Œæ‰§è¡Œä»»åŠ¡*/  
+        /*µ÷ÓÃ»Øµ÷º¯Êı£¬Ö´ĞĞÈÎÎñ*/  
         //if(!(item.process)){
         //	//int* i = (((struct param *)(item.arg))->i);
         //	printf("bad item is %ld\n",1);
@@ -288,7 +288,7 @@ inline void* thread_routine (cpp_thread_pool_t * pool)
         //	}
         (item.process) (item.arg);  
     }  
-    /*è¿™ä¸€å¥åº”è¯¥æ˜¯ä¸å¯è¾¾çš„*/  
+    /*ÕâÒ»¾äÓ¦¸ÃÊÇ²»¿É´ïµÄ*/  
    return (void*)0;  
 }
 
@@ -320,7 +320,7 @@ inline int init_thread_task_queue(thread_task_queue_t * thread_task_queue,uint32
     thread_task_queue->head.mask = thread_task_queue->tail.mask = max-1;
     return 0;  
 }  
- // å…¥é˜Ÿåˆ—
+ // Èë¶ÓÁĞ
 inline int en_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_task_entry_t& item)  
 {  
 	 // DEBUG("en_thread_task_queue\n"	);
@@ -332,7 +332,7 @@ inline int en_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
     do {
         head = thread_task_queue->head.first;
         tail = thread_task_queue->tail.second;
-        // å·²æ»¡ ä¸” éç©º
+        // ÒÑÂú ÇÒ ·Ç¿Õ
         if (((head - tail) > mask) && (!((tail == head) || (tail > head && (head - tail) > mask))))
         	{
         		DEBUG("%ld %s,head=%ld,tail=%ld\n",__LINE__,"The thread_task_queue_t is full",head,tail);
@@ -353,7 +353,7 @@ inline int en_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
     thread_task_queue->head.second = next;
     
     
-    // å¦‚æœå†™è€…åœ¨ç¡çœ å°±å”¤é†’ä»–
+    // Èç¹ûĞ´ÕßÔÚË¯Ãß¾Í»½ĞÑËû
   // if( 1 == thread_task_queue->is_sleeping)
   //{
   // //DEBUG("en_trans TRANS_QUEUE_SLEEP_LOCK\n"	);
@@ -369,7 +369,7 @@ inline int en_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
     
     return 0;  
 }  
-  // å‡ºé˜Ÿåˆ—
+  // ³ö¶ÓÁĞ
 inline int de_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_task_entry_t & item)  
 {     
 	   DEBUG("Enter de_thread_task_queue\n"	);
@@ -388,7 +388,7 @@ inline int de_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
         if ((tail == head) || (tail > head && (head - tail) > mask))
         {
         
-        //ä¸ºç©ºå°±ç¡çœ 
+        //Îª¿Õ¾ÍË¯Ãß
         THREAD_TASK_QUEUE_SLEEP_LOCK((thread_task_queue->sleep_locker));
         if( 0 == thread_task_queue->is_sleeping)
    		  {
@@ -423,8 +423,8 @@ inline int de_thread_task_queue(thread_task_queue_t * thread_task_queue, thread_
     thread_task_queue->tail.second = next;
     return 0;
 }  
-/* ä¸‹é¢æ˜¯å…³äºå¾ªç¯æ•°ç»„ç¼“å†²åŒºçš„æ“ä½œç›¸å…³çš„æ“ä½œ*/
-// åœæ—¥å¿—å,é‡å»º ç¼“å†²åŒº
+/* ÏÂÃæÊÇ¹ØÓÚÑ­»·Êı×é»º³åÇøµÄ²Ù×÷Ïà¹ØµÄ²Ù×÷*/
+// Í£ÈÕÖ¾ºó,ÖØ½¨ »º³åÇø
 inline int reinit_thread_task_queue(thread_task_queue_t * thread_task_queue,uint32_t max)  
 {  
     delete thread_task_queue->item;  
@@ -432,40 +432,40 @@ inline int reinit_thread_task_queue(thread_task_queue_t * thread_task_queue,uint
     return init_thread_task_queue(thread_task_queue, max);  
 } 
 
-  //æ¸…é™¤æ—¥å¿—ç¼“å†²é˜Ÿåˆ—
+  //Çå³ıÈÕÖ¾»º³å¶ÓÁĞ
 int destroy_task_queue(thread_task_queue_t * thread_task_queue)  
 {  
 	  THREAD_TASK_QUEUE_SLEEP_COND_DEST((thread_task_queue->sleep_cond));
 	  thread_task_queue->is_sleeping = 0;
 	  THREAD_TASK_QUEUE_SLEEP_LOCK_DEST((thread_task_queue->sleep_locker));
-    //delete thread_task_queue->item ;  //ä¼šè‡ªåŠ¨åˆ é™¤
+    //delete thread_task_queue->item ;  //»á×Ô¶¯É¾³ı
     //delete thread_task_queue;
 } 
 //_________________________________________________________ 
  
  
-//    ä¸‹é¢æ˜¯æµ‹è¯•ä»£ç   
+//    ÏÂÃæÊÇ²âÊÔ´úÂë  
 int  
 test_cpp_thread_main (int argc, char **argv)  
 {  
 	cpp_thread_namespace::cpp_thread_pool_t  pool ;  
-  pool.thread_pool_init (8,1024);/*çº¿ç¨‹æ± ä¸­æœ€å¤šä¸‰ä¸ªæ´»åŠ¨çº¿ç¨‹*/  
+  pool.thread_pool_init (8,1024);/*Ïß³Ì³ØÖĞ×î¶àÈı¸ö»î¶¯Ïß³Ì*/  
     
   std::function<void * (void *)> myprocess = [&](void * a){
   	printf ("threadid is 0x%x\n", pthread_self ());  
-    sleep (1);/*ä¼‘æ¯ä¸€ç§’ï¼Œå»¶é•¿ä»»åŠ¡çš„æ‰§è¡Œæ—¶é—´*/  
+    sleep (1);/*ĞİÏ¢Ò»Ãë£¬ÑÓ³¤ÈÎÎñµÄÖ´ĞĞÊ±¼ä*/  
     return (void *)NULL;
     };
       
-    /*è¿ç»­å‘æ± ä¸­æŠ•å…¥10ä¸ªä»»åŠ¡*/  
+    /*Á¬ĞøÏò³ØÖĞÍ¶Èë10¸öÈÎÎñ*/  
     int i;  
     for (i = 0; i < 10; i++)  
     {  
         pool.add_task (myprocess, (void*)0);  
     }  
-    /*ç­‰å¾…æ‰€æœ‰ä»»åŠ¡å®Œæˆ*/  
+    /*µÈ´ıËùÓĞÈÎÎñÍê³É*/  
    
-    /*é”€æ¯çº¿ç¨‹æ± */  
+    /*Ïú»ÙÏß³Ì³Ø*/  
     pool.thread_pool_destroy ();  
   
     return 0;  

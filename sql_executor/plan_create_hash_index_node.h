@@ -1,51 +1,51 @@
 /*
-g++ -C -std=c++11 plan_create_skiplist_index_node.h -w
+g++ -C -std=c++11 plan_create_hash_index_node.h -w
 
 */
-#ifndef PLAN_CREATE_SKIPLIST_INDEX_NODE
-#define PLAN_CREATE_SKIPLIST_INDEX_NODE
+#ifndef PLAN_CREATE_HASH_INDEX_NODE
+#define PLAN_CREATE_HASH_INDEX_NODE
 
 #include "plan_node.h"
-#include "../mem_date_index_ctl/mem_skiplist_index.h"
+#include "../mem_date_index_ctl/mem_hash_index.h"
 #include "../SQL/sql_parser/CreateIndexAnalyser.hpp"
 #include "create_index_online.h"
 
-#define PLAN_TYPE_CREATE_SKIPLIST_INDEX 								700
-#define CREATE_SKIPLIST_INDEX_NO_FIELD 								  701
-#define CREATE_SKIPLIST_INDEX_WRONG_FIELD						    703
+#define PLAN_TYPE_CREATE_HASH_INDEX 								600
+#define CREATE_HASH_INDEX_NO_FIELD 								  601
+#define CREATE_HASH_INDEX_WRONG_FIELD						    603
 
 
-int create_mem_skiplist_config(mem_skiplist_index_config_t** skiplist_config,
-															unsigned  long long heap_block_size,
-															char *index_name,
-															int skip_level)
+int create_mem_hash_config(		mem_hash_index_config_t** hash_config ,
+															unsigned  long long array_block_size  ,
+															unsigned  long long link_block_size ,
+															int                 div               ,
+															char *index_name										)
 {
-	*skiplist_config =(mem_skiplist_index_config_t *)malloc(MEM_SKIPLIST_CONFIG_SIZE);
-	(*skiplist_config)->index_no			  = 1;
-	(*skiplist_config)->owner_table_no  = 1;
-	strcpy((*skiplist_config)->index_name,index_name);
-	(*skiplist_config)->heap_block_size = heap_block_size;
-	(*skiplist_config)->max_level = skip_level;
-	
+	(*hash_config) =(mem_hash_index_config_t *)malloc(MEM_HASH_CONFIG_SIZE);
+	//(*hash_config)->index_no			 	 = 1;
+	(*hash_config)->owner_table_no 	 = 1;
+	strcpy((*hash_config)->index_name,index_name);
+	(*hash_config)->array_block_size = array_block_size;
+	(*hash_config)->link_block_size  = link_block_size ;
+	(*hash_config)->div              = div;
 	return 0;
 }
 
 
-//key func æ„é€  ç»“æœé›†çš„ record_tuple
-struct create_skiplist_index_node:public plan_node
+//key func ¹¹Ôì ½á¹û¼¯µÄ record_tuple
+struct create_hash_index_node:public plan_node
 {
-std::string table_name;                //è¡¨å
-std::string index_name;                //è¡¨å
-std::vector<std::string> field_vector ;  //å­—æ®µåˆ—è¡¨
-size_t 	block_size;										 //ä¸€ä¸ªå—å¤§å°
-size_t 	extend_block_size;             //å—çš„æ‰©å±•å¤§å°
-std::string path;											 //è·¯å¾„
-struct mem_table_t*                    mem_table;   //è¡¨æŒ‡é’ˆ
-mem_skiplist_index_t	*                mem_skiplist_index; //skiplist ç´¢å¼•æŒ‡é’ˆ
-int index_type;												// index ç±»å‹
-int skip_level;														//è·³è¡¨å±‚æ•°,é»˜è®¤4å±‚
-
-create_skiplist_index_node( 
+std::string table_name;                //±íÃû
+std::string index_name;                //±íÃû
+std::vector<std::string> field_vector ;  //×Ö¶ÎÁĞ±í
+size_t 	block_size;										 //Ò»¸ö¿é´óĞ¡
+size_t 	extend_block_size;             //¿éµÄÀ©Õ¹´óĞ¡
+std::string path;											 //Â·¾¶
+struct mem_table_t*                    mem_table;   //±íÖ¸Õë
+mem_hash_index_t	*                    mem_hash_index; //HASH Ë÷ÒıÖ¸Õë
+int index_type;												// index ÀàĞÍ
+int div;
+create_hash_index_node( 
 							std::string& _table_name,
 							std::string& _index_name,
 							std::vector<std::string>& _field_vector,
@@ -61,40 +61,16 @@ create_skiplist_index_node(
 		block_size(_block_size),
 		extend_block_size(_extend_block_size),
 		path("./"),
-		index_type(INDEX_TYPE_SKIP),
+		index_type(INDEX_TYPE_HASH),
 		mem_table(NULL),
-		mem_skiplist_index(NULL),skip_level(4)
+		mem_hash_index(NULL),
+		div(3)
 		
 {
-plan_type = PLAN_TYPE_CREATE_SKIPLIST_INDEX;	
+plan_type = PLAN_TYPE_CREATE_HASH_INDEX;	
 }
 
-create_skiplist_index_node( 
-							std::string& _table_name,
-							std::string& _index_name,
-							std::vector<std::string>& _field_vector,
-							size_t 	_block_size,
-							size_t 	_extend_block_size,
-							int _skip_level,
-							rapidjson::Value& _json,
-  						rapidjson::Document * _Doc
-  									
-):plan_node(_json,_Doc),	
-		table_name(_table_name),
-		index_name(_index_name),
-		field_vector(_field_vector),
-		block_size(_block_size),
-		extend_block_size(_extend_block_size),
-		path("./"),
-		index_type(INDEX_TYPE_SKIP),
-		mem_table(NULL),
-		mem_skiplist_index(NULL),skip_level(_skip_level)
-		
-{
-plan_type = PLAN_TYPE_CREATE_SKIPLIST_INDEX;	
-}
-
-create_skiplist_index_node( 
+create_hash_index_node( 
 							std::string& _table_name,
 							std::string& _index_name,
 							std::vector<std::string>& _field_vector,
@@ -108,14 +84,18 @@ create_skiplist_index_node(
 		block_size(0),
 		extend_block_size(0),
 		path("./"),
-		index_type(INDEX_TYPE_SKIP),
+		index_type(INDEX_TYPE_HASH),
 		mem_table(NULL),
-		mem_skiplist_index(NULL),skip_level(4)
+		mem_hash_index(NULL),
+		div(3)
 {
-plan_type = PLAN_TYPE_CREATE_SKIPLIST_INDEX;	
+plan_type = PLAN_TYPE_CREATE_HASH_INDEX;	
 }
 
-
+void set_div(int _div)
+{
+	if( _div!=0 )	div = _div;
+}
 
 void set_path( std::string _path )
 {
@@ -125,7 +105,7 @@ _path = path;
 int get_table_ptr()
 {
 	int err = 0;
-	// å¯¹äºåŸå§‹è¡¨æ£€æŸ¥è¯¥è¡¨æ˜¯å¦å­˜åœ¨
+	// ¶ÔÓÚÔ­Ê¼±í¼ì²é¸Ã±íÊÇ·ñ´æÔÚ
 				if(!table_name.empty()){
 					long long table_no;
 					 err = search_table_name( const_cast<char *>(table_name.c_str()) , &table_no);
@@ -148,10 +128,10 @@ int get_table_ptr()
 	return err;
 }
 	
-//æ£€æŸ¥è¯¥è¡¨ä¸­æ˜¯å¦å­˜åœ¨æŸä¸ªå­—æ®µ,å¹¶åœ¨è¡¨çš„å­—æ®µä¸Šæ ‡è®°ç´¢å¼•id
+//¼ì²é¸Ã±íÖĞÊÇ·ñ´æÔÚÄ³¸ö×Ö¶Î,²¢ÔÚ±íµÄ×Ö¶ÎÉÏ±ê¼ÇË÷Òıid
 int check_field()
 {
-	if(!field_vector.empty() && mem_table != NULL && mem_skiplist_index != NULL ){
+	if(!field_vector.empty() && mem_table != NULL && mem_hash_index != NULL ){
 		CPP_DEBUG<<"mem_table_lock "<<" \n";
 		mem_table_lock( &( mem_table->table_locker ) );
 		for( auto &v : field_vector )
@@ -159,10 +139,11 @@ int check_field()
 			if( !has_field( mem_table , v ) ){
 					CPP_ERROR<<"The Field "<<v<<" Not Exists in Table "<<table_name<<" \n";
 					CPP_DEBUG<<"mem_table_unlock "<<" \n";		
- 	       	mem_table_unlock( &( mem_table->table_locker ) );
-				  return CREATE_SKIPLIST_INDEX_WRONG_FIELD;
+ 		      mem_table_unlock( &( mem_table->table_locker ) );
+				  return CREATE_HASH_INDEX_WRONG_FIELD;
 				}
-				else { // æ·»åŠ ç´¢å¼•æ ‡è®°
+				else { // Ìí¼ÓË÷Òı±ê¼Ç
+
 					 for(int i = 0;i < mem_table->config.field_used_num; ++i  )
  						{
  								field_t& field = mem_table->config.fields_table[i];
@@ -172,66 +153,71 @@ int check_field()
  							  	{
  							  		if(field.relate_index[j]!=0 ){
  							  		field.index_type[j] = index_type;
- 							  		field.relate_index[j] = mem_skiplist_index->config.index_no;  
+ 							  		field.relate_index[j] = mem_hash_index->config.index_no;  
  							  	  }
  							    }
  							  }
- 						}
+ 			
+ 				 
+
+
 				}
 		}
-	CPP_DEBUG<<"mem_table_unlock "<<" \n";		
- 	mem_table_unlock( &( mem_table->table_locker ) );
+					}
+ 		CPP_DEBUG<<"mem_table_unlock "<<" \n";		
+ 		mem_table_unlock( &( mem_table->table_locker ) );
 	}
 	else {
-				CPP_ERROR<<"Field Empty !\n";
-				return CREATE_SKIPLIST_INDEX_NO_FIELD;
+				if(!field_vector.empty() )CPP_ERROR<<"In Create Index Statment, Fields is Empty !\n";
+				else if(mem_table == NULL)CPP_ERROR<<"In Create Index, Table ptr is Empty !\n";
+				else if(mem_hash_index == NULL)CPP_ERROR<<"In Create Index, Index ptr is Empty !\n";
+				return CREATE_HASH_INDEX_NO_FIELD;
 			}
 	return 0;
 }
 	
 virtual int execute( unsigned long long  trans_no  )
 {
-//  è·å¾—è¡¨æŒ‡é’ˆ
+//  »ñµÃ±íÖ¸Õë
 int err = get_table_ptr();
 if( err )return err;
 	
 if( path !="./")index_name = path + index_name;
 
-//å»º skiplist ç´¢å¼•é…ç½®
-mem_skiplist_index_config_t * skiplist_config		= NULL;
-//å»º skiplist é…ç½®ä¿¡æ¯
-if(0!=(err=create_mem_skiplist_config(&skiplist_config, block_size, const_cast<char *>(index_name.c_str())  ,skip_level ) ) )
+//½¨ hash Ë÷ÒıÅäÖÃ
+mem_hash_index_config_t * hash_config		= NULL;
+//½¨ hash ÅäÖÃĞÅÏ¢
+if(0!=(err=create_mem_hash_config(&hash_config, block_size ,extend_block_size , div , const_cast<char *>(index_name.c_str()) )))
 {
-	ERROR("mem_skiplist_index_create err is %d\n",err);
+	ERROR("mem_hash_index_create err is %d\n",err);
 	return err;
 }
 	
-//å»º skiplist ç´¢å¼•
-if(0!=(err=mem_skiplist_create(&mem_skiplist_index,mem_table,skiplist_config)))
+//½¨ hash Ë÷Òı
+if(0!=(err=mem_hash_index_create(&mem_hash_index,mem_table,hash_config)))
 	{
-		ERROR("mem_skiplist_index_create err is %d\n",err);
+		ERROR("mem_hash_index_create err is %d\n",err);
 		return err;
 	}
 
-//æ£€æŸ¥å¤±è´¥ï¼Œå›æ»šå…ƒæ•°æ®
+//¼ì²éÊ§°Ü£¬»Ø¹öÔªÊı¾İ
 if( check_field() )
 {
-	if(0!=(err=mem_skiplist_index_close(mem_skiplist_index)))
+	if(0!=(err=mem_hash_index_close(mem_hash_index)))
 		{
-			DEBUG("mem_skiplist_index_close err is %d\n",err);
+			DEBUG("mem_hash_index_close err is %d\n",err);
 			return err;
 		}
   
 }	
 
-
-//  ç›®å‰åªæ”¯æŒå•è¯»å»ºç´¢å¼•
+//  Ä¿Ç°Ö»Ö§³Öµ¥¶Á½¨Ë÷Òı
 if( 0 < field_vector.size() ){
 	
 	for( auto &v : field_vector  )
 	{
-	 online_create_index<mem_skiplist_entry_t> online_create_indexer( mem_table , v , index_type );
-	 err = online_create_indexer.execute(  mem_skiplist_index );
+	 online_create_index<mem_hash_entry_t> online_create_indexer( mem_table , v , index_type );
+	 err = online_create_indexer.execute(  mem_hash_index );
 	}
 }
 else
@@ -267,5 +253,21 @@ virtual std::string to_sring()
 	//return 0;
 }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif 

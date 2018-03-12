@@ -16,22 +16,22 @@ extern "C" {
 #include <stdlib.h>  
 #include <errno.h>  
 #include <unistd.h>  
-#include <pthread.h> //å¼•å…¥äº’æ–¥é”
+#include <pthread.h> //ÒıÈë»¥³âËø
 #include<string.h>
 #include"../util/file_entry_map.h"
 
 
 
-//æ—¥å¿—
-//å…ˆåŠ å…¨å±€é”
-//å†æŒ‰ç…§ç”³è¯·çš„èµ·å§‹ä½ç½®å’Œé•¿åº¦ï¼Œå¡«å……0
-//å†é‡Šæ”¾å…¨å±€é”
-//å¯¹è¯¥ç‰‡åŒºåŸŸåŠ èŒƒå›´é”
-//å†™æ•°æ®
-//é‡Šæ”¾èŒƒå›´é”
+//ÈÕÖ¾
+//ÏÈ¼ÓÈ«¾ÖËø
+//ÔÙ°´ÕÕÉêÇëµÄÆğÊ¼Î»ÖÃºÍ³¤¶È£¬Ìî³ä0
+//ÔÙÊÍ·ÅÈ«¾ÖËø
+//¶Ô¸ÃÆ¬ÇøÓò¼Ó·¶Î§Ëø
+//Ğ´Êı¾İ
+//ÊÍ·Å·¶Î§Ëø
 
-//ç´¯åŠ æ–‡ä»¶å¤§å°ï¼Œè¶…è¿‡å¤§å°ç”Ÿæˆæ–°æ–‡ä»¶
-//æš‚æ—¶ç”¨äº’æ–¥é”è¡¨ç¤ºäº‹ç‰©é”
+//ÀÛ¼ÓÎÄ¼ş´óĞ¡£¬³¬¹ı´óĞ¡Éú³ÉĞÂÎÄ¼ş
+//ÔİÊ±ÓÃ»¥³âËø±íÊ¾ÊÂÎïËø
 //#define REDO_LOG_LOCK_T        pthread_mutex_t
 //#define REDO_LOG_LOCK(x)       pthread_mutex_lock(x)
 //#define REDO_LOG_UNLOCK(x)     pthread_mutex_unlock(x)   
@@ -42,7 +42,7 @@ extern "C" {
 #define REDO_LOG_UNLOCK(x)     pthread_spin_unlock(x)   
 #define REDO_LOG_LOCK_INIT(x)  pthread_spin_init(x,0)   
 
-//æš‚æ—¶ç”¨è‡ªæ—‹é”é”æ¥å®ç°å›æ”¶é“¾è¡¨é”
+//ÔİÊ±ÓÃ×ÔĞıËøËøÀ´ÊµÏÖ»ØÊÕÁ´±íËø
 #define SIZE_LOCK_T             pthread_spinlock_t
 #define SIZE_LOCK(x)            pthread_spin_lock(x)
 #define SIZE_UNLOCK(x)          pthread_spin_unlock(x)   
@@ -52,10 +52,10 @@ extern "C" {
 #define ERR_FILE_NAME_IS_NULL   430001
 #define ERR_FILE_PTR_IS_NULL    430002
 
-//ç”¨æ¥ç®¡ç†å·²ç»æ‰“å¼€çš„ redofile
+//ÓÃÀ´¹ÜÀíÒÑ¾­´ò¿ªµÄ redofile
 static file_entry_map_t opened_redo_log_file;
 
-// æ³¨å†Œæ‰“å¼€çš„æ–‡ä»¶
+// ×¢²á´ò¿ªµÄÎÄ¼ş
 static int regist_opened_file(char * file_name,FILE * fd)
 {
 if(NULL == file_name)
@@ -77,7 +77,7 @@ if(NULL == fd)
 	  return 0;
 }
 
-// æ³¨é”€æ‰“å¼€çš„æ–‡ä»¶
+// ×¢Ïú´ò¿ªµÄÎÄ¼ş
 static int unregist_opened_file(char * file_name)
 {
 if(NULL == file_name)
@@ -98,7 +98,7 @@ if(0!=(err =  get_file_entry_map_addr(&opened_redo_log_file,file_name,&addr,&add
 }
 
 
-// æŸ¥æ‰¾æ‰“å¼€çš„æ–‡ä»¶
+// ²éÕÒ´ò¿ªµÄÎÄ¼ş
 static int search_opened_file(char * file_name,FILE ** fd)
 {
 if(NULL == file_name)
@@ -120,7 +120,7 @@ if(0!=(err =  get_file_entry_map_addr(&opened_redo_log_file,file_name,&addr,&add
 	
 }
 
-// clearæ‰“å¼€æ–‡ä»¶é€ŸæŸ¥è¡¨
+// clear´ò¿ªÎÄ¼şËÙ²é±í
 static int clear_opened_file()
 {
   dest_file_entry_map_manager(&opened_redo_log_file);
@@ -129,7 +129,7 @@ static int clear_opened_file()
 	
 }
 
-// close æ‰“å¼€æ–‡ä»¶é€ŸæŸ¥è¡¨
+// close ´ò¿ªÎÄ¼şËÙ²é±í
 static int close_opened_file()
 {
   dest_file_entry_map_manager(&opened_redo_log_file);
@@ -138,45 +138,45 @@ static int close_opened_file()
 }
 
 //________________________________________________________________-
-// ç³»ç»Ÿredoæ—¥å¿—ç®¡ç†å™¨
+// ÏµÍ³redoÈÕÖ¾¹ÜÀíÆ÷
 typedef struct sys_redo_log_manager_t
 {
-FILE *                      data_fd;                  //å½“å‰æ‰“å¼€çš„æ•°æ®æ–‡ä»¶
-char                        redo_path[128];            //redo æ—¥å¿—è·¯å¾„
-FILE *                      index_fd;                  //å½“å‰æ‰“å¼€çš„ç›®å½•æ–‡ä»¶
-char                        index_path[128];           //index æ—¥å¿—è·¯å¾„
-char                        path[128];            //redo æ—¥å¿—è·¯å¾„
-REDO_LOG_LOCK_T             data_locker;               		//æ•°æ®æ–‡ä»¶é”
-REDO_LOG_LOCK_T             index_locker;               		//ç›®å½•æ–‡ä»¶é”
-off_t                   		data_max_size;                 //å•ä¸ªæ•°æ®æ–‡ä»¶å¤§å°
-off_t                   		index_max_size;                 //å•ä¸ªæ•°æ®æ–‡ä»¶å¤§å°
-off_t                       cur_data_size;                 //å½“å‰æ–‡ä»¶å¤§å°
-SIZE_LOCK_T                 data_size_locker;              //æ–‡ä»¶å¤§å°ç´¯åŠ å™¨é”
-off_t                       cur_index_size;                 //å½“å‰æ–‡ä»¶å¤§å°
-SIZE_LOCK_T                 index_size_locker;              //æ–‡ä»¶å¤§å°ç´¯åŠ å™¨é”
+FILE *                      data_fd;                  //µ±Ç°´ò¿ªµÄÊı¾İÎÄ¼ş
+char                        redo_path[128];            //redo ÈÕÖ¾Â·¾¶
+FILE *                      index_fd;                  //µ±Ç°´ò¿ªµÄÄ¿Â¼ÎÄ¼ş
+char                        index_path[128];           //index ÈÕÖ¾Â·¾¶
+char                        path[128];            //redo ÈÕÖ¾Â·¾¶
+REDO_LOG_LOCK_T             data_locker;               		//Êı¾İÎÄ¼şËø
+REDO_LOG_LOCK_T             index_locker;               		//Ä¿Â¼ÎÄ¼şËø
+off_t                   		data_max_size;                 //µ¥¸öÊı¾İÎÄ¼ş´óĞ¡
+off_t                   		index_max_size;                 //µ¥¸öÊı¾İÎÄ¼ş´óĞ¡
+off_t                       cur_data_size;                 //µ±Ç°ÎÄ¼ş´óĞ¡
+SIZE_LOCK_T                 data_size_locker;              //ÎÄ¼ş´óĞ¡ÀÛ¼ÓÆ÷Ëø
+off_t                       cur_index_size;                 //µ±Ç°ÎÄ¼ş´óĞ¡
+SIZE_LOCK_T                 index_size_locker;              //ÎÄ¼ş´óĞ¡ÀÛ¼ÓÆ÷Ëø
 } __attribute__ ((packed, aligned (64))) sys_redo_log_manager_t;
 
 #define REDO_LOG_MANAGER_SIZE  sizeof(sys_redo_log_manager_t)
 
-//é»˜è®¤ æ³¨æ„ä¸º2çš„næ¬¡å¹‚
+//Ä¬ÈÏ ×¢ÒâÎª2µÄn´ÎÃİ
 #define DEFAULT_FILE_MAX_SIZE       1024*1024*128
 #define DEFAULT_DATA_FILE_MAX_SIZE  1024*1024*512
 #define DEFAULT_INDEX_FILE_MAX_SIZE 1024*1024*512
 
-//é»˜è®¤ æ³¨æ„ä¸º2çš„næ¬¡å¹‚
+//Ä¬ÈÏ ×¢ÒâÎª2µÄn´ÎÃİ
 #define DEFAULT_QUEUE_MAX_SIZE 1024*1024*128
 #define DEFAULT_STACK_MAX_SIZE  1024*1024*128
 
-//é»˜è®¤äº‹åŠ¡ä¸ªæ•°
-#define DEFAULT_MAX_TRANS_NUM  2048  
-//é»˜è®¤å›æ»šæ®µå¤§å° 10M
+//Ä¬ÈÏÊÂÎñ¸öÊı
+#define DEFAULT_MAX_TRANS_NUM  1024*1024  
+//Ä¬ÈÏ»Ø¹ö¶Î´óĞ¡ 10M
 #define DEFAULT_ROLLBACK_SPACE_SIZE  1024*1024*500
 //#define DEFAULT_ROLLBACK_SPACE_SIZE  1024*1024
 
 static sys_redo_log_manager_t redo_log_manager;
 
 //______________________________________________________
-//åˆå§‹åŒ– redo_manager
+//³õÊ¼»¯ redo_manager
 inline int init_redo_log_manager()
 {
 	REDO_LOG_LOCK_INIT(&(redo_log_manager.data_locker) );
@@ -209,59 +209,60 @@ inline int init_redo_log_manager()
 	return 0;
 }
 
-//é…ç½® config_manager
+//ÅäÖÃ config_manager
 inline int config_redo_data_log(char * path,off_t file_max_size)
 {
-	REDO_LOG_LOCK(&(redo_log_manager.data_locker));//æ•°æ®æ–‡ä»¶ä¸Šé”
+	REDO_LOG_LOCK(&(redo_log_manager.data_locker));//Êı¾İÎÄ¼şÉÏËø
 	strcpy(redo_log_manager.path,path);
 	strcpy(redo_log_manager.redo_path,path);
 	strcat(redo_log_manager.redo_path,"/redo_data_");
-	//æ‹¼å…¥æ—¶é—´
+	//Æ´ÈëÊ±¼ä
   GetTimeForNAME(redo_log_manager.redo_path);
   redo_log_manager.data_max_size = file_max_size;
-  REDO_LOG_UNLOCK(&(redo_log_manager.data_locker));//æ•°æ®æ–‡ä»¶ä¸Šé”
+  REDO_LOG_UNLOCK(&(redo_log_manager.data_locker));//Êı¾İÎÄ¼şÉÏËø
 	return 0;
 }
 
-//é…ç½® config_manager
+//ÅäÖÃ config_manager
 inline int config_redo_index_log(char * path,off_t file_max_size)
 {
-	REDO_LOG_LOCK(&(redo_log_manager.index_locker));//ç›®å½•æ–‡ä»¶ä¸Šé”
+	REDO_LOG_LOCK(&(redo_log_manager.index_locker));//Ä¿Â¼ÎÄ¼şÉÏËø
 	strcpy(redo_log_manager.redo_path,path);
 	strcat(redo_log_manager.index_path,"/redo_index_");
-	//æ‹¼å…¥æ—¶é—´
+	//Æ´ÈëÊ±¼ä
   GetTimeForNAME(redo_log_manager.index_path);
   redo_log_manager.index_max_size = file_max_size;
-  REDO_LOG_UNLOCK(&(redo_log_manager.index_locker));//ç›®å½•æ–‡ä»¶è§£é”
+  REDO_LOG_UNLOCK(&(redo_log_manager.index_locker));//Ä¿Â¼ÎÄ¼ş½âËø
 	return 0;
 }
 
-//å…³é—­ redo_manager
+//¹Ø±Õ redo_manager
 inline int close_redo_log_manager()
 {
-	REDO_LOG_LOCK(&(redo_log_manager.data_locker));//æ•°æ®æ–‡ä»¶ä¸Šé”
+	REDO_LOG_LOCK(&(redo_log_manager.data_locker));//Êı¾İÎÄ¼şÉÏËø
 	fclose(redo_log_manager.data_fd);
-	REDO_LOG_UNLOCK(&(redo_log_manager.data_locker));//æ•°æ®æ–‡ä»¶è§£é”
+	REDO_LOG_UNLOCK(&(redo_log_manager.data_locker));//Êı¾İÎÄ¼ş½âËø
 	
-	REDO_LOG_LOCK(&(redo_log_manager.index_locker));//ç›®å½•æ–‡ä»¶ä¸Šé”
+	REDO_LOG_LOCK(&(redo_log_manager.index_locker));//Ä¿Â¼ÎÄ¼şÉÏËø
 	fclose(redo_log_manager.index_fd);
-	REDO_LOG_UNLOCK(&(redo_log_manager.index_locker));//ç›®å½•æ–‡ä»¶è§£é”
+	REDO_LOG_UNLOCK(&(redo_log_manager.index_locker));//Ä¿Â¼ÎÄ¼ş½âËø
 	close_opened_file();
 	return 0;
 }
 
-//åˆ·æ–° redo_manager
+//Ë¢ĞÂ redo_manager
 inline int fflush_redo_log_manager()
 {
-	REDO_LOG_LOCK(&(redo_log_manager.index_locker));//ç›®å½•æ–‡ä»¶ä¸Šé”	
-	fflush(redo_log_manager.index_fd);
+	REDO_LOG_LOCK(&(redo_log_manager.index_locker));//Ä¿Â¼ÎÄ¼şÉÏËø	
+        fflush(redo_log_manager.index_fd);
 	fsync(fileno(redo_log_manager.index_fd));
-	REDO_LOG_UNLOCK(&(redo_log_manager.index_locker));//ç›®å½•æ–‡ä»¶è§£é”
+	REDO_LOG_UNLOCK(&(redo_log_manager.index_locker));//Ä¿Â¼ÎÄ¼ş½âËø
 
-  REDO_LOG_LOCK(&(redo_log_manager.data_locker));//æ•°æ®æ–‡ä»¶ä¸Šé”
+  REDO_LOG_LOCK(&(redo_log_manager.data_locker));//Êı¾İÎÄ¼şÉÏËø
+
 	fflush(redo_log_manager.data_fd);
-	fsync(fileno(redo_log_manager.index_fd));
-	REDO_LOG_UNLOCK(&(redo_log_manager.data_locker));//æ•°æ®æ–‡ä»¶è§£é”	
+         fsync(fileno(redo_log_manager.data_fd));
+	REDO_LOG_UNLOCK(&(redo_log_manager.data_locker));//Êı¾İÎÄ¼ş½âËø	
 	return 0;
 }
 

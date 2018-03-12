@@ -28,13 +28,13 @@ rapidjson::Document *doc;
 size_t table_block_size;  //TABLET_BLOCK_SIZE
 size_t extern_size;       //EXTERN_SIZE
 
-std::string index_name;  //ç´¢å¼•å
-std::string table_name;  //ç´¢å¼•æ‰€åœ¨çš„è¡¨å
-std::vector<std::string> elements; //æ‰€æœ‰å­—æ®µ
-int index_type;					 //ç´¢å¼•ç±»å‹
-int constraint_type;		 //çº¦æŸç±»å‹
-int skip_level;					 //è·³è¡¨å±‚çº§
-// é»˜è®¤ 16M
+std::string index_name;  //Ë÷ÒıÃû
+std::string table_name;  //Ë÷ÒıËùÔÚµÄ±íÃû
+std::vector<std::string> elements; //ËùÓĞ×Ö¶Î
+int index_type;					 //Ë÷ÒıÀàĞÍ
+int constraint_type;		 //Ô¼ÊøÀàĞÍ
+int skip_level;					 //Ìø±í²ã¼¶
+// Ä¬ÈÏ 16M
 CreateIndexAnalyser(rapidjson::Value    *_root,rapidjson::Document *_doc):root(_root),doc(_doc),index_type(0),constraint_type(0),table_block_size(16*1024*1024),extern_size(16*1024*1024),skip_level(4){get_all();}
 CreateIndexAnalyser(rapidjson::Value    *_root,rapidjson::Document *_doc,int _index_type,int _constraint_type,size_t _table_block_size,size_t _extern_size):root(_root),doc(_doc),index_type(_index_type),skip_level(4),constraint_type(_constraint_type),table_block_size(_table_block_size),extern_size(_extern_size){get_all();}
 
@@ -130,14 +130,14 @@ return 0;
 }
 
 
-// è·å¾—ç´¢å¼•ç±»å‹
-// æš‚æ—¶ä¸æ”¯æŒçº¦æŸ
+// »ñµÃË÷ÒıÀàĞÍ
+// ÔİÊ±²»Ö§³ÖÔ¼Êø
 int get_constraint_type()
 {
 	return 0;
 }
 
-// è·å¾—ç´¢å¼•ç±»å‹
+// »ñµÃË÷ÒıÀàĞÍ
 int get_index_type()
 {
 	CPP_DEBUG <<"before get_index_type() \n";
@@ -175,15 +175,15 @@ int get_create_info()
 		{
 		  if( v["tag"].GetInt() == T_TABLET_BLOCK_SIZE && v.HasMember("TABLET_BLOCK_SIZE") ) 
 			{
-				table_block_size = atol( v["TABLET_BLOCK_SIZE"]["str_value_"].GetString() )*1024*1024; // é»˜è®¤æ˜¯å…†
+				table_block_size = atol( v["TABLET_BLOCK_SIZE"]["str_value_"].GetString() )*1024*1024; // Ä¬ÈÏÊÇÕ×
 			}
 			if( v["tag"].GetInt() == T_EXTERN_SIZE && v.HasMember("EXTERN_SIZE") ) 
 			{
-				extern_size = atol( v["EXTERN_SIZE"]["str_value_"].GetString() )*1024*1024; // é»˜è®¤æ˜¯å…†
+				extern_size = atol( v["EXTERN_SIZE"]["str_value_"].GetString() )*1024*1024; // Ä¬ÈÏÊÇÕ×
 			}
 			if( v["tag"].GetInt() == T_SKIP_LEVEL && v.HasMember("SKIP_LEVEL") ) 
 			{
-				skip_level = atoi( v["SKIP_LEVEL"]["str_value_"].GetString() ); // é»˜è®¤æ˜¯å…†
+				skip_level = atoi( v["SKIP_LEVEL"]["str_value_"].GetString() ); // Ä¬ÈÏÊÇÕ×
 			}
 			
 			
@@ -193,15 +193,15 @@ int get_create_info()
 				
 			if( (*elemets)["tag"].GetInt() == T_TABLET_BLOCK_SIZE && (*elemets).HasMember("TABLET_BLOCK_SIZE") ) 
 			{
-				table_block_size = atol( (*elemets)["TABLET_BLOCK_SIZE"]["str_value_"].GetString() )*1024*1024; // é»˜è®¤æ˜¯å…†
+				table_block_size = atol( (*elemets)["TABLET_BLOCK_SIZE"]["str_value_"].GetString() )*1024*1024; // Ä¬ÈÏÊÇÕ×
 			}
 			if( (*elemets)["tag"].GetInt() == T_EXTERN_SIZE && (*elemets).HasMember("EXTERN_SIZE") ) 
 			{
-				extern_size = atol( (*elemets)["EXTERN_SIZE"]["str_value_"].GetString() )*1024*1024; // é»˜è®¤æ˜¯å…†
+				extern_size = atol( (*elemets)["EXTERN_SIZE"]["str_value_"].GetString() )*1024*1024; // Ä¬ÈÏÊÇÕ×
 			}
 			if( (*elemets)["tag"].GetInt() == T_SKIP_LEVEL && (*elemets).HasMember("SKIP_LEVEL") ) 
 			{
-				skip_level = atoi( (*elemets)["SKIP_LEVEL"]["str_value_"].GetString() ); // é»˜è®¤æ˜¯å…†
+				skip_level = atoi( (*elemets)["SKIP_LEVEL"]["str_value_"].GetString() ); // Ä¬ÈÏÊÇÕ×
 			}
 				
 			}

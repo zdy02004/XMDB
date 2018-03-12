@@ -1,4 +1,4 @@
-fndef TRANSACTION_H
+#ifndef TRANSACTION_H
 #define TRANSACTION_H
 
 #ifdef __cplusplus
@@ -2511,3 +2511,4 @@ int redo(char * path,char * start_str_in)
 #endif
 
 #endif 
+

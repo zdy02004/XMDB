@@ -47,13 +47,13 @@ int create_block(mem_block_t **mb,char * file_name,size_t block_size)
 {
 	DEBUG("in create_block\n");
 
-	//åˆ›å»ºå—
+	//´´½¨¿é
 	*mb =(mem_block_t *) malloc(MEM_BLOCK_HEAD_SIZE);
 	DEBUG("create_block %0x\n",*mb);
 
-	//é…ç½®å—æè¿°ç¬¦
+	//ÅäÖÃ¿éÃèÊö·û
 	mem_block_config( *mb  ,block_size , file_name );
-		//åˆå§‹åŒ–å—
+		//³õÊ¼»¯¿é
 	INIT_MEM_BLOCK(*mb)
 	
 	DEBUG("fd = %d\n",(*mb)->fd);
@@ -92,14 +92,14 @@ int create_mem_table_config(mem_table_config_t ** mem_config,mem_block_t *mb,cha
 }
 
 
-//key func æ„é€  ç»“æœé›†çš„ record_tuple
+//key func ¹¹Ôì ½á¹û¼¯µÄ record_tuple
 struct create_table_node:public plan_node
 {
-std::string table_name;                //è¡¨å
-std::vector<FieldDesc> field_vector ;  //å­—æ®µåˆ—è¡¨
-size_t 	block_size;										 //ä¸€ä¸ªå—å¤§å°
-size_t 	extend_block_size;             //å—çš„æ‰©å±•å¤§å°
-std::string path;											 //è·¯å¾„
+std::string table_name;                //±íÃû
+std::vector<FieldDesc> field_vector ;  //×Ö¶ÎÁĞ±í
+size_t 	block_size;										 //Ò»¸ö¿é´óĞ¡
+size_t 	extend_block_size;             //¿éµÄÀ©Õ¹´óĞ¡
+std::string path;											 //Â·¾¶
 struct mem_table_t*                    mem_table;
 
 create_table_node( 
@@ -129,12 +129,12 @@ _path = path;
 	
 virtual int execute( unsigned long long  trans_no  )
 {
-// å»ºç‰©ç†å—
+// ½¨ÎïÀí¿é
 mem_block_t *mb = NULL;
 std::string total_path = path + table_name+".dat";
 
 create_block( &mb,const_cast<char *>(total_path.c_str() ),block_size );
-//å»ºé€»è¾‘è¡¨é…ç½®
+//½¨Âß¼­±íÅäÖÃ
 mem_table_config_t * mem_config = NULL;
 int err;
 if(0!=(err=create_mem_table_config(&mem_config,mb,const_cast<char *>( table_name.c_str() ),extend_block_size, field_vector ) ))
@@ -144,14 +144,14 @@ if(0!=(err=create_mem_table_config(&mem_config,mb,const_cast<char *>( table_name
 }
 
 
-//å»ºé€»è¾‘è¡¨
+//½¨Âß¼­±í
 
 if(0!=(err=mem_table_create(&mem_table,mem_config)))
 {
 		ERROR("mem_table_create err is %d\n",err);
 		return err;
 }
-MEM_TABLE_LOCK_INIT(&(mem_table->table_locker ));		// åŸå› ä¸æ˜ï¼Œå†åˆå§‹åŒ–ä¸€æ¬¡
+MEM_TABLE_LOCK_INIT(&(mem_table->table_locker ));		// Ô­Òò²»Ã÷£¬ÔÙ³õÊ¼»¯Ò»´Î
 DEBUG("create_table node : mem_table->record_size is %d\n",mem_table->record_size );
 DEBUG("RECORD_HEAD_SIZE is %d\n",RECORD_HEAD_SIZE);
 return 0;
@@ -176,6 +176,21 @@ virtual std::string to_sring()
 	//return 0;
 }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #endif 

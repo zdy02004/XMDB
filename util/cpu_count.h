@@ -7,7 +7,7 @@
 #endif  
 unsigned get_cput_core()  
 {  
-  unsigned count = 1; // è‡³å°‘ä¸€ä¸ª  
+  unsigned count = 1; // ÖÁÉÙÒ»¸ö  
   #if defined (LINUX)  
   count = get_nprocs();   
   #elif defined (WINDOWS)  

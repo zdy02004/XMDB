@@ -12,7 +12,7 @@
 #include "../util/func_task_t.hpp"
 #include "../util/cpp_thread_pool.h"
 
-// ä½¿ç”¨tuple ä½œä¸ºå‡½æ•°å‚æ•°åˆ—è¡¨
+// Ê¹ÓÃtuple ×÷Îªº¯Êı²ÎÊıÁĞ±í
 template<size_t N>
 struct Apply {
 template<typename F, typename T, typename... A>
@@ -56,14 +56,14 @@ typename ::std::decay<T>::type
 ::std::forward<T>(t));
 }
 
-// ç”¨äº ç‰¹åŒ– æŒ‡é’ˆå‡½æ•°çš„è¿”å›å€¼
+// ÓÃÓÚ ÌØ»¯ Ö¸Õëº¯ÊıµÄ·µ»ØÖµ
 template<class T,bool T2,typename ... Args>
 struct is_functional
 {
 typedef typename std::result_of<T(Args...)>::type  ret_type;
 
 };
-// ç”¨äº ç‰¹åŒ– std::function çš„è¿”å›å€¼
+// ÓÃÓÚ ÌØ»¯ std::function µÄ·µ»ØÖµ
 template<class T,typename ... Args>
 struct is_functional<T,true,Args...>
 {
@@ -86,7 +86,7 @@ typedef typename T::result_type  ret_type;
 //};
 
 
-//æ‡’æ‰§è¡Œå‡½æ•°åŒ…è£…å™¨
+//ÀÁÖ´ĞĞº¯Êı°ü×°Æ÷
 template<class Funtype,typename ... Args>
 struct exec_fun
 {
@@ -144,11 +144,11 @@ struct exec_fun
 #define OPERATION_END      2
 #define OPERATION_RUNING   3
 /*  
-å®šä¹‰ä¾èµ–æ‰§è¡ŒèŠ‚ç‚¹
+¶¨ÒåÒÀÀµÖ´ĞĞ½Úµã
 
-pre_node1    							  <--(ä¾èµ–)    current_node    <--(ä¾èµ–)    out_node
+pre_node1    							  <--(ÒÀÀµ)    current_node    <--(ÒÀÀµ)    out_node
    |																																			|
-   |brotherï¼ˆä¸Šé¢å’Œä¸‹é¢çš„èŠ‚ç‚¹æ˜¯å¹¶è¡Œçš„å…³ç³»ï¼‰																|brotherï¼ˆä¸Šé¢å’Œä¸‹é¢çš„èŠ‚ç‚¹æ˜¯å¹¶è¡Œçš„å…³ç³»ï¼‰
+   |brother£¨ÉÏÃæºÍÏÂÃæµÄ½ÚµãÊÇ²¢ĞĞµÄ¹ØÏµ£©																|brother£¨ÉÏÃæºÍÏÂÃæµÄ½ÚµãÊÇ²¢ĞĞµÄ¹ØÏµ£©
    |																																			|
 pre_node2																															out_node2
    |																																			|
@@ -161,10 +161,10 @@ pre_node3      																												out_node3
 
 typedef std::function <int( std::function<void * (void *)> &, void *)>  put_once_t ;
 
-// å¤„ç†èŠ‚ç‚¹
-// pre_type     å‰ç»§èŠ‚ç‚¹ç±»å‹
-// brother_type å…„å¼ŸèŠ‚ç‚¹ç±»å‹
-// OpperType    æ“ä½œèŠ‚ç‚¹ç±»å‹
+// ´¦Àí½Úµã
+// pre_type     Ç°¼Ì½ÚµãÀàĞÍ
+// brother_type ĞÖµÜ½ÚµãÀàĞÍ
+// OpperType    ²Ù×÷½ÚµãÀàĞÍ
 template<class pre_type,class brother_type,class OpperType>
 struct exec_node_type
 {
@@ -174,30 +174,30 @@ struct exec_node_type
 	typedef brother_type  		brother_type_;
 	typedef OpperType  				OpperType_;
 	
-	 //æ‰§è¡ŒèŠ‚ç‚¹è¿”å›ç±»å‹
+	 //Ö´ĞĞ½Úµã·µ»ØÀàĞÍ
 	typedef typename OpperType::ret_type  ret_type; 
   
-         //å‰ç»§èŠ‚ç‚¹ç±»å‹
+         //Ç°¼Ì½ÚµãÀàĞÍ
 	typedef exec_node_type<typename pre_type_::pre_type_ , typename pre_type_::brother_type_,
 									  typename pre_type_::OpperType_
 								   > input_node_type;		 	
 
-	//åç»§èŠ‚ç‚¹ç±»å‹							 	
+	//ºó¼Ì½ÚµãÀàĞÍ							 	
 	//typedef exec_node<typename out_type_::FunType_, typename out_type_::Arg1_ , typename out_type_::Arg2_ , 
 	//																						 typename out_type_::Arg3_ , typename out_type_::Arg4_ , 
 	//							 typename out_type_::pre_type_,typename out_type_::out_type , typename out_type_::brother_type_  > output_node_type;
 	
-  int    						operation_type;	//æ“ä½œç±»å‹
-  short  						is_start_end;		//æ˜¯å¦æ˜¯å¼€å§‹èŠ‚ç‚¹ 1 å¼€å§‹   2 ç»“æŸ		
-  std::atomic<bool> is_done;				//æ˜¯å¦ç»“æŸ  0 æœªç»“æŸ   1  ç»“æŸ
-  OpperType 				exec_node;   		//æ‰§è¡ŒèŠ‚ç‚¹
+  int    						operation_type;	//²Ù×÷ÀàĞÍ
+  short  						is_start_end;		//ÊÇ·ñÊÇ¿ªÊ¼½Úµã 1 ¿ªÊ¼   2 ½áÊø		
+  std::atomic<bool> is_done;				//ÊÇ·ñ½áÊø  0 Î´½áÊø   1  ½áÊø
+  OpperType 				exec_node;   		//Ö´ĞĞ½Úµã
   
-  input_node_type		* input_node;//å‰ç»§ä¾èµ–èŠ‚ç‚¹
-  brother_type      * brother;	 //å‰ç»§ä¾èµ–å…„å¼ŸèŠ‚ç‚¹ 
-  ret_type 						ret;			 //æ‰§è¡Œç»“æœé›† é»˜è®¤ä¸ºæŒ‡é’ˆç±»å‹
-  cpp_func_task_namespace::wait_func_queue_t   wait_queue;//ç­‰å¾…é˜Ÿåˆ—	
-  std::function<void(void)>    call_once_thread_poll;//çº¿ç¨‹æ± ä¸€æ¬¡å–ä»»åŠ¡å¹²æ´»
-  put_once_t         put_once_to_thread_poll;  //å¾€çº¿ç¨‹æ± ä¸€æ¬¡å–ä»»åŠ¡å¹²æ´»
+  input_node_type		* input_node;//Ç°¼ÌÒÀÀµ½Úµã
+  brother_type      * brother;	 //Ç°¼ÌÒÀÀµĞÖµÜ½Úµã 
+  ret_type 						ret;			 //Ö´ĞĞ½á¹û¼¯ Ä¬ÈÏÎªÖ¸ÕëÀàĞÍ
+  cpp_func_task_namespace::wait_func_queue_t   wait_queue;//µÈ´ı¶ÓÁĞ	
+  std::function<void(void)>    call_once_thread_poll;//Ïß³Ì³ØÒ»´ÎÈ¡ÈÎÎñ¸É»î
+  put_once_t         put_once_to_thread_poll;  //ÍùÏß³Ì³ØÒ»´ÎÈ¡ÈÎÎñ¸É»î
   
 inline exec_node_type(int _operation_type ):operation_type(_operation_type),is_start_end(OPERATION_START),input_node( NULL ),brother( NULL )
 {  		
@@ -214,10 +214,10 @@ exec_node_type( ):operation_type(OPERATION_RUNING),is_start_end(OPERATION_START)
 
 }
 
-//æ™®é€šåŒ moveè¯­ä¹‰
+//ÆÕÍ¨Í¬ moveÓïÒå
 inline exec_node_type( exec_node_type< pre_type, brother_type, OpperType>& move ):operation_type(move.operation_type),is_start_end(move.is_start_end),exec_node(move.exec_node),input_node(move.input_node),brother(move.brother),ret(move.ret),wait_queue(std::move(wait_queue)),call_once_thread_poll(std::move(move.call_once_thread_poll)),put_once_to_thread_poll(move.put_once_to_thread_poll){is_done.store(move.is_done.load());}
 
-//move è¯­ä¹‰
+//move ÓïÒå
 inline exec_node_type( exec_node_type< pre_type, brother_type, OpperType>&& move )
 {
 	operation_type = move.operation_type;
@@ -226,7 +226,7 @@ inline exec_node_type( exec_node_type< pre_type, brother_type, OpperType>&& move
 	exec_node      = std::move(move.exec_node);	
 	input_node     = move.input_node;
 	brother        = move.brother;
-	ret	       = move.ret;		//é»˜è®¤ä¸ºæŒ‡é’ˆç±»å‹
+	ret	           = move.ret;		//Ä¬ÈÏÎªÖ¸ÕëÀàĞÍ
 	wait_queue     = std::move(wait_queue);	
 	call_once_thread_poll  = std::move(move.call_once_thread_poll);
 	put_once_to_thread_poll= std::move(move.put_once_to_thread_poll);		
@@ -239,7 +239,7 @@ inline exec_node_type( exec_node_type< pre_type, brother_type, OpperType>&& move
 	exec_node      = std::move(move.exec_node);	
 	input_node     = move.input_node;
 	brother        = move.brother;
-	ret	           = move.ret;	//é»˜è®¤ä¸ºæŒ‡é’ˆç±»å‹
+	ret	           = move.ret;	//Ä¬ÈÏÎªÖ¸ÕëÀàĞÍ
 	wait_queue	   = std::move(wait_queue);	
 	call_once_thread_poll = std::move(move.call_once_thread_poll);	
 	put_once_to_thread_poll= std::move(move.put_once_to_thread_poll);		
@@ -247,32 +247,32 @@ inline exec_node_type( exec_node_type< pre_type, brother_type, OpperType>&& move
   	
 ~exec_node_type()
 {
-	//é”€æ¯ç­‰å¾…é˜Ÿåˆ—
+	//Ïú»ÙµÈ´ı¶ÓÁĞ
 	//CAS_RING_DESTORY(jmp_buf_type,wait_queue);
 }
   	
-//è®¾ç½®æ‰§è¡Œå‡½æ•°
+//ÉèÖÃÖ´ĞĞº¯Êı
 inline  void set_wait_queue_size(uint32_t size)
 {
 	wait_queue.init( size );
  
 }
-//è®¾ç½®æ‰§è¡Œå‡½æ•°
+//ÉèÖÃÖ´ĞĞº¯Êı
 inline void set_exec(OpperType & _exec_node)
 {
 	exec_node.swap(_exec_node);
 }
-//è®¾ç½®å‰ç»§èŠ‚ç‚¹
+//ÉèÖÃÇ°¼Ì½Úµã
 inline  void set_input_node(input_node_type & _input_node )
 {
 	input_node = &_input_node;
 }
-//è®¾ç½®å…„å¼ŸèŠ‚ç‚¹
+//ÉèÖÃĞÖµÜ½Úµã
 inline  void set_brother_node(brother_type & _brohter_node )
 {
 	brother = &_brohter_node;
 }
- // è®¾ç½®è°ƒç”¨ä¸€æ¬¡ çº¿ç¨‹æ± æ‰§è¡Œå‡½æ•°ï¼Œè¿™é‡Œè§„å®šè¯¥å‡½æ•°ä¸º void(void)
+ // ÉèÖÃµ÷ÓÃÒ»´Î Ïß³Ì³ØÖ´ĞĞº¯Êı£¬ÕâÀï¹æ¶¨¸Ãº¯ÊıÎª void(void)
 inline  void set_call_once(std::function<void(void)>  _call_once)
 {
 	call_once_thread_poll = std::move(_call_once);
@@ -302,26 +302,26 @@ set_pool(pool_type&  pool)
   
 inline int check( int * pre_brother)
 {
- return 0;  //é€€å‡ºè¿”å›
+ return 0;  //ÍË³ö·µ»Ø
 }
 	
-//é€’å½’æ£€æŸ¥å‰ç»§èŠ‚ç‚¹
+//µİ¹é¼ì²éÇ°¼Ì½Úµã
 template<class T>
 inline int check( T*  pre_brother)
 {
- if(pre_brother->brother == NULL)return 0;  //é€€å‡ºè¿”å›
+ if(pre_brother->brother == NULL)return 0;  //ÍË³ö·µ»Ø
  typename T::brother_type_ * brother_tmp = pre_brother->brother;
  int ret = check_isdone(brother_tmp);
- if( ret == 1 )return 1;                    //ä¸­æ–­è¿”å›
- if( ret == 0 )return 0;                    //é€€å‡ºè¿”å›
+ if( ret == 1 )return 1;                    //ÖĞ¶Ï·µ»Ø
+ if( ret == 0 )return 0;                    //ÍË³ö·µ»Ø
  return check(brother_tmp) ;
 
 }
-//é€’å½’æ£€æŸ¥å‰ç»§èŠ‚ç‚¹
+//µİ¹é¼ì²éÇ°¼Ì½Úµã
 template<class T>
 inline int check_isdone( T*  brother_tmp)
 {
-	if(brother_tmp->is_done.load()!= 1)return 1;       //ä¸­æ–­è¿”å›
+	if(brother_tmp->is_done.load()!= 1)return 1;       //ÖĞ¶Ï·µ»Ø
   else return 2;
 }
 inline int check_isdone( int*  brother_tmp)
@@ -353,29 +353,29 @@ inline exec_node_type(exec_fun<Funtype,Args...> & later_func ):exec_node(later_f
 
 template<class Funtype,typename ... Args>
 inline 
-exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // å‰ç»§èŠ‚ç‚¹ç±»å‹
-   exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //å…„å¼ŸèŠ‚ç‚¹ç±»å‹
+exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // Ç°¼Ì½ÚµãÀàĞÍ
+   exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //ĞÖµÜ½ÚµãÀàĞÍ
    exec_fun<Funtype,Args...> > &
 then(exec_fun<Funtype,Args...> & later_func )
 {
-// then èŠ‚ç‚¹ç±»å‹
+// then ½ÚµãÀàĞÍ
 std::shared_ptr<
-exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // å‰ç»§èŠ‚ç‚¹ç±»å‹
-								exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //å…„å¼ŸèŠ‚ç‚¹ç±»å‹
+exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // Ç°¼Ì½ÚµãÀàĞÍ
+								exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //ĞÖµÜ½ÚµãÀàĞÍ
 								exec_fun<Funtype,Args...> >  
 						>   then_exec_node ( new
-exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // å‰ç»§èŠ‚ç‚¹ç±»å‹
-								exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //å…„å¼ŸèŠ‚ç‚¹ç±»å‹
+exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // Ç°¼Ì½ÚµãÀàĞÍ
+								exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //ĞÖµÜ½ÚµãÀàĞÍ
 								exec_fun<Funtype,Args...> >(later_func)		);					 
-// è®¾ç½®æ‰§è¡Œå™¨								
+// ÉèÖÃÖ´ĞĞÆ÷								
  	//	then_exec_node->set_exec(later_func);
-// è®¾ç½®å‰ç»§ä¾èµ–é¡¹ä¸º this
+// ÉèÖÃÇ°¼ÌÒÀÀµÏîÎª this
  		then_exec_node->set_input_node(*this);
-// ä¼ é€’ä¾èµ– çº¿ç¨‹æ± çš„ put_once å‡½æ•°
+// ´«µİÒÀÀµ Ïß³Ì³ØµÄ put_once º¯Êı
  		then_exec_node->set_put_once(this->put_once_to_thread_poll);
-// ä¼ é€’ä¾èµ– çº¿ç¨‹æ± çš„ call_once å‡½æ•°
+// ´«µİÒÀÀµ Ïß³Ì³ØµÄ call_once º¯Êı
  		then_exec_node->set_call_once(this->call_once_thread_poll);
-// æ‰”è¿›çº¿ç¨‹æ± 
+// ÈÓ½øÏß³Ì³Ø
  		std::function<void * (void *)> process  =[=](void * a)	 {
  	  then_exec_node->try_execute();
  		return (void *)0;
@@ -383,7 +383,7 @@ exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // å‰ç»§èŠ‚ç‚¹
  		 
  		DEBUG("put_once_to_thread_poll() \n");  		
  		put_once_to_thread_poll(process,(void *)0);
-  	//æ‰”è¿›ç­‰å¾…é˜Ÿåˆ—
+  	//ÈÓ½øµÈ´ı¶ÓÁĞ
   	//DEBUG("put_once_to_wait_queue() \n");
   	//std::function<void (void )> this_process=[=](){
 		//then_exec_node->try_execute();
@@ -397,18 +397,18 @@ exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // å‰ç»§èŠ‚ç‚¹
 
 template<class Funtype,typename ... Args>
 inline   
-exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // å‰ç»§èŠ‚ç‚¹ç±»å‹
-		   exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //å…„å¼ŸèŠ‚ç‚¹ç±»å‹
+exec_node_type< exec_node_type<pre_type,brother_type,OpperType>, // Ç°¼Ì½ÚµãÀàĞÍ
+		   exec_node_type< int,int,exec_node_type< int,int,exec_fun<Funtype,Args...> > >, //ĞÖµÜ½ÚµãÀàĞÍ
 		   exec_fun<Funtype,Args...> >  &
 then( Funtype f,Args... args ) 
 {		
 	exec_fun<Funtype,Args...> later_func ( std::forward<Funtype>(f),std::forward<Args>(args)...);
 	return then( later_func  );
 }
-	//æ‰§è¡Œæœ¬èŠ‚ç‚¹
+	//Ö´ĞĞ±¾½Úµã
 inline int try_execute()
 {
-	//1 æ‰€æœ‰çš„å‰ç»§èŠ‚ç‚¹éƒ½ç»“æŸ
+	//1 ËùÓĞµÄÇ°¼Ì½Úµã¶¼½áÊø
 	int first_check = 0;
 	do
 	{
@@ -416,22 +416,22 @@ inline int try_execute()
 		{
 			DEBUG(" input_node != NULL \n");
 			typename input_node_type::brother_type_ * brother_tmp =input_node->brother;
-		 	//å‰ç»§èŠ‚ç‚¹æˆ–è€…å‰ç»§çš„å…„å¼ŸèŠ‚ç‚¹æ²¡æ‰§è¡Œå®Œï¼Œå°±æŠŠè‡ªå·±æ”¾åˆ°å‰æ™¯èŠ‚ç‚¹çš„ç­‰å¾…é˜Ÿåˆ—ä¸­ï¼Œç„¶åé€€å‡º
+		 	//Ç°¼Ì½Úµã»òÕßÇ°¼ÌµÄĞÖµÜ½ÚµãÃ»Ö´ĞĞÍê£¬¾Í°Ñ×Ô¼º·Åµ½Ç°¾°½ÚµãµÄµÈ´ı¶ÓÁĞÖĞ£¬È»ºóÍË³ö
 		 	if ( check(brother_tmp) || 0 == input_node->is_done.load()/*get_stat()*/  )
 		  {
 		  	DEBUG(" input_node is working \n");
-				//é¦–æ¬¡è°ƒç”¨
+				//Ê×´Îµ÷ÓÃ
 				if( first_check  == 0 )
 				{
 					DEBUG(" First execute !\n");				
-					first_check = 2;
+				  first_check = 2;
 					std::function<void (void )> this_process=[&](){
 					this->try_execute();
 					};
 					  
 					input_node->wait_queue.push( this_process );
 					
-					// å¦‚æœé¦–æ¬¡è°ƒç”¨åï¼Œä¾èµ–é¡¹å°±æ‰§è¡Œå®Œäº†,è¿™é‡Œå›æ»šä¸Šä¸€æ­¥æ“ä½œ
+					// Èç¹ûÊ×´Îµ÷ÓÃºó£¬ÒÀÀµÏî¾ÍÖ´ĞĞÍêÁË,ÕâÀï»Ø¹öÉÏÒ»²½²Ù×÷
 					if( !( check(brother_tmp) || 0 == input_node->is_done.load()/*get_stat()*/ ) )
 					{
 						DEBUG("ROLL BACK \n");
@@ -441,12 +441,12 @@ inline int try_execute()
 				}
 		   	else 
 		   	{
-					// æ­£å¸¸æƒ…å†µä¸å¯¹åˆ°è¾¾æ­¤åˆ†æ”¯
+					// Õı³£Çé¿ö²»¶Ôµ½´ï´Ë·ÖÖ§
 					DEBUG(" first check = %d \n",first_check);
 					call_once_thread_poll();
 		   	}
 		  }
-		  //ä¾èµ–èŠ‚ç‚¹éƒ½æ‰§è¡Œå®Œå°±é€€å‡º
+		  //ÒÀÀµ½Úµã¶¼Ö´ĞĞÍê¾ÍÍË³ö
 		  else break;
 		}
 		else break;
@@ -454,20 +454,20 @@ inline int try_execute()
 	}while( true );
 	
 	DEBUG("exec_node.exe() \n");
-	//2 æ‰§è¡Œæœ¬èŠ‚ç‚¹ä»»åŠ¡
+	//2 Ö´ĞĞ±¾½ÚµãÈÎÎñ
 	//ret = exec_node.exe();
 	ret =  exec_node();
 
   is_done.store(1);	  	
   DEBUG(" Before done ============================\n");
   wait_queue.schedule(put_once_to_thread_poll);
-  //wait_queue.schedule_now(); //ç«‹å³æ‰§è¡Œ
+  //wait_queue.schedule_now(); //Á¢¼´Ö´ĞĞ
   DEBUG(" After done  ============================\n");
 }
 
 }__attribute__ ((packed, aligned (64)));
 
-//åˆ›å»ºé»˜è®¤ç©ºèŠ‚ç‚¹
+//´´½¨Ä¬ÈÏ¿Õ½Úµã
 template<class Funtype,typename ... Args>
 inline 
 exec_node_type<exec_node_type<int,int,exec_fun < Funtype,Args... > >,exec_node_type<int,int,exec_fun < Funtype,Args... > >,exec_fun < Funtype,Args... > >
@@ -481,7 +481,7 @@ void empty_func(void)
 	return;
 }
 
-//ç©ºæ‰§è¡ŒèŠ‚ç‚¹
+//¿ÕÖ´ĞĞ½Úµã
 template <typename ... Args>
 struct exec_fun< int,Args...>
 {
@@ -503,7 +503,7 @@ inline int exe()
 	
 };
 
-// ç©ºæ‰§è¡Œè¾…åŠ©èŠ‚ç‚¹
+// ¿ÕÖ´ĞĞ¸¨Öú½Úµã
 template<class OpperType>
 struct exec_node_type<int,int,OpperType>
 {
@@ -513,12 +513,12 @@ struct exec_node_type<int,int,OpperType>
 	typedef int ret_type; 
 	typedef int	input_node_type;
 	
-	short										is_start_end;			//æ˜¯å¦æ˜¯å¼€å§‹èŠ‚ç‚¹ 1 å¼€å§‹   2 ç»“æŸ
+	short										is_start_end;			//ÊÇ·ñÊÇ¿ªÊ¼½Úµã 1 ¿ªÊ¼   2 ½áÊø
 	std::atomic<bool>				is_done;			
-	input_node_type      	 *input_node;		//å‰ç»§ä¾èµ–èŠ‚ç‚¹
-	brother_type_					 *brother;			//å‰ç»§ä¾èµ–å…„å¼ŸèŠ‚ç‚¹ 
-	cpp_func_task_namespace::wait_func_queue_t    wait_queue;		 //ç­‰å¾…é˜Ÿåˆ—
-	exec_fun< int,OpperType>  exec_node;              					 //æ‰§è¡ŒèŠ‚ç‚¹
+	input_node_type      	 *input_node;		//Ç°¼ÌÒÀÀµ½Úµã
+	brother_type_					 *brother;			//Ç°¼ÌÒÀÀµĞÖµÜ½Úµã 
+	cpp_func_task_namespace::wait_func_queue_t    wait_queue;		 //µÈ´ı¶ÓÁĞ
+	exec_fun< int,OpperType>  exec_node;              					 //Ö´ĞĞ½Úµã
 
 exec_node_type():input_node(NULL),brother(NULL),is_start_end(OPERATION_END)
 {
@@ -532,7 +532,7 @@ inline int try_execute()
 
 ~exec_node_type()
 {
-	//é”€æ¯ç­‰å¾…é˜Ÿåˆ—
+	//Ïú»ÙµÈ´ı¶ÓÁĞ
 	//CAS_RING_DESTORY(jmp_buf_type,wait_queue);
 }
 };

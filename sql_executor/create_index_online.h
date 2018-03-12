@@ -21,8 +21,8 @@ template< typename ContainerT, typename PredicateT >
 //
 
 
-//if( INDEX_TYPE_HASH == index_type )mem_hash_index_t	*  mem_hash_index; //HASH ç´¢å¼•æŒ‡é’ˆ
-//if( INDEX_TYPE_SKIP == index_type )mem_skiplist_index_t	*   mem_skiplist_index; //skiplist ç´¢å¼•æŒ‡é’ˆ
+//if( INDEX_TYPE_HASH == index_type )mem_hash_index_t	*  mem_hash_index; //HASH Ë÷ÒıÖ¸Õë
+//if( INDEX_TYPE_SKIP == index_type )mem_skiplist_index_t	*   mem_skiplist_index; //skiplist Ë÷ÒıÖ¸Õë
 
 template<class T>
 struct get_mem_index_type_from_entry_type
@@ -43,14 +43,14 @@ struct get_mem_index_type_from_entry_type<mem_skiplist_entry_t>
 };
 
 
-// éœ€è¦æ–°å»ºä¸€ä¸ªäº‹åŠ¡
+// ĞèÒªĞÂ½¨Ò»¸öÊÂÎñ
 template<class INDEX_ENTERY_TYPE>
 struct online_create_index
 {
 mem_table_t *mem_table;
-std::string field_name;  // å»ºç´¢å¼•çš„å­—æ®µå
+std::string field_name;  // ½¨Ë÷ÒıµÄ×Ö¶ÎÃû
 int         index_type;
-long long   Tn;   // å»ºç´¢å¼•æ—¶ç”³è¯·çš„äº‹åŠ¡æ§½
+long long   Tn;   // ½¨Ë÷ÒıÊ±ÉêÇëµÄÊÂÎñ²Û
 index_dml_t<INDEX_ENTERY_TYPE>  index_dml;
 int          error;
 
@@ -75,7 +75,7 @@ online_create_index(mem_table_t * _mem_table , std::string& _field_name ,int _in
 
 //sys_transaction_manager_t transaction_manager;
 
-//å»ºç´¢å¼•é‚£ä¸€æ—¶åˆ»çš„ ã€Šæœªæäº¤çš„ scn  list<record_t> 
+//½¨Ë÷ÒıÄÇÒ»Ê±¿ÌµÄ ¡¶Î´Ìá½»µÄ scn  list<record_t> 
 std::map<unsigned  long long, std::list<struct record_t*> > un_commit_map;
 long long commit_scn ;
 long long un_commit_scn ;
@@ -90,8 +90,8 @@ CPP_DEBUG<<"START get_un_commit_scn() \n";
 	record_t * record_ptr;
 	long  block_no;
 	
-// ä¿®æ”¹ å­—æ®µç´¢å¼•æ ‡è¯†
-MEM_TRANSACTION_LOCK(&(transaction_manager.locker));    //ä¸Šé” 
+// ĞŞ¸Ä ×Ö¶ÎË÷Òı±êÊ¶
+MEM_TRANSACTION_LOCK(&(transaction_manager.locker));    //ÉÏËø 
 int is_ok = 1;
 while(is_ok)
 {
@@ -104,43 +104,43 @@ int i = 0;
 			if( 0!= (HIGH_LEVEL_TRYLOCK(&(mem_block_temp->high_level_lock))) )
 			{
 				//IMPORTANT_INFO("HIGH_LEVEL_TRYLOCK =0\n");
-				return HIGH_LEVEL_TRY_LOCK;  //é«˜æ°´ä½çº¿ä¸Šé”
+				return HIGH_LEVEL_TRY_LOCK;  //¸ßË®Î»ÏßÉÏËø
 			}		
 		unsigned  long  high_level_temp = mem_block_temp->high_level;  
     if(mem_block_temp->space_start_addr + mem_block_temp->high_level* mem_table->record_size < mem_block_temp->space_end_addr - mem_table->record_size )
     {		
     	 DEBUG("----- try to get record  high level -----\n");
-    	 //è¿”å›å—çš„é€»è¾‘å·
+    	 //·µ»Ø¿éµÄÂß¼­ºÅ
     	 end_block_no = mem_block_temp->block_no;
        high_level=high_level_temp;
        is_ok = 0;
        //DEBUG(" ----- try to allocate record by high level end -----\n");
     }	
-	 HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //é«˜æ°´ä½çº¿è§£é” 		
+	 HIGH_LEVEL_UNLOCK(&(mem_block_temp->high_level_lock)); //¸ßË®Î»Ïß½âËø 		
 }
 
-un_commit_scn = transaction_manager.scn;						 		//è·å¾—æœªåˆ†é…æœ€å° scnï¼Œåé¢çš„ scn æ’å…¥æ—¶ ï¼Œå°±æ’å…¥ç´¢å¼•
-commit_scn    = transaction_manager.commit_scn;				  //è·å¾—å·²æäº¤æœ€å¤§ scn 
-MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker)); //è§£é”
+un_commit_scn = transaction_manager.scn;						 		//»ñµÃÎ´·ÖÅä×îĞ¡ scn£¬ºóÃæµÄ scn ²åÈëÊ± £¬¾Í²åÈëË÷Òı
+commit_scn    = transaction_manager.commit_scn;				  //»ñµÃÒÑÌá½»×î´ó scn 
+MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker)); //½âËø
 //mem_table_force_del_record( mem_table , record_ptr);
 CPP_DEBUG<<"End get_un_commit_scn() \n";
 
 return 0;
 }
 
-//è·å¾—å½“å‰æ—¶åˆ» commit_scn
+//»ñµÃµ±Ç°Ê±¿Ì commit_scn
 unsigned  long long get_commit_scn(  )
 {
 CPP_DEBUG<<"START get_commit_scn() \n";
-MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //ä¸Šé” 
-long long commit_scn      = transaction_manager.commit_scn;			 //è·å¾—å·²æäº¤æœ€å¤§ scn 
-MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker)); //è§£é”
+MEM_TRANSACTION_LOCK(&(transaction_manager.locker));   //ÉÏËø 
+long long commit_scn      = transaction_manager.commit_scn;			 //»ñµÃÒÑÌá½»×î´ó scn 
+MEM_TRANSACTION_UNLOCK(&(transaction_manager.locker)); //½âËø
 CPP_DEBUG<<"END get_commit_scn() \n";
 
 return commit_scn;
 }
 
-// ç¬¬ä¸€æ¬¡å…¨è¡¨æ‰«
+// µÚÒ»´ÎÈ«±íÉ¨
 int scan_all_row_to_create_index( mem_table_t *mem_table,mem_index_ptr_t*  mem_index_ptr ){
 		CPP_DEBUG<<"START scan_all_row_to_create_index() \n";
 
@@ -156,12 +156,12 @@ int __i = 0;
 struct record_t     * record_ptr;
 struct record_t * out_record_ptr = NULL;
 
-//åˆ†é…ä¸€ä¸ªäº‹åŠ¡ï¼Œå¿…é¡»åœ¨ get_un_commit_scn ä¹‹å
+//·ÖÅäÒ»¸öÊÂÎñ£¬±ØĞëÔÚ get_un_commit_scn Ö®ºó
 if(0!=(error=allocate_trans(&Tn))){
 	ERROR("allocate_trans[%d] failed,Tn is %d\n",Tn,error); 
 	 return error;
 }
-// å¼€å§‹ä¸€ä¸ªäº‹åŠ¡
+// ¿ªÊ¼Ò»¸öÊÂÎñ
 if(0!=(error=start_trans(Tn))){
 	ERROR("start_trans failed,Tn is %d\n",error); 
   return error;
@@ -169,30 +169,30 @@ if(0!=(error=start_trans(Tn))){
 
   struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;	
  
-	for(;__i<mem_table->config.mem_block_used;++__i)//éå†æ‰€æœ‰å—																
+	for(;__i<mem_table->config.mem_block_used;++__i)//±éÀúËùÓĞ¿é																
 	{
 			unsigned  long  __high_level_temp = 0;
       
-				for(; //éå†æ‰€æœ‰è¡Œ
+				for(; //±éÀúËùÓĞĞĞ
 				__mem_block_temp->space_start_addr + (__high_level_temp)* (mem_table->record_size) < __mem_block_temp->space_end_addr - mem_table->record_size ;
 				++__high_level_temp
 				   )		 															
 				{
-					// å¦‚ä½•å·²ç»æ‰«æåˆ°äº†ç´¢å¼•å»ºç«‹ç‚¹ï¼Œåé¢å°±ä¸ç”¨æ‰«æäº†
+					// ÈçºÎÒÑ¾­É¨Ãèµ½ÁËË÷Òı½¨Á¢µã£¬ºóÃæ¾Í²»ÓÃÉ¨ÃèÁË
 					if( __mem_block_temp->block_no == end_block_no && __high_level_temp == __high_level_temp )return 0;
 					
 					//DEBUG("__high_level_temp = %ld\n",__high_level_temp);
-						// æ‰¾åˆ°å¯ç”¨çš„è®°å½•ä½ç½®
+						// ÕÒµ½¿ÉÓÃµÄ¼ÇÂ¼Î»ÖÃ
 						record_ptr = (struct record_t *) ( (char *)__mem_block_temp->space_start_addr + (__high_level_temp) * (mem_table->record_size) );
-						// å·²ç»åˆ é™¤çš„è¡Œä¸å¤„ç†
+						// ÒÑ¾­É¾³ıµÄĞĞ²»´¦Àí
 						if(record_ptr->is_used != 1)continue;
 					  DEBUG("record_ptr addr is %0x,record_ptr->is_used = %d\n",record_ptr,record_ptr->is_used);
 
 						if( !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn) )
 						{
-									//å¤„ç†ä¸€è¡Œæ•°æ®
+									//´¦ÀíÒ»ĞĞÊı¾İ
 									row_wlock   (  &(record_ptr->row_lock ) );
-									// åœ¨create index ä¹‹å‰å°±å·²ç»æäº¤çš„äº†ï¼Œåˆ é™¤ä¸ç®¡ï¼Œmvcc_insert
+									// ÔÚcreate index Ö®Ç°¾ÍÒÑ¾­Ìá½»µÄÁË£¬É¾³ı²»¹Ü£¬mvcc_insert
 									if ( record_ptr->scn <= commit_scn ){
 									   			if ( record_ptr->is_used == 0 ) {
 									   				row_wunlock   (  &(record_ptr->row_lock ) );
@@ -202,8 +202,8 @@ if(0!=(error=start_trans(Tn))){
 									   			}
 									   else { 
 									   	
-									   	  ret = index_dml.insert_into_index_scn(mem_index_ptr, //ç´¢å¼•æŒ‡é’ˆ
-												record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+									   	  ret = index_dml.insert_into_index_scn(mem_index_ptr, //Ë÷ÒıÖ¸Õë
+												record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 												buf,
 												&out_record_ptr,	
 												Tn ,
@@ -216,14 +216,14 @@ if(0!=(error=start_trans(Tn))){
 									   			}
 									}
 									
-									// åœ¨create index ä¹‹å‰æ²¡æœ‰æäº¤çš„ ï¼Œä½†æ˜¯ç°å°±å·²ç»æäº¤çš„äº†ï¼Œåˆ é™¤ä¸ç®¡ï¼Œmvcc_insert
-									// ç°åœ¨è¿˜æ²¡æœ‰æäº¤çš„ï¼Œæ’å…¥ map
+									// ÔÚcreate index Ö®Ç°Ã»ÓĞÌá½»µÄ £¬µ«ÊÇÏÖ¾ÍÒÑ¾­Ìá½»µÄÁË£¬É¾³ı²»¹Ü£¬mvcc_insert
+									// ÏÖÔÚ»¹Ã»ÓĞÌá½»µÄ£¬²åÈë map
 									int scn;
 									if ( record_ptr->scn > commit_scn && record_ptr->scn < un_commit_scn ){
 									   unsigned  long long  commit_scn2  = get_commit_scn();
 										 	DEBUG("record_ptr->scn is %d,commit_scn is %d , un_commit_scn is %d,commit_scn2 is %d \n",record_ptr->scn,commit_scn, un_commit_scn,commit_scn2);
 
-											// å·²æäº¤
+											// ÒÑÌá½»
 											if( record_ptr->scn <= commit_scn2 ){
 												
 									   			if ( record_ptr->is_used == 0 ) {
@@ -232,8 +232,8 @@ if(0!=(error=start_trans(Tn))){
 									   			}
 									   			else { 
 									   				scn = record_ptr->scn;
-									   				ret = index_dml.insert_into_index_scn(mem_index_ptr, //ç´¢å¼•æŒ‡é’ˆ
-														record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+									   				ret = index_dml.insert_into_index_scn(mem_index_ptr, //Ë÷ÒıÖ¸Õë
+														record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 														buf,
 														&out_record_ptr,	
 														Tn ,
@@ -245,22 +245,22 @@ if(0!=(error=start_trans(Tn))){
 														       }
 									   			}
 									   		}
-									    // æœªæäº¤
+									    // Î´Ìá½»
 									   	else un_commit_map[record_ptr->scn].push_back( record_ptr );
-									//å…¨è¡¨æ‰«ç»“æŸ
+									//È«±íÉ¨½áÊø
 									}
 									row_wunlock   (  &(record_ptr->row_lock ) );
 						}
 						
 				}
-			__mem_block_temp = __mem_block_temp->next;      //ä¸‹ä¸€ä¸ªå—
+			__mem_block_temp = __mem_block_temp->next;      //ÏÂÒ»¸ö¿é
 	}
 	CPP_DEBUG<<"END scan_all_row_to_create_index() \n";
 
 	return 0;
 }
 
-// ç­‰å¾…é—´éš”äº‹åŠ¡å¤„ç†å®Œ
+// µÈ´ı¼ä¸ôÊÂÎñ´¦ÀíÍê
 int deal_uncommit_scn( mem_index_ptr_t*  mem_index_ptr )
 {
 	CPP_DEBUG<<"START deal_uncommit_scn() \n";
@@ -279,11 +279,11 @@ record_t * record_ptr = NULL;
 //long scn;
 //error = get_trans_scn( Tn, &scn);
 
-//  last_scn < un_commit_scn && scn != un_commit_scn å½“å…¨è¡¨æ‰«å¼€å§‹é‚£ä¸€æ—¶åˆ»çš„æœªæäº¤äº‹åŠ¡éƒ½æäº¤çš„æ—¶å€™ï¼ŒæŠŠä»–ä»¬æ’å…¥ç´¢å¼•ï¼Œå¦åˆ™ç­‰å¾…ä»–ä»¬æ‰§è¡Œå®Œ
+//  last_scn < un_commit_scn && scn != un_commit_scn µ±È«±íÉ¨¿ªÊ¼ÄÇÒ»Ê±¿ÌµÄÎ´Ìá½»ÊÂÎñ¶¼Ìá½»µÄÊ±ºò£¬°ÑËûÃÇ²åÈëË÷Òı£¬·ñÔòµÈ´ıËûÃÇÖ´ĞĞÍê
 while( last_scn < un_commit_scn  )
 {
 	DEBUG("last_scn: %d <= un_commit_scn : %d \n",last_scn, un_commit_scn );
-usleep(1000000); // ç°åœ¨è¿˜æœ‰ create index æ—¶æ²¡æœ‰æäº¤çš„äº‹åŠ¡å°±ç­‰å¾…1så†é‡è¯•
+usleep(1000000); // ÏÖÔÚ»¹ÓĞ create index Ê±Ã»ÓĞÌá½»µÄÊÂÎñ¾ÍµÈ´ı1sÔÙÖØÊÔ
 last_scn = get_commit_scn();
 
 auto commit_end = un_commit_map.upper_bound(last_scn);
@@ -296,18 +296,18 @@ for( std::map<unsigned  long long, std::list<struct record_t * > >::iterator  i 
 			if( !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn) )
 			{
 			  row_wlock   (  &(record_ptr->row_lock ) );
-			  //è®°å½•æœªä½¿ç”¨æˆ–è€…å›æ»šè¢«åˆ æ‰äº†
+			  //¼ÇÂ¼Î´Ê¹ÓÃ»òÕß»Ø¹ö±»É¾µôÁË
 			  if( 0 == record_ptr->is_used )
 			  {
 			  	row_wunlock (  &(record_ptr->row_lock )    );
 			  	continue;
 			  }
 	      
-			  //è·å¾—äº‹åŠ¡æ§½ä¸­çš„ scn
+			  //»ñµÃÊÂÎñ²ÛÖĞµÄ scn
 			  if( record_ptr->scn > commit_scn && record_ptr->scn < un_commit_scn )
 			  	{ 
-			  						   				error = index_dml.insert_into_index_scn(mem_index_ptr, //ç´¢å¼•æŒ‡é’ˆ
-			  											record_ptr,       //å¯¹åº”è¡¨ä¸Šçš„åŸå§‹æ•°æ® è¡ŒæŒ‡é’ˆ
+			  						   				error = index_dml.insert_into_index_scn(mem_index_ptr, //Ë÷ÒıÖ¸Õë
+			  											record_ptr,       //¶ÔÓ¦±íÉÏµÄÔ­Ê¼Êı¾İ ĞĞÖ¸Õë
 			  											buf,
 			  											&out_record_ptr,	
 			  											Tn ,
@@ -322,7 +322,7 @@ for( std::map<unsigned  long long, std::list<struct record_t * > >::iterator  i 
 			 }
 
 		}
-		i = un_commit_map.erase(i); //æ‰€ä»¥æœ€ä¸Šé¢ for ä¸ç”¨ ++ 
+		i = un_commit_map.erase(i); //ËùÒÔ×îÉÏÃæ for ²»ÓÃ ++ 
 }
 
 }

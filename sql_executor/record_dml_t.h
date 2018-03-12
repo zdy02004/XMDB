@@ -126,23 +126,23 @@ int update_from_index(
 
 struct record_dml_t
 {
-mem_table_t *mem_table; // é‚£ä¸ªè¡¨çš„ç´¢å¼•
+mem_table_t *mem_table; // ÄÇ¸ö±íµÄË÷Òı
 record_meta       meta;
 record_tuple tuple_one;
 
 std::vector<field_t>     field_vector;
-std::vector<std::string> field_names; // å»ºç´¢å¼•çš„å­—æ®µå
-std::vector<std::string> field_values; // å»ºç´¢å¼•çš„å­—æ®µå
+std::vector<std::string> field_names; // ½¨Ë÷ÒıµÄ×Ö¶ÎÃû
+std::vector<std::string> field_values; // ½¨Ë÷ÒıµÄ×Ö¶ÎÃû
 
 generic_result return_record;
 index_selector_t index_selector;
 bool has_index; 
  
-//è¡¨æŒ‡é’ˆ
-//å­—æ®µåå‘é‡
-//å­—æ®µå€¼å‘é‡
-//ä¸»è¦é€‚ç”¨äº insert into table ( xx,xx,xx ) values (xx,xx,xx);
-//å’Œ update talbe set xx = xx, xx=xx where ;
+//±íÖ¸Õë
+//×Ö¶ÎÃûÏòÁ¿
+//×Ö¶ÎÖµÏòÁ¿
+//Ö÷ÒªÊÊÓÃÓÚ insert into table ( xx,xx,xx ) values (xx,xx,xx);
+//ºÍ update talbe set xx = xx, xx=xx where ;
 record_dml_t( mem_table_t *_mem_table, 
 							std::vector<std::string>& _field_names,
 							std::vector<std::string>& _field_values):field_names(_field_names),
@@ -192,12 +192,12 @@ inline void init()
 		return_record.allocate(mem_table->record_size - RECORD_HEAD_SIZE);		
 		
 		field_t field;
-		mem_table_lock( &( mem_table->table_locker ) );// ç¡®ä¿ create_index_online ä¸æ¼æ•°æ®
+		mem_table_lock( &( mem_table->table_locker ) );// È·±£ create_index_online ²»Â©Êı¾İ
 		for( size_t i = 0; i< field_names.size() ;  ++i )
 		{
-			tuple_one.get_field_desc( mem_table ,field_names[i], field );//è·å–å­—æ®µæè¿°
+			tuple_one.get_field_desc( mem_table ,field_names[i], field );//»ñÈ¡×Ö¶ÎÃèÊö
 			field_vector.emplace_back(field);
-			if( field.relate_index[0] != 0 ){	//æœ‰ç´¢å¼•å°±å»ºç«‹ç´¢å¼•æ“çºµç±»
+			if( field.relate_index[0] != 0 ){	//ÓĞË÷Òı¾Í½¨Á¢Ë÷Òı²Ù×İÀà
 				has_index = true;			                 
 				long relate_index = 0;           
 				int  index_type = 0;				
@@ -215,12 +215,12 @@ inline void init()
 				}
 			}
 		}
-		mem_table_unlock( &( mem_table->table_locker ) );// ç¡®ä¿ create_index_online ä¸æ¼æ•°æ®
+		mem_table_unlock( &( mem_table->table_locker ) );// È·±£ create_index_online ²»Â©Êı¾İ
   	
   	}
 }
 
-// æŠŠå€¼å¡«å……å…¥ tuple ä¸­
+// °ÑÖµÌî³äÈë tuple ÖĞ
 inline int fill_record( )
 {
 	int ret = 0;
@@ -235,8 +235,8 @@ inline int fill_record( )
   return 0;
 }
 
-// ç”¨äºå®æ—¶æ’å…¥æ—¶å»ºç´¢å¼•
-//ä¸»è¦é€‚ç”¨äº insert into table ( xx,xx,xx ) values (xx,xx,xx);
+// ÓÃÓÚÊµÊ±²åÈëÊ±½¨Ë÷Òı
+//Ö÷ÒªÊÊÓÃÓÚ insert into table ( xx,xx,xx ) values (xx,xx,xx);
 inline int insert_one_into_table(
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
@@ -252,7 +252,7 @@ ret = mem_mvcc_insert_record( mem_table ,
                           out_record_ptr,
                           &block_no, /* in */
                           return_record.get_data(),
-                          Tn        //äº‹åŠ¡ID
+                          Tn        //ÊÂÎñID
                           );
 if(ret )return ret;
 if(has_index)ret = index_selector.insert_into_index(
@@ -264,7 +264,7 @@ return ret;
 
 }
 
-// ç”¨äºå®æ—¶åˆ é™¤æ—¶åˆ ç´¢å¼•
+// ÓÃÓÚÊµÊ±É¾³ıÊ±É¾Ë÷Òı
 inline int delete_one_from_table(
 												record_t * in_record_ptr,	
 												unsigned long long Tn  )
@@ -274,7 +274,7 @@ int ret1 = 0;
 record_t * out_index_record_ptr = NULL;
 ret =  mem_mvcc_delete_record( mem_table ,
 																				in_record_ptr,
-																				Tn               // æœ¬äº‹åŠ¡ID
+																				Tn               // ±¾ÊÂÎñID
 																				);
 if(ret )return ret;
 if(has_index)ret = index_selector.delete_from_index(
@@ -283,8 +283,8 @@ if(has_index)ret = index_selector.delete_from_index(
 												Tn  );
 return ret;
 }
-// ç”¨äºå®æ—¶æ›´æ–°æ—¶æ›´æ–°ç´¢å¼•
-//ä¸»è¦é€‚ç”¨äº //å’Œ update talbe set xx = xx, xx=xx where ;
+// ÓÃÓÚÊµÊ±¸üĞÂÊ±¸üĞÂË÷Òı
+//Ö÷ÒªÊÊÓÃÓÚ //ºÍ update talbe set xx = xx, xx=xx where ;
 inline int update_one_from_table(
 												record_t * in_record_ptr,	
 												record_t ** out_record_ptr,	
@@ -297,7 +297,7 @@ record_t * out_index_record_ptr = NULL;
 ret =  mem_mvcc_update_record( mem_table ,
 															in_record_ptr,
 															return_record.get_data(),
-															Tn,               // æœ¬äº‹åŠ¡ID
+															Tn,               // ±¾ÊÂÎñID
 															out_record_ptr
 															);
 if(ret )return ret;

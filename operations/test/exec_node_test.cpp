@@ -53,9 +53,9 @@ void set_func(std::function<void * (void *)> & _process )
 
 int main()
 {
-		// åˆå§‹åŒ–çº¿ç¨‹æ± 
+		// ³õÊ¼»¯Ïß³Ì³Ø
 	  cpp_thread_namespace::cpp_thread_pool_t  pool ;  
-    pool.thread_pool_init (2,1024);/*çº¿ç¨‹æ± ä¸­æœ€å¤šä¸‰ä¸ªæ´»åŠ¨çº¿ç¨‹*/ 
+    pool.thread_pool_init (6,1024);/*Ïß³Ì³ØÖĞ×î¶àÈı¸ö»î¶¯Ïß³Ì*/ 
 	
 	//typedef  std::function< int(int,int,int,int )> int_fun;
 	typedef int(*int_fun)(int,int,int );
@@ -63,36 +63,36 @@ int main()
 	typedef int(*int0_fun)(void );
 	typedef int(*int2_fun)(int,int );
 
-  // é¦–èŠ‚æ‰§è¡Œå™¨ç±»å‹
+  // Ê×½ÚÖ´ĞĞÆ÷ÀàĞÍ
   typedef exec_fun < int_fun,int,int,int    >  ew1_type;
-  // é¦–èŠ‚ç‚¹çš„ç©ºå‰ç»§ç©ºå…„å¼ŸèŠ‚ç‚¹ç±»å‹
+  // Ê×½ÚµãµÄ¿ÕÇ°¼Ì¿ÕĞÖµÜ½ÚµãÀàĞÍ
 	typedef exec_node_type<int,int,ew1_type   >  empty_node_type1;
-  // é¦–èŠ‚ç‚¹ç±»å‹
+  // Ê×½ÚµãÀàĞÍ
   typedef exec_node_type<empty_node_type1,empty_node_type1,ew1_type> en_type1;
-  // é¦–èŠ‚ç‚¹
+  // Ê×½Úµã
   //en_type1 enode1(1);
   en_type1 enode1(func3,1,2,3);
-  // é¦–èŠ‚æ‰§è¡Œå™¨
+  // Ê×½ÚÖ´ĞĞÆ÷
 //	ew1_type ewraper1(func3,1,2,3);
 //	enode1.set_exec(ewraper1);
-	//è¿è¡Œé¦–èŠ‚ç‚¹
+	//ÔËĞĞÊ×½Úµã
 	enode1.try_execute();
 	
 	
-	//2 èŠ‚ç‚¹çš„ç©ºå…„å¼ŸèŠ‚ç‚¹
-	// é¦–èŠ‚æ‰§è¡Œå™¨ç±»å‹
+	//2 ½ÚµãµÄ¿ÕĞÖµÜ½Úµã
+	// Ê×½ÚÖ´ĞĞÆ÷ÀàĞÍ
   typedef exec_fun < char_fun,char,char,char,char> ew2_type;
-	// 2èŠ‚ç‚¹çš„ç©ºå…„å¼ŸèŠ‚ç‚¹ç±»å‹
+	// 2½ÚµãµÄ¿ÕĞÖµÜ½ÚµãÀàĞÍ
 	typedef exec_node_type<int,int,ew2_type> empty_node_type2;
-	//2èŠ‚ç‚¹ç±»å‹
+	//2½ÚµãÀàĞÍ
   typedef exec_node_type<en_type1,empty_node_type2,ew2_type> en_type2;
-  //2èŠ‚ç‚¹
+  //2½Úµã
 	en_type2 enode2(2);
 	//en_type2 enode2(func4,'a','b','c','d');
-	//2èŠ‚ç‚¹æ‰§è¡Œå™¨
+	//2½ÚµãÖ´ĞĞÆ÷
 	ew2_type ewraper2(func4,'a','b','c','d');
 	enode2.set_exec(ewraper2);
-	//è®¾ç½®2èŠ‚ç‚¹å‰ç»§çš„å‰ç»§èŠ‚ç‚¹
+	//ÉèÖÃ2½ÚµãÇ°¼ÌµÄÇ°¼Ì½Úµã
 	enode2.set_input_node(enode1 );
 	   
 	enode2.set_put_once(
@@ -112,10 +112,10 @@ int main()
 	 			 .then(func2,9,10)
 	 			 .then(func2,11,12)
 	       .then(func0);
-	//è¿è¡Œ2èŠ‚ç‚¹
+	//ÔËĞĞ2½Úµã
 	enode2.try_execute();
 
-// 3èŠ‚ç‚¹
+// 3½Úµã
 en_type2 enode3(func4,'e','f','g','h');
 enode3.set_input_node(enode1 );
 enode3.set_put_once(
@@ -134,15 +134,15 @@ return	pool.add_task(process,arg);
  enode3.then(func2,17,18)
  			 .then(func2,19,20)
  			 .then(func2,21,22);
-//è¿è¡Œ3èŠ‚ç‚¹
+//ÔËĞĞ3½Úµã
 enode3.try_execute();
   
   std::function<int(int,int,int*)> f1 = [](int a1,int b1,int *c)->int { DEBUG("########### %d,%d\n",a1,b1);*c = a1+b1;printf("########### c= %d\n",*c);return 0;};
   std::function<int(int&)> 	  	   f2 = [](int &k)->int{printf(">>>>>>>>>>>>>>> = %d\n",k);return 0;};
 
-//å¿«é€Ÿè¯­æ³•
-// ç”±äº exec_node  å†…éƒ¨ç”¨ tupe å­˜æ‰§è¡Œå‚æ•°ï¼Œæ‰§è¡Œå‚æ•°æ— æ³•æ ¹æ®å‡½æ•°ç±»å‹æ¨åˆ°ï¼Œå› æ­¤ä¼ å³å€¼è¦å°†å·¦å€¼è½¬æ¢ï¼Œ
-// ä¾‹å¦‚å¼•ç”¨ std::ref(c)
+//¿ìËÙÓï·¨
+// ÓÉÓÚ exec_node  ÄÚ²¿ÓÃ tupe ´æÖ´ĞĞ²ÎÊı£¬Ö´ĞĞ²ÎÊıÎŞ·¨¸ù¾İº¯ÊıÀàĞÍÍÆµ½£¬Òò´Ë´«ÓÒÖµÒª½«×óÖµ×ª»»£¬
+// ÀıÈçÒıÓÃ std::ref(c)
  int c = 0;
  auto b = make_exec_node(func2,111,222).set_pool(pool)
  .then(func4,'f','f','f','f')
@@ -150,7 +150,7 @@ enode3.try_execute();
  f1,
  1,
  2,
- &c //ç”±äºå¤šä¸ª then ç›´æ¥æ˜¯ ç«‹åˆ»æ„å»ºï¼Œç¨åæ‰§è¡Œï¼Œå› æ­¤è¦æƒ³ä¸Šä¸€ä¸ª thenç»“æœï¼Œä½œä¸ºä¸‹ä¸€ä¸ªthençš„å‚æ•°ï¼Œéœ€è¦ä¼ æŒ‡é’ˆæˆ–å¼•ç”¨
+ &c //ÓÉÓÚ¶à¸ö then Ö±½ÓÊÇ Á¢¿Ì¹¹½¨£¬ÉÔºóÖ´ĞĞ£¬Òò´ËÒªÏëÉÏÒ»¸ö then½á¹û£¬×÷ÎªÏÂÒ»¸öthenµÄ²ÎÊı£¬ĞèÒª´«Ö¸Õë»òÒıÓÃ
  )
 .then(
   f2,
@@ -165,7 +165,7 @@ enode3.try_execute();
   	
 	sleep(7);
 	ERROR("Send stop command!\n");
-	/*é”€æ¯çº¿ç¨‹æ±  ä¸è¦å¿˜è®°*/  
+	/*Ïú»ÙÏß³Ì³Ø ²»ÒªÍü¼Ç*/  
 	pool.thread_pool_destroy ();
 	
 	return 0;

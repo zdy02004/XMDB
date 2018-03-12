@@ -124,7 +124,7 @@ char buf[]="abcdee";
 mem_trans_data_entry_t * out;
 long k=0;
 //long end = 1000*500*2;
-long end = 10000*50;
+long end = 1000*50;
 for(;k<end;++k){
 if(0!=(err=mem_mvcc_insert_record(mem_table,&record_ptr,&block_no,buf,trans_no))){ERROR("mem_mvcc_insert_record err is %d\n",err);}
 if(0!=(err=mem_mvcc_update_record(mem_table,record_ptr,buf,trans_no,&record_ptr ))){ERROR("mem_mvcc_update_record err is %d\n",err);return 0;}

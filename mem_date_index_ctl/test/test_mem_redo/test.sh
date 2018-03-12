@@ -3,7 +3,7 @@ rm *core*
 rm *.exe *.dat
 rm roll*
 rm *.o
-rm *2016*
+rm *201*
 rm redo*
 clear
 gcc mem_trans_redo.c -g  -I ../../  -lpthread -o mem_trans_redo.exe 

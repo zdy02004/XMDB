@@ -11,14 +11,14 @@ g++ -w  skiplist_range_test.cpp  -I ../../mem_date_index_ctl/ -g   -lpthread -st
 ./skiplist_range_test.exe
 */
 
-// çº¿ç¨‹å‚æ•°
+// Ïß³Ì²ÎÊı
 typedef struct thread_param_test
 {
 	struct mem_table_t  				*  mem_table ;
 	mem_table_config_t  				*  mem_config;
 	mem_skiplist_index_config_t *  skiplist_config;
 	mem_skiplist_index_t  			*  skiplist_index;
-// æµ‹è¯•æ’å…¥æ•°æ®
+// ²âÊÔ²åÈëÊı¾İ
 struct record_t * record_ptr;
 long block_no;
 long long  trans_no;
@@ -44,13 +44,13 @@ int create_block(mem_block_t **mb,char * file_name)
 {
 	DEBUG("in create_block\n");
 
-	//åˆ›å»ºå—
+	//´´½¨¿é
 	*mb =(mem_block_t *) malloc(MEM_BLOCK_HEAD_SIZE);
 	DEBUG("create_block %0x\n",*mb);
 
-	//é…ç½®å—æè¿°ç¬¦
+	//ÅäÖÃ¿éÃèÊö·û
 	mem_block_config( *mb  ,1024*1024*1 , file_name );
-	//åˆå§‹åŒ–å—
+	//³õÊ¼»¯¿é
 	INIT_MEM_BLOCK(*mb)
 	
 	DEBUG("fd = %d\n",(*mb)->fd);
@@ -78,7 +78,7 @@ int create_mem_table_config(mem_table_config_t ** mem_config,mem_block_t *mb,cha
 	strcpy(fields_table[2].field_name,"try_time\0");
 	fields_table[3].field_type   = FIELD_TYPE_STR;
 	strcpy(fields_table[3].field_name,"try_str\0");
-	fields_table[3].field_size   = 64;// è®¾ç½®å­—ç¬¦ä¸²ç±»å‹é•¿åº¦
+	fields_table[3].field_size   = 64;// ÉèÖÃ×Ö·û´®ÀàĞÍ³¤¶È
 	
 	(*mem_config)->field_used_num   = 3;
 	(*mem_config)->mem_blocks_table = mb;
@@ -112,28 +112,28 @@ int create_mem_skiplist_config(mem_skiplist_index_config_t** skiplist_config,
 
 void init_trans_redo()
 {
-//åˆå§‹åŒ– redo_manager  
+//³õÊ¼»¯ redo_manager  
 init_redo_log_manager();
-//é…ç½® config_manager
+//ÅäÖÃ config_manager
 //config_redo_data_log(char * path,off_t file_max_size)  
 
-// æ³¨æ„åœ¨åˆå§‹åŒ– äº‹åŠ¡ç®¡ç†å™¨ä¹‹å‰ï¼Œè¦å…ˆåˆå§‹åŒ–ç³»ç»Ÿåºåˆ—ç®¡ç†å™¨
+// ×¢ÒâÔÚ³õÊ¼»¯ ÊÂÎñ¹ÜÀíÆ÷Ö®Ç°£¬ÒªÏÈ³õÊ¼»¯ÏµÍ³ĞòÁĞ¹ÜÀíÆ÷
 init_sys_transaction_manager();
-//é…ç½® transaction_managerçš„ åºåˆ—å€¼ å’Œ  å›æ»šç©ºé—´æœ€å¤§å€¼
+//ÅäÖÃ transaction_managerµÄ ĞòÁĞÖµ ºÍ  »Ø¹ö¿Õ¼ä×î´óÖµ
 config_sys_transaction_manager(1,DEFAULT_FILE_MAX_SIZE);
  
-//æ‰©å±•äº‹åŠ¡æ§½
+//À©Õ¹ÊÂÎñ²Û
 // extend_transaction_manager();
 
-// åˆå§‹åŒ–æ•°æ®æ—¥å¿—å†™è€…çº¿ç¨‹
+// ³õÊ¼»¯Êı¾İÈÕÖ¾Ğ´ÕßÏß³Ì
 init_trans_redo_data_writer(&sys_trans_redo_data_writer,10);
-// å¼€å¯ writer çº¿ç¨‹å†™æ—¥å¿—
+// ¿ªÆô writer Ïß³ÌĞ´ÈÕÖ¾
 start_trans_redo_data_writer();
 }
 
 void dest_trans_redo()
 {
-	 // å…³é—­ writer çº¿ç¨‹å†™æ—¥å¿—
+	 // ¹Ø±Õ writer Ïß³ÌĞ´ÈÕÖ¾
 	 stop_trans_redo_data_writer();
 }
 
@@ -165,7 +165,7 @@ struct mem_table_t  *  mem_table 				=  ((thread_param_test*)arg)->mem_table ;
 mem_table_config_t * mem_config  				=  ((thread_param_test*)arg)->mem_config ;
 mem_skiplist_index_config_t * skiplist_config 	=  ((thread_param_test*)arg)->skiplist_config ;
 mem_skiplist_index_t  			* skiplist_index = ((thread_param_test*)arg)->skiplist_index ;
-// æµ‹è¯•æ’å…¥æ•°æ®
+// ²âÊÔ²åÈëÊı¾İ
 struct record_t * record_ptr     = NULL ;
 long block_no = ((thread_param_test*)arg)->block_no ;
 long long  trans_no    = ((thread_param_test*)arg)->trans_no ;
@@ -190,7 +190,7 @@ for(;for_i<sizeof(test_table_t);++for_i)
 printf("%02X ",buf[for_i]);
 printf("\n");
 
-	//å¡«å……1äº‹åŠ¡ï¼Œå¹¶æäº¤ç»™ ç¼“å†²åŒºï¼Œä¾› writer çº¿ç¨‹ å†™æ‰
+	//Ìî³ä1ÊÂÎñ£¬²¢Ìá½»¸ø »º³åÇø£¬¹© writer Ïß³Ì Ğ´µô
 long k=0;
 //long end = 1000*500*2;
 long end = 10;
@@ -222,13 +222,13 @@ memcpy(buf,(char *)&bufe,sizeof(test_table_t));
 	
 if(0!=(err=mem_mvcc_insert_record(mem_table,&record_ptr,&mem_block_no, buf	,trans_no))){ERROR("mem_mvcc_insert_record err is %d\n",err);}
 
-//ç´¢å¼•èµ‹å€¼
+//Ë÷Òı¸³Öµ
 
 //strcpy(input.ckey,str_date);
 input.block_no   = mem_block_no;
 input.record_num = record_ptr->record_num;
 
-//ç´¢å¼•ä½ç½®
+//Ë÷ÒıÎ»ÖÃ
 if(0!=(err=mem_skiplist_mvcc_insert(skiplist_index,&input,&out_record_ptr,trans_no)))DEBUG("mem_skiplist_index_insert_long err is %d\n",err);
 //if(0!=(err=mem_skiplist_mvcc_insert_str(skiplist_index,&input,&out_record_ptr,trans_no)))DEBUG("mem_skiplist_index_insert_long err is %d\n",err);
 
@@ -253,7 +253,7 @@ if(0!=(err=mem_skiplist_mvcc_insert(skiplist_index,&input,&out_record_ptr,trans_
 }
 
 /*
-* æµ‹è¯• mem_block åŸºæœ¬åŠŸèƒ½
+* ²âÊÔ mem_block »ù±¾¹¦ÄÜ
 *
 *
 *
@@ -264,17 +264,17 @@ int main(int arcv,char * arc[])
 	int err;
 	init_mem_no_manager();
 //__________________________________________
-	// åˆå§‹åŒ–äº‹åŠ¡ç›¸å…³
+	// ³õÊ¼»¯ÊÂÎñÏà¹Ø
 	init_trans_redo();
 	
-//   å»ºæµ‹è¯•è¡¨ï¼Œå¹¶æ’å…¥æ•°æ®
+//   ½¨²âÊÔ±í£¬²¢²åÈëÊı¾İ
 //__________________________________________
-// å»ºç‰©ç†å—
+// ½¨ÎïÀí¿é
 mem_block_t *mb = NULL;
 create_block(&mb,"./map_table.dat");
-//å»ºé€»è¾‘è¡¨é…ç½®
+//½¨Âß¼­±íÅäÖÃ
 mem_table_config_t * mem_config = NULL;
-// æµ‹è¯•æ’å…¥æ•°æ®
+// ²âÊÔ²åÈëÊı¾İ
 struct record_t * record_ptr =NULL;
 long block_no;
 
@@ -284,7 +284,7 @@ long block_no;
 if(0!=(err=create_mem_table_config(&mem_config,mb,"first_table_name\0")))ERROR("create_mem_table_config err is %d\n",err);
 //DEBUG("mem_config is %d\n",mem_config);
 
-//å»ºé€»è¾‘è¡¨
+//½¨Âß¼­±í
 struct mem_table_t  *  mem_table = NULL;
 
 if(0!=(err=mem_table_create(&mem_table,mem_config)))ERROR("mem_table_create err is %d\n",err);
@@ -292,30 +292,30 @@ if(0!=(err=mem_table_create(&mem_table,mem_config)))ERROR("mem_table_create err 
 DEBUG("RECORD_HEAD_SIZE is %d\n",RECORD_HEAD_SIZE);
 
 
-//å»º hash ç´¢å¼•é…ç½®
+//½¨ hash Ë÷ÒıÅäÖÃ
 mem_skiplist_index_config_t * skiplist_config		= NULL;
-//å»º hash é…ç½®ä¿¡æ¯
+//½¨ hash ÅäÖÃĞÅÏ¢
 if(0!=(err=create_mem_skiplist_config(&skiplist_config,20480,"./first_index_name\0",4)))DEBUG("mem_table_create err is %d\n",err);
-//å»ºè·³è¡¨ç´¢å¼•
+//½¨Ìø±íË÷Òı
 mem_skiplist_index_t  			* mem_skiplist_index	= NULL;
 if(0!=(err=mem_skiplist_create(&mem_skiplist_index,mem_table,skiplist_config)))DEBUG("mem_table_create err is %d\n",err);
-// åˆå§‹åŒ–è·³è¡¨ 
+// ³õÊ¼»¯Ìø±í 
 if(0!=(err=mem_skiplist_init( mem_skiplist_index)))DEBUG("mem_table_create err is %d\n",err);
 
 DEBUG("mem_skiplist_index is %0x\n",mem_skiplist_index);
 
 //____________________________________________
-//åˆ†é…ä¸€ä¸ªäº‹åŠ¡æ§½
+//·ÖÅäÒ»¸öÊÂÎñ²Û
 long long  trans_no;
 if(0!=(err=allocate_trans(&trans_no)))ERROR("allocate_trans[%d] failed,trans_no is %d\n",trans_no,err); 
-// å¼€å§‹ä¸€ä¸ªäº‹åŠ¡
+// ¿ªÊ¼Ò»¸öÊÂÎñ
 if(0!=(err=start_trans(trans_no)))ERROR("start_trans failed,trans_no is %d\n",err); 
 
-// äº‹åŠ¡ trans_no ï¼Œå¯¹ mem_table ä¸Šæ’å®ƒé”
+// ÊÂÎñ trans_no £¬¶Ô mem_table ÉÏÅÅËüËø
 mem_table_rwlock_by_writer(mem_table,trans_no);
 
 
-//çº¿ç¨‹æ•°
+//Ïß³ÌÊı
 int tnum = 1	;
 pthread_t th[tnum];
 
@@ -347,7 +347,7 @@ for(;j<tnum;++j){
     ret = pthread_join( (th[j]), NULL);  
   }
 
-// æŸ¥è¯¢æ“ä½œ
+// ²éÑ¯²Ù×÷
  std::list<test_table_t> ret_vector;
  char field_name[32] = {"id"};
  char field_name2[32] = {"try_num"};
@@ -389,16 +389,16 @@ std::list<test_table_t> ret_vector2;
 //                        							mem_skiplist_index ,
 //                               				&in,
 //																			&last_find_entry,
-//                          						trans_no,          //å½“å‰äº‹åŠ¡ID
-//																			&ret_vector2		    //åŸå§‹ç»“æœé›†
+//                          						trans_no,          //µ±Ç°ÊÂÎñID
+//																			&ret_vector2		    //Ô­Ê¼½á¹û¼¯
 //                        							);
                         							
 //int ret = mem_skiplist_index_scan_str(  
 //mem_table,
 //mem_skiplist_index ,
 //&in,
-//trans_no,          //å½“å‰äº‹åŠ¡ID
-//&ret_vector2		    //åŸå§‹ç»“æœé›†
+//trans_no,          //µ±Ç°ÊÂÎñID
+//&ret_vector2		    //Ô­Ê¼½á¹û¼¯
 //);
 
 //between
@@ -409,39 +409,39 @@ std::list<test_table_t> ret_vector2;
 //                        /* in */&in                 ,
 //                        /* in */&in2                ,
 //                          			&last_find_entry,
-//																&ret_vector2      		    //åŸå§‹ç»“æœé›†
+//																&ret_vector2      		    //Ô­Ê¼½á¹û¼¯
 //                        );
 
 // >                   
                         
 finded_Addr_t  finded_Addr; 
-finded_Addr_t  ret_addr	;	    //åŸå§‹ç»“æœé›†                        
+finded_Addr_t  ret_addr	;	    //Ô­Ê¼½á¹û¼¯                        
 int ret = mem_skiplist_index_scanAddr_long_GE(  
                                        mem_table,
                         /* in */       mem_skiplist_index ,
                         /* in */ 			 &in             ,
                           						 &last_find_entry,
                           			       finded_Addr,
-																       ret_addr  		    //åŸå§‹ç»“æœé›†
+																       ret_addr  		    //Ô­Ê¼½á¹û¼¯
                         );        
-finded_Addr_t  ret_addr2	;	    //åŸå§‹ç»“æœé›†                        
+finded_Addr_t  ret_addr2	;	    //Ô­Ê¼½á¹û¼¯                        
 ret = mem_skiplist_index_scanAddr_long_LE(  
                                        mem_table,
                         /* in */       mem_skiplist_index ,
                         /* in */ 			 &in2             ,
                           						 &last_find_entry,
                           			       ret_addr,
-																       ret_addr2  		    //åŸå§‹ç»“æœé›†
+																       ret_addr2  		    //Ô­Ê¼½á¹û¼¯
                         );                 
                         
 //ret = merg_index_result(  
 //                                mem_table,
 //																ret_addr2, 
-//                          			trans_no,                 //å½“å‰äº‹åŠ¡ID
-//																&ret_vector2		    //åŸå§‹ç»“æœé›†
+//                          			trans_no,                 //µ±Ç°ÊÂÎñID
+//																&ret_vector2		    //Ô­Ê¼½á¹û¼¯
 //                        );
  
-//æŠ•å½±åˆ—è¡¨
+//Í¶Ó°ÁĞ±í
 std::list<std::string> prolist;
 	prolist.push_back("id");
 	prolist.push_back("try_num");
@@ -451,13 +451,13 @@ std::list<std::string> prolist;
                                 mem_table,
 																ret_addr2, 
 																//NULL,
-																&cmp1,							////æ¯”è¾ƒå‡½æ•°é“¾
-																prolist,						//æŠ•å½±åˆ—è¡¨
-                          			trans_no,           //å½“å‰äº‹åŠ¡ID
-																&ret_vector2		    //åŸå§‹ç»“æœé›†
+																&cmp1,							////±È½Ïº¯ÊıÁ´
+																prolist,						//Í¶Ó°ÁĞ±í
+                          			trans_no,           //µ±Ç°ÊÂÎñID
+																&ret_vector2		    //Ô­Ê¼½á¹û¼¯
  );
 
-//æ‰“å°ç»“æœé›† 
+//´òÓ¡½á¹û¼¯ 
 std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++\n"<<std::endl;
 std::for_each(ret_vector2.begin(),ret_vector2.end(),[](test_table_t& x){
 	std::cout<<"========================="<<std::endl;
@@ -468,23 +468,23 @@ std::for_each(ret_vector2.begin(),ret_vector2.end(),[](test_table_t& x){
 	return x;
 	});
 
-// å›æ»šäº‹åŠ¡
+// »Ø¹öÊÂÎñ
 //if(0!=(err=rollback_trans(trans_no)))ERROR("rollback_trans failed,trans_no is %d\n",err);
-// æäº¤äº‹åŠ¡
+// Ìá½»ÊÂÎñ
 if(0!=(err=commit_trans(trans_no)))DEBUG("commit_trans failed,trans_no is %d\n",err); 
 
 
-// äº‹åŠ¡ trans_no ï¼Œå¯¹ mem_table è§£æ’å®ƒé”
+// ÊÂÎñ trans_no £¬¶Ô mem_table ½âÅÅËüËø
 mem_table_rwunlock_by_writer(mem_table,trans_no);
 //__________________________________________
   
-  // å…³é—­ writer çº¿ç¨‹å†™æ—¥å¿—
+  // ¹Ø±Õ writer Ïß³ÌĞ´ÈÕÖ¾
   dest_trans_redo();
 	dest_mem_no_manager();
 
-//å…³é—­ skiplist ç´¢å¼•
+//¹Ø±Õ skiplist Ë÷Òı
 if(0!=(err=mem_skiplist_index_close(mem_skiplist_index)))DEBUG("mem_skiplist_index_close err is %d\n",err);
-//å…³é—­è¡¨
+//¹Ø±Õ±í
 if(0!=(err=mem_table_close(mem_table)))ERROR("mem_table_close err is %d\n",err);
 	printf("main  end  at %s\n",GetTime());
 	return 0;

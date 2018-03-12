@@ -31,19 +31,19 @@ int create_mem_skiplist_config(mem_skiplist_index_config_t** skiplist_config,
 }
 
 
-//key func æ„é€  ç»“æœé›†çš„ record_tuple
+//key func ¹¹Ôì ½á¹û¼¯µÄ record_tuple
 struct create_skiplist_index_node:public plan_node
 {
-std::string table_name;                //è¡¨å
-std::string index_name;                //è¡¨å
-std::vector<std::string> field_vector ;  //å­—æ®µåˆ—è¡¨
-size_t 	block_size;										 //ä¸€ä¸ªå—å¤§å°
-size_t 	extend_block_size;             //å—çš„æ‰©å±•å¤§å°
-std::string path;											 //è·¯å¾„
-struct mem_table_t*                    mem_table;   //è¡¨æŒ‡é’ˆ
-mem_skiplist_index_t	*                mem_skiplist_index; //skiplist ç´¢å¼•æŒ‡é’ˆ
-int index_type;												// index ç±»å‹
-int skip_level;														//è·³è¡¨å±‚æ•°,é»˜è®¤4å±‚
+std::string table_name;                //±íÃû
+std::string index_name;                //±íÃû
+std::vector<std::string> field_vector ;  //×Ö¶ÎÁĞ±í
+size_t 	block_size;										 //Ò»¸ö¿é´óĞ¡
+size_t 	extend_block_size;             //¿éµÄÀ©Õ¹´óĞ¡
+std::string path;											 //Â·¾¶
+struct mem_table_t*                    mem_table;   //±íÖ¸Õë
+mem_skiplist_index_t	*                mem_skiplist_index; //skiplist Ë÷ÒıÖ¸Õë
+int index_type;												// index ÀàĞÍ
+int skip_level;														//Ìø±í²ãÊı,Ä¬ÈÏ4²ã
 
 create_skiplist_index_node( 
 							std::string& _table_name,
@@ -125,7 +125,7 @@ _path = path;
 int get_table_ptr()
 {
 	int err = 0;
-	// å¯¹äºåŸå§‹è¡¨æ£€æŸ¥è¯¥è¡¨æ˜¯å¦å­˜åœ¨
+	// ¶ÔÓÚÔ­Ê¼±í¼ì²é¸Ã±íÊÇ·ñ´æÔÚ
 				if(!table_name.empty()){
 					long long table_no;
 					 err = search_table_name( const_cast<char *>(table_name.c_str()) , &table_no);
@@ -148,18 +148,21 @@ int get_table_ptr()
 	return err;
 }
 	
-//æ£€æŸ¥è¯¥è¡¨ä¸­æ˜¯å¦å­˜åœ¨æŸä¸ªå­—æ®µ,å¹¶åœ¨è¡¨çš„å­—æ®µä¸Šæ ‡è®°ç´¢å¼•id
+//¼ì²é¸Ã±íÖĞÊÇ·ñ´æÔÚÄ³¸ö×Ö¶Î,²¢ÔÚ±íµÄ×Ö¶ÎÉÏ±ê¼ÇË÷Òıid
 int check_field()
 {
 	if(!field_vector.empty() && mem_table != NULL && mem_skiplist_index != NULL ){
+		CPP_DEBUG<<"mem_table_lock "<<" \n";
+		mem_table_lock( &( mem_table->table_locker ) );
 		for( auto &v : field_vector )
 		{
 			if( !has_field( mem_table , v ) ){
 					CPP_ERROR<<"The Field "<<v<<" Not Exists in Table "<<table_name<<" \n";
+					CPP_DEBUG<<"mem_table_unlock "<<" \n";		
+ 	       	mem_table_unlock( &( mem_table->table_locker ) );
 				  return CREATE_SKIPLIST_INDEX_WRONG_FIELD;
 				}
-				else { // æ·»åŠ ç´¢å¼•æ ‡è®°
-					mem_table_lock( &( mem_table->table_locker ) );
+				else { // Ìí¼ÓË÷Òı±ê¼Ç
 					 for(int i = 0;i < mem_table->config.field_used_num; ++i  )
  						{
  								field_t& field = mem_table->config.fields_table[i];
@@ -174,9 +177,10 @@ int check_field()
  							    }
  							  }
  						}
- 					mem_table_unlock( &( mem_table->table_locker ) );
 				}
 		}
+	CPP_DEBUG<<"mem_table_unlock "<<" \n";		
+ 	mem_table_unlock( &( mem_table->table_locker ) );
 	}
 	else {
 				CPP_ERROR<<"Field Empty !\n";
@@ -187,29 +191,29 @@ int check_field()
 	
 virtual int execute( unsigned long long  trans_no  )
 {
-//  è·å¾—è¡¨æŒ‡é’ˆ
+//  »ñµÃ±íÖ¸Õë
 int err = get_table_ptr();
 if( err )return err;
 	
 if( path !="./")index_name = path + index_name;
 
-//å»º skiplist ç´¢å¼•é…ç½®
+//½¨ skiplist Ë÷ÒıÅäÖÃ
 mem_skiplist_index_config_t * skiplist_config		= NULL;
-//å»º skiplist é…ç½®ä¿¡æ¯
+//½¨ skiplist ÅäÖÃĞÅÏ¢
 if(0!=(err=create_mem_skiplist_config(&skiplist_config, block_size, const_cast<char *>(index_name.c_str())  ,skip_level ) ) )
 {
 	ERROR("mem_skiplist_index_create err is %d\n",err);
 	return err;
 }
 	
-//å»º skiplist ç´¢å¼•
+//½¨ skiplist Ë÷Òı
 if(0!=(err=mem_skiplist_create(&mem_skiplist_index,mem_table,skiplist_config)))
 	{
 		ERROR("mem_skiplist_index_create err is %d\n",err);
 		return err;
 	}
 
-//æ£€æŸ¥å¤±è´¥ï¼Œå›æ»šå…ƒæ•°æ®
+//¼ì²éÊ§°Ü£¬»Ø¹öÔªÊı¾İ
 if( check_field() )
 {
 	if(0!=(err=mem_skiplist_index_close(mem_skiplist_index)))
@@ -221,7 +225,7 @@ if( check_field() )
 }	
 
 
-//  ç›®å‰åªæ”¯æŒå•è¯»å»ºç´¢å¼•
+//  Ä¿Ç°Ö»Ö§³Öµ¥¶Á½¨Ë÷Òı
 if( 0 < field_vector.size() ){
 	
 	for( auto &v : field_vector  )
@@ -263,4 +267,21 @@ virtual std::string to_sring()
 	//return 0;
 }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif 

@@ -195,3 +195,5 @@ ParseResult result;
 parse_terminate(&result);
 return 0;
 }
+
+}

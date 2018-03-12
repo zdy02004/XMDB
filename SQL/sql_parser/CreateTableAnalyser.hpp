@@ -35,9 +35,9 @@ size_t table_block_size;  //TABLET_BLOCK_SIZE
 size_t extern_size;       //EXTERN_SIZE
 
 std::string table_name;
-std::vector<FieldDesc> elements; //æ‰€æœ‰å­—æ®µ
+std::vector<FieldDesc> elements; //ËùÓÐ×Ö¶Î
 
-// é»˜è®¤ 16M
+// Ä¬ÈÏ 16M
 CreateTableAnalyser(rapidjson::Value    *_root,rapidjson::Document *_doc):root(_root),doc(_doc),table_block_size(16*1024*1024),extern_size(16*1024*1024){get_all();}
 CreateTableAnalyser(rapidjson::Value    *_root,rapidjson::Document *_doc,size_t _table_block_size,size_t _extern_size):root(_root),doc(_doc),table_block_size(_table_block_size),extern_size(_extern_size){get_all();}
 
@@ -128,11 +128,11 @@ int get_create_info()
 
 		  if( v["tag"].GetInt() == T_TABLET_BLOCK_SIZE && v.HasMember("TABLET_BLOCK_SIZE") ) 
 			{
-				table_block_size = atol( v["TABLET_BLOCK_SIZE"]["str_value_"].GetString() )*1024*1024; // é»˜è®¤æ˜¯å…†
+				table_block_size = atol( v["TABLET_BLOCK_SIZE"]["str_value_"].GetString() )*1024*1024; // Ä¬ÈÏÊÇÕ×
 			}
 			if( v["tag"].GetInt() == T_EXTERN_SIZE && v.HasMember("EXTERN_SIZE") ) 
 			{
-				extern_size = atol( v["EXTERN_SIZE"]["str_value_"].GetString() )*1024*1024; // é»˜è®¤æ˜¯å…†
+				extern_size = atol( v["EXTERN_SIZE"]["str_value_"].GetString() )*1024*1024; // Ä¬ÈÏÊÇÕ×
 			}
 			
 		}

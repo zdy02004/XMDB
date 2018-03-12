@@ -571,3 +571,4 @@ extern int parse_sql(ParseResult* p, const char* buf, size_t len);
 extern int parse_init(ParseResult* p);
 extern int parse_terminate(ParseResult* p);
 #endif
+

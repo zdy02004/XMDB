@@ -9,7 +9,7 @@
 #define _SIMPLE_MEMPOOL_H
 #define CACHE_LINE_SIZE 64
 
-//æš‚æ—¶ç”¨è‡ªæ—‹é”é”æ¥å®ç°å›æ”¶é“¾è¡¨é”
+//ÔİÊ±ÓÃ×ÔĞıËøËøÀ´ÊµÏÖ»ØÊÕÁ´±íËø
 #define EXTERN_LOCK_T             rwlock_t
 #define EXTERN_LOCK(x)            rwlock_wlock(x)
 #define EXTERN_UNLOCK(x)          rwlock_wunlock(x)   
@@ -26,8 +26,8 @@ extern "C" {
 
 #endif
 /*
-é€‚ç”¨äºå°äº 4K çš„å†…å­˜åˆ†é…ç­–ç•¥
-> 4K æ—¶è°ƒç”¨ malloc 
+ÊÊÓÃÓÚĞ¡ÓÚ 4K µÄÄÚ´æ·ÖÅä²ßÂÔ
+> 4K Ê±µ÷ÓÃ malloc 
 */
 
 typedef struct unode_t
@@ -37,14 +37,14 @@ struct unode_t * next;
 //void           * pad[2];//    
 }unode_t;
 
-//ç”±äºå†…å­˜åˆ†é…çš„æ¬¡åºä¸å—å½±å“ ABA å¹¶ä¸æ˜¯é—®é¢˜
+//ÓÉÓÚÄÚ´æ·ÖÅäµÄ´ÎĞò²»ÊÜÓ°Ïì ABA ²¢²»ÊÇÎÊÌâ
 
 typedef struct unode_list_t
 {
 unode_t *            head;
- char pad1[CACHE_LINE_SIZE - 1 * sizeof(unode_t *)];
+ char pad1[CACHE_LINE_SIZE - 4 * sizeof(unode_t *)];
 unode_t *            end;
- char pad2[CACHE_LINE_SIZE - 1 * sizeof(unode_t *)];
+ char pad2[CACHE_LINE_SIZE - 4 * sizeof(unode_t *)];
  
 unode_t *            unode_ptr_array_t;
 unsigned int          block_size;
@@ -55,7 +55,7 @@ EXTERN_LOCK_T        extern_locker;
 int                  slot;
 }unode_list_t;
 
-//ç»†ç²’åº¦ slotï¼Œå‡å°‘å†…éƒ¨å†…å­˜ç¢ç‰‡
+//Ï¸Á£¶È slot£¬¼õÉÙÄÚ²¿ÄÚ´æËéÆ¬
 unsigned int mem_pool_size[] ={1,2,4,8,16,32,48,64,80,96,112,128,192,256,320,484,512,
 											768,832,896,960,1024,1088,1152,1216,1280,1344,1408,1472,
 											1536,1600,1664,1728,1792,1856,1920,1984,2048,2112,2176,
@@ -87,7 +87,7 @@ int unode_list_print(unode_list_t *);
 //ret->space				     =                  malloc( block_num*block_size);
 //ret->unode_ptr_array_t =      (unode_t*)  malloc( block_num*sizeof(struct unode_t) );
 
-// åˆå§‹åŒ–é“¾è¡¨
+// ³õÊ¼»¯Á´±í
 //unsigned int i = 0;
 //unode_t * tmp   = (unode_t*)(ret->unode_ptr_array_t);
 //for(;i<block_num;++i)
@@ -106,7 +106,7 @@ int unode_list_print(unode_list_t *);
 //return ret;
 //}
 
-//ä¸åˆ†é…ç©ºé—´ï¼Œåªæ˜¯åˆå§‹åŒ–äº§æ•°ï¼Œç­‰åˆ°çœŸæ­£ç”¨åˆ°çš„æ—¶å€™å†åˆ†é…ç©ºé—´
+//²»·ÖÅä¿Õ¼ä£¬Ö»ÊÇ³õÊ¼»¯²úÊı£¬µÈµ½ÕæÕıÓÃµ½µÄÊ±ºòÔÙ·ÖÅä¿Õ¼ä
 int  unode_list_t_light_init(unode_list_t * lst,unsigned int block_size,unsigned int block_num,int slot )
 {
 lst->space				     =   NULL;  
@@ -126,14 +126,14 @@ typedef struct mem_pool_virtual_info
 	unode_t *	node;
 }mem_pool_virtual_info;
 
-//block_num åº”ä¸º 4çš„å€æ•°
+//block_num Ó¦Îª 4µÄ±¶Êı
 int  unode_list_t_init(unode_list_t * lst,unsigned int block_size,unsigned int block_num,int slot )
 {
 lst->space				     =              malloc( block_num*(block_size+sizeof(mem_pool_virtual_info)));
 lst->unode_ptr_array_t =  (unode_t*)  malloc( block_num* sizeof(unode_t) );
   
 
-// åˆå§‹åŒ–é“¾è¡¨
+// ³õÊ¼»¯Á´±í
 unsigned int i = 0;
 unode_t * tmp   = lst->unode_ptr_array_t;
 mem_pool_virtual_info * virtual_info;
@@ -238,7 +238,7 @@ static inline unode_t * unode_list_malloc(unode_list_t *lst,int slot)
 	{	
 			//printf("%d unode_list_malloc0 \n",__LINE__);
 
-	//ç©ºé—´ç”¨å…‰å°±é‡æ–°åˆ†é…
+	//¿Õ¼äÓÃ¹â¾ÍÖØĞÂ·ÖÅä
 	if(lst->head == NULL)
 	{
 	  EXTERN_LOCK(&(lst->extern_locker));
@@ -250,7 +250,7 @@ static inline unode_t * unode_list_malloc(unode_list_t *lst,int slot)
 	  EXTERN_UNLOCK(&(lst->extern_locker));
   }
 		
-	//ç©ºé—´æœªç”¨å…‰åˆ™å–å‡ºheadï¼Œå¹¶æ›´æ–°lst->head	
+	//¿Õ¼äÎ´ÓÃ¹âÔòÈ¡³öhead£¬²¢¸üĞÂlst->head	
 	//printf("%d unode_list_malloc \n",__LINE__);
 	do
 	{
@@ -260,12 +260,12 @@ static inline unode_t * unode_list_malloc(unode_list_t *lst,int slot)
 
   }while(!__sync_bool_compare_and_swap(&(lst->head),head,next));
   }
-  while(head == NULL);//å–å‡ºå¤±è´¥å°±é‡è¯•
+  while(head == NULL);//È¡³öÊ§°Ü¾ÍÖØÊÔ
 	//printf("%d unode_list_malloc head = %0x, next = %0x\n",__LINE__,head,next);
 
 	return head;
 	
-	// å•çº¿ç¨‹é€»è¾‘
+	// µ¥Ïß³ÌÂß¼­
 	//if(lst->head == NULL)
 	//{
   //return unode_list_extend(lst );
@@ -285,7 +285,7 @@ static inline int unode_list_free(unode_list_t *lst,unode_t * node)
   }while(!__sync_bool_compare_and_swap(&lst->end,end,node));
 	
 	
-	// å•çº¿ç¨‹é€»è¾‘
+	// µ¥Ïß³ÌÂß¼­
 	//if(lst->end)lst->end->next = node;
 	//lst->end       = node;
 	return 0;
@@ -340,9 +340,9 @@ int mem_pool_print(mem_pool_t * pool)
 	}
 	return 0;
 }
-//äºŒåˆ†æŸ¥æ‰¾ æŸ¥æ‰¾ç¬¬ä¸€ä¸ªå¤§äºç­‰äºæŸä¸ªæ•°çš„ä¸‹æ ‡
+//¶ş·Ö²éÕÒ ²éÕÒµÚÒ»¸ö´óÓÚµÈÓÚÄ³¸öÊıµÄÏÂ±ê
 static inline int firstGreatOrEqual(int* a, int n,unsigned int key){  
-        //n + 1 ä¸ªæ•°  
+        //n + 1 ¸öÊı  
         unsigned int low = 0;  
         unsigned int high = n;  
         unsigned int mid = 0;  

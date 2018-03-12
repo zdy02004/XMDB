@@ -4556,3 +4556,5 @@ int parse_sql(ParseResult* p, const char* buf, size_t len)
   yy_delete_buffer(bp, p->yyscan_info_);
   return ret;
 }
+
+

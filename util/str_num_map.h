@@ -1,4 +1,4 @@
-#ifndef STR_NUM_MAP_T
+﻿#ifndef STR_NUM_MAP_T
 #define STR_NUM_MAP_T
 
 #ifdef __cplusplus
@@ -172,6 +172,7 @@ inline int extend_str_num_map_manager(str_num_map_t *str_num_map_manager)
 //获取块号对应的地址
 inline int get_str_num_map_addr(str_num_map_t *str_num_map_manager,char * str,str_num_t ** addr,str_num_t ** addr_pre)
 {
+	DEBUG("str is %s\n",str);
 	if( str_num_map_manager == NULL){
 		ERROR("ERR_STR_NUM_MAP_NULL\n");
 		return ERR_STR_NUM_MAP_NULL;
@@ -187,6 +188,7 @@ inline int get_str_num_map_addr(str_num_map_t *str_num_map_manager,char * str,st
 	}
   
   long long str_num_map = ___str_hash_fun_for_file(str,str_num_map_manager->max_num);
+ 	DEBUG("str_num_map index is %ld\n",str_num_map);
 
 	
 	 STR_NUM_MAP_LOCK  (&(str_num_map_manager->locker));  //上锁
@@ -223,6 +225,7 @@ inline int set_str_num_map_addr(str_num_map_t *str_num_map_manager,char * str,st
 	//IMPORTANT_INFO("set_str_num_map_addr key %s ,value %d\n",str,addr);
 
 	long long str_num_map = ___str_hash_fun_for_file(str,str_num_map_manager->max_num);
+  DEBUG("str_num_map index is %ld\n",str_num_map);
 
 	 STR_NUM_MAP_LOCK  (&(str_num_map_manager->locker));  //上锁
 	 if(NULL == str_num_map_manager->str_num_map_table[str_num_map]){str_num_map_manager->str_num_map_table[str_num_map]= addr;}
@@ -269,6 +272,8 @@ inline int del_str_num_map_addr(str_num_map_t *str_num_map_manager,char * str)
 	str_num_t * addr_pre = NULL;
 	str_num_t * addr     = NULL;
 	int err;
+	
+	DEBUG("str is %s\n",str);
 	err =get_str_num_map_addr(str_num_map_manager, str,&addr,&addr_pre);
 	if(!err && addr != addr_pre && addr_pre!=NULL)
 	{

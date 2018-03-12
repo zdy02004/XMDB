@@ -41,7 +41,7 @@ namespace cpp_func_task_namespace{
 */  
 typedef struct func_task_t
 {  
-    /*å›è°ƒå‡½æ•°ï¼Œä»»åŠ¡è¿è¡Œæ—¶ä¼šè°ƒç”¨æ­¤å‡½æ•°ï¼Œæ³¨æ„ä¹Ÿå¯å£°æ˜æˆå…¶å®ƒå½¢å¼*/  
+    /*»Øµ÷º¯Êı£¬ÈÎÎñÔËĞĞÊ±»áµ÷ÓÃ´Ëº¯Êı£¬×¢ÒâÒ²¿ÉÉùÃ÷³ÉÆäËüĞÎÊ½*/  
     std::function<void (void )> process ;  
     func_task_t(){}
     func_task_t(std::function<void (void )>& _process ){
@@ -118,7 +118,7 @@ inline int init_func_task_queue(func_task_queue_t * func_task_queue,uint32_t max
     func_task_queue->head.mask = func_task_queue->tail.mask = max-1;
     return 0;  
 }  
- // å…¥é˜Ÿåˆ—
+ // Èë¶ÓÁĞ
 inline int en_func_task_queue(func_task_queue_t * func_task_queue, func_task_t& item)  
 {  
 	 // DEBUG("en_func_task_queue\n"	);	  
@@ -128,7 +128,7 @@ inline int en_func_task_queue(func_task_queue_t * func_task_queue, func_task_t& 
     do {
         head = func_task_queue->head.first;
         tail = func_task_queue->tail.second;
-        // å·²æ»¡ ä¸” éç©º
+        // ÒÑÂú ÇÒ ·Ç¿Õ
         if (((head - tail) > mask) && (!((tail == head) || (tail > head && (head - tail) > mask))))
         	{
         		DEBUG("%ld %s,head=%ld,tail=%ld\n",__LINE__,"The func_task_queue_t is full",head,tail);
@@ -149,7 +149,7 @@ inline int en_func_task_queue(func_task_queue_t * func_task_queue, func_task_t& 
 
     return 0;  
 }  
-  // å‡ºé˜Ÿåˆ—
+  // ³ö¶ÓÁĞ
 inline int de_func_task_queue(func_task_queue_t * func_task_queue, func_task_t & item)  
 {     
 	   DEBUG("Enter de_func_task_queue\n"	);
@@ -164,7 +164,7 @@ inline int de_func_task_queue(func_task_queue_t * func_task_queue, func_task_t &
  
         if ((tail == head) || (tail > head && (head - tail) > mask))
         {
-        //ä¸ºç©ºå°±ç¡çœ 
+        //Îª¿Õ¾ÍË¯Ãß
         DEBUG("The func_task_queue_t is empty\n ");
         return FUNC_TASK_ERR_QUEUE_EMPTY;
         }
@@ -183,8 +183,8 @@ inline int de_func_task_queue(func_task_queue_t * func_task_queue, func_task_t &
     func_task_queue->tail.second = next;
     return 0;
 }  
-/* ä¸‹é¢æ˜¯å…³äºå¾ªç¯æ•°ç»„ç¼“å†²åŒºçš„æ“ä½œç›¸å…³çš„æ“ä½œ*/
-// åœæ—¥å¿—å,é‡å»º ç¼“å†²åŒº
+/* ÏÂÃæÊÇ¹ØÓÚÑ­»·Êı×é»º³åÇøµÄ²Ù×÷Ïà¹ØµÄ²Ù×÷*/
+// Í£ÈÕÖ¾ºó,ÖØ½¨ »º³åÇø
 inline int reinit_func_task_queue(func_task_queue_t * func_task_queue,uint32_t max)  
 {  
     delete func_task_queue->item;  
@@ -192,19 +192,19 @@ inline int reinit_func_task_queue(func_task_queue_t * func_task_queue,uint32_t m
     return init_func_task_queue(func_task_queue, max);  
 } 
 
-  //æ¸…é™¤æ—¥å¿—ç¼“å†²é˜Ÿåˆ—
+  //Çå³ıÈÕÖ¾»º³å¶ÓÁĞ
 int destroy_func_task_queue(func_task_queue_t * func_task_queue)  
 {  
-    //delete func_task_queue->item ;  //ä¼šè‡ªåŠ¨åˆ é™¤
+    //delete func_task_queue->item ;  //»á×Ô¶¯É¾³ı
     //delete func_task_queue;
 } 
 
 //______________________________________________________________________________
 								
-//å…¨å±€å°±ç»ªé˜Ÿåˆ—
+//È«¾Ö¾ÍĞ÷¶ÓÁĞ
 class wait_func_queue_t
 {
-	  func_task_queue_t inner_queue; // ç­‰å¾…é˜Ÿåˆ—
+	  func_task_queue_t inner_queue; // µÈ´ı¶ÓÁĞ
 public:
 	inline  void init(uint32_t size)
 	  {
@@ -256,7 +256,7 @@ public:
      	  return ret;
     }
     
-    //ä»ç­‰å¾…é˜Ÿåˆ—ä¸­æ‹¿å‡ºä¸€ä¸ªæ‰§è¡Œ
+    //´ÓµÈ´ı¶ÓÁĞÖĞÄÃ³öÒ»¸öÖ´ĞĞ
     template<class put_once_t>
     int schedule(put_once_t& put_once_func)
     {
@@ -278,7 +278,7 @@ public:
       DEBUG("Leave  wait_func_queue_t::schedule()\n");
     	return ret;
     }
-        //ä»ç­‰å¾…é˜Ÿåˆ—ä¸­æ‹¿å‡ºä¸€ä¸ªç«‹å³æ‰§è¡Œ
+        //´ÓµÈ´ı¶ÓÁĞÖĞÄÃ³öÒ»¸öÁ¢¼´Ö´ĞĞ
     int schedule_now( )
     {
     	DEBUG("Enter  wait_func_queue_t::schedule_one_now()\n");
@@ -310,3 +310,4 @@ public:
 
 }
 #endif
+

@@ -11,28 +11,28 @@
 
 void init_trans_redo()
 {
-//åˆå§‹åŒ– redo_manager  
+//³õÊ¼»¯ redo_manager  
 init_redo_log_manager();
-//é…ç½® config_manager
+//ÅäÖÃ config_manager
 //config_redo_data_log(char * path,off_t file_max_size)  
 
-// æ³¨æ„åœ¨åˆå§‹åŒ– äº‹åŠ¡ç®¡ç†å™¨ä¹‹å‰ï¼Œè¦å…ˆåˆå§‹åŒ–ç³»ç»Ÿåºåˆ—ç®¡ç†å™¨
+// ×¢ÒâÔÚ³õÊ¼»¯ ÊÂÎñ¹ÜÀíÆ÷Ö®Ç°£¬ÒªÏÈ³õÊ¼»¯ÏµÍ³ĞòÁĞ¹ÜÀíÆ÷
 init_sys_transaction_manager();
-//é…ç½® transaction_managerçš„ åºåˆ—å€¼ å’Œ  å›æ»šç©ºé—´æœ€å¤§å€¼
+//ÅäÖÃ transaction_managerµÄ ĞòÁĞÖµ ºÍ  »Ø¹ö¿Õ¼ä×î´óÖµ
 config_sys_transaction_manager(1,DEFAULT_FILE_MAX_SIZE);
  
-//æ‰©å±•äº‹åŠ¡æ§½
+//À©Õ¹ÊÂÎñ²Û
 // extend_transaction_manager();
 
-// åˆå§‹åŒ–æ•°æ®æ—¥å¿—å†™è€…çº¿ç¨‹
+// ³õÊ¼»¯Êı¾İÈÕÖ¾Ğ´ÕßÏß³Ì
 init_trans_redo_data_writer(&sys_trans_redo_data_writer,10);
-// å¼€å¯ writer çº¿ç¨‹å†™æ—¥å¿—
+// ¿ªÆô writer Ïß³ÌĞ´ÈÕÖ¾
 start_trans_redo_data_writer();
 }
 
 void dest_trans_redo()
 {
-	 // å…³é—­ writer çº¿ç¨‹å†™æ—¥å¿—
+	 // ¹Ø±Õ writer Ïß³ÌĞ´ÈÕÖ¾
 	 stop_trans_redo_data_writer();
 }
 
@@ -55,7 +55,7 @@ int main()
 {
 	init_mem_no_manager();
 	//__________________________________________
-	// åˆå§‹åŒ–äº‹åŠ¡ç›¸å…³
+	// ³õÊ¼»¯ÊÂÎñÏà¹Ø
 	init_trans_redo();
 	
 	
@@ -64,6 +64,10 @@ const char *sql_str = ""
 
 const char *sql_str2 = ""
 "create index test_table_inx on test_table USING hash ( id ) SKIP_LEVEL = 4 ";
+
+//const char *sql_str2 = ""
+//"create index test_table_inx on test_table ( id ) SKIP_LEVEL = 4 ";
+
 
 CPP_DEBUG<< sql_str <<endl;
  CPP_DEBUG<< sql_str2 <<endl;
@@ -88,7 +92,7 @@ int ret2 = parse_init(&result2);
     result2.Doc.Accept(writer2);
        
  
-//ä¼˜åŒ–å‰
+//ÓÅ»¯Ç°
   CPP_DEBUG <<"create table "<< buffer.GetString() << std::endl;
   
 
@@ -100,7 +104,7 @@ int ret2 = parse_init(&result2);
   	  mctp.execute();
 		}
   }	
-  	//ä¼˜åŒ–å‰
+  	//ÓÅ»¯Ç°
   CPP_DEBUG <<"create index "<< buffer2.GetString() << std::endl;
    for (auto& v : result2.Doc["ROOT"]["children"].GetArray() ){
   		//QueryAnalyser qa( v ,result.Doc );
@@ -111,8 +115,8 @@ int ret2 = parse_init(&result2);
 		}
   }	
   
-  //ä¼˜åŒ–å
-  //CPP_DEBUG <<"ä¼˜åŒ–å json\n";
+  //ÓÅ»¯ºó
+  //CPP_DEBUG <<"ÓÅ»¯ºó json\n";
   //rapidjson_log( &result.Doc["ROOT"] );
   
    
@@ -120,7 +124,7 @@ int ret2 = parse_init(&result2);
 parse_terminate(&result);
 parse_terminate(&result2);
 
-//æ¸…ç†äº‹åŠ¡æ§½
+//ÇåÀíÊÂÎñ²Û
 dest_trans_redo();
 dest_mem_no_manager();
 
