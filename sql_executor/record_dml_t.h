@@ -5,10 +5,7 @@
 #include "index_dml_t.h"
 
 /*
-
  g++ -C -w -lpthread  -std=c++11 record_dml_t.h 
-
-
 */
 
 
@@ -46,30 +43,30 @@ int insert_into_index(
 												record_t * record_ptr,
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
-	{
-		int ret = 0;
-		for(size_t i = 0 ; i< hash_index_dml_vector.size();++i){
-			ret = hash_index_dml_vector[i].insert_into_index(
-																								hash_index_vector[i],
-																								record_ptr,
-																								(char *)record_ptr + RECORD_HEAD_SIZE,
-																								out_record_ptr,
-																								Tn);
-				if(ret)return ret;
-		}
-		for(size_t i = 0 ; i< skiplist_index_dml_vector.size();++i){
-			ret = skiplist_index_dml_vector[i].insert_into_index(
-																								skiplist_index_vector[i],
-																								record_ptr,
-																								(char *)record_ptr + RECORD_HEAD_SIZE,
-																								out_record_ptr,
-																								Tn);
+{
+	int ret = 0;
+	for(size_t i = 0 ; i< hash_index_dml_vector.size();++i){
+		ret = hash_index_dml_vector[i].insert_into_index(
+																							hash_index_vector[i],
+																							record_ptr,
+																							(char *)record_ptr + RECORD_HEAD_SIZE,
+																							out_record_ptr,
+																							Tn);
 			if(ret)return ret;
-		}
-		
+	}
+	for(size_t i = 0 ; i< skiplist_index_dml_vector.size();++i){
+		ret = skiplist_index_dml_vector[i].insert_into_index(
+																							skiplist_index_vector[i],
+																							record_ptr,
+																							(char *)record_ptr + RECORD_HEAD_SIZE,
+																							out_record_ptr,
+																							Tn);
+		if(ret)return ret;
 	}
 	
-	
+}
+
+
 int delete_from_index(
 												record_t * record_ptr,
 												record_t ** out_record_ptr,	
@@ -153,7 +150,7 @@ record_dml_t( mem_table_t *_mem_table,
 																											 field_values(_field_values),
 																											 has_index(0)
 {
-		init();  	
+		//init();  	
 }
 
 record_dml_t(
@@ -161,7 +158,13 @@ record_dml_t(
 							std::vector<std::string>& _field_values):field_names(_field_names),
 																											 field_values(_field_values)
 {
-		init();  	
+		//init();  	
+}
+
+inline void set_mem_table( mem_table_t *_mem_table)
+																											 
+{
+		mem_table = _mem_table;
 }
 
 inline void change_value(std::vector<std::string>& _field_values)
@@ -179,6 +182,10 @@ record_dml_t( mem_table_t *_mem_table):mem_table(_mem_table)
 inline void init()
 {	
 	  int ret = 0 ;
+	  if(  NULL != mem_table ){
+	  	
+	
+	  
 		meta.from_table( mem_table );
 		tuple_one.meta = &meta;
 		tuple_one.result = &return_record;
@@ -210,7 +217,7 @@ inline void init()
 		}
 		mem_table_unlock( &( mem_table->table_locker ) );// 确保 create_index_online 不漏数据
   	
-  	
+  	}
 }
 
 // 把值填充入 tuple 中
@@ -300,8 +307,5 @@ return ret;
 }
 
 };
-
-
-
 
 #endif
