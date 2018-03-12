@@ -10,11 +10,11 @@
 
 
 
-// ´Ó normal_double_condition_list ÖĞ»ñµÃ¹ıÂËÁĞ±í
+// ä» normal_double_condition_list ä¸­è·å¾—è¿‡æ»¤åˆ—è¡¨
 int handl_create_table(
-													/*in*/CreateTableAnalyser 					&qta,			     //ĞèÒªÉ¨ÃèµÄË÷ÒıÌõ¼ş   
-													/*out*/mem_table_t								**mem_table ,    //ĞèÒª´´½¨µÄ±íÖ¸Õë        
-													/*in&&out*/std::list<plan_node *>	&plan_node_list //Êä³öµÄÖ´ĞĞ¼Æ»®    
+													/*in*/CreateTableAnalyser 					&qta,			     //éœ€è¦æ‰«æçš„ç´¢å¼•æ¡ä»¶   
+													/*out*/mem_table_t								**mem_table ,    //éœ€è¦åˆ›å»ºçš„è¡¨æŒ‡é’ˆ        
+													/*in&&out*/std::list<plan_node *>	&plan_node_list //è¾“å‡ºçš„æ‰§è¡Œè®¡åˆ’    
 													)
 {
 create_table_node *node = new create_table_node(
@@ -24,6 +24,7 @@ create_table_node *node = new create_table_node(
 																qta.extern_size,
 	  								            *( qta.root ),
   								              qta.doc);
+*mem_table = node->mem_table;
 plan_node_list.push_back(node);
 
 return 0;
