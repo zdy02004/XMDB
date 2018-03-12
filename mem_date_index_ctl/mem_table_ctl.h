@@ -1344,13 +1344,15 @@ inline int mem_table_create(
 
 	//填充表里的字段信息的大小
   fill_table_field_size ( *mem_table );  
-  
+  DEBUG("mem_table->record_size is %ld \n",(*mem_table)->record_size);
+
   DEBUG("mem_table_config->mem_blocks_table block_size is %d\n",mem_table_config->mem_blocks_table->block_size );
   DEBUG("(*mem_table)->config.table_name2 is %s\n",(*mem_table)->config.table_name );
 
 	//redo_log
 	int err;
 	err = mem_table_open(*mem_table);
+  DEBUG("mem_table->record_size is %ld \n",(*mem_table)->record_size);
 
 	return err;
 }
