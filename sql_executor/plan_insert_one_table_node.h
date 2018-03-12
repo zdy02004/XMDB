@@ -2,8 +2,8 @@
 g++ -C -std=c++11 plan_insert_one_table_node.h -w
 
 */
-#ifndef PLAN_plan_insert_one_table_node
-#define PLAN_plan_insert_one_table_node
+#ifndef PLAN_	INSERT_ONE_TABLE_NODE
+#define PLAN_	INSERT_ONE_TABLE_NODE
 
 #include "plan_node.h"
 #include "../SQL/sql_parser/InsertTableAnalyser.hpp"
@@ -15,14 +15,14 @@ g++ -C -std=c++11 plan_insert_one_table_node.h -w
 #define PLAN_INSERT_TABLE_INPUT_NUM_NOT_EQA         804
 
 
-//key func ¹¹Ôì ½á¹û¼¯µÄ record_tuple
+//key func æ„é€  ç»“æœé›†çš„ record_tuple
 struct plan_insert_one_table_node:public plan_node
 {
-std::string table_name;                 //±íÃû
-std::vector<std::string> field_vector ; //×Ö¶ÎÃû³ÆÁĞ±í
-std::vector<std::string> value_vector ; //×Ö¶ÎÖµÁĞ±í
-struct mem_table_t*      mem_table;     //±íÖ¸Õë
-record_dml_t						 record_dml;		//record_dml ²Ù×÷Àà
+std::string table_name;                 //è¡¨å
+std::vector<std::string> field_vector ; //å­—æ®µåç§°åˆ—è¡¨
+std::vector<std::string> value_vector ; //å­—æ®µå€¼åˆ—è¡¨
+struct mem_table_t*      mem_table;     //è¡¨æŒ‡é’ˆ
+record_dml_t						 record_dml;		//record_dml æ“ä½œç±»
 
 
 plan_insert_one_table_node( 
@@ -45,7 +45,7 @@ plan_type = PLAN_TYPE_INSERT_ONE_TABLE;
 int get_table_ptr()
 {
 	int err = 0;
-	// ¶ÔÓÚÔ­Ê¼±í¼ì²é¸Ã±íÊÇ·ñ´æÔÚ
+	// å¯¹äºåŸå§‹è¡¨æ£€æŸ¥è¯¥è¡¨æ˜¯å¦å­˜åœ¨
 				if(!table_name.empty()){
 					long long table_no;
 					 err = search_table_name( const_cast<char *>(table_name.c_str()) , &table_no);
@@ -58,7 +58,15 @@ int get_table_ptr()
 					 	 //		relation_name = std::string(mem_table->config.table_name);
 					 	 //	}
 					 		//}
-					 		if(mem_table) record_dml.mem_table = mem_table;
+					 		if( mem_table &&  !err ) {
+					 			record_dml.mem_table = mem_table;
+					 			record_dml.init();
+					 		}
+					 		else
+					 			{
+					 				CPP_ERROR<<"Get mem_table ptr failed!\n";
+					        return err;
+					 			}
 					 }
 					 
 				}
@@ -69,10 +77,10 @@ int get_table_ptr()
 	return err;
 }
 	
-//¼ì²é¸Ã±íÖĞÊÇ·ñ´æÔÚÄ³¸ö×Ö¶Î,²¢ÔÚ±íµÄ×Ö¶ÎÉÏ±ê¼ÇË÷Òıid
+//æ£€æŸ¥è¯¥è¡¨ä¸­æ˜¯å¦å­˜åœ¨æŸä¸ªå­—æ®µ,å¹¶åœ¨è¡¨çš„å­—æ®µä¸Šæ ‡è®°ç´¢å¼•id
 int check_field()
 {
-	// ÃèÊö²¿·Ö²»Îª¿Õ
+	// æè¿°éƒ¨åˆ†ä¸ä¸ºç©º
 	if(!field_vector.empty() && mem_table != NULL  ){
 		for( auto &v : field_vector )
 		{
@@ -82,13 +90,13 @@ int check_field()
 				}
 		}
 		 
-		if( field_vector.size() !=value_vector.size()  )
+		if( field_vector.size() != value_vector.size()  )
 		{
 			CPP_ERROR<<"Value list num != field list num"<<std::endl;
 			return PLAN_INSERT_TABLE_INPUT_NUM_NOT_EQA;
 		}
 	}
-		// ÃèÊö²¿·ÖÎª¿Õ
+		// æè¿°éƒ¨åˆ†ä¸ºç©º
 	else if( field_vector.empty() && mem_table != NULL  ){
 		 for(int i = 0;i < mem_table->config.field_used_num; ++i  )
 		 {
@@ -111,11 +119,11 @@ int check_field()
 	
 virtual int execute( unsigned long long  Tn  )
 {
-//  »ñµÃ±íÖ¸Õë
+//  è·å¾—è¡¨æŒ‡é’ˆ
 int err = get_table_ptr();
 if( err )return err;
 record_t * out_record_ptr = NULL;
-//¼ì²éÊ§°Ü£¬»Ø¹öÔªÊı¾İ
+//æ£€æŸ¥å¤±è´¥ï¼Œå›æ»šå…ƒæ•°æ®
 if( err = check_field() )
 {
 			ERROR("check_field failed\n");
@@ -154,21 +162,4 @@ virtual std::string to_sring()
 	//return 0;
 }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif 
