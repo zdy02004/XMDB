@@ -246,6 +246,8 @@ long block_no;
 int ret  = 0;
 int ret1 = 0;
 record_t * out_index_record_ptr = NULL;
+
+CPP_DEBUG<<"mem_table->record_size - RECORD_HEAD_SIZE is "<<mem_table->record_size - RECORD_HEAD_SIZE<<std::endl;
 ret = mem_mvcc_insert_record( mem_table ,
                           out_record_ptr,
                           &block_no, /* in */
@@ -307,5 +309,8 @@ return ret;
 }
 
 };
+
+
+
 
 #endif
