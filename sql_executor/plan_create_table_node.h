@@ -15,25 +15,28 @@ g++ -C -std=c++11 plan_create_table_node.h -w
 #include "../mem_date_index_ctl/mem_table_ctl.h"
 #include "../SQL/sql_parser/CreateTableAnalyser.hpp"
 
-
 inline void transform_field(field_t &field,int field_type)
 {
+	CPP_DEBUG<<"transform_field field_type is "<<field_type<<std::endl;
 	switch(  field_type )
 	{
-		case T_TYPE_INTEGER:					field.field_type = FIELD_TYPE_INT;break;
-  	case T_TYPE_FLOAT :						field.field_type = FIELD_TYPE_FLOAT;break;
-  	case T_TYPE_DOUBLE :					field.field_type = FIELD_TYPE_DOUBLE;break;
-  	case T_TYPE_DECIMAL :					field.field_type = FIELD_TYPE_DOUBLE;break;
-  	case T_TYPE_BOOLEAN :					field.field_type = FIELD_TYPE_SHORT;break;
-  	case T_TYPE_DATE :					  field.field_type = FIELD_TYPE_LONG;break;
+		case T_TYPE_INTEGER:					field.field_type = FIELD_TYPE_INT;CPP_DEBUG<<"FIELD_TYPE_INT "<<std::endl;break;
+  	case T_TYPE_FLOAT :						field.field_type = FIELD_TYPE_FLOAT;CPP_DEBUG<<"FIELD_TYPE_FLOAT "<<std::endl;break;
+  	case T_TYPE_DOUBLE :					field.field_type = FIELD_TYPE_DOUBLE;CPP_DEBUG<<"FIELD_TYPE_DOUBLE "<<std::endl;break;
+  	case T_TYPE_DECIMAL :					field.field_type = FIELD_TYPE_DOUBLE;CPP_DEBUG<<"FIELD_TYPE_DOUBLE "<<std::endl;break;
+  	case T_TYPE_BOOLEAN :					field.field_type = FIELD_TYPE_SHORT;CPP_DEBUG<<"FIELD_TYPE_SHORT "<<std::endl;break;
+  	case T_TYPE_DATE :					  field.field_type = FIELD_TYPE_LONG;CPP_DEBUG<<"FIELD_TYPE_LONG "<<std::endl;break;
   	case T_TYPE_TIME :break;
-  	case T_TYPE_DATETIME :			  field.field_type = FIELD_TYPE_LONG;break;
+  	case T_TYPE_DATETIME :			  field.field_type = FIELD_TYPE_LONG;CPP_DEBUG<<"FIELD_TYPE_LONG "<<std::endl;break;
   	case T_TYPE_TIMESTAMP :break;
-  	case T_TYPE_CHARACTER:				field.field_type = FIELD_TYPE_STR;break;
-  	case T_TYPE_VARCHAR :					field.field_type = FIELD_TYPE_STR;break;
+  	case T_TYPE_CHARACTER:				field.field_type = FIELD_TYPE_STR;CPP_DEBUG<<"FIELD_TYPE_STR "<<std::endl;break;
+  	case T_TYPE_VARCHAR :					field.field_type = FIELD_TYPE_STR;CPP_DEBUG<<"FIELD_TYPE_STR "<<std::endl;break;
   	case T_TYPE_CREATETIME :break;
   	case T_TYPE_MODIFYTIME :break;
-  
+    case T_TYPE_SHORT  :          field.field_type = FIELD_TYPE_SHORT;CPP_DEBUG<<"FIELD_TYPE_SHORT "<<std::endl;break;
+    case T_TYPE_INT    :          field.field_type = FIELD_TYPE_INT;CPP_DEBUG<<"FIELD_TYPE_INT "<<std::endl;break;
+    case T_TYPE_LONG   :					field.field_type = FIELD_TYPE_LONG;CPP_DEBUG<<"FIELD_TYPE_LONG "<<std::endl;break;
+    case T_TYPE_LONGLONG :        field.field_type = FIELD_TYPE_LONGLONG;CPP_DEBUG<<"FIELD_TYPE_LONGLONG "<<std::endl;break;
 	}
 	
 }
@@ -69,6 +72,7 @@ int create_mem_table_config(mem_table_config_t ** mem_config,mem_block_t *mb,cha
 	strcpy((*mem_config)->table_name,table_name);
 	
 	size_t num = field_vector.size();
+	CPP_DEBUG<<"num is "<<num<<std::endl;
 	struct field_t *fields_table  = (struct field_t *) malloc( FIELD_SIZE*num );
 	(*mem_config)->fields_table      = fields_table;
 	
@@ -148,6 +152,7 @@ if(0!=(err=mem_table_create(&mem_table,mem_config)))
 		return err;
 }
 MEM_TABLE_LOCK_INIT(&(mem_table->table_locker ));		// 原因不明，再初始化一次
+DEBUG("create_table node : mem_table->record_size is %d\n",mem_table->record_size );
 DEBUG("RECORD_HEAD_SIZE is %d\n",RECORD_HEAD_SIZE);
 return 0;
 
@@ -171,21 +176,6 @@ virtual std::string to_sring()
 	//return 0;
 }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #endif 
