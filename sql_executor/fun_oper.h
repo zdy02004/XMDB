@@ -43,6 +43,7 @@ int field_type_priority[9][9]= {
 //选择优先级高的字段，并返回
 int get_max_field_type(int a, int b)
 {
+	CPP_DEBUG<<"a="<<a<<" b="<<b<<std::endl;
 		if( 1 == field_type_priority[a-1][b-1]  )return a;
 		else return b;	
 }
@@ -116,7 +117,7 @@ fun_oper():father(NULL),is_reduce(false){}
 fun_oper(int tag_ , int node_type_ ):tag(tag_),node_type(node_type_),father(NULL),is_reduce(false){}
 int get_tag(){return tag;}
 int set_tag(int tag_){ tag = tag_;}
-int set_alias_name( std::string  _alias_name ){ alias_name = _alias_name;}
+int set_alias_name( std::string  _alias_name ){ alias_name = _alias_name;CPP_DEBUG<<"alias_name=" <<alias_name<<std::endl;}
 std::string & get_alias_name(){return alias_name;}
 virtual union_value eval(  record_meta * _meta , generic_result * _result ) = 0;  
 
@@ -141,8 +142,8 @@ struct value_element:public fun_oper
   {	
   	rt = _RawTarget; 
   	field_name = rt.column_name; 
-  }
-  	
+  } 
+	
 	virtual union_value eval(  record_meta * _meta , generic_result * _result ) 
 	{
 			 
@@ -341,27 +342,28 @@ struct fun_avg:public fun_element
 			switch( (*vv)["tag"].GetInt() )
 			{
 				case T_FUN_COUNT:{
-					std::shared_ptr<fun_count> node(new fun_count );
-					fun_count * ptr = node.get();
+					fun_count * node = new fun_count ;
 					node->tag = T_FUN_COUNT;
-					ptr->set_children( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"] ,index )  );
+					node->set_children( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"] ,index )  );
 					if( 0 == child_ptr )return child_ptr; 
-					child_ptr->father = ptr ;
-					ptr->tag =get_max_field_type(ptr->tag , child_ptr->tag);
-				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
+					child_ptr->father = node ;
+					node->tag =get_max_field_type(node->tag , child_ptr->tag);
+				  if( v->HasMember("PROJECT_ALIAS") ){node->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  	else
 			  	{
-			  	ptr->set_alias_name( to_string(index) );
+			  	auto temp_name =to_string(index);
+			  	node->set_alias_name( temp_name );
 			  		
 			  	}
-			    return ptr;
+			    return node;
 				}
 				case T_FUN_SUM:{
 					CPP_DEBUG<< " T_FUN_SUM " <<endl;
 
-					std::shared_ptr<fun_sum> node(new fun_sum );
+					//std::shared_ptr<fun_sum> node(new fun_sum );
+					fun_sum * node = new fun_sum;
 					node->tag = T_FUN_SUM;
-					fun_sum * ptr = node.get();
+					fun_sum * ptr = node;
 					ptr->set_children(  child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"] ,index )  );
 					if( 0 == child_ptr )return child_ptr;
 					child_ptr->father = ptr ;
@@ -369,18 +371,44 @@ struct fun_avg:public fun_element
 				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  	else
 			  	{
-			  	ptr->set_alias_name( to_string(index) );
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
 			  		
 			  	}
 			    return ptr;
+				}
+				case T_FUN_AVG:{
+					CPP_DEBUG<< " T_FUN_AVG " <<endl;
+
+					//std::shared_ptr<fun_avg> node(new fun_avg );
+					fun_avg *  node = new fun_avg;
+					node->tag = T_FUN_AVG;						
+					fun_avg * ptr = node;
+					ptr->set_children(  child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"] ,index )  );
+					if( 0 == child_ptr )return child_ptr; 
+					child_ptr->father = ptr ;
+					ptr->tag =get_max_field_type(ptr->tag , child_ptr->tag);
+				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
+			  	else
+			  	{
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
+			  		
+			  	}
+			    return ptr;
+				}
+					case T_FUN_SYS:{
+					
+					break;
 				}
 				case T_FUN_MAX:{
 					CPP_DEBUG<< " T_FUN_MAX " <<endl;
 					if( std::string( (*vv)["FUN_TYPE"].GetString() )  == std::string("MAXX") ){
 						CPP_DEBUG<< " T_FUN_MAXX " <<endl;
-						std::shared_ptr<oper_max> node(new oper_max );
+						//std::shared_ptr<oper_max> node(new oper_max );
+						oper_max * node = new oper_max;
 						node->tag = T_FUN_MAX;
-						oper_max * ptr = node.get();
+						oper_max * ptr = node;
 				  	//分别向左右节点继续构造				  
 				  	ptr->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0][0],index  ) );
 				  	ptr->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][0][1],index ) );
@@ -392,17 +420,19 @@ struct fun_avg:public fun_element
 			    	if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  		else
 			  		{
-			  		ptr->set_alias_name( to_string(index) );
+			  		auto temp_name =to_string(index);
+			  	  ptr->set_alias_name( temp_name );
 			  			
 			  		}
-			    	ptr->tag =get_max_field_type(  ptr->get_tag() , child_ptr->tag,child_ptr2->tag );
+			    	ptr->tag =get_max_field_type(  child_ptr->tag,child_ptr2->tag );
 			    	
 			    	return ptr;
 					}
 					
-					std::shared_ptr<fun_max> node(new fun_max );
+					//std::shared_ptr<fun_max> node(new fun_max );
+					fun_max* node = new fun_max;
 					node->tag = T_FUN_MAX;
-					fun_max * ptr = node.get();
+					fun_max * ptr = node;
 					ptr->set_children(  child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"] ,index )  );
 					if( 0 == child_ptr )return child_ptr; 
 					child_ptr->father = ptr ;
@@ -410,7 +440,8 @@ struct fun_avg:public fun_element
 				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  	else
 			  	{
-			  	ptr->set_alias_name( to_string(index) );
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
 			  		
 			  	}
 			    return ptr;
@@ -419,9 +450,10 @@ struct fun_avg:public fun_element
 					CPP_DEBUG<< " T_FUN_MIN " <<endl;
 					if( std::string( (*vv)["FUN_TYPE"].GetString() )  == std::string("MINX") ){
 						CPP_DEBUG<< " T_FUN_MINX " <<endl;
-						std::shared_ptr<oper_min> node(new oper_min );
+						//std::shared_ptr<oper_min> node(new oper_min );
+						oper_min * node = new oper_min;
 						node->tag = T_FUN_MIN;
-						oper_min * ptr = node.get();
+						oper_min * ptr = node;
 				  	//分别向左右节点继续构造				  
 				  	ptr->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0][0],index  ) );
 				  	ptr->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][0][1],index ) );
@@ -429,18 +461,20 @@ struct fun_avg:public fun_element
 				  	child_ptr->father = ptr ;
 						if( 0 == child_ptr2 )return child_ptr2;
 						child_ptr2->father = ptr ;		
-			    	ptr->tag =get_max_field_type(  ptr->get_tag() , child_ptr->tag,child_ptr2->tag );
+			    	ptr->tag =get_max_field_type( child_ptr->tag,child_ptr2->tag );
 				  	if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  		else
 			  		{
-			  		ptr->set_alias_name( to_string(index) );
+			  		auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
 			  			
 			  		}
 			    	return ptr;
 					}
-					std::shared_ptr<fun_min> node(new fun_min );
+					//std::shared_ptr<fun_min> node(new fun_min );
+					fun_min * node = new fun_min;
 					node->tag = T_FUN_MIN;						
-					fun_min * ptr = node.get();
+					fun_min * ptr = node;
 					ptr->set_children(  child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"] ,index )  );
 					if( 0 == child_ptr )return child_ptr; 
 					child_ptr->father = ptr ;
@@ -448,43 +482,24 @@ struct fun_avg:public fun_element
 				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  	else
 			  	{
-			  	ptr->set_alias_name( to_string(index) );
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
 			  		
 			  	}
 			    return ptr;
-				}
-				case T_FUN_AVG:{
-					CPP_DEBUG<< " T_FUN_AVG " <<endl;
-
-					std::shared_ptr<fun_avg> node(new fun_avg );
-					node->tag = T_FUN_AVG;						
-					fun_avg * ptr = node.get();
-					ptr->set_children(  child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"] ,index )  );
-					if( 0 == child_ptr )return child_ptr; 
-					child_ptr->father = ptr ;
-					ptr->tag =get_max_field_type(ptr->tag , child_ptr->tag);
-				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
-			  	else
-			  	{
-			  	ptr->set_alias_name( to_string(index) );
-			  		
-			  	}
-			    return ptr;
-				}
-					case T_FUN_SYS:{
-					
-					break;
 				}
 				case T_CUR_TIME:{
 					CPP_DEBUG<< " T_CUR_TIME " <<endl;
 
-					std::shared_ptr<time_element> node(new time_element );
+					//std::shared_ptr<time_element> node(new time_element );
+					time_element * node = new time_element;
 					node->tag = T_CUR_TIME;						
-					time_element * ptr = node.get();
+					time_element * ptr = node;
 				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  	else
 			  	{
-			  	ptr->set_alias_name( to_string(index) );
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
 			  		
 			  	}
 			    return ptr;
@@ -508,31 +523,34 @@ struct fun_avg:public fun_element
 				case T_OP_ADD:{
 					CPP_DEBUG<< " T_OP_ADD " <<endl;
 
-					std::shared_ptr<oper_add> node(new oper_add );
-					node->tag = T_OP_ADD;
-					oper_add * ptr = node.get();
+					//std::shared_ptr<oper_add> node(new oper_add );
+					oper_add * node  = new oper_add;
+					node->node_type = T_OP_ADD;
+					oper_add * ptr = node;
 				  //分别向左右节点继续构造				  
-				  ptr->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index  ) );
-				  ptr->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );	
+				  node->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index  ) );
+				  node->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );	
 				  if( 0 == child_ptr )return child_ptr; 
-				  child_ptr->father = ptr ;
+				  child_ptr->father = node ;
 					if( 0 == child_ptr2 )return child_ptr2;
-					child_ptr2->father = ptr ;	
-			    ptr->tag =get_max_field_type(  ptr->get_tag() , child_ptr->tag,child_ptr2->tag );
+					child_ptr2->father = node ;	
+			    node->tag =get_max_field_type(  child_ptr->get_tag(),child_ptr2->get_tag() );
 				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  	else
 			  	{
-			  	ptr->set_alias_name( to_string(index) );
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
 			  		
 			  	}		  
-			    return ptr;
+			    return node;
 				}
 				case T_OP_MINUS:{
 					CPP_DEBUG<< " T_OP_MINUS " <<endl;
 
-					std::shared_ptr<oper_minus> node(new oper_minus );
-					node->tag = T_OP_MINUS;
-					oper_minus * ptr = node.get();
+					//std::shared_ptr<oper_minus> node(new oper_minus );
+					oper_minus * node = new oper_minus;
+					node->node_type = T_OP_MINUS;
+					oper_minus * ptr = node;
 				  //分别向左右节点继续构造				  
 				  ptr->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index ) );
 				  ptr->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );
@@ -540,20 +558,22 @@ struct fun_avg:public fun_element
 				  child_ptr->father = ptr ;
 					if( 0 == child_ptr2 )return child_ptr2;
 					child_ptr2->father = ptr ;
-			    ptr->tag =get_max_field_type(  ptr->get_tag() , child_ptr->tag,child_ptr2->tag );
+			    ptr->tag =get_max_field_type( child_ptr->tag,child_ptr2->tag );
 				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  	else
 			  	{
-			  	ptr->set_alias_name( to_string(index) );
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
 			  		
 			  	}
 			    return ptr;
 				}
 				case T_OP_MUL:{
 					CPP_DEBUG<< " T_OP_MUL " <<endl;
-					std::shared_ptr<oper_mul> node(new oper_mul );
-					node->tag = T_OP_MUL;
-					oper_mul * ptr = node.get();
+					//std::shared_ptr<oper_mul> node(new oper_mul );
+					oper_mul * node = new oper_mul;
+					node->node_type = T_OP_MUL;
+					oper_mul * ptr = node;
 				  //分别向左右节点继续构造				  
 				  ptr->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index ) );
 				  ptr->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );		
@@ -561,11 +581,12 @@ struct fun_avg:public fun_element
 				  child_ptr->father = ptr ;
 					if( 0 == child_ptr2 )return child_ptr2;
 					child_ptr2->father = ptr ;
-			    ptr->tag =get_max_field_type(  ptr->get_tag() , child_ptr->tag,child_ptr2->tag );
+			    ptr->tag =get_max_field_type(  child_ptr->tag,child_ptr2->tag );
 				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  	else
 			  	{
-			  	ptr->set_alias_name( to_string(index) );
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
 			  		
 			  	}
 			    return ptr;
@@ -573,9 +594,10 @@ struct fun_avg:public fun_element
 				case T_OP_DIV:{
 					CPP_DEBUG<< " T_OP_DIV " <<endl;
 
-					std::shared_ptr<oper_div> node(new oper_div );
-					node->tag = T_OP_DIV;						
-					oper_div * ptr = node.get();
+					//std::shared_ptr<oper_div> node(new oper_div );
+					oper_div * node = new oper_div;
+					node->node_type = T_OP_DIV;						
+					oper_div * ptr = node;
 				  //分别向左右节点继续构造				  
 				  ptr->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index ) );
 				  ptr->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );	
@@ -583,11 +605,12 @@ struct fun_avg:public fun_element
 				  child_ptr->father = ptr ;
 					if( 0 == child_ptr2 )return child_ptr2;
 					child_ptr2->father = ptr ;	
-			    ptr->tag =get_max_field_type(  ptr->get_tag() , child_ptr->tag,child_ptr2->tag );
+			    ptr->tag =get_max_field_type( child_ptr->tag,child_ptr2->tag );
 				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  	else
 			  	{
-			  	ptr->set_alias_name( to_string(index) );
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
 			  		
 			  	}
 			    return ptr;
@@ -597,9 +620,10 @@ struct fun_avg:public fun_element
 				}
 				case T_OP_POW:{
 					CPP_DEBUG<< " T_OP_POW " <<endl;
-					std::shared_ptr<oper_pow> node(new oper_pow );
-					node->tag = T_OP_POW;										
-					oper_pow * ptr = node.get();
+					//std::shared_ptr<oper_pow> node(new oper_pow );
+					oper_pow * node = new oper_pow;
+					node->node_type = T_OP_POW;										
+					oper_pow * ptr = node;
 				  //分别向左右节点继续构造				  
 				  ptr->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index ) );
 				  ptr->set_right( child_ptr2 =resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );		
@@ -607,11 +631,12 @@ struct fun_avg:public fun_element
 				  child_ptr->father = ptr ;
 					if( 0 == child_ptr2 )return child_ptr2;
 					child_ptr2->father = ptr ;
-			    ptr->tag =get_max_field_type(  ptr->get_tag() , child_ptr->tag,child_ptr2->tag );
+			    ptr->tag =get_max_field_type(  child_ptr->tag,child_ptr2->tag );
 				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  	else
 			  	{
-			  	ptr->set_alias_name( to_string(index) );
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
 			  		
 			  	}
 			    return ptr;
@@ -619,9 +644,10 @@ struct fun_avg:public fun_element
 				case T_OP_MOD:{
 					CPP_DEBUG<< " T_OP_MOD " <<endl;
 
-					std::shared_ptr<oper_mod> node(new oper_mod );
-					node->tag = T_OP_MOD;								
-					oper_mod * ptr = node.get();
+					//std::shared_ptr<oper_mod> node(new oper_mod );
+					oper_mod * node = new oper_mod;
+					node->node_type = T_OP_MOD;								
+					oper_mod * ptr = node;
 				  //分别向左右节点继续构造				  
 				  ptr->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index ) );
 				  ptr->set_right( child_ptr2 =resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );	
@@ -629,11 +655,12 @@ struct fun_avg:public fun_element
 				  child_ptr->father = ptr ;
 					if( 0 == child_ptr2 )return child_ptr2;
 					child_ptr2->father = ptr ;		
-			    ptr->tag =get_max_field_type(  ptr->get_tag() , child_ptr->tag,child_ptr2->tag );
+			    ptr->tag = get_max_field_type(  child_ptr->tag,child_ptr2->tag );
 				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  	else
 			  	{
-			  	ptr->set_alias_name( to_string(index) );
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
 			  		
 			  	}
 				  //返回自己
@@ -673,26 +700,32 @@ struct fun_avg:public fun_element
 					  if( vv->HasMember("RELATION_NAME") )
 						{
 					  if( vv->HasMember("RELATION_NAME") ) {
-					  	std::shared_ptr<value_element> node( new value_element(  
-					  																			(*vv)["RELATION_NAME"]["str_value_"].GetString(),
-					  																			(*vv)["COLUMN_NAME"]["str_value_"].GetString(),
-					  																			 0 
-					  																		) 
-					  								); 
+					  	//std::shared_ptr<value_element> node( new value_element(  
+					  	//																		(*vv)["RELATION_NAME"]["str_value_"].GetString(),
+					  	//																		(*vv)["COLUMN_NAME"]["str_value_"].GetString(),
+					  	//																		 0 
+					  	//																	) 
+					  	//							); 
+					  	
+					  	value_element * node = new value_element(  
+					  																		(*vv)["RELATION_NAME"]["str_value_"].GetString(),
+					  																		(*vv)["COLUMN_NAME"]["str_value_"].GetString(),
+					  																		 0 );
 					  								
 					  	relation_name = (*vv)["RELATION_NAME"]["str_value_"].GetString();
 					  	column_name = (*vv)["COLUMN_NAME"]["str_value_"].GetString();
 					  	
 					  	
 					  	
-					    node->tag = T_OP_NAME_FIELD;
-					  	ptr = node.get();
+					    node->node_type = T_OP_NAME_FIELD;
+					  	ptr = node;
 					  }
 			    	else {
-			    	  std::shared_ptr<value_element> node( new value_element(  (*vv)["COLUMN_NAME"]["str_value_"].GetString() , 0 ) ); 
+			    	  //std::shared_ptr<value_element> node( new value_element(  (*vv)["COLUMN_NAME"]["str_value_"].GetString() , 0 ) ); 
+					    value_element * node = new value_element(  (*vv)["COLUMN_NAME"]["str_value_"].GetString() , 0 );
 					    column_name = (*vv)["COLUMN_NAME"]["str_value_"].GetString();
-					    node->tag = T_OP_NAME_FIELD;
-			    	  ptr = node.get();
+					    node->node_type = T_OP_NAME_FIELD;
+			    	  ptr = node;
 			    	 }
 					  }
 				
@@ -715,6 +748,7 @@ struct fun_avg:public fun_element
 					 	 		if( has_field( mem_table ,column_name ) ){
 					 	 			++field_num;
 					 	 			relation_name = std::string(mem_table->config.table_name);
+					 	 			break;
 					 	 		}
 					 		}
 					 }
@@ -724,6 +758,24 @@ struct fun_avg:public fun_element
 			
 			if( 1 < field_num ){CPP_ERROR<<"ERR_PLEASE_MARK_TABLE_COLOUM"<<endl ;return 0;  }
 			if( 0 ==field_num ){CPP_ERROR<<"ERR_NOT_FOUND_COLOUM"<<endl;return 0; 	        }
+			}
+			else{ // 对于 relation_name 不为空的情况，检查表是否存在，字段是否存在
+			int field_num = 0;
+			long long table_no;
+			int err = search_table_name( const_cast<char *>(relation_name.c_str() ) ,&table_no);		
+					 if( 0 == err){
+					 	 err = get_table_no_addr(table_no,(void **)(&mem_table));
+					 	 if( 0 == err){
+					 	 		if( has_field( mem_table ,column_name ) ){
+					 	 			++field_num;
+					 	 		}
+					 		}
+					 }
+					 else{
+					 	CPP_ERROR<<"ERR_NOT_FOUND_TABLE"<<endl;return 0; 	 
+					 }
+			 if( 0 ==field_num ){CPP_ERROR<<"ERR_NOT_FOUND_COLOUM"<<endl;return 0; 	        }
+
 			}
 			field_t field;
 			get_field( mem_table , column_name, field );
@@ -747,8 +799,8 @@ struct fun_avg:public fun_element
 				
 				
 				auto val_temp = atof( (*vv)["str_value_"].GetString());
-				std::shared_ptr<const_element> node( new const_element( val_temp ) )  ;
-					
+				//std::shared_ptr<const_element> node( new const_element( val_temp ) )  ;
+			  const_element * node = new const_element( val_temp );
 			  int tag = (*vv)["tag"].GetInt();
 			  switch(tag)
 			  {
@@ -771,13 +823,21 @@ struct fun_avg:public fun_element
 			  node->tag = tag;
 			  CPP_DEBUG<< " node->tag = tag; " <<endl;
 
-			  if( v->HasMember("PROJECT_ALIAS") ){node->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
+			  if( v->HasMember("PROJECT_ALIAS") ){
+			  	 CPP_DEBUG<< "  v->HasMember(PROJECT_ALIAS)  " <<std::endl;
+
+			  	node->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  );
+			  		
+			  		 }
 			  else
 			  {
-			  	node->set_alias_name( to_string(index) );
+			  	CPP_DEBUG<< "  v->HasNoMember(PROJECT_ALIAS),std::endl,index=" <<index<<std::endl;
+			  	auto temp_name =  to_string( index );
+			  	node->set_alias_name( temp_name );
 			  	
 			  }
-				return node.get();
+			  CPP_DEBUG<< " T_CONST END" <<endl;
+				return node;
 				
 			}
 			
@@ -788,18 +848,20 @@ struct fun_avg:public fun_element
 				
 				
 				
-				std::shared_ptr<str_element> node( new str_element(  
-					  																			(*vv)["str_value_"].GetString() )
-					  																		 ) ;
-
+				//std::shared_ptr<str_element> node( new str_element(  
+				//	  																			(*vv)["str_value_"].GetString() )
+				//	  																		 ) ;
+				str_element * node = new str_element(  
+					  																			(*vv)["str_value_"].GetString() 
+					  																);
 			  node->tag = FIELD_TYPE_STR;
 			  if( v->HasMember("PROJECT_ALIAS") ){node->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
 			  else
 			  {
-			  	node->set_alias_name( to_string(index) );
+			  	node->set_alias_name( to_string(index ) );
 			  	
 			  }
-				return node.get();
+				return node;
 				
 			}
 		  
@@ -831,10 +893,13 @@ inline void resolve_projectlist_to_opper_node( QueryAnalyser * qa , rapidjson::V
     }
     else if(NULL != projectlist){
     	// 填加投影位置信息
-    	auto ptr = resolve_project_to_opper_node( qa , projectlist, index ) ;
+    	CPP_DEBUG<< "  resolve_project_to_opper_node started " <<index<<endl;
+    	fun_oper * ptr = resolve_project_to_opper_node( qa , projectlist, index ) ;
+    	CPP_DEBUG<< "  resolve_project_to_opper_node finished " <<index<<endl;
     	if(  0 != ptr )projection_fun_oper_lists.push_back( ptr );// 等于 0 应该返回报错
     	 ++index;
 		}
+
          
 }
 
@@ -844,11 +909,15 @@ inline void resolve_to_opper_node(  QueryAnalyser * qa ,
 														   /* out */ record_meta & projection_meta  //投影元数据描述 
 														   				)
 {
+	CPP_DEBUG<< "  resolve_to_opper_node started " <<endl;
 	resolve_projectlist_to_opper_node(qa,&((*(qa->project_lists))["children"] ),projection_fun_oper_lists );
-	for(auto &v : projection_fun_oper_lists)
+	CPP_DEBUG<< "  resolve_projectlist_to_opper_node end " <<endl;
+
+	for(fun_oper *v : projection_fun_oper_lists)
 	{
-		if( !v && v->alias_name.empty() )break;
-		CPP_DEBUG<<"<v->alias_name: "<<v->alias_name<<"\n";
+		if( NULL == v )continue;
+		CPP_DEBUG<<"<v->alias_name: "<<v->get_alias_name()<<"\n";
+		if( v && (v->get_alias_name() ).empty() )continue;
 		field_t field;
 		strcpy(field.field_name , v->get_alias_name().c_str());
 		field.field_type = v->get_tag();
@@ -856,6 +925,8 @@ inline void resolve_to_opper_node(  QueryAnalyser * qa ,
 		projection_meta.add_field(field);
 		
 	}
+  CPP_DEBUG<< "  resolve_to_opper_node ended " <<endl;
+
 }
 
 
