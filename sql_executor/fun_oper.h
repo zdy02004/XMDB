@@ -120,7 +120,7 @@ int set_tag(int tag_){ tag = tag_;}
 int set_alias_name( std::string  _alias_name ){ alias_name = _alias_name;CPP_DEBUG<<"alias_name=" <<alias_name<<std::endl;}
 std::string & get_alias_name(){return alias_name;}
 virtual union_value eval(  record_meta * _meta , generic_result * _result ) = 0;  
-
+virtual ~fun_oper(){};  
 };
 
 // 运算的值 
@@ -155,7 +155,7 @@ struct value_element:public fun_oper
 		   err = record_tuple_.get_field(mem_table ,field_name,&addr);		   
        RETURN_CAST_FIELD( field.field_type,  addr ) ;
 	}  
-	
+	 ~value_element(){}
 };
 
 
@@ -170,6 +170,8 @@ struct const_element:public fun_oper
 	{
 		   return  value;
 	}  
+ ~const_element(){}
+
 	
 };
 
@@ -184,7 +186,8 @@ struct str_element:public fun_oper
 	{
 		   return  const_cast<char *>(value.c_str());
 	}  
-	
+  ~str_element(){}
+
 };
 
 
@@ -198,7 +201,8 @@ struct time_element:public fun_oper
 		  value.long_value = get_systime();
 		  return  value;
 	}  
-	
+ ~time_element(){}
+
 };
 
 // 运算的父类
@@ -213,6 +217,11 @@ struct oper_element:public fun_oper
 	int set_right  ( fun_oper * _right){	right = _right;  }
 	
 	virtual union_value eval(  record_meta * _meta , generic_result * _result ) = 0;
+ ~oper_element(){
+			delete left;
+			delete right;
+			}
+
 };
 
 
@@ -226,6 +235,9 @@ struct fun_element:public fun_oper
 	int set_children  ( fun_oper * _children ){	children = _children;  }
 	
 	virtual union_value eval(  record_meta * _meta , generic_result * _result )= 0  ;
+  ~fun_element(){
+	delete children;
+	}
 };
 
 // +
