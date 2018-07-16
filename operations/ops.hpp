@@ -3,6 +3,10 @@
 #ifndef BASIC_OPS
 #define BASIC_OPS
 
+#define BASIC_OPS_SCAN    0
+#define BASIC_OPS_DELETE  1
+#define BASIC_OPS_UPDATE  2
+
 #include"../mem_date_index_ctl/mem_table_mvcc_op.h"
 #include<vector>
 #include<list>
@@ -331,11 +335,12 @@ inline int full_table_scan_with_prolist_and_conlist(
 														compare_list*com_list,            //比较函数链
 														field_list_type& field_list,      //原始投影字段
 														unsigned long long  Tn,           //当前事务ID
-														std::list<record_type>* ret		    //原始结果集
+														std::list<record_type>* ret,	    //原始结果集
+														int oper_type = BASIC_OPS_SCAN    //操作类型默认是扫描
 														
 ) 
 {
-	  //如果原始投影字段和条件字段均为空，则走全表全字段扫描
+	  //如果原始投影字段为空则走全表全字段扫描
 	  if(field_list.empty() && com_list == NULL ){
 	  	return full_table_scan_with_conlist(
 														mem_table,    //表
@@ -430,15 +435,31 @@ inline int full_table_scan_with_prolist_and_conlist(
 					
 					 if( is_ok && !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn )/*!mem_table_read_record(mem_table , record_ptr, (char *)buf )*/ )
 						{
-							 // memcpy(return_record.get_data(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
-							 size_t pos = 0;
-							 for(auto &one_field : pro_fields){
-							 	memcpy(return_record.get_data()+pos,buf+one_field.field_dis,one_field.field_size );
-							 	pos += one_field.field_size;
+							 if( BASIC_OPS_SCAN == oper_type )
+							 {
+								 size_t pos = 0;
+								 for(auto &one_field : pro_fields){
+								 	memcpy(return_record.get_data()+pos,buf+one_field.field_dis,one_field.field_size );
+								 	pos += one_field.field_size;
+								 }
+									
+									DEBUG("Find one record!\n");
+									ret->emplace_back( return_record );
 							 }
-								
-								DEBUG("Find one record!\n");
-								ret->emplace_back( return_record );
+							 
+							 if( BASIC_OPS_DELETE == oper_type )
+							 {
+							 	int err = 0;
+							 	err = mem_mvcc_delete_record(mem_table ,
+																				record_ptr,
+																				Tn               // 本事务ID
+																				);
+								if( 0 != err)	{
+									ERROR("mem_mvcc_delete_record err is %d\n",err);
+									return err;
+								}											
+							 }
+							 
 						}
 				}
 			__mem_block_temp = __mem_block_temp->next;      //下一个块
@@ -454,8 +475,9 @@ template<typename record_type >
 inline int full_table_scan_with_conlist(
 														struct mem_table_t *mem_table,       //表
 														compare_list*com_list,               //比较函数链
-														unsigned long long  Tn,               //当前事务ID
-														std::list<record_type>* ret		    //原始结果集
+														unsigned long long  Tn,              //当前事务ID
+														std::list<record_type>* ret	,  	     //原始结果集
+														int oper_type = BASIC_OPS_SCAN    //操作类型默认是扫描
 														
 ) 
 {
@@ -521,10 +543,28 @@ inline int full_table_scan_with_conlist(
 					
 					 if( is_ok && !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn )/*!mem_table_read_record(mem_table , record_ptr, (char *)buf )*/ )
 						{
+							 if( BASIC_OPS_SCAN == oper_type )
+							 {
 							  //int size = mem_table->record_size ;
 							  memcpy(return_record.get_data(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 								DEBUG("Find one record!\n");
 								ret->emplace_back( return_record );
+							 }
+							 
+							 if( BASIC_OPS_DELETE == oper_type )
+							 {
+							 	int err = 0;
+							 	err = mem_mvcc_delete_record(mem_table ,
+																				record_ptr,
+																				Tn               // 本事务ID
+																				);
+								if( 0 != err)	{
+									ERROR("mem_mvcc_delete_record err is %d\n",err);
+									return err;
+								}		
+							}
+							
+						
 						}
 				}
 			__mem_block_temp = __mem_block_temp->next;      //下一个块
@@ -535,7 +575,7 @@ inline int full_table_scan_with_conlist(
  //表扫描
 //un 遍历函数
 //aram 函数参数
-//template<>  typename record_type,  typename record_type,
+//template<>  typename record_type,  typename record_type
 template<typename field_type,typename record_type >
 inline int full_table_scan_with_con(
 														struct mem_table_t *mem_table,       //表
@@ -543,7 +583,8 @@ inline int full_table_scan_with_con(
 														int (*compare_func)(field_type * field_name1,field_type * field_name2),//字段比较函数
 														field_type * cmp_field_value,       //比较字段值
 														unsigned long long  Tn,             //当前事务ID
-														std::list<record_type>* ret		    //原始结果集
+														std::list<record_type>* ret,		    //原始结果集
+														int oper_type = BASIC_OPS_SCAN      //操作类型默认是扫描
 ) 
 {
    	int j = -1;
@@ -602,10 +643,26 @@ struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;
 						}
 						if( !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn) )
 						{
-							  //int size = mem_table->record_size ;
+							
+							 if( BASIC_OPS_SCAN == oper_type )
+							 {
 							  memcpy(return_record.get_data(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 								DEBUG("find one record!\n");
 								ret->emplace_back( return_record );
+							 }
+							 
+							 if( BASIC_OPS_DELETE == oper_type )
+							 {
+							 	int err = 0;
+							 	err = mem_mvcc_delete_record(mem_table ,
+																				record_ptr,
+																				Tn               // 本事务ID
+																				);
+								if( 0 != err)	{
+									ERROR("mem_mvcc_delete_record err is %d\n",err);
+									return err;
+								}		
+							}
 						}
 						
 				}
@@ -623,7 +680,8 @@ template<typename record_type >
 inline int full_table_scan(
 														struct mem_table_t *mem_table,       //表
 														unsigned long long  Tn,             //当前事务ID
-														std::list<record_type>* ret		    //原始结果集
+														std::list<record_type>* ret	, 	    //原始结果集
+														int oper_type = BASIC_OPS_SCAN    //操作类型默认是扫描
 ) 
 {
 
@@ -655,10 +713,25 @@ struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;
 
 						if( !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn) )
 						{
-							  //int size = mem_table->record_size ;
+							 if( BASIC_OPS_SCAN == oper_type )
+							 {
 							  memcpy(return_record.get_data(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 								DEBUG("find one record!\n");
 								ret->emplace_back( return_record );
+							 }
+							 
+							 if( BASIC_OPS_DELETE == oper_type )
+							 {
+							 	int err = 0;
+							 	err = mem_mvcc_delete_record(mem_table ,
+																				record_ptr,
+																				Tn               // 本事务ID
+																				);
+								if( 0 != err)	{
+									ERROR("mem_mvcc_delete_record err is %d\n",err);
+									return err;
+								}		
+							}
 						}
 						
 				}
