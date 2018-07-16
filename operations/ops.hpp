@@ -335,8 +335,8 @@ inline int full_table_scan_with_prolist_and_conlist(
 														
 ) 
 {
-	  //如果原始投影字段为空则走全表全字段扫描
-	  if(field_list.empty()){
+	  //如果原始投影字段和条件字段均为空，则走全表全字段扫描
+	  if(field_list.empty() && com_list == NULL ){
 	  	return full_table_scan_with_conlist(
 														mem_table,    //表
 														com_list,     //比较函数链
