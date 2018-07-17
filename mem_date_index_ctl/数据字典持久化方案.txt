@@ -1,0 +1,167 @@
+
+
+
+
+//////////////////////////////////////////////////
+redo段 undo段
+每个事物有一个 事物ID，对应一个数据版本号 trans_version
+1. copy on write
+2. 读的时候，如果 行的版本号 <= trans_version,则直接读
+3. 如果> 版本号则到 undo 段中，读取对应的数据
+4. 写的时候，先将原数据写入 undo段，再将要修改的数据写入 redo 段，
+提交的时候，持久化 redo 段，redo 写成功后，
+
+事务未释放的行锁 record_ptr->scn 有事务ID
+否则为 0
+
+恢复方式：
+
+镜像 + redo  
+
+
+/////////////////////////////////////////////////////
+元数据的序列化到文件----元数据，数据字典的管理
+
+//内存表配置信息
+struct mem_table_config_t
+{  
+	 long                      mem_table_no;           // 该表的逻辑ID
+	 long                      owner_id;               // 该表所属用户的ID
+	 char                      table_name[128];        // 表名
+   struct field_t     *      fields_table;           // 该表使用的所有字段
+   int                       field_used_num;         // 使用字段的多少
+   struct mem_block_t *      mem_blocks_table;       // 该表使用的数据内存块--块表
+   int                       mem_block_used;         // 使用数据内存块的多少
+   int                       auto_extend;            // 是否自动扩展
+   off_t                     extend_block_size;      // 自动扩展块大小
+} __attribute__ ((packed, aligned (16)));
+
+
+//字段描述符
+struct field_t
+{
+int                field_type;                //字段类型
+char               field_name[32];            //字段名
+off_t              field_size;                //一个字段占用空间的大小
+int                field_order;               //字段在记录中排第几个
+off_t              field_dis;                 //该字段距离数据启始地址的距离
+int                has_hash;                  //是否有hash 索引
+long               hash_no;                   //索引的逻辑号
+//                                            //索引的地址
+} __attribute__ ((packed, aligned (16)));
+
+//内存块描述符
+struct  mem_block_t
+{
+long                        block_no;                   //块号
+off_t                       block_size;                 //块大小   
+void *                      block_start_addr;           //块起始地址
+void *                      block_end_addr;             //块结束地址
+void *                      space_start_addr;           //块内数据空间起始地址
+void *                      space_end_addr;             //块内数据空间结束地址
+off_t                       space_size;                 //块内数据空间大小
+unsigned  long long         high_level;                 //高水位线
+HIGH_LEVEL_LOCK_T           high_level_lock;            //高水位线锁                
+struct mem_block_t *        next;                       //下一个块地址
+int                         status;                     //块状态 
+key_t                       shmid;                      //共享内存id
+int                         fd;                         //映射id
+char                        file_name[256];             //映射文件名
+MEM_BLOCK_LOCK_T            block_lock;                 //块锁
+struct mem_free_list_t      mem_free_list;              // 空闲链表，用于复用已经删除数据记录
+// redo_log  日志，暂未想好如何实现
+} __attribute__ ((packed, aligned (16)));
+
+数据字典方案，使用jason 存储到不同的文件中
+
+1. 表info   dba_tables 对应  mem_table_config_t  的非链表字段，段组织方式
+2. 字段info dba_fields 对应  struct field_t      外加1个 所属表的表号 long   mem_table_no  
+3. 块info   dba_blocks 对应  struct  mem_block_t 外加1个 所属表的表号 long   mem_table_no
+4. 每个表有上述4个文件，文件名是  user.table_name_info   user.field_name_info  user.block_name_info  user.index_name_info
+5. 配置map
+
+针对1 表
+{
+"obj_no" : "1"
+"mem_table_no" : "1",
+"owner_id"     : "1",
+"table_name"   : "ins_user",
+"field_used_num" : "10",
+"mem_block_used" : "2",
+"auto_extend" : "1",
+"extend_block_size" : "2048"
+}
+
+
+针对2 字段
+{
+"mem_table_no" : "2",
+[
+"field_type" : "1",
+"field_name"     : "1",
+"field_size"   : "ins_user",
+"field_order" : "10",
+"field_dis" : "0",
+"has_hash" : "0",
+"hash_no" : "2048"
+],
+[
+"field_type" : "2",
+"field_name"     : "1",
+"field_size"   : "ins_user",
+"field_order" : "10",
+"field_dis" : "2",
+"has_hash" : "1",
+"hash_no" : "2048"
+],
+[
+"field_type" : "3",
+"field_name"     : "1",
+"field_size"   : "ins_user",
+"field_order" : "10",
+"field_dis" : "3",
+"has_hash" : "2",
+"hash_no" : "2048"
+]
+}
+
+
+针对3 block
+{
+"mem_table_no" : "3",
+[
+"mem_table_no" : "1",
+"seq_no","0",   //块顺序
+"block_no" : "1",
+"block_size" : "1",
+"high_level"     : "1",
+"file_name"   : "ins_block1",
+"field_order" : "10",
+"field_dis" : "1"
+}
+
+4
+//加载进内存的字典索引
+struct json_file_dict_index
+{
+ddl_lock      locker;      // 用互斥锁实现
+short is_used;
+long mem_table_no;                  // 表逻辑号
+data_file_lock data_file_locker;    // 数据文件字典锁
+char   data_dict[128];              //表字典文件
+off_t  data_dict_dis;               // json 在表字典文件中的偏移
+field_file_lock field_file_locker;  // 字段文件字典锁
+char   field_dict[128];             //字段字典文件
+off_t  field_dict_dis;              // json 在字段字典文件中的偏移
+block_file_lock block_file_locker;  // 块文件字典锁
+char   block_dict[128];             //块字典文件
+off_t  block_dict_dis;              // json 在块字典文件中的偏移
+}
+
+针对4 
+按照 mem_table_no 增序排列，因此可以快速定位
+
+   
+/*  思路
+struct json_file_dict_index 在内存中有一份，在文件中有一份，保持同步
+文件中 不真正删除 一个 struct json_file_dict_index  对象,只是逻辑删除 is_used = 0 ，新增append 到文件尾巴
