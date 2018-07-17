@@ -1,2 +1,1 @@
 https://github.com/miloyip/rapidjson/tree/master/include/rapidjson
-ftp://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz

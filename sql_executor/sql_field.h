@@ -52,7 +52,7 @@ else if(n == FIELD_TYPE_FLOAT )return *CAST_FIELD_PTR_5( __ptr );\
 else if(n == FIELD_TYPE_DOUBLE )return *CAST_FIELD_PTR_6( __ptr );\
 else if(n == FIELD_TYPE_STR )return CAST_FIELD_PTR_7( __ptr ); 
 
-// è¡¨ä¸­æ˜¯å¦æœ‰è¯¥å­—æ®µ
+// ±íÖĞÊÇ·ñÓĞ¸Ã×Ö¶Î
 inline int has_field(mem_table_t *mem_table ,std::string field_name){  
    
    if( NULL == mem_table        )   return EMPTY_TABLE;
@@ -67,7 +67,7 @@ inline int has_field(mem_table_t *mem_table ,std::string field_name){
    return 0;
 
 }
-// è¡¨ä¸­æ˜¯å¦æœ‰ç´¢å¼•
+// ±íÖĞÊÇ·ñÓĞË÷Òı
 inline int field_has_index(mem_table_t *mem_table ,std::string field_name,long & index_no,int & index_type){  
    int err = has_field( mem_table , field_name);
    if( err )return err;
@@ -88,7 +88,7 @@ inline int field_has_index(mem_table_t *mem_table ,std::string field_name,long &
 
 }
 
-// ä»è¡¨ä¸­è·å¾—å­—æ®µ
+// ´Ó±íÖĞ»ñµÃ×Ö¶Î
 inline int get_field(mem_table_t *mem_table ,std::string field_name,field_t & field){  
    int err = has_field( mem_table , field_name);
    if( err )return err;
@@ -170,7 +170,7 @@ struct get_field_type<FIELD_TYPE_STR>
 
 
 
-// å°†ç»“æœè¡Œä¸­çš„å­—æ®µæå‡º
+// ½«½á¹ûĞĞÖĞµÄ×Ö¶ÎÎö³ö
 template<class T,int T2>
 inline typename get_field_type<T2>::value_type cast_field( T * record , const field_t & field ){  
     
@@ -218,8 +218,8 @@ inline typename get_field_type<T>::value_type cast_condition( std::string& condi
 }
 
 
-// å°†æ¡ä»¶å¸¸é‡è½¬åŒ–ä¸ºå€¼æŒ‡é’ˆ
-// éœ€è¦free å€¼æŒ‡é’ˆ
+// ½«Ìõ¼ş³£Á¿×ª»¯ÎªÖµÖ¸Õë
+// ĞèÒªfree ÖµÖ¸Õë
 inline void * cast_ptr_by_field( std::string& condition , const field_t & field ){  
 	   switch( field.field_type )
     {
@@ -243,7 +243,7 @@ inline void * cast_ptr_by_field( std::string& condition , const field_t & field 
 }
 
 
-// å­—æ®µæ¯”è¾ƒå¸¸ç”¨å‡½æ•°
+// ×Ö¶Î±È½Ï³£ÓÃº¯Êı
 // <
 inline bool compare_lt_field( const char * a, const char * b , const field_t & field ){  
 	   switch( field.field_type )
@@ -353,7 +353,7 @@ inline bool compare_uneq_field( const char * a, const char * b , const field_t &
 		
 }
 
-// å­—æ®µæ¯”è¾ƒè¾…åŠ©ç»“æ„
+// ×Ö¶Î±È½Ï¸¨Öú½á¹¹
 struct compare_field
 {
 char * buf;
@@ -361,7 +361,7 @@ field_t field;
 size_t  size;
 compare_field(char * _buf,field_t &_field, size_t _size ):buf(_buf),field(_field),size(_size){}
 compare_field(const compare_field& a):buf(a.buf),field(a.field),size(a.size){}
-// å°†å¤æ‚çš„ç±»å‹æ¯”è¾ƒè½¬åŒ–ä¸ºäºŒè¿›åˆ¶ä¸Šçš„æ¯”è¾ƒï¼Œå®ç°ä¸‡èƒ½çš„ == æ¯”è¾ƒ
+// ½«¸´ÔÓµÄÀàĞÍ±È½Ï×ª»¯Îª¶ş½øÖÆÉÏµÄ±È½Ï£¬ÊµÏÖÍòÄÜµÄ == ±È½Ï
 bool operator == ( const compare_field &a) const
 {
 	if(a.field.field_type != field.field_type)return false;
@@ -397,7 +397,7 @@ bool operator >= ( const compare_field &a) const
 
 };
 
-// ä½¿ compare_field æ”¯æŒ unordered_map
+// Ê¹ compare_field Ö§³Ö unordered_map
 namespace std
 {
     template<> struct hash<compare_field>
@@ -414,9 +414,9 @@ namespace std
 
 
  
-// å°†ä¸€ä¸ªæŠ•å½±ç»†åŒ–
-// v æŠ•å½±
-// ä»ä¸­æå‡ºåŸå§‹å­—æ®µ
+// ½«Ò»¸öÍ¶Ó°Ï¸»¯
+// v Í¶Ó°
+// ´ÓÖĞÎö³öÔ­Ê¼×Ö¶Î
 inline int get_project_fields( rapidjson::Value  * v, vector<RawTarget> &raw_target_list ){
  	  rapidjson::Value   *v0 ;
 		if ( v->HasMember("children") ) v0 = &((*v)["children"]);
@@ -475,15 +475,15 @@ return 0;
 }
 
 /*
-æ‰¾å‡ºæ¯ä¸ªè¡¨ä¸­æŠ•å½±ç”¨åˆ°çš„å­—æ®µ
+ÕÒ³öÃ¿¸ö±íÖĞÍ¶Ó°ÓÃµ½µÄ×Ö¶Î
 */
 inline int get_projection_fields(
 													/*in*/  QueryAnalyser * qa,										
-													/*out*/ std::map<std::string,std::set<std::string> >&  aggregat_fields ,  //(è¡¨å,ç”¨äºèšåˆçš„å­—æ®µå)
-													/*out*/ std::map<std::string,std::set<std::string> >&  raw_fields ,       //(è¡¨å,æ™®é€šå­—æ®µå)
-													/*out*/ std::map<std::string,std::set<std::string> >&  oper_fields ,      //(è¡¨å,æ™®é€šæ“ä½œå­—æ®µå)
-													/*out*/ std::map<std::string,std::set<std::string> >&  nomal_func_fields,  //(è¡¨å,éèšåˆå‡½æ•°å­—æ®µå)
-												  /*out*/ std::map<std::string,std::set<std::string> >&  projection_fields  //(è¡¨å,éèšåˆå‡½æ•°å­—æ®µå)
+													/*out*/ std::map<std::string,std::set<std::string> >&  aggregat_fields ,  //(±íÃû,ÓÃÓÚ¾ÛºÏµÄ×Ö¶ÎÃû)
+													/*out*/ std::map<std::string,std::set<std::string> >&  raw_fields ,       //(±íÃû,ÆÕÍ¨×Ö¶ÎÃû)
+													/*out*/ std::map<std::string,std::set<std::string> >&  oper_fields ,      //(±íÃû,ÆÕÍ¨²Ù×÷×Ö¶ÎÃû)
+													/*out*/ std::map<std::string,std::set<std::string> >&  nomal_func_fields,  //(±íÃû,·Ç¾ÛºÏº¯Êı×Ö¶ÎÃû)
+												  /*out*/ std::map<std::string,std::set<std::string> >&  projection_fields  //(±íÃû,·Ç¾ÛºÏº¯Êı×Ö¶ÎÃû)
 												)
 {
 	int ret = 0;
@@ -499,36 +499,36 @@ inline int get_projection_fields(
 		std::set<std::string> oper_list;
 		std::set<std::string> nomal_func_list;
 							
-		vector<RawTarget>  agg_raw_target_list;	 // èšåˆå‡½æ•°åŸå§‹å­—æ®µå
-		for(auto &v : qa-> aggregat_funs)	       // èšåˆå‡½æ•°å­—æ®µå
+		vector<RawTarget>  agg_raw_target_list;	 // ¾ÛºÏº¯ÊıÔ­Ê¼×Ö¶ÎÃû
+		for(auto &v : qa-> aggregat_funs)	       // ¾ÛºÏº¯Êı×Ö¶ÎÃû
 		{
 			 get_project_fields(  v,  agg_raw_target_list );
 		}
 		
-		vector<RawTarget>  oper_raw_target_list;	 // æ™®é€šæ“ä½œåŸå§‹å­—æ®µå
-		for(auto &v : qa-> project_opers)	// æ™®é€šæ“ä½œå­—æ®µå
+		vector<RawTarget>  oper_raw_target_list;	 // ÆÕÍ¨²Ù×÷Ô­Ê¼×Ö¶ÎÃû
+		for(auto &v : qa-> project_opers)	// ÆÕÍ¨²Ù×÷×Ö¶ÎÃû
 		{
 			get_project_fields(  v,  oper_raw_target_list );
 		}
 		
-		vector<RawTarget>  normal_raw_target_list;	 // éèšåˆå‡½æ•°åŸå§‹å­—æ®µå
-		for(auto &v : qa-> nomal_funs)	// éèšåˆå‡½æ•°å­—æ®µå
+		vector<RawTarget>  normal_raw_target_list;	 // ·Ç¾ÛºÏº¯ÊıÔ­Ê¼×Ö¶ÎÃû
+		for(auto &v : qa-> nomal_funs)	// ·Ç¾ÛºÏº¯Êı×Ö¶ÎÃû
 		{
 			get_project_fields(  v,  normal_raw_target_list );
 		}	
 		
-		//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
-		// å¼€å§‹æå‡ºå­—æ®µ
+		//¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
+		// ¿ªÊ¼Îö³ö×Ö¶Î
 		
-		for(auto &v : qa-> raw_target_list)	// æ™®é€šå­—æ®µå
+		for(auto &v : qa-> raw_target_list)	// ÆÕÍ¨×Ö¶ÎÃû
 		{
-			//æ²¡æœ‰è¡¨åï¼Œå°±åˆ°è¡¨ä¸­æ‰¾æ˜¯å¦æœ‰è¯¥å­—æ®µ
+			//Ã»ÓĞ±íÃû£¬¾Íµ½±íÖĞÕÒÊÇ·ñÓĞ¸Ã×Ö¶Î
 			if(v.relation_name.empty() && has_field( mem_table , v.column_name ) ){
 				 raw_list.insert(v.column_name);
 				 projection_fields[table_name].insert(v.column_name);
 			}
-			//æœ‰è¡¨åä¸”ç›¸ç­‰
-			else if ( ( v.relation_name == table_name || v.relation_name == alias_name )&& has_field( mem_table , v.column_name ) ) //æš‚æ—¶ä¸è€ƒè™‘å­æŸ¥è¯¢
+			//ÓĞ±íÃûÇÒÏàµÈ
+			else if ( ( v.relation_name == table_name || v.relation_name == alias_name )&& has_field( mem_table , v.column_name ) ) //ÔİÊ±²»¿¼ÂÇ×Ó²éÑ¯
 			{
 				raw_list.insert(v.column_name);
 				projection_fields[table_name].insert(v.column_name);
@@ -536,16 +536,16 @@ inline int get_projection_fields(
 			}
 		}
 		
-		for(auto &v : agg_raw_target_list)	// èšåˆå‡½æ•°å­—æ®µå
+		for(auto &v : agg_raw_target_list)	// ¾ÛºÏº¯Êı×Ö¶ÎÃû
 		{
-			//æ²¡æœ‰è¡¨åï¼Œå°±åˆ°è¡¨ä¸­æ‰¾æ˜¯å¦æœ‰è¯¥å­—æ®µ
+			//Ã»ÓĞ±íÃû£¬¾Íµ½±íÖĞÕÒÊÇ·ñÓĞ¸Ã×Ö¶Î
 			if(v.relation_name.empty() && has_field( mem_table , v.column_name ) ){
 				 aggregat_fields[table_name].insert(v.column_name);
 				 projection_fields[table_name].insert(v.column_name);
 				 
 			}
-			//æœ‰è¡¨åä¸”ç›¸ç­‰
-			else if ( ( v.relation_name == table_name || v.relation_name == alias_name )&& has_field( mem_table , v.column_name ) ) //æš‚æ—¶ä¸è€ƒè™‘å­æŸ¥è¯¢
+			//ÓĞ±íÃûÇÒÏàµÈ
+			else if ( ( v.relation_name == table_name || v.relation_name == alias_name )&& has_field( mem_table , v.column_name ) ) //ÔİÊ±²»¿¼ÂÇ×Ó²éÑ¯
 			{
 				aggregat_fields[table_name].insert(v.column_name);
 				projection_fields[table_name].insert(v.column_name);
@@ -553,16 +553,16 @@ inline int get_projection_fields(
 			}
 		}
 		
-		for(auto &v :  oper_raw_target_list)	// æ™®é€šæ“ä½œå­—æ®µå
+		for(auto &v :  oper_raw_target_list)	// ÆÕÍ¨²Ù×÷×Ö¶ÎÃû
 		{
-			//æ²¡æœ‰è¡¨åï¼Œå°±åˆ°è¡¨ä¸­æ‰¾æ˜¯å¦æœ‰è¯¥å­—æ®µ
+			//Ã»ÓĞ±íÃû£¬¾Íµ½±íÖĞÕÒÊÇ·ñÓĞ¸Ã×Ö¶Î
 			if(v.relation_name.empty() && has_field( mem_table , v.column_name ) ){
 				 oper_fields[table_name].insert(v.column_name);
 				 projection_fields[table_name].insert(v.column_name);
 				 
 			}
-			//æœ‰è¡¨åä¸”ç›¸ç­‰
-			else if ( ( v.relation_name == table_name || v.relation_name == alias_name )&& has_field( mem_table , v.column_name ) ) //æš‚æ—¶ä¸è€ƒè™‘å­æŸ¥è¯¢
+			//ÓĞ±íÃûÇÒÏàµÈ
+			else if ( ( v.relation_name == table_name || v.relation_name == alias_name )&& has_field( mem_table , v.column_name ) ) //ÔİÊ±²»¿¼ÂÇ×Ó²éÑ¯
 			{
 				oper_fields[table_name].insert(v.column_name);
 			  projection_fields[table_name].insert(v.column_name);
@@ -570,16 +570,16 @@ inline int get_projection_fields(
 			}
 		}
 		
-		for(auto &v : normal_raw_target_list)	// éèšåˆå‡½æ•°å­—æ®µå
+		for(auto &v : normal_raw_target_list)	// ·Ç¾ÛºÏº¯Êı×Ö¶ÎÃû
 		{
-			//æ²¡æœ‰è¡¨åï¼Œå°±åˆ°è¡¨ä¸­æ‰¾æ˜¯å¦æœ‰è¯¥å­—æ®µ
+			//Ã»ÓĞ±íÃû£¬¾Íµ½±íÖĞÕÒÊÇ·ñÓĞ¸Ã×Ö¶Î
 			if(v.relation_name.empty() && has_field( mem_table , v.column_name ) ){
 				 nomal_func_fields[table_name].insert(v.column_name);
 				 projection_fields[table_name].insert(v.column_name);
 
 			}
-			//æœ‰è¡¨åä¸”ç›¸ç­‰
-			else if ( ( v.relation_name == table_name || v.relation_name == alias_name )&& has_field( mem_table , v.column_name ) ) //æš‚æ—¶ä¸è€ƒè™‘å­æŸ¥è¯¢
+			//ÓĞ±íÃûÇÒÏàµÈ
+			else if ( ( v.relation_name == table_name || v.relation_name == alias_name )&& has_field( mem_table , v.column_name ) ) //ÔİÊ±²»¿¼ÂÇ×Ó²éÑ¯
 			{
 				nomal_func_fields[table_name].insert(v.column_name);
       	projection_fields[table_name].insert(v.column_name);
@@ -587,7 +587,7 @@ inline int get_projection_fields(
 			}
 		}
 		
-		 //â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
+		 //¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
 		
 		
 		aggregat_fields[table_name] 			= aggregat_list;

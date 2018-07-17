@@ -141,8 +141,10 @@ if( const_type == "INTNUM" )
 														index,
 														atoi(const_value.c_str()),
 														integer_hash_fun,
+														trans_no,
 														*finded_Addr,
-														ret_list
+														ret_list,
+														oper_type
 														 );
 }
 
@@ -153,8 +155,10 @@ if( const_type == "STRING" )
 														index,
 														const_cast<char *>(const_value.c_str() ),
 														str_hash_fun,
+														trans_no,
 														*finded_Addr,
-														ret_list
+														ret_list,
+														oper_type
 														 );
 }
 			
@@ -217,8 +221,10 @@ if( const_type == "INTNUM" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
+                                trans_no,
                           		*finded_Addr,
-								ret_list	    //原始结果集
+																ret_list,	    //原始结果集
+																oper_type
                         );
 }
 
@@ -232,8 +238,10 @@ if( const_type == "STRING" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
+                                trans_no,
                           		*finded_Addr,
-								ret_list	    //原始结果集
+								               ret_list	,    //原始结果集
+								               oper_type
                         );
 }
 			
@@ -297,8 +305,10 @@ if( const_type == "INTNUM" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
+                                trans_no,
                           		*finded_Addr,
-								ret_list	    //原始结果集
+								                ret_list,	    //原始结果集
+								                oper_type
                         );
 }
 
@@ -312,8 +322,10 @@ if( const_type == "STRING" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
+                                trans_no,
                           		*finded_Addr,
-								ret_list	    //原始结果集
+								                ret_list,	    //原始结果集
+								                oper_type
                         );
 }
 			
@@ -377,8 +389,10 @@ if( const_type == "INTNUM" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
+                                trans_no,
                           		*finded_Addr,
-								ret_list	    //原始结果集
+															ret_list,	    //原始结果集
+															oper_type
                         );
 }
 
@@ -392,8 +406,10 @@ if( const_type == "STRING" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
+                                trans_no,
                           		*finded_Addr,
-								ret_list	    //原始结果集
+																ret_list,	    //原始结果集
+																oper_type
                         );
 }
 			
@@ -456,8 +472,10 @@ if( const_type == "INTNUM" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
+                                 trans_no,
                           		*finded_Addr,
-								ret_list	    //原始结果集
+							                	ret_list,	    //原始结果集
+							                	oper_type
                         );
 }
 
@@ -471,8 +489,10 @@ if( const_type == "STRING" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
+                               trans_no,
                           		*finded_Addr,
-								ret_list	    //原始结果集
+								               ret_list,    //原始结果集
+								               oper_type
                         );
 }
 			
@@ -537,8 +557,10 @@ if( const_type == "INTNUM" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
-                          		*finded_Addr,
-								ret_list	    //原始结果集
+                                trans_no,
+                          		  *finded_Addr,
+								                ret_list,	    //原始结果集
+								                oper_type
                         );
 }
 
@@ -552,8 +574,10 @@ if( const_type == "STRING" )
                         /* in */index,
                         /* in */&in             ,
                                 NULL,
+                                trans_no,
                           		*finded_Addr,
-								ret_list	    //原始结果集
+							                	ret_list,	    //原始结果集
+							                	oper_type
                         );
 }
 			
@@ -627,8 +651,10 @@ if( const_type == "INTNUM" )
                         /* in */index,
                         /* in */&min,&max,
                                 NULL,
+                                trans_no,
                           		*finded_Addr,
-															 ret_list	    //原始结果集
+															 ret_list,	    //原始结果集
+															 oper_type
                         );
 }
 
@@ -643,8 +669,10 @@ if( const_type == "STRING" )
                         /* in */index,
                         /* in */&min,&max            ,
                                 NULL,
+                                trans_no,
                           		*finded_Addr,
-																ret_list	    //原始结果集
+																ret_list,	    //原始结果集
+																oper_type
                         );
 }
 			
@@ -690,7 +718,8 @@ ret =  merg_index_result(
                                 mem_table,
 								*finded_Addr, 
                  trans_no,                 //当前事务ID
-								&ret_list		    //原始结果集
+								&ret_list,		    //原始结果集
+								oper_type
                         );
 			
 	return ret;
@@ -747,7 +776,8 @@ ret =  merg_index_result_with_prolist_and_conlist(
 								com_list, 			 //比较函数链
 								pro_list,       //原始投影字段列表
                  trans_no,       //当前事务ID
-								&ret_list		     //原始结果集
+								&ret_list,		     //原始结果集
+								oper_type
                         );
 			
 	return ret;
@@ -773,7 +803,7 @@ virtual std::string to_sring()
 
 };
 
-// 普通全表相等条件，带投影和条件 扫描
+// 普通全表相等条件,带投影和条件 扫描
 // select * from where 打包节点 sfw
 struct scan_sfw_node:public plan_node
 {
@@ -815,7 +845,8 @@ virtual int execute( unsigned long long  trans_no  )
 														 pre,             //比较函数链
 														 pro_list,				//原始投影字段
 														 trans_no,//get_trans_no()                 //当前事务ID
-													 	 &ret_list  	    //原始结果集
+													 	 &ret_list,  	    //原始结果集
+													 	 oper_type
 );
 	return ret;
 }
@@ -873,7 +904,8 @@ virtual int execute( unsigned long long  trans_no  )
 														 mem_table,       //表
 														 pre,             //比较函数链
 														 trans_no,//get_trans_no()                 //当前事务ID
-													 	 &ret_list  	  //原始结果集
+													 	 &ret_list , 	  //原始结果集
+													 	 oper_type
 );
 	return ret;
 }
@@ -912,7 +944,8 @@ virtual int execute( unsigned long long  trans_no  )
 	int ret = 0;
   ret = full_table_scan( mem_table,       //表
 												 trans_no,//get_trans_no()                 //当前事务ID
-												 &ret_list  	  //原始结果集
+												 &ret_list , 	  //原始结果集
+												 oper_type
 );
 	return ret;
 }

@@ -30,14 +30,17 @@ rapidjson::Value json;
 rapidjson::Document  *Doc;
 
 int plan_type;
+int oper_type;
 size_t ret_size;
 
 plan_node(rapidjson::Value& _json,rapidjson::Document * _Doc):Doc(_Doc)
 {
 		json.CopyFrom( _json,Doc->GetAllocator() );
+		oper_type = 0;
 }
 
 int get_plan_type() {return plan_type;}
+int set_oper_type(int _oper_type ) { oper_type =  _oper_type; }
 
 virtual void make_json() = 0;
 virtual std::string to_sring () = 0;

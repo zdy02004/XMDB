@@ -159,18 +159,18 @@ SIZE_LOCK_T                 index_size_locker;              //文件大小累加器锁
 #define REDO_LOG_MANAGER_SIZE  sizeof(sys_redo_log_manager_t)
 
 //默认 注意为2的n次幂
-#define DEFAULT_FILE_MAX_SIZE       1024*1024*128
-#define DEFAULT_DATA_FILE_MAX_SIZE  1024*1024*512
-#define DEFAULT_INDEX_FILE_MAX_SIZE 1024*1024*512
+#define DEFAULT_FILE_MAX_SIZE       1024*1024*16
+#define DEFAULT_DATA_FILE_MAX_SIZE  1024*1024*16
+#define DEFAULT_INDEX_FILE_MAX_SIZE 1024*1024*16
 
 //默认 注意为2的n次幂
-#define DEFAULT_QUEUE_MAX_SIZE 1024*1024*128
-#define DEFAULT_STACK_MAX_SIZE  1024*1024*128
+#define DEFAULT_QUEUE_MAX_SIZE 1024*1024*4
+#define DEFAULT_STACK_MAX_SIZE  1024*1024*4
 
 //默认事务个数
 #define DEFAULT_MAX_TRANS_NUM  1024*1024  
 //默认回滚段大小 10M
-#define DEFAULT_ROLLBACK_SPACE_SIZE  1024*1024*500
+#define DEFAULT_ROLLBACK_SPACE_SIZE  1024*1024*4
 //#define DEFAULT_ROLLBACK_SPACE_SIZE  1024*1024
 
 static sys_redo_log_manager_t redo_log_manager;
