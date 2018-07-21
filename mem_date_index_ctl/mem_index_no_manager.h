@@ -143,6 +143,7 @@ inline int get_index_no_addr(long index_no,void ** addr)
 	
 	 MEM_INDEX_NO_RLOCK  (&(mem_index_no_manager.locker));  //上锁
 	 *addr = (mem_index_no_manager.mem_index_no_table[index_no]);
+	 	DEBUG("get_index_no_addr(%ld) = %0x\n", index_no ,*addr);
 	 MEM_INDEX_NO_RUNLOCK(&(mem_index_no_manager.locker));  //解锁
 	if( 0 == addr )
 		{
@@ -161,8 +162,12 @@ inline int set_index_no_addr(long index_no,void * addr)
 			ERROR("ERR_INDEX_NO_LESS_ZERO\n");
 			return ERR_INDEX_NO_LESS_ZERO;
 		} 
-	if(index_no> mem_index_no_manager.cur_num )  return ERR_INDEX_NOT_EXIST;
+	if(index_no> mem_index_no_manager.cur_num ) {
+		ERROR("ERR_INDEX_NOT_EXIST\n");
+		return ERR_INDEX_NOT_EXIST;
+	} 
 	
+	 DEBUG("set_index_no_addr(%ld) = %0x\n", index_no ,addr);
 	 MEM_INDEX_NO_LOCK  (&(mem_index_no_manager.locker));  //上锁
 	 mem_index_no_manager.mem_index_no_table[index_no] = addr;
 	 MEM_INDEX_NO_UNLOCK(&(mem_index_no_manager.locker));  //解锁

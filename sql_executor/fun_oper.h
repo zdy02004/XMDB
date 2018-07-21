@@ -17,6 +17,9 @@ g++ -C -w -std=c++11 fun_oper.h
 #define TIME_TYPE  5
 #define STR_TYPE   6
 
+#define META_PTR_IS_NULL      32100
+#define RESULT_PTR_IS_NULL    32101
+
 //类型优先级表
 // 											FIELD_TYPE_INT  FIELD_TYPE_SHORT  FIELD_TYPE_LONG FIELD_TYPE_LONGLONG FIELD_TYPE_FLOAT FIELD_TYPE_DOUBLE FIELD_TYPE_STR FIELD_TYPE_DATE  
 // FIELD_TYPE_INT		          0                1                 0                  0                  0               0                   0          0
@@ -113,6 +116,10 @@ int node_type;
 bool is_reduce;
 std::string alias_name;
 fun_oper * father;	
+mem_table_t  * mem_table ;
+int set_mem_table(mem_table_t  * _mem_table ){	mem_table = _mem_table;         }
+
+
 fun_oper():father(NULL),is_reduce(false){}
 fun_oper(int tag_ , int node_type_ ):tag(tag_),node_type(node_type_),father(NULL),is_reduce(false){}
 int get_tag(){return tag;}
@@ -128,7 +135,6 @@ virtual ~fun_oper(){};
 struct value_element:public fun_oper
 {
 	record_tuple   record_tuple_;
-	mem_table_t  * mem_table ;
 	std::string    field_name ;
 	RawTarget      rt;
 	
@@ -136,8 +142,8 @@ struct value_element:public fun_oper
 	value_element(std::string & _relation_name, std::string & _column_name,int _index):fun_oper(0,FIELD_TYPE),field_name(_column_name),rt(RawTarget(_relation_name,_column_name,_index)){is_reduce = true;}
 	value_element(const char * _column_name,int _index ):fun_oper(0,FIELD_TYPE),field_name(_column_name), rt(RawTarget( _column_name,_index) ){is_reduce = true;}
 
-	int set_meta   ( record_meta    * _meta    ){	record_tuple_.meta   = _meta;   }
-	int set_field_name(std::string &_field_name){	field_name = _field_name;       }
+	int set_meta   ( record_meta    * _meta     ){	record_tuple_.meta   = _meta;   }
+	int set_field_name(std::string &_field_name ){	field_name = _field_name;       }
   int set_rt     (RawTarget   &_RawTarget    )
   {	
   	rt = _RawTarget; 
@@ -146,13 +152,34 @@ struct value_element:public fun_oper
 	
 	virtual union_value eval(  record_meta * _meta , generic_result * _result ) 
 	{
-			 
+			 DEBUG("enter value_element eval \n");
+			 if( NULL == _meta )
+			 	{
+			 		ERROR("META_PTR_IS_NULL \n");
+			 		return META_PTR_IS_NULL;
+			 	}
+			 	if( NULL == _result )
+			 	{
+			 		ERROR("RESULT_PTR_IS_NULL \n");
+			 		return META_PTR_IS_NULL;
+			 	}
+			 	
 		   record_tuple_.result = _result;
 		   record_tuple_.meta   = _meta;
 		   field_t field; 
 		   int err = record_tuple_.get_field_desc(mem_table ,field_name, field);
+		   	if( err )
+			 	{
+			 		ERROR("record_tuple_.get_field_desc err is %d \n",err);
+			 		return err;
+			 	}
 		   char * addr = NULL;
-		   err = record_tuple_.get_field(mem_table ,field_name,&addr);		   
+		   err = record_tuple_.get_field(mem_table ,field_name,&addr);	
+		   if( err )
+			 	{
+			 		ERROR("record_tuple_.get_field err is %d \n",err);
+			 		return err;
+			 	}	   
        RETURN_CAST_FIELD( field.field_type,  addr ) ;
 	}  
 	 ~value_element(){}
@@ -167,7 +194,8 @@ struct const_element:public fun_oper
 	const_element(union_value x):fun_oper(0,CONST_TYPE),value(x){is_reduce = true;}
   	
 	virtual union_value eval(  record_meta * _meta , generic_result * _result ) 
-	{
+	{  
+			 DEBUG("enter const_element eval \n");
 		   return  value;
 	}  
  ~const_element(){}
@@ -184,6 +212,8 @@ struct str_element:public fun_oper
   	
 	virtual union_value eval(  record_meta * _meta , generic_result * _result ) 
 	{
+		   DEBUG("enter str_element eval \n");
+
 		   return  const_cast<char *>(value.c_str());
 	}  
   ~str_element(){}
@@ -198,6 +228,7 @@ struct time_element:public fun_oper
   time_element():value(0),fun_oper(0,TIME_TYPE){is_reduce = true;}
 	virtual union_value eval(  record_meta * _meta , generic_result * _result ) 
 	{
+			DEBUG("enter time_element eval \n");
 		  value.long_value = get_systime();
 		  return  value;
 	}  
@@ -243,49 +274,163 @@ struct fun_element:public fun_oper
 // +
 struct oper_add:public oper_element
 {
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  { return left->eval(_meta,result) + right->eval(_meta,result); }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter oper_add eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		 return left->eval(_meta,result) + right->eval(_meta,result); 
+		 }
 };
 
 // -
 struct oper_minus:public oper_element
 {
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  { return left->eval(_meta,result) - right->eval(_meta,result); }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  { 
+		
+		 DEBUG("enter oper_minus eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		return left->eval(_meta,result) - right->eval(_meta,result);
+		 }
 };
 
 // *
 struct oper_mul:public oper_element
 {
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  { return left->eval(_meta,result) * right->eval(_meta,result); }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  { 
+		 DEBUG("enter oper_mul eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		return left->eval(_meta,result) * right->eval(_meta,result); 
+		}
 };
 
 // /
 struct oper_div:public oper_element
 {
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  { return left->eval(_meta,result) / right->eval(_meta,result); }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter oper_div eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+		 return left->eval(_meta,result) / right->eval(_meta,result);
+		  }
 };
 
 // ^
 struct oper_pow:public oper_element
 {
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  { return left->eval(_meta,result) ^ right->eval(_meta,result); }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter oper_pow eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		 return left->eval(_meta,result) ^ right->eval(_meta,result);
+		  }
 };
 
 // mod
 struct oper_mod:public oper_element
 {
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  { return left->eval(_meta,result) % right->eval(_meta,result); }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter oper_mod eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		 return left->eval(_meta,result) % right->eval(_meta,result);
+		  }
 };
 
 //oper max
 struct oper_max:public oper_element
 {
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  { return std::max(left->eval(_meta,result).double_value , right->eval(_meta,result).double_value ); }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  { 
+		 
+		 DEBUG("enter oper_max eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		return std::max(left->eval(_meta,result).double_value , right->eval(_meta,result).double_value );
+		 }
 };
 
 //oper min
 struct oper_min:public oper_element
 {
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  { return std::max( left->eval(_meta,result).double_value , right->eval(_meta,result).double_value ); }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter oper_min eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		 return std::max( left->eval(_meta,result).double_value , right->eval(_meta,result).double_value );
+		 	
+		 	 }
 };
 
 // sum
@@ -293,14 +438,44 @@ struct fun_sum:public fun_element
 {
 	double sum_ret;
 	fun_sum():sum_ret(0){} 
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  {  sum_ret += children->eval(_meta,result).double_value ; return sum_ret; }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter fun_sum eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+		  
+		  sum_ret += children->eval(_meta,result).double_value ;
+		  return sum_ret;
+		   }
 };
 // max
 struct fun_max:public fun_element
 {
 	union_value max_ret;
 	fun_max():max_ret(0){} 
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  {  max_ret  = std::max( max_ret.double_value, children->eval(_meta,result).double_value ) ; return max_ret; }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter fun_max eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+		  max_ret  = std::max( max_ret.double_value, children->eval(_meta,result).double_value ) ; 
+		  return max_ret; 
+		  
+		  }
 };
 
 // min
@@ -308,7 +483,23 @@ struct fun_min:public fun_element
 {
 	union_value min_ret;
 	fun_min():min_ret(0){} 
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  {  min_ret  = std::min( min_ret.double_value, children->eval(_meta,result).double_value ) ; return min_ret; }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+	 	 DEBUG("enter fun_min eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			 	 
+		  min_ret  = std::min( min_ret.double_value, children->eval(_meta,result).double_value ) ;
+		  return min_ret; 
+		  
+		  }
 };
 
 // count
@@ -316,7 +507,13 @@ struct fun_count:public fun_element
 {
 	union_value count;
 	fun_count():count(0){} 
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  {  tag =T_INT ;++count.longlong_value ; return count.longlong_value; }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  { 
+		 DEBUG("enter fun_count eval \n");
+		 tag =T_INT ;
+		 ++count.longlong_value ;
+		 return count.longlong_value; 
+		 
+		 }
 };
 
 // avg
@@ -326,7 +523,23 @@ struct fun_avg:public fun_element
 	unsigned long count;
 	double sum_ret;
 	fun_avg():count(0),sum_ret(0){} 
-	virtual union_value eval(  record_meta * _meta , generic_result * result )  {  ++count ; sum_ret += children->eval(_meta,result).double_value; return sum_ret/count; }
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  { 
+		 DEBUG("enter fun_avg eval \n");
+		 	 if( NULL == _meta )
+			 	{
+			 		ERROR("META_PTR_IS_NULL \n");
+			 		return META_PTR_IS_NULL;
+			 	}
+			 	if( NULL == result )
+			 	{
+			 		ERROR("RESULT_PTR_IS_NULL \n");
+			 		return META_PTR_IS_NULL;
+			 	}
+			 	
+		 ++count ; 
+		 sum_ret += children->eval(_meta,result).double_value; 
+		 return sum_ret/count;
+		  }
 };
 
 
@@ -337,8 +550,6 @@ struct fun_avg:public fun_element
   	  v= &( (*v)[0] );
  	  }
  	  
- 	  
-
  	  rapidjson::Value  * vv ;
 		if ( v->HasMember("PROJECT") )
 			vv = &(*v)["PROJECT"];
@@ -709,15 +920,8 @@ struct fun_avg:public fun_element
 					//std::shared_ptr<value_element> node(new value_element );
 					value_element * ptr = NULL;
 					
-					  if( vv->HasMember("RELATION_NAME") )
-						{
+
 					  if( vv->HasMember("RELATION_NAME") ) {
-					  	//std::shared_ptr<value_element> node( new value_element(  
-					  	//																		(*vv)["RELATION_NAME"]["str_value_"].GetString(),
-					  	//																		(*vv)["COLUMN_NAME"]["str_value_"].GetString(),
-					  	//																		 0 
-					  	//																	) 
-					  	//							); 
 					  	
 					  	value_element * node = new value_element(  
 					  																		(*vv)["RELATION_NAME"]["str_value_"].GetString(),
@@ -733,13 +937,12 @@ struct fun_avg:public fun_element
 					  	ptr = node;
 					  }
 			    	else {
-			    	  //std::shared_ptr<value_element> node( new value_element(  (*vv)["COLUMN_NAME"]["str_value_"].GetString() , 0 ) ); 
 					    value_element * node = new value_element(  (*vv)["COLUMN_NAME"]["str_value_"].GetString() , 0 );
 					    column_name = (*vv)["COLUMN_NAME"]["str_value_"].GetString();
 					    node->node_type = T_OP_NAME_FIELD;
 			    	  ptr = node;
 			    	 }
-					  }
+
 				
 					
 		//直接获得表名失败,从tables 里找对应的 relation_name，找不到或找到多个报错
@@ -800,6 +1003,16 @@ struct fun_avg:public fun_element
 			  	ptr->set_alias_name( relation_name + "." + column_name );
 			  	
 			  }
+			  
+			if(mem_table)
+				{
+					ptr->set_mem_table( mem_table );  
+					DEBUG( "ptr->set_mem_table( %0x )\n" , mem_table );
+				}
+			else {
+				ERROR("mem_table is NULL\n");
+			}
+			
 			return ptr;
 			
 			
@@ -908,7 +1121,15 @@ inline void resolve_projectlist_to_opper_node( QueryAnalyser * qa , rapidjson::V
     	CPP_DEBUG<< "  resolve_project_to_opper_node started " <<index<<endl;
     	fun_oper * ptr = resolve_project_to_opper_node( qa , projectlist, index ) ;
     	CPP_DEBUG<< "  resolve_project_to_opper_node finished " <<index<<endl;
-    	if(  0 != ptr )projection_fun_oper_lists.push_back( ptr );// 等于 0 应该返回报错
+    	if(  0 != ptr )
+    		{
+    			DEBUG("projection_fun_oper_lists.push_back( ptr )\n");
+    			projection_fun_oper_lists.push_back( ptr );
+    		}
+    		else {// 等于 0 应该返回报错
+    			ERROR("resolve_project_to_opper_node return ptr is 0 !!\n");
+    			return ;
+    		}
     	 ++index;
 		}
 
@@ -923,18 +1144,20 @@ inline void resolve_to_opper_node(  QueryAnalyser * qa ,
 {
 	CPP_DEBUG<< "  resolve_to_opper_node started " <<endl;
 	resolve_projectlist_to_opper_node(qa,&((*(qa->project_lists))["children"] ),projection_fun_oper_lists );
-	CPP_DEBUG<< "  resolve_projectlist_to_opper_node end " <<endl;
+	CPP_DEBUG<< "  resolve_projectlist_to_opper_node  end " <<endl;
 
 	for(fun_oper *v : projection_fun_oper_lists)
 	{
 		if( NULL == v )continue;
-		CPP_DEBUG<<"<v->alias_name: "<<v->get_alias_name()<<"\n";
+		CPP_DEBUG<<"v->alias_name: "<<v->get_alias_name()<<"\n";
 		if( v && (v->get_alias_name() ).empty() )continue;
 		field_t field;
 		strcpy(field.field_name , v->get_alias_name().c_str());
 		field.field_type = v->get_tag();
 		fill_field_info (&field);
-		projection_meta.add_field(field);
+		CPP_DEBUG<<"projection_meta.add_field("<<v->mem_table<<",field); "<<"\n";
+		projection_meta.add_field(v->mem_table,field);
+		//projection_meta.push_field(v->mem_table ,v->field_name,v->get_alias_name());
 		
 	}
   CPP_DEBUG<< "  resolve_to_opper_node ended " <<endl;

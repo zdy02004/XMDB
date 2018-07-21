@@ -145,9 +145,10 @@ inline int mem_skiplist_create(
                     
        //5 设置  mem_skiplist_index              
       (*mem_skiplist_index) = (mem_skiplist_index_t  *)malloc(MEM_SKIPLIST_INDEX_SIZE);
-
+      DEBUG(" mem_skiplist_index_t malloc(),*mem_skiplist_index is %0x \n",*mem_skiplist_index);
+      
       allocate_index_no(&((*mem_skiplist_index) -> config.index_no ));
-      set_index_no_addr((*mem_skiplist_index) -> config.index_no,(void *)mem_skiplist_index);
+      set_index_no_addr((*mem_skiplist_index) -> config.index_no,(void *)(*mem_skiplist_index));
       (*mem_skiplist_index) -> config.owner_table_no   = mem_index_config->owner_table_no;
       (*mem_skiplist_index) -> config.field_order      = mem_index_config->field_order;
       (*mem_skiplist_index) -> config.field_num        = mem_index_config->field_num;
@@ -158,8 +159,8 @@ inline int mem_skiplist_create(
       //设置堆内存
        (*mem_skiplist_index)->heap_space = heap_space_temp;
         SKIPLIST_LOCK_INIT(&((*mem_skiplist_index)->locker))
-       (*mem_skiplist_index)->root      = NULL;                                       
-    //  DEBUG(" mem_skiplist_create() ,mem_skiplist_index is %0x \n",(*mem_skiplist_index));
+       (*mem_skiplist_index)->root      = NULL;     
+        DEBUG(" (*mem_skiplist_index)->heap_space = %0x \n",heap_space_temp);
 
       return err;
 }                 	

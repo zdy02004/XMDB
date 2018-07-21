@@ -21,104 +21,161 @@ int get_complist_from_double_con(
 														/*out*/compare_list ** first
 													)
 {
+DEBUG("enter get_complist_from_double_con(),normal_double_condition_list.size() is %d ------------- { \n",normal_double_condition_list.size() );
 int err = 0;
 compare_list * pre = NULL;
 plan_node * node;  
 
 for(auto& v : normal_double_condition_list)
 {
+	DEBUG("for(auto& v : normal_double_condition_list) \n");
+	
+	
   int tag = v.tag;
 	std::string relation_name = v.relation_name;
 	std::string column_name   = v.column_name;
 	std::string const_value   = v.const_value;
   std::string const_type    = v.const_type;
   	
+  	CPP_DEBUG<<"tag = "<< tag <<endl;
+  	CPP_DEBUG<<"relation_name = "<< relation_name <<endl;
+    CPP_DEBUG<<"column_name = "<< column_name <<endl;
+    CPP_DEBUG<<"const_value = "<< const_value <<endl;	
+    CPP_DEBUG<<"const_type = "<< const_type <<endl;
+    
+    DEBUG("mem_table is %0x \n",mem_table);
+    	  	  	
   field_t  field;
   err = get_field(mem_table ,column_name, field);
-  if( err != 0 )return err;
+  if( err != 0 )
+  	{
+  		ERROR("get_field err is %d \n",err);
+  		return err;
+  	}
   
   switch(tag)
   {
   case T_OP_EQ :{
-	 
-	 std::shared_ptr<compare_list> cmp1(new compare_list);
+	 DEBUG("case T_OP_EQ \n");
+	 //std::shared_ptr<compare_list> cmp1(new compare_list);
+	 compare_list * cmp1 = new compare_list;
 	 cmp1->mem_table       			= mem_table;
-	 cmp1->field_name      			= field.field_name;	 
+	 cmp1->next       		    	= NULL;
+	 strcpy(cmp1->field_name, column_name.c_str() );	 
 	 
-	 if(pre)pre->next					 	= cmp1.get();
-	 else *first                = cmp1.get();
+	 //if(pre)pre->next					 	= cmp1.get();
+	 //else *first                = cmp1.get(); 	
+	 if(pre)pre->next					 	= cmp1;
+	 else *first                = cmp1;	
 	 	
-	 pre = cmp1.get();
-	 cmp1->cmp_field_value 			=  cast_ptr_by_field( const_value ,  field );
-	 
+	 //pre = cmp1.get();
+	 pre = cmp1;
+	 cmp1->cmp_field_value 			=  cast_ptr_by_field_to_string( const_value ,  field ).c_str() ;
+	 //DEBUG("cmp1->cmp_field_value : %ld \n", *(long long *)( cmp1->cmp_field_value.c_str() ) );
 	 break;
 }      
   case T_OP_LE :{
-	 std::shared_ptr<compare_list> cmp1(new compare_le_list);
+   DEBUG("case T_OP_LE \n");
+	 //std::shared_ptr<compare_list> cmp1(new compare_list);
+	 compare_list * cmp1 = new compare_list;	 
 	 cmp1->mem_table       			= mem_table;
-	 cmp1->field_name      			= field.field_name;	 
+	 cmp1->next       		    	= NULL;
+	 strcpy(cmp1->field_name, column_name.c_str() );	 
 	 
-	 if(pre)pre->next					 	= cmp1.get();
-	 else *first                = cmp1.get();
+	 //if(pre)pre->next					 	= cmp1.get();
+	 //else *first                = cmp1.get(); 	
+	 if(pre)pre->next					 	= cmp1;
+	 else *first                = cmp1;	
 
-	 pre = cmp1.get();
-	 cmp1->cmp_field_value 			=  cast_ptr_by_field( const_value ,  field );
+	 //pre = cmp1.get();
+	 pre = cmp1;
+	 cmp1->cmp_field_value 			=  cast_ptr_by_field_to_string( const_value ,  field ).c_str() ;
 	
 	 break;
 }  
   case T_OP_LT :{
-	 std::shared_ptr<compare_list> cmp1(new compare_lt_list);
+   DEBUG("case T_OP_LT \n");
+	 //std::shared_ptr<compare_list> cmp1(new compare_list);
+	 compare_list * cmp1 = new compare_list;
 	 cmp1->mem_table       			= mem_table;
-	 cmp1->field_name      			= field.field_name;	 
-	 
-	 if(pre)pre->next					 	= cmp1.get();
-	 else *first                = cmp1.get();
+	 cmp1->next       		    	= NULL;
 
-	 pre = cmp1.get();
-	 cmp1->cmp_field_value 			=  cast_ptr_by_field( const_value ,  field );
+	 strcpy(cmp1->field_name, column_name.c_str() );	 
+	 
+	 //if(pre)pre->next					 	= cmp1.get();
+	 //else *first                = cmp1.get(); 	
+	 if(pre)pre->next					 	= cmp1;
+	 else *first                = cmp1;	
+
+	 //pre = cmp1.get();
+	 pre = cmp1;
+	 cmp1->cmp_field_value 			=  cast_ptr_by_field_to_string( const_value ,  field ).c_str() ;
 	
    break;
 }  
   case T_OP_GE :{
-	 std::shared_ptr<compare_list> cmp1(new compare_ge_list);
+   DEBUG("case T_OP_GE \n");
+	 //std::shared_ptr<compare_list> cmp1(new compare_list);
+	 compare_list * cmp1 = new compare_list;
 	 cmp1->mem_table       			= mem_table;
-	 cmp1->field_name      			= field.field_name;	 
+	 cmp1->next       		    	= NULL;
+
+	 strcpy(cmp1->field_name, column_name.c_str() );	 
 	 
-	 if(pre)pre->next					 	= cmp1.get();
-	 else *first                = cmp1.get();
+	 //if(pre)pre->next					 	= cmp1.get();
+	 //else *first                = cmp1.get(); 	
+	 if(pre)pre->next					 	= cmp1;
+	 else *first                = cmp1;	
 	 	
-	 pre = cmp1.get();
-	 cmp1->cmp_field_value 			=  cast_ptr_by_field( const_value ,  field );
+	 //pre = cmp1.get();
+	 pre = cmp1;
+	 cmp1->cmp_field_value 			=  cast_ptr_by_field_to_string( const_value ,  field ).c_str() ;
 	
 	break;
 }  
   case T_OP_GT :{
-	 std::shared_ptr<compare_list> cmp1(new compare_gt_list);
+   DEBUG("case T_OP_GT \n");
+	 //std::shared_ptr<compare_list> cmp1(new compare_list);
+	 compare_list * cmp1 = new compare_list;
 	 cmp1->mem_table       			= mem_table;
-	 cmp1->field_name      			= field.field_name;	 
+	 cmp1->next       		    	= NULL;
+
+	 strcpy(cmp1->field_name, column_name.c_str() );	 
 	 
-	 if(pre)pre->next					 	= cmp1.get();
-	 else *first                = cmp1.get();
+	 //if(pre)pre->next					 	= cmp1.get();
+	 //else *first                = cmp1.get(); 	
+	 if(pre)pre->next					 	= cmp1;
+	 else *first                = cmp1;	
 	 	
-	 pre = cmp1.get();
-	 cmp1->cmp_field_value 			=  cast_ptr_by_field( const_value ,  field );
+	 //pre = cmp1.get();
+	 pre = cmp1;
+	 cmp1->cmp_field_value 			=  cast_ptr_by_field_to_string( const_value ,  field ).c_str() ;
 	
 	 break;
 }   
   case T_OP_NE :{
-	 std::shared_ptr<compare_list> cmp1(new compare_ne_list);
+   DEBUG("case T_OP_NE \n");
+	 //std::shared_ptr<compare_list> cmp1(new compare_list);
+	 compare_list * cmp1 = new compare_list;
 	 cmp1->mem_table       			= mem_table;
-	 cmp1->field_name      			= field.field_name;	 
+	 cmp1->next       		    	= NULL;
+
+	 strcpy(cmp1->field_name, column_name.c_str() );	 
 	 
-	 if(pre)pre->next					 	= cmp1.get();
-	 else *first                = cmp1.get();
+	 //if(pre)pre->next					 	= cmp1.get();
+	 //else *first                = cmp1.get(); 	
+	 if(pre)pre->next					 	= cmp1;
+	 else *first                = cmp1;	
 	 	
-	 pre = cmp1.get();
-	 cmp1->cmp_field_value 			=  cast_ptr_by_field( const_value ,  field );
+	 //pre = cmp1.get();
+	 pre = cmp1;
+	 cmp1->cmp_field_value 			=  cast_ptr_by_field_to_string( const_value ,  field ).c_str() ;
 	
 	 break;
 }   
     case T_OP_LIKE :{
+    	   DEBUG("case T_OP_LIKE \n");
+
 // ÔÝÎ´ÊµÏÖ
 	
 	break;
@@ -127,7 +184,13 @@ for(auto& v : normal_double_condition_list)
   default : break;// ÆäËûÇé¿ö£¬½»¸øÈ«±íscan
   
   }	
-  }
+}
+  
+if(pre)DEBUG("cmp1->field_name is %s \n",pre->field_name);
+else DEBUG("pre is null\n");
+	
+if((*first))DEBUG("leave get_complist_from_double_con() ,com_list ->field_name is %s  ------------- } \n",(*first)->field_name );
+else DEBUG("*first is null  ------------- }\n");
 
 return 0;
 }
@@ -139,7 +202,7 @@ int handl_const_con(
 														/*in*/std::list<const_condition_struct>& const_list 		 //ÐèÒªÉ¨ÃèµÄ·ÇË÷ÒýÌõ¼þ
 													)
 {
- 
+ DEBUG("enter handl_const_con  ------------- {\n");
  int err  = 0 ;
 // »ñµÃ¹ýÂËÁÐ±í
 for(auto &v : const_list)
@@ -147,6 +210,7 @@ for(auto &v : const_list)
 		if(v.is_drop())return INFO_BROCKEN;
 		
 	}
+DEBUG("Leave handl_const_con  ------------- }\n");	
 return err;
 
 }
@@ -161,6 +225,8 @@ int handl_double_con_index( /*in*/mem_table_t *mem_table , 																		//Ð
 														/*in&&out*/std::list<plan_node *>								& plan_node_list  //Êä³öµÄÖ´ÐÐ¼Æ»®
 													  )
 {
+DEBUG("enter handl_double_con_index  ------------- {\n");
+
 int err = 0;
 int first = 1;
 std::shared_ptr<finded_Addr_t> finded_Addr (new finded_Addr_t );
@@ -184,10 +250,13 @@ for(auto& v : index_list)
 	
 if( INDEX_TYPE_HASH == index_type)
 {
+DEBUG("INDEX_TYPE_HASH == index_type\n");
+	
 mem_hash_index_t * index = (mem_hash_index_t *) addr;
 switch(tag)
 {
 case T_OP_EQ :{
+DEBUG("new scan_index_hash_node\n");	
 scan_index_hash_node *node = new scan_index_hash_node(index_no,
   								               index_type,
   								               mem_table,
@@ -211,10 +280,13 @@ break;
 
 if( INDEX_TYPE_SKIP == index_type)
 {
+DEBUG("INDEX_TYPE_SKIP == index_type\n");
+	
 	mem_skiplist_index_t *index = (mem_skiplist_index_t *) addr;
   switch(tag)
   {
   case T_OP_EQ :{
+  DEBUG("new scan_skiplist_eq_node\n");	
 	scan_skiplist_eq_node *node = new scan_skiplist_eq_node(index_no,
 	  								              	index_type,
 	  								              	mem_table,
@@ -233,6 +305,7 @@ if( INDEX_TYPE_SKIP == index_type)
 	break;
 }      
   case T_OP_LE :{
+  DEBUG("new scan_skiplist_le_node\n");	
 	scan_skiplist_le_node *node = new scan_skiplist_le_node(index_no,
 	  								              	index_type,
 	  								              	mem_table,
@@ -250,6 +323,7 @@ if( INDEX_TYPE_SKIP == index_type)
 	break;
 }  
   case T_OP_LT :{
+  DEBUG("new scan_skiplist_lt_node\n");	
 	scan_skiplist_lt_node *node = new scan_skiplist_lt_node(index_no,
 	  								              	index_type,
 	  								              	mem_table,
@@ -266,6 +340,7 @@ if( INDEX_TYPE_SKIP == index_type)
 	break;
 }  
   case T_OP_GE :{
+  DEBUG("new scan_skiplist_ge_node\n");	
 	scan_skiplist_ge_node *node = new scan_skiplist_ge_node(index_no,
 	  								              	index_type,
 	  								              	mem_table,
@@ -283,6 +358,7 @@ if( INDEX_TYPE_SKIP == index_type)
 	break;
 }  
   case T_OP_GT :{
+  DEBUG("new scan_skiplist_gt_node\n");	
 	scan_skiplist_gt_node *node = new scan_skiplist_gt_node(index_no,
 	  								              	index_type,
 	  								              	mem_table,
@@ -314,7 +390,8 @@ if( INDEX_TYPE_SKIP == index_type)
 //	break;
 //}  
   case T_OP_NE :
-  	
+  DEBUG("case T_OP_NE :\n");	
+	
   default :// ÆäËûÇé¿ö£¬½»¸øÈ«±íscan
   nomal_list.push_back(v);
   
@@ -324,6 +401,7 @@ if( INDEX_TYPE_SKIP == index_type)
 }
 
 // »ñµÃ¹ýÂËÁÐ±í
+ DEBUG("get_complist_from_double_con() \n");	
  compare_list *com_list = NULL;
  err = get_complist_from_double_con(
 																			 mem_table , 
@@ -332,6 +410,8 @@ if( INDEX_TYPE_SKIP == index_type)
 																		);
 
 rapidjson::Value merg_json;
+DEBUG("new merg_index_sfw_node() \n");	
+	
 // ºÏ²¢index ½á¹û¼¯
 merg_index_sfw_node *node = new merg_index_sfw_node( mem_table,
 																		com_list,															//¹ýÂËÁÐ±í
@@ -341,6 +421,8 @@ merg_index_sfw_node *node = new merg_index_sfw_node( mem_table,
 	  								              	pre_Addr
 	  								              	);
 plan_node_list.push_back(node);
+DEBUG("Leave handl_double_con_index ------------- }\n");
+return 0;
 }					
 
 
@@ -352,9 +434,10 @@ int handl_double_con_normal(
 														/*in&&out*/std::list<plan_node *>							 & plan_node_list  //Êä³öµÄÖ´ÐÐ¼Æ»®
 													)
 {
- 
+ CPP_DEBUG<<"begin handl_double_con_normal() ------------- { \n "<<std::endl;
  int err  = 0 ;
 // »ñµÃ¹ýÂËÁÐ±í
+ DEBUG("get_complist_from_double_con() \n");	 
  compare_list *com_list = NULL;
  err = get_complist_from_double_con(
 																			 mem_table , 
@@ -362,8 +445,21 @@ int handl_double_con_normal(
 																/*out*/&com_list
 																		);
 
+ if(err)
+ 	{
+ 		ERROR("get_complist_from_double_con() err is %d \n",err);
+ 		return err;
+ 	}
 rapidjson::Value normal_json;
 // ºÏ²¢index ½á¹û¼¯
+ DEBUG("mem_table is %0x \n",mem_table);
+ DEBUG("com_list is %0x\n ",com_list);
+ DEBUG("com_list->field_name is %s \n",com_list->field_name);
+ DEBUG("pro_list.size() %ld \n",pro_list.size());
+// DEBUG("normal_json %ld \n",normal_json );
+// DEBUG("nomal_list.begin()->query_plan_->doc %ld \n ",nomal_list.begin()->query_plan_->doc );
+
+DEBUG("new scan_sfw_node() \n");	 
 scan_sfw_node *node = new scan_sfw_node( mem_table,
 																		com_list,															//¹ýÂËÁÐ±í
 																		pro_list,       											//Í¶Ó°ÁÐ±í
@@ -371,6 +467,7 @@ scan_sfw_node *node = new scan_sfw_node( mem_table,
 	  								              	nomal_list.begin()->query_plan_->doc
 	  								              	);
 plan_node_list.push_back(node);
+CPP_DEBUG<<"end handl_double_con_normal() ------------- } \n "<<std::endl;
 return err;
 }
 
@@ -390,6 +487,7 @@ int handl_join_condtions(
 													/*in&&out*/std::list<plan_node *>		& plan_node_list
 												)
 {
+DEBUG("Enter handl_join_condtions ------------- {\n");
 	
 if( NULL == qa ) return QueryAnalyserNullPtr;
 std::vector<rapidjson::Value *>& join_conditions = qa->join_conditions;
@@ -418,6 +516,7 @@ for(auto & v : join_eq_condition_struct_list)
 	  		is_first = 0;
 	  	}
 		if(v.context_->HasMember("SEMI_JOIN_LEVEL")){
+		DEBUG("new do_semi_join_node() \n");	 	
 		do_semi_join_node *node = new do_semi_join_node(
   															v.relation_name[0],v.relation_name[1],
   															v.column_name[0],v.column_name[1],
@@ -432,6 +531,7 @@ for(auto & v : join_eq_condition_struct_list)
   	pre_meta = &(node->out_meta);
   	}
   	else	if(v.context_->HasMember("ANTI_JOIN_LEVEL")){
+  	DEBUG("new do_anti_join_node() \n");	 		
 		do_anti_join_node *node = new do_anti_join_node(
   															v.relation_name[0],v.relation_name[1],
   															v.column_name[0],v.column_name[1],
@@ -448,7 +548,7 @@ for(auto & v : join_eq_condition_struct_list)
   	}
   	else {
   	join_eq_condition_only_inner_join_list.push_back(v);	
-  	
+  	DEBUG("new do_join_node() \n");	 		
 		do_join_node *node = new do_join_node(
   															v.relation_name[0],v.relation_name[1],
   															v.column_name[0],v.column_name[1],
@@ -470,6 +570,8 @@ for(auto & v : join_eq_condition_struct_list)
 		
 	
 	out_meta = *pre_meta;
+	DEBUG("Leave handl_join_condtions ------------- }\n");
+  return 0;
 }
 
 
@@ -480,6 +582,7 @@ int get_record_meta_from_join_list(
 																/*out*/ record_meta & meta
 														  )
 {
+	DEBUG("Enter get_record_meta_from_join_list ------------- {\n");
 	bool is_first = true;
 	std:string table_name;
 	for(auto &v:inner_join_list )
@@ -494,10 +597,16 @@ int get_record_meta_from_join_list(
 			meta.append_by_string_list(v.mem_table[1],scan_fields[table_name] );
 		 }
 
-	if(is_first)return -1;
+	if(is_first)
+		{
+			ERROR("is_first = true!\n");
+			return -1;
+		}
 	else return 0;
 
 		}
+DEBUG("Leave get_record_meta_from_join_list ------------- }\n");
+	
 }
 
 
@@ -511,7 +620,12 @@ int handl_groupby(
 									/*out*/	std::list<plan_node *>	& plan_node_list
 								  )
 {
-	if(qa->group_target.empty())return 0;
+	DEBUG("Enter handl_groupby ------------- {\n");
+	if(qa->group_target.empty())
+		{
+			DEBUG("No Need to handl_groupby ------------- }\n");
+			return 0;
+		}
 	
 	std::vector<std::string>	table_names; 
 	std::vector<std::string>	column_names; 
@@ -566,7 +680,14 @@ int handl_groupby(
 		err = input_meta.append_by_string_list( qa->tables.begin()->mem_table,scan_fields[table_names[0]] );
 	}
 	
+	if(err)
+		{
+			ERROR("input_meta.append_by_string_list() err is %d \n",err );
+			return err;
+		}
+	
   rapidjson::Value  order_json;
+  DEBUG("new do_groupby_node() \n");	 		
 	do_groupby_node *node = new do_groupby_node(
 												table_names,
 												column_names,
@@ -585,6 +706,8 @@ int handl_groupby(
 
 												
   *groupby_result_meta = &(node->meta);
+  
+  DEBUG("Leave handl_groupby ------------- }\n");
 	return 0;
 }
 
@@ -598,7 +721,12 @@ int handl_orderby(
 									/*out*/	std::list<plan_node *>	& plan_node_list
 								  )
 {
-	if(qa->order_target.empty())return 0;
+ DEBUG("Enter handl_orderby ------------- {\n");
+	if(qa->order_target.empty())
+		{
+			DEBUG("No Need to handl_orderby ------------- }\n");
+			return 0;
+		}
 	
 	std::vector<std::string>	table_names; 
 	std::vector<std::string>	column_names; 
@@ -624,6 +752,7 @@ int handl_orderby(
 
 	
   rapidjson::Value  order_json;
+  DEBUG("new do_orderby_node() \n");	 		
 	do_orderby_node *node = new do_orderby_node(
 												table_names,
 												column_names,
@@ -639,6 +768,7 @@ int handl_orderby(
 												
 	plan_node_list.push_back(node); 
 
+  DEBUG("Leave handl_orderby ------------- }\n");
 
 	return 0;
 }
@@ -653,26 +783,36 @@ int handl_projection(
 									/*out*/	std::list<plan_node *>	&  plan_node_list						 
 								  )
 {
-	
-	resolve_to_opper_node( qa , projection_fun_oper_lists, projection_meta	);
-	if( projection_fun_oper_lists.empty()  );
+	 DEBUG("Enter handl_projection() ------------- {\n");
+
+	 resolve_to_opper_node( qa , projection_fun_oper_lists, projection_meta	);
+  
+		DEBUG(" resolve_to_opper_node( qa , projection_fun_oper_lists, projection_meta	); \n" );
+
+	 if( projection_fun_oper_lists.empty()  )
 		{
-		  CPP_ERROR<<" resolve_to_opper_node failed!\n"	;
+		  CPP_ERROR<<" projection_fun_oper_lists is empty() !\n"	;
 		  return -1;
 		}
 		
-	input_meta = input_meta ;// µ¥±íÓÃµ¥±í£¬¶à±íÓÃjoin
-		
+		DEBUG("get_ret_list() is %d \n", (*(plan_node_list.rbegin()))->plan_type );
+	//projection_meta = input_meta ;// µ¥±íÓÃµ¥±í£¬¶à±íÓÃjoin
+	shared_ptr<std::list<generic_result> > ret_list ( new std::list<generic_result> );
+  DEBUG("new do_projection_node() \n");	 		
 	do_projection_node *node = new do_projection_node(
 												input_meta,
 												projection_meta,
 												projection_fun_oper_lists,
-								        (*(plan_node_list.rbegin()))->get_ret_list(),				
+								        (*(plan_node_list.rbegin()))->get_ret_list(),	
+								        ret_list,			
 												*(qa->project_lists),
   											qa->doc
 												);
-												
+	CPP_DEBUG<<" plan_node_list.push_back(node);!\n"	;											
 	plan_node_list.push_back(node); 
+	
+  DEBUG("Leave handl_projection ------------- }\n");
+
   return 0;
 	
 }

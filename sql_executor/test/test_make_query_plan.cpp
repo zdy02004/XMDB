@@ -70,7 +70,7 @@ ParseResult result;
     result.Doc.Accept(writer);
     
  
-//优化前
+//构造查询计划
   CPP_DEBUG <<"优化前 json"<< buffer.GetString() << std::endl;
 
  for (auto& v : result.Doc["ROOT"]["children"].GetArray() ){

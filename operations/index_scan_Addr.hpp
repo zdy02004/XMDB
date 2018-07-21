@@ -2139,6 +2139,7 @@ inline int merg_index_result_with_prolist_and_conlist(
 
 	for ( auto &v : finded_Addr )
 	{
+		DEBUG("for(auto &v : finded_Addr )\n");
 		ret = get_record( mem_table, v.block_no, v.record_num, &return_record_ptr );
 		if ( !mem_mvcc_read_record( mem_table, return_record_ptr, (char *) buf, Tn ) )
 		{

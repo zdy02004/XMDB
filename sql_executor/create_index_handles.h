@@ -17,9 +17,7 @@ int handle_create_index(
 													/*in&&out*/std::list<plan_node *>	&plan_node_list //输出的执行计划    
 													)
 {
-		CPP_DEBUG<<"handle_create_index() \n"<<"qia->index_type is "<<qia->index_type<<endl;
-
-
+CPP_DEBUG<<"handle_create_index() \n"<<"qia->index_type is "<<qia->index_type<<endl;
 
 switch(qia->index_type)
 {

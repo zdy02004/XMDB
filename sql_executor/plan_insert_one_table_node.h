@@ -119,6 +119,7 @@ int check_field()
 	
 virtual int execute( unsigned long long  Tn  )
 {
+DEBUG("insert_one_into_table execute () begin\n");
 //  获得表指针
 int err = get_table_ptr();
 if( err )return err;
@@ -139,7 +140,7 @@ if(err)
 		ERROR("insert_one_into_table err is %d\n",err);
 		return err;
 	}
-
+DEBUG("insert_one_into_table execute () end\n");
 return 0;
 
 }

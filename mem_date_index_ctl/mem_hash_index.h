@@ -288,13 +288,22 @@ inline int mem_hash_index_select_long(
                        /* out */long * mem_table_no )
 {
   DEBUG("mem_hash_index_select_long() start!\n");                                                                                                                 //解行锁
-	if( NULL == mem_hash_index ){DEBUG("SELECT_MEM_HASH_INDEX_ERR_INDEX_IS_NULL\n"   );  return SELECT_MEM_HASH_INDEX_ERR_INDEX_IS_NULL;     }
-	if( NULL == hash_fun       ){DEBUG("SELECT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL\n");  return SELECT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	 }
+	if( NULL == mem_hash_index ){ERROR("SELECT_MEM_HASH_INDEX_ERR_INDEX_IS_NULL\n"   );  return SELECT_MEM_HASH_INDEX_ERR_INDEX_IS_NULL;     }
+	if( NULL == hash_fun       ){ERROR("SELECT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL\n");  return SELECT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	 }
+	DEBUG("Enter mem_hash_index_select_long(),key = %ld\n",key);
+	
+	DEBUG("mem_hash_index->array_space  = %0x\n",mem_hash_index->array_space);
+	DEBUG("mem_hash_index->array_space->config  = %0x\n",&(mem_hash_index->array_space->config ) );
+	DEBUG("mem_hash_index->array_space->config.mem_blocks_table = %0x\n",&( mem_hash_index->array_space->config.mem_blocks_table ) );
 	
 	struct  mem_block_t * array_block_temp   = mem_hash_index->array_space->config.mem_blocks_table;
+  if( NULL == array_block_temp  ){ERROR("SELECT_MEM_HASH_INDEX_ARRAY_SPACE_IS_NULL\n");   return SELECT_MEM_HASH_INDEX_ARRAY_SPACE_IS_NULL;  }
+  else DEBUG("array_block_temp is %0x\n", array_block_temp );
+  
   struct  mem_block_t * linked_block_temp  = mem_hash_index->linked_space->config.mem_blocks_table;
-  if( NULL == array_block_temp  )  return SELECT_MEM_HASH_INDEX_ARRAY_SPACE_IS_NULL;
-	if( NULL == linked_block_temp )  return SELECT_MEM_HASH_INDEX_LINKED_SPACE_IS_NULL;	
+	if( NULL == linked_block_temp ){ERROR("SELECT_MEM_HASH_INDEX_LINKED_SPACE_IS_NULL\n");  return SELECT_MEM_HASH_INDEX_LINKED_SPACE_IS_NULL; }
+	else DEBUG("linked_block_temp is %0x\n", linked_block_temp );
+
 	DEBUG("mem_hash_index_select_long() in!\n");                                                                                                                 //解行锁
   DEBUG("array_block_temp is %0x!\n", array_block_temp);
  //执行hash 函数
@@ -399,6 +408,8 @@ inline int mem_hash_index_insert_long(
 	if( NULL == hash_fun  )  return INSERT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	
 	if( block_no < 0      ) return INSERT_MEM_HASH_INDEX_ERR_BLOCK_NO_UNSAFE;	
 	DEBUG("Enter mem_hash_index_insert_long(),key = %ld\n",key);
+	DEBUG("Enter mem_hash_index_insert_long(),block_no = %ld\n",block_no);
+	DEBUG("Enter mem_hash_index_insert_long(),record_num = %ld\n",record_num);
 
 	//1 array_space 不存在数据，则存入数据
 	//2 array_space 存在数据，link_space 不存在数据，插入link_space
@@ -532,10 +543,11 @@ inline int mem_hash_index_select_str(
                        /* out */long                    *  mem_table_no
                         )
 {
-	if( NULL == mem_hash_index )  return SELECT_MEM_HASH_INDEX_ERR_INDEX_IS_NULL;
-	if( NULL == hash_fun       )  return SELECT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	
-  if( NULL == key            )  return SELECT_MEM_HASH_INDEX_ERR_STR_KEY_IS_NULL;
-	
+	if( NULL == mem_hash_index ) { ERROR("SELECT_MEM_HASH_INDEX_ERR_INDEX_IS_NULL\n");   return SELECT_MEM_HASH_INDEX_ERR_INDEX_IS_NULL;   }
+	if( NULL == hash_fun       ) { ERROR("SELECT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL\n");return SELECT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;}	
+  if( NULL == key            ) { ERROR("SELECT_MEM_HASH_INDEX_ERR_STR_KEY_IS_NULL\n"); return SELECT_MEM_HASH_INDEX_ERR_STR_KEY_IS_NULL; }
+	DEBUG("Enter mem_hash_index_select_str(),key = %s\n",key);
+
 	struct  mem_block_t * array_block_temp   = mem_hash_index->array_space->config.mem_blocks_table;
   struct  mem_block_t * linked_block_temp  = mem_hash_index->linked_space->config.mem_blocks_table;
 
@@ -633,10 +645,14 @@ inline int mem_hash_index_insert_str(
                         /* out */long                  *  mem_table_no
                         )
 {
-	if( NULL == hash_fun  )  return INSERT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	
-	if( NULL == key       )  return INSERT_MEM_HASH_INDEX_ERR_STR_KEY_IS_NULL;	
-
-	if( block_no < 0      )  return INSERT_MEM_HASH_INDEX_ERR_BLOCK_NO_UNSAFE;	
+	if( NULL == hash_fun  )  {ERROR("INSERT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL\n");return INSERT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	}
+	if( NULL == key       )  {ERROR("INSERT_MEM_HASH_INDEX_ERR_STR_KEY_IS_NULL\n"); return  INSERT_MEM_HASH_INDEX_ERR_STR_KEY_IS_NULL;	}
+	if( block_no < 0      )  {ERROR("INSERT_MEM_HASH_INDEX_ERR_BLOCK_NO_UNSAFE\n"); return INSERT_MEM_HASH_INDEX_ERR_BLOCK_NO_UNSAFE;	}
+	
+	DEBUG("Enter mem_hash_index_insert_str(),key = %s\n",key);
+	DEBUG("Enter mem_hash_index_insert_str(),block_no = %ld\n",block_no);
+	DEBUG("Enter mem_hash_index_insert_str(),record_num = %ld\n",record_num);
+	
 	//1 array_space 不存在数据，则存入数据
 	//2 array_space 存在数据，link_space 不存在数据，插入link_space
 	//3 存在数据，link_space  存在数据，插入link_space最近的地方
@@ -766,7 +782,14 @@ inline int mem_hash_index_del_long(
                         /*out*/long                 *  block_no_temp,
                         /*out*/long                 *  mem_table_no)
 {
-	if( NULL == hash_fun  )  return DEL_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	
+	if( NULL == hash_fun  ) 
+		{
+			 ERROR("DEL_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL !\n");
+			 return DEL_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	
+		}
+  DEBUG("Enter mem_hash_index_del_long(),key = %ld\n",key);
+	DEBUG("Enter mem_hash_index_del_long(),block_no_to_del = %ld\n",block_no_to_del);
+	DEBUG("Enter mem_hash_index_del_long(),record_num_to_del = %ld\n",record_num_to_del);
 
   unsigned  long             record_num         = 0;
   struct  record_t         * record_ptr         = 0;
@@ -891,9 +914,12 @@ inline int mem_hash_index_del_str(
                         /*out*/long *                  mem_table_no
                         )
 {
-	if( NULL == hash_fun  )  return DEL_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	
-	if( NULL == key       )  return DEL_MEM_HASH_INDEX_ERR_STR_KEY_IS_NULL;	
-
+	if( NULL == hash_fun  )  {ERROR("DEL_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL\n"); return DEL_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL;	}
+	if( NULL == key       )  {ERROR("DEL_MEM_HASH_INDEX_ERR_STR_KEY_IS_NULL\n");  return DEL_MEM_HASH_INDEX_ERR_STR_KEY_IS_NULL;	}
+  DEBUG("Enter mem_hash_index_del_str(),key = %s\n",key);
+	DEBUG("Enter mem_hash_index_del_str(),block_no_to_del = %ld\n",block_no_to_del);
+	DEBUG("Enter mem_hash_index_del_str(),record_num_to_del = %ld\n",record_num_to_del);
+	
   unsigned  long             record_num         = 0;
   struct  record_t         * record_ptr         = 0;
   struct  mem_hash_entry_t * array_space_entry  = 0;
@@ -1021,6 +1047,10 @@ inline int mem_hash_index_del_str(
                         long                 block_no_to_del;
                         unsigned  long       record_num_to_del;
                         
+                        DEBUG("Enter mem_hash_index_update_long(),key = %ld\n",key);
+                        DEBUG("Enter mem_hash_index_update_long(),block_no = %ld\n",block_no);
+                        DEBUG("Enter mem_hash_index_update_long(),record_num = %ld\n",record_num);
+
                         err1 = mem_hash_index_del_long( 
                         														  mem_hash_index,
                         														  key,
@@ -1064,6 +1094,10 @@ inline int mem_hash_index_update_str (
                         long                 block_no_to_del;
                         unsigned  long       record_num_to_del;
                         
+                        DEBUG("Enter mem_hash_index_update_str(),key = %s\n",key);
+                        DEBUG("Enter mem_hash_index_update_str(),block_no = %ld\n",block_no);
+                        DEBUG("Enter mem_hash_index_update_str(),record_num = %ld\n",record_num);
+                        
                         err1 = mem_hash_index_del_str( 
                         														  mem_hash_index,
                         														  key,
@@ -1097,13 +1131,14 @@ inline int mem_hash_index_create(
                              )
 {
 	
-	if(NULL == mem_table                          )  return CREATE_HASH_INDEX_ERR_TABLE_PTR;
-	if(NULL == mem_index_config                   )  return CREATE_HASH_INDEX_ERR_NULL_CONFIG;
-	if(NULL == mem_index_config->index_name       )  return CREATE_HASH_INDEX_ERR_NO_NAME;
-	if(strlen (mem_index_config->index_name)>=120 )  return CREATE_HASH_INDEX_ERR_NAME_TOO_LONG;
-  if(mem_index_config->owner_table_no<=0        )  return CREATE_HASH_INDEX_ERR_NO_TABLE_NO;
+	if(NULL == mem_table                          ) {ERROR("CREATE_HASH_INDEX_ERR_TABLE_PTR\n");     return CREATE_HASH_INDEX_ERR_TABLE_PTR;     }
+	if(NULL == mem_index_config                   ) {ERROR("CREATE_HASH_INDEX_ERR_NULL_CONFIG\n");   return CREATE_HASH_INDEX_ERR_NULL_CONFIG;   }
+	if(NULL == mem_index_config->index_name       ) {ERROR("CREATE_HASH_INDEX_ERR_NO_NAME\n");       return CREATE_HASH_INDEX_ERR_NO_NAME;       }
+	if(strlen (mem_index_config->index_name)>=120 ) {ERROR("CREATE_HASH_INDEX_ERR_NAME_TOO_LONG\n"); return CREATE_HASH_INDEX_ERR_NAME_TOO_LONG; }
+  if(mem_index_config->owner_table_no<=0        ) {ERROR("CREATE_HASH_INDEX_ERR_NO_TABLE_NO\n");   return CREATE_HASH_INDEX_ERR_NO_TABLE_NO;   }
 	//if(NULL == mem_index_config->field_order      )  return CREATE_HASH_INDEX_ERR_NO_FIELD_PTR;
   //if(mem_index_config->field_num <= 0          )   return CREATE_HASH_INDEX_ERR_FIELD_NUM_LESS_ZERO;
+  DEBUG("Enter mem_hash_index_create(),*mem_hash_index is %0x \n",*mem_hash_index);
 
       int len = strlen(mem_index_config->index_name);
 			//allocate_index_no(&(mem_index_config->index_no));
@@ -1161,6 +1196,11 @@ inline int mem_hash_index_create(
                              &array_space_temp,
                              array_space_config
                              );
+      if(0!=err){
+      	ERROR("mem_table_create(array_space_temp) err is %d \n",err );
+      	return err;
+      } 
+      
       DEBUG(" array_space_temp is %0x \n",array_space_temp);
 			//DEBUG(" mb's block_malloc_addr is %0x \n",mb->block_malloc_addr);
 
@@ -1206,13 +1246,20 @@ inline int mem_hash_index_create(
                              &link_space_temp,
                              link_space_config
                              );
+      if(0!=err){
+      	ERROR("mem_table_create(link_space_temp) err is %d \n",err );
+      	return err;
+      }                      
       DEBUG(" link_space_config is %0x \n",link_space_config);
  			DEBUG(" mb2's block_malloc_addr is %0x \n",mb2->block_malloc_addr);
  			//5 设置  mem_hash_index             
       (*mem_hash_index) = (struct mem_hash_index_t  *)malloc(MEM_HASH_INDEX_SIZE);
+      DEBUG(" mem_hash_index malloc(),*mem_hash_index is %0x \n",*mem_hash_index);
+
+      
       //(*mem_hash_index) -> config.index_no         = /*mem_index_config->index_no*/;
       allocate_index_no(&((*mem_hash_index) -> config.index_no ));
-      set_index_no_addr((*mem_hash_index) -> config.index_no,(void *)mem_hash_index);
+      set_index_no_addr((*mem_hash_index) -> config.index_no,(void *)(*mem_hash_index));
       (*mem_hash_index) -> config.owner_table_no   = mem_index_config->owner_table_no;
       (*mem_hash_index) -> config.field_order      = mem_index_config->field_order;
       (*mem_hash_index) -> config.field_num        = mem_index_config->field_num;
@@ -1224,12 +1271,14 @@ inline int mem_hash_index_create(
 				//设置堆内存
        (*mem_hash_index)->array_space = array_space_temp;
        (*mem_hash_index)->linked_space = link_space_temp;
+       
+       DEBUG(" (*mem_hash_index)->array_space = %0x \n",array_space_temp);
+       DEBUG(" (*mem_hash_index)->link_space_temp = %0x \n",link_space_temp);
              
-      DEBUG(" mem_hash_index_create() end \n");
-
-      if(0!=err)return err;
+    
       //对每个项建索引
 //___________________________________________________________________________________      
+      DEBUG(" mem_hash_index_create() end \n");
       return 0;
 }
 
@@ -1238,19 +1287,36 @@ inline int mem_hash_index_create(
 //打开索引
 inline int mem_hash_index_open(struct mem_hash_index_t *  mem_hash_index)
 {
-	if(NULL == mem_hash_index    )  return OPEN_MEM_HASH_ERR_NULL_HASH_PTR;
-  
+	if(NULL == mem_hash_index    ){
+		ERROR(" OPEN_MEM_HASH_ERR_NULL_HASH_PTR() \n");
+		return OPEN_MEM_HASH_ERR_NULL_HASH_PTR;
+	}  
+  DEBUG("enter  mem_hash_index_open()  \n");
   int err;
 	err = mem_table_open(mem_hash_index->array_space);
-	if( 0!= err )return err;
+	if( 0!= err )
+		{
+			ERROR("mem_table_open(mem_hash_index->array_space) err is %d \n",err );
+			return err;
+		}
 	err = mem_table_open(mem_hash_index->linked_space);
-	if( 0!= err )return err;
+	if( 0!= err )
+		{
+			ERROR("mem_table_open(mem_hash_index->linked_space) err is %d \n",err );
+			return err;
+		}
+	DEBUG("leave  mem_hash_index_open()  \n");
 	return 0;
 }	
 //关索引
 inline	int mem_hash_index_close(struct mem_hash_index_t *  mem_hash_index)
 {
-	if(NULL == mem_hash_index    )  return CLOSE_MEM_HASH_INDEX_ERR_NULL_PTR;
+	if(NULL == mem_hash_index    ){
+		ERROR("CLOSE_MEM_HASH_INDEX_ERR_NULL_PTR() \n");
+		return CLOSE_MEM_HASH_INDEX_ERR_NULL_PTR;
+	}  
+	  
+	  DEBUG("enter  mem_hash_index_close()  \n");
 	  int err,err1;
 	  err  = mem_table_close((mem_hash_index)->array_space);
 	  err1 = mem_table_close((mem_hash_index)->linked_space);
@@ -1258,6 +1324,7 @@ inline	int mem_hash_index_close(struct mem_hash_index_t *  mem_hash_index)
 	  if(0 != err)return err;
 	  if(0 != err1)return err1;
 		if(mem_hash_index)free(mem_hash_index);
+		DEBUG("leave  mem_hash_index_close()  \n");
 		return 0;
 	}
 
@@ -1271,6 +1338,8 @@ inline int mem_hash_index_insert_l(
                         /* out */long                 *    mem_table_no
                         )   
     {
+    DEBUG("enter  mem_hash_index_insert_l()  \n");
+	
     return mem_hash_index_insert_long(mem_hash_index,
     																  input->key,
     																  input->block_no,
@@ -1291,6 +1360,7 @@ inline int mem_hash_index_insert_l(
                         /* out */long      * mem_table_no
                         )   
     {
+    DEBUG("enter  mem_hash_index_del_l()  \n");
     return mem_hash_index_del_long(mem_hash_index,
     																  input->key,
     																  input->block_no,
@@ -1310,6 +1380,7 @@ inline int mem_hash_index_insert_l(
                         /* out */long                 *    mem_table_no
                         )   
     {
+     DEBUG("enter  mem_hash_index_insert_s()  \n");
     return mem_hash_index_insert_str(mem_hash_index,
     																  input->key,
     																  input->block_no,
@@ -1330,6 +1401,7 @@ inline int mem_hash_index_insert_l(
                         /* out */long      * mem_table_no
                         )   
     {
+     DEBUG("enter  mem_hash_index_del_s()  \n");
     return mem_hash_index_del_str(mem_hash_index,
     																  input->key,
     																  input->block_no,

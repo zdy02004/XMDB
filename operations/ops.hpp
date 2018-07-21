@@ -157,16 +157,18 @@ inline int get_field_index(char * field_name,struct mem_table_t *mem_table/*,fie
 	{
 	DEBUG("get filed name is :%s \n",field_name);
 	
-	fields_table        =  mem_table->config.fields_table;
+	fields_table   =  mem_table->config.fields_table;
 	field_used_num =  mem_table->config.field_used_num;
 	for(;j< field_used_num;++j)
 	{
 		if(  strcmp( fields_table[j].field_name,field_name ) == 0 )
 		{
+			  DEBUG("FOUND field_name:%s,and index is %d \n",field_name,j);
 				return j;//找到字段就退出，j就是对应的字段顺序号
 		}
 	}
   }
+  ERROR("NOT FOUND field_name:%s\n",field_name);
 	return -1;
 }
 
@@ -175,8 +177,8 @@ struct compare_list
 {
 	
 	struct mem_table_t *mem_table; // 表
-	char * field_name;    				 //字段名
-	void * cmp_field_value;        //比较字段值
+	char   field_name[32];    				 //字段名
+	std::string cmp_field_value;        //比较字段值
 	void * fun;                    //比较函数
 	struct compare_list * next;
 	//switch_fun_class switch_fun;
@@ -190,10 +192,10 @@ struct compare_list
 	{
 		//int j = -1;
 		//j = get_field_index(  field_name,mem_table ) ;
-		field_type1* b = (field_type1*)cmp_field_value ;
+		field_type1* b = (field_type1*)(cmp_field_value.c_str()) ;
 		DEBUG("cmp_fun\n");
-		std::cout<<*a<<std::endl;
-		std::cout<<*b<<std::endl;
+		CPP_DEBUG<<"record_value is "<<*a<<std::endl;
+		CPP_DEBUG<<"cmp_field_value is "<<*b<<std::endl;
 		return !( (*a) == (*b) );
 	}
 } __attribute__ ((packed, aligned (64)));
@@ -223,8 +225,8 @@ public:
 		//j = get_field_index(  field_name,mem_table ) ;
 		field_type1* b = (field_type1*)cmp_field_value ;
 		DEBUG("cmp_fun\n");
-		std::cout<<*a<<std::endl;
-		std::cout<<*b<<std::endl;
+		CPP_DEBUG<<"record_value is "<<*a<<std::endl;
+		CPP_DEBUG<<"cmp_field_value is "<<*b<<std::endl;
 		return !( (*a) <= (*b) );
 	}
 } __attribute__ ((packed, aligned (64)));
@@ -241,8 +243,8 @@ public:
 		//j = get_field_index(  field_name,mem_table ) ;
 		field_type1* b = (field_type1*)cmp_field_value ;
 		DEBUG("cmp_fun\n");
-		std::cout<<*a<<std::endl;
-		std::cout<<*b<<std::endl;
+		CPP_DEBUG<<"record_value is "<<*a<<std::endl;
+		CPP_DEBUG<<"cmp_field_value is "<<*b<<std::endl;
 		return !( (*a) < (*b) );
 	}
 } __attribute__ ((packed, aligned (64)));
@@ -260,8 +262,8 @@ public:
 		//j = get_field_index(  field_name,mem_table ) ;
 		field_type1* b = (field_type1*)cmp_field_value ;
 		DEBUG("cmp_fun\n");
-		std::cout<<*a<<std::endl;
-		std::cout<<*b<<std::endl;
+		CPP_DEBUG<<"record_value is "<<*a<<std::endl;
+		CPP_DEBUG<<"cmp_field_value is "<<*b<<std::endl;
 		return !( (*a) >= (*b) );
 	}
 } __attribute__ ((packed, aligned (64)));
@@ -278,8 +280,8 @@ public:
 		//j = get_field_index(  field_name,mem_table ) ;
 		field_type1* b = (field_type1*)cmp_field_value ;
 		DEBUG("cmp_fun\n");
-		std::cout<<*a<<std::endl;
-		std::cout<<*b<<std::endl;
+		CPP_DEBUG<<"record_value is "<<*a<<std::endl;
+		CPP_DEBUG<<"cmp_field_value is "<<*b<<std::endl;
 		return !( (*a) > (*b) );
 	}
 } __attribute__ ((packed, aligned (64)));
@@ -296,8 +298,8 @@ public:
 		//j = get_field_index(  field_name,mem_table ) ;
 		field_type1* b = (field_type1*)cmp_field_value ;
 		DEBUG("cmp_fun\n");
-		std::cout<<*a<<std::endl;
-		std::cout<<*b<<std::endl;
+		CPP_DEBUG<<"record_value is "<<*a<<std::endl;
+		CPP_DEBUG<<"cmp_field_value is "<<*b<<std::endl;
 		return !( (*a) != (*b) );
 	}
 } __attribute__ ((packed, aligned (64)));
@@ -340,6 +342,7 @@ inline int full_table_scan_with_prolist_and_conlist(
 														
 ) 
 {
+	  DEBUG("enter full_table_scan_with_prolist_and_conlist ---------------{ \n");
 	  //如果原始投影字段为空则走全表全字段扫描
 	  if(field_list.empty() && com_list == NULL ){
 	  	return full_table_scan_with_conlist(
@@ -362,7 +365,8 @@ inline int full_table_scan_with_prolist_and_conlist(
 	  field_used_num =  mem_table->config.field_used_num;
 
     //抽取字段需要的变量
-    
+     DEBUG("get pro_fields and pro_size \n");
+
     //构造抽取字段列表
     std::list<field_t> pro_fields;
     //抽取字段总长度
@@ -371,6 +375,7 @@ inline int full_table_scan_with_prolist_and_conlist(
     for(auto &one : field_list){
     	
     	k = get_field_index(const_cast<char *>(one.c_str() ) , mem_table );
+    	DEBUG("get_field_index(%s) return %d\n",one.c_str(),k);
 			if( k>=0 && k< field_used_num ){
 				 //field = ( field_type * )( (char *)(record_ptr) + RECORD_HEAD_SIZE + fields_table[k].field_dis );
 				 pro_fields.push_back(fields_table[k]);
@@ -378,7 +383,9 @@ inline int full_table_scan_with_prolist_and_conlist(
 			}
     	
     }
-   
+    
+    DEBUG(" pro_size is %ld \n",pro_size);
+
    //
     char buf[mem_table->record_size - RECORD_HEAD_SIZE];
     
@@ -392,6 +399,7 @@ inline int full_table_scan_with_prolist_and_conlist(
      
 	for(;__i<mem_table->config.mem_block_used;++__i)//遍历所有块																
 	{
+		  DEBUG(" Scan mem_table block[%ld] \n",__i);
 			unsigned  long  __high_level_temp = 0;
 
 				for(; //遍历所有行
@@ -399,7 +407,7 @@ inline int full_table_scan_with_prolist_and_conlist(
 				++__high_level_temp
 				   )		 															
 				{
-					//DEBUG("__high_level_temp = %ld\n",__high_level_temp);
+					  //DEBUG(" Scan mem_table.block[%ld].record[%ld] \n",__i,__high_level_temp);
 						// 找到可用的记录位置
 						record_ptr = (struct record_t *) ( (char *)__mem_block_temp->space_start_addr + (__high_level_temp) * (mem_table->record_size) );
 						// 已经删除的行不处理
@@ -424,17 +432,24 @@ inline int full_table_scan_with_prolist_and_conlist(
 
 							  if( get_field_ret != 0 )
 									{
+										DEBUG("is_ok = 0  \n");
 									  is_ok = 0 ;
 										break;
 									}
 						}
 		
-						if(com_list_iter)com_list_iter = com_list_iter->next;
+						if(com_list_iter)
+							{
+								com_list_iter = com_list_iter->next;
+								DEBUG("com_list_iter = com_list_iter->next; \n");
+							}
 					}
 					com_list_iter = com_list;
 					
+					 DEBUG("Try to read  \n");
 					 if( is_ok && !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn )/*!mem_table_read_record(mem_table , record_ptr, (char *)buf )*/ )
 						{
+							 DEBUG("if( is_ok && !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn )! \n");
 							 if( BASIC_OPS_SCAN == oper_type )
 							 {
 								 size_t pos = 0;
@@ -464,6 +479,7 @@ inline int full_table_scan_with_prolist_and_conlist(
 				}
 			__mem_block_temp = __mem_block_temp->next;      //下一个块
 	}
+  DEBUG("leave full_table_scan_with_prolist_and_conlist ---------------} \n");
 	return 0;
 }
 

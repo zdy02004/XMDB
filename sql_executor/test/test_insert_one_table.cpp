@@ -3,7 +3,9 @@
 #include "../make_create_index_plan_node.h"
 #include "../make_create_table_plan_node.h"
 #include "../make_insert_one_table_node.h"
-
+#include "../../SQL/sql_parser/queryOptimiser.hpp"
+#include "../fun_oper.h"
+#include "../make_query_plan_node.h"
 
 /*
   g++ -g test_insert_one_table.cpp ../../SQL/sql_parser/*.o  -std=gnu++11 -o main -w  -lpthread 
@@ -68,13 +70,17 @@ const char *sql_str2 = ""
 const char *sql_str3 = ""
 "insert into test_table  ( id , name )  values (1,2) ";
 
+const char *sql_str4 = ""
+"select id from  test_table  where name = 2 ";
+
 //const char *sql_str2 = ""
 //"create index test_table_inx on test_table ( id ) SKIP_LEVEL = 4 ";
 
 
 CPP_DEBUG<< sql_str <<endl;
- CPP_DEBUG<< sql_str2 <<endl;
-  CPP_DEBUG<< sql_str3 <<endl;
+CPP_DEBUG<< sql_str2 <<endl;
+CPP_DEBUG<< sql_str3 <<endl;
+CPP_DEBUG<< sql_str4 <<endl;
 
 ParseResult result;
 int ret = parse_init(&result);
@@ -105,11 +111,16 @@ int ret2 = parse_init(&result2);
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer3(buffer3); 	
     result3.Doc.Accept(writer3);       
        
- 
-//优化前
-  CPP_DEBUG <<"create table "<< buffer.GetString() << std::endl;
-  
+ ParseResult result4;
+ int ret4 = parse_init(&result4);
+ parse_sql(&result4, sql_str4, strlen(sql_str4));
 
+    rapidjson::StringBuffer buffer4;
+    //rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer4(buffer4); 	
+    result4.Doc.Accept(writer4);   
+ 
+CPP_DEBUG <<"create table "<< buffer.GetString() << std::endl;
  for (auto& v : result.Doc["ROOT"]["children"].GetArray() ){
   		//QueryAnalyser qa( v ,result.Doc );
   		if( v.HasMember("OPERATION_NAME") && v["OPERATION_NAME"] == "CREATE_TABLE"  ){
@@ -118,8 +129,8 @@ int ret2 = parse_init(&result2);
   	  mctp.execute();
 		}
   }	
-  	//优化前
-  CPP_DEBUG <<"create index "<< buffer2.GetString() << std::endl;
+
+CPP_DEBUG <<"create index "<< buffer2.GetString() << std::endl;
    for (auto& v : result2.Doc["ROOT"]["children"].GetArray() ){
   		//QueryAnalyser qa( v ,result.Doc );
   		if( v.HasMember("OPERATION_NAME") && v["OPERATION_NAME"] == "CREATE_INDEX"  ){
@@ -130,7 +141,7 @@ int ret2 = parse_init(&result2);
   }	
 
 
-
+ CPP_DEBUG <<"insert into table "<< buffer3.GetString() << std::endl;
 int err = 0;
 //分配一个事务槽
 long long  trans_no;
@@ -138,8 +149,6 @@ if(0!=(err=allocate_trans(&trans_no)))DEBUG("allocate_trans[%d] failed,trans_no 
 // 开始一个事务
 if(0!=(err=start_trans(trans_no)))DEBUG("start_trans failed,trans_no is %d\n",err); 
 	 
-    	//优化前
-  CPP_DEBUG <<"insert into table "<< buffer3.GetString() << std::endl;
    for (auto& v : result3.Doc["ROOT"]["children"].GetArray() ){
   		//QueryAnalyser qa( v ,result.Doc );
   		if( v.HasMember("OPERATION_NAME") && v["OPERATION_NAME"] == "INSERT_TABLE"  ){
@@ -151,12 +160,71 @@ if(0!=(err=start_trans(trans_no)))DEBUG("start_trans failed,trans_no is %d\n",er
  
 if(0!=(err=commit_trans(trans_no)))ERROR("commit_trans failed,trans_no is %d\n",err); 
 
+
+ 
+//构造查询计划
+  CPP_DEBUG <<"优化前 json"<< buffer4.GetString() << std::endl;
+
+ for (auto& v : result4.Doc["ROOT"]["children"].GetArray() ){
+  		if( v.HasMember("OPERATION_NAME") && v["OPERATION_NAME"] == "SELECT"  ){
+  		QueryAnalyser qa( v ,result4.Doc );
+  		
+  		for(auto& name : qa.tables){
+  			CPP_DEBUG<<"Names: "<<name.table_name_<<" "<<name.alias_name_<<" "<<name.sub_select_alias_name_<<std::endl;
+  			
+  		}
+  		
+  		//上拉子链接
+  		qa.pull_up_sublinks();
+  		//上拉子查询
+  		qa.pull_up_subquerys();
+  		CPP_DEBUG<<"Begin Optimiser\n "<<std::endl;
+
+  		//逻辑优化器
+  		QueryOptimiser qo (qa);
+
+  		CPP_DEBUG<<"优化between\n "<<std::endl;
+  		qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_btw,&qo,std::placeholders::_1,std::placeholders::_2) );
+  		CPP_DEBUG<<"优化 in\n "<<std::endl;
+	  	qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_in,&qo,std::placeholders::_1,std::placeholders::_2) );
+  		CPP_DEBUG<<"优化 not \n "<<std::endl;
+  		qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_not,&qo,std::placeholders::_1,std::placeholders::_2) );
+		  CPP_DEBUG<<"优化 const \n "<<std::endl;
+  		qo.optimiser_template( (qa.where_list) ,(qa.where_list),  std::bind(&QueryOptimiser::optimiser_const,&qo,std::placeholders::_1,std::placeholders::_2) );
+		  CPP_DEBUG<<"优化 const 表达式\n "<<std::endl;
+  		qo.optimiser_project_template( &(*(qa.project_lists))["children"] , 0 ,  std::bind(&QueryOptimiser::optimiser_project_const,&qo,std::placeholders::_1,std::placeholders::_2) );
+		  CPP_DEBUG<<"优化 const 条件\n "<<std::endl;
+		  qo.optimiser_project_template( (qa.where_list) ,0,  std::bind(&QueryOptimiser::optimiser_project_const,&qo,std::placeholders::_1,std::placeholders::_2) );
+		
+    //优化后
+  		CPP_DEBUG <<"优化后 json\n";
+  		rapidjson_log( &result4.Doc["ROOT"] );
+    
+	 //std::vector<fun_oper *>  projection_fun_oper_lists ;
+   //esolve_to_opper_node(   &qa ,  projection_fun_oper_lists	);
+		  CPP_DEBUG<<"生成物理执行计划\n "<<std::endl;
+		  physical_query_plan phplan( &qa );
+		 
+				CPP_DEBUG<<"执行SQL\n "<<std::endl;
+				//分配一个事务槽
+				long long  trans_no2;
+				if(0!=(err=allocate_trans(&trans_no2)))DEBUG("allocate_trans[%d] failed,trans_no2 is %d\n",trans_no2,err); 
+				// 开始一个事务
+				if(0!=(err=start_trans(trans_no2)))DEBUG("start_trans failed,trans_no2 is %d\n",err); 
+				err = phplan.execute(trans_no2);
+				if(err) //回滚
+					{
+						if(0!=(err=rollback_trans(trans_no2)))ERROR("rollback_trans failed,trans_no2 is %d\n",err);
+					}
+				else{//提交
+					if(0!=(err=commit_trans(trans_no2)))ERROR("commit_trans failed,trans_no2 is %d\n",err); 		  
+
+				}
+		
+		}
+  }	
   
-  //优化后
-  //CPP_DEBUG <<"优化后 json\n";
-  //rapidjson_log( &result.Doc["ROOT"] );
-  
-   
+  		
   
 parse_terminate(&result);
 parse_terminate(&result2);

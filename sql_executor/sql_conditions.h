@@ -20,7 +20,7 @@
 #define GET_SINGLE_TABLE_EMPTY_QA 78009
 #define ERR_NOT_FOUND_LINK        78010
 #define QueryAnalyserNullPtr      78011
-
+#define NOT_INDEX_FIELD           78012
 
 /*
 主要定义了如下结构体
@@ -85,10 +85,10 @@ struct normal_single_condition_struct{
 		
 		//直接获得表名
 		if( (*context_)["children"][0].HasMember("RELATION_NAME") ){
-			relation_name = (*context_)["children"][0]["RELATION_NAME"].GetString();
+			relation_name = (*context_)["children"][0]["RELATION_NAME"]["str_value_"].GetString();
 		}
 		if( (*context_)["children"][0].HasMember("COLUMN_NAME") ){
-			column_name = (*context_)["children"][0]["COLUMN_NAME"].GetString();
+			column_name = (*context_)["children"][0]["COLUMN_NAME"]["str_value_"].GetString();
 		}
 		
 	}
@@ -162,27 +162,38 @@ struct normal_double_condition_struct:public normal_single_condition_struct{
 	}	
 	  
 int get_name(){	  
+	  DEBUG("get_name()\n");
 		int i = 0; // 代表有列名的序号
 		int j = 0; // 代表有列名的序号
 		
+		// rapidjson_log( context_ );
+		
 		if( (*context_)["children"][0].HasMember("COLUMN_NAME") && (*context_)["children"][1].HasMember("CONST_TYPE") ) {i = 0; j = 1;}
 		else if ( (*context_)["children"][1].HasMember("COLUMN_NAME") &&(*context_)["children"][0].HasMember("CONST_TYPE") ) {i = 1; j = 0;}
-		else return ERR_UNNOMAL_DOUBLE_CONDITION;		
+		else 
+			{
+				ERROR("ERR_UNNOMAL_DOUBLE_CONDITION \n");
+				return ERR_UNNOMAL_DOUBLE_CONDITION;		
+			}
 		
 		//直接获得常量
+		DEBUG("Get const_value \n");
 		if( (*context_)["children"][j].HasMember("str_value_") ){
+			DEBUG("HasMember(str_value_) \n");
 			const_value = (*context_)["children"][j]["str_value_"].GetString();
 		}
 		if( (*context_)["children"][j].HasMember("CONST_TYPE") ){
+			DEBUG("HasMember(CONST_TYPE) \n");
 			const_type = (*context_)["children"][j]["CONST_TYPE"].GetString();
 		}
 		
 		//直接获得表名
+		DEBUG("Get RELATION_NAME and COLUMN_NAME \n");
 		if( (*context_)["children"][i].HasMember("RELATION_NAME") ){
-			relation_name = (*context_)["children"][i]["RELATION_NAME"].GetString();
+			relation_name = (*context_)["children"][i]["RELATION_NAME"]["str_value_"].GetString();
 		}
 		if( (*context_)["children"][i].HasMember("COLUMN_NAME") ){
-			column_name = (*context_)["children"][i]["COLUMN_NAME"].GetString();
+			column_name = (*context_)["children"][i]["COLUMN_NAME"]["str_value_"].GetString();
 		}
 		
 		return normal_single_condition_struct::get_name();	
@@ -214,10 +225,10 @@ int get_name(){
 			//if( (*context_)["children"][i].HasMember("COLUMN_NAME") && (*context_)["children"][i].HasMember("CONST_TYPE") ) {btw_index[i] = 0;}
 			//直接获得表名
 			if( (*context_)["children"][i].HasMember("RELATION_NAME") ){
-				relation_name = (*context_)["children"][i]["RELATION_NAME"].GetString();
+				relation_name = (*context_)["children"][i]["RELATION_NAME"]["str_value_"].GetString();
 			}
 			if( (*context_)["children"][i].HasMember("COLUMN_NAME") ){
-				column_name = (*context_)["children"][i]["COLUMN_NAME"].GetString();
+				column_name = (*context_)["children"][i]["COLUMN_NAME"]["str_value_"].GetString();
 			}
 			//直接获得常量
 			if( (*context_)["children"][i].HasMember("str_value_") ){
@@ -257,17 +268,17 @@ struct join_eq_condition_struct{
 		
 		//直接获得表名
 		if( (*context_)["children"][0].HasMember("RELATION_NAME") ){
-			relation_name[0] = (*context_)["children"][0]["RELATION_NAME"].GetString();
+			relation_name[0] = (*context_)["children"][0]["RELATION_NAME"]["str_value_"].GetString();
 		}
 		if( (*context_)["children"][0].HasMember("COLUMN_NAME") ){
-			column_name[0] = (*context_)["children"][0]["COLUMN_NAME"].GetString();
+			column_name[0] = (*context_)["children"][0]["COLUMN_NAME"]["str_value_"].GetString();
 		}
 				//直接获得表名
 		if( (*context_)["children"][1].HasMember("RELATION_NAME") ){
-			relation_name[1] = (*context_)["children"][1]["RELATION_NAME"].GetString();
+			relation_name[1] = (*context_)["children"][1]["RELATION_NAME"]["str_value_"].GetString();
 		}
 		if( (*context_)["children"][1].HasMember("COLUMN_NAME") ){
-			column_name[1] = (*context_)["children"][1]["COLUMN_NAME"].GetString();
+			column_name[1] = (*context_)["children"][1]["COLUMN_NAME"]["str_value_"].GetString();
 		}
 		
 	}
@@ -277,6 +288,7 @@ struct join_eq_condition_struct{
 	// 无关系返回 0
 	inline int can_link_or_delete( join_eq_condition_struct & linker )
 	{
+		DEBUG("begin can_link_or_delete() \n");
 		int i = 0;
 		for(int i = 0; i<2; ++i){
 			for(int j = 0; j<2 ; ++j){
@@ -291,6 +303,7 @@ struct join_eq_condition_struct{
 	// 获得连接 序号，self 是自己的，next是右边的
 	inline int get_link_seq( join_eq_condition_struct & linker,int & self, int & next )
 	{
+		DEBUG("begin get_link_seq() \n");
 		int k = 0;
 		int i = 0;
 		int j = 0;
@@ -385,6 +398,7 @@ inline int get_single_table_conditions(
 											/*out*/ std::list<const_condition_struct>        & const_condition_list
 										)
 {
+	DEBUG("begin get_single_table_conditions \n");
 	if( mem_table == NULL) return GET_SINGLE_TABLE_EMPTY_TABLE;
 	if(qa == NULL) return GET_SINGLE_TABLE_EMPTY_QA;
   /*in*/  vector<TableItem> 				& tables 									= qa->tables;                    	// 表信息
@@ -426,21 +440,61 @@ inline int get_single_table_conditions(
   						  normal_single_condition_list.push_back(nscs);
   					}
   				}
-  				if(!err)return err;
+  				if(err)
+  				{
+  					ERROR("end get_single_table_conditions，err is %d \n",err);
+  					return err;
+  					
+  				}
   				//按是否有索引排列
+  				DEBUG("normal_single_condition_list.sort() \n");
   				normal_single_condition_list.sort();
   				
   				for(auto &nomal_double_condition : nomal_double_conditions ){//查找双条件列表中，使用该表字段的二元条件
+  					DEBUG(" qa is %0x \n",qa);
+  					rapidjson_log( nomal_double_condition );
+  					
   					normal_double_condition_struct ndcs(nomal_double_condition,qa);
   					err = ndcs.get_name();
   					if( err == 0 && 0 == strcmp( ndcs.relation_name.c_str(),(*mem_table)->config.table_name ) ){
-  					//	normal_double_condition_list.push_back(ndcs);
-  						  if(ndcs.has_index) normal_double_condition_list.push_back(ndcs);
-  						 	else 							 normal_index_double_condition_list.push_back(ndcs);
+  						  DEBUG("Find table_name: %s，and try to find column_name:%s \n",ndcs.relation_name.c_str(), ndcs.column_name.c_str() );
+  						  
+  						  long  index_no;
+  						  int   index_type;
+  						  
+  						  int ret = field_has_index( *mem_table ,ndcs.column_name, index_no, index_type);
+								if( ret == 1 ) //字段有索引就加入到 索引双条件list
+  						  {
+  						 			    DEBUG( "ndcs.column_name：%s is index field!\n" , ndcs.column_name.c_str() ); ;
+  					    				DEBUG("Find index double conditions，and push_back it \n");					    				
+  						  				normal_index_double_condition_list.push_back(ndcs); 						 		
+  						 	}
+  						 	else if( ret == 0)//否则加入到 普通双条件list
+  						 		{
+  						 			DEBUG("ndcs.column_name：%s is not index field!\n" , ndcs.column_name.c_str() ); 
+  						 			DEBUG("Find normal double conditions，and push_back it \n");
+  						 			normal_double_condition_list.push_back(ndcs);
+  						 		  err = NOT_INDEX_FIELD;
+  						 		}
+  						 		else if( ret == DO_NOT_HAS_FIELD )//表中无该字段
+  						 		{
+  					  	 		DEBUG(" table: %s，do not have field :%s \n",ndcs.relation_name.c_str(), ndcs.column_name.c_str() );
+  						 		}
+  						 		else //其他错误
+  						 			{
+  						 			ERROR(" field_has_index err is %d ,and try next!\n",ret );
+  						 			err = ret;
+  						 			}
   					}
   				}
-  				if(!err)return err;
-  				//按是否有索引排列
+  				if( err != 0 && err != NOT_INDEX_FIELD )
+  				{
+  					ERROR("end get_single_table_conditions，err is %d \n",err);
+  					return err;
+  					
+  				}
+  				//按是否有关联条件
+  				DEBUG("normal_double_condition_list.sort() \n");
   				normal_double_condition_list.sort();
   				
   				//
@@ -448,16 +502,24 @@ inline int get_single_table_conditions(
   					join_eq_condition_struct jecs(join_condition,qa);
   					err = jecs.get_name();
   					if( err == 0 &&( 0 == strcmp( jecs.relation_name[0].c_str(),(*mem_table)->config.table_name) || 0 == strcmp( jecs.relation_name[1].c_str(),(*mem_table)->config.table_name ) ) ){
+  					DEBUG("Find join conditions，and push_back it \n");
   					join_eq_condition_list.push_back(jecs);
   					}
   				}
-  				if(!err)return err;
+  				
+  				if( err != 0 && err != NOT_INDEX_FIELD )
+  				{
+  					ERROR("end get_single_table_conditions，err is %d \n",err);
+  					return err;
+  					
+  				}
   				
   				//	
   				for(auto &const_condition : const_conditions ){//查找常量条件列表中，判断是否短路
   					const_condition_struct ccs(const_condition,qa);
   					err = ccs.is_drop();
   					if( err == 0   ){
+  						DEBUG("Find const conditions，and push_back it \n");
   						const_condition_list.push_back(ccs);
   					}
   					else if(err == INFO_BROCKEN ){
@@ -466,9 +528,16 @@ inline int get_single_table_conditions(
   					
   					}
   				}
-  				if(!err)return err;
+  				if( err != 0 && err != NOT_INDEX_FIELD )
+  				{
+  					ERROR("end get_single_table_conditions，err is %d \n",err);
+  					return err;
+  					
+  				}
   			}
   		}
+  DEBUG("end get_single_table_conditions \n");
+	return err;
   }
 
 
@@ -504,13 +573,14 @@ inline int get_table_conditions(
 																join_eq_condition_list,
 																const_condition_list
 																);
-		if(ret)
-			{
-				CPP_ERROR<<"GET TABLE: "<<table_name<<" where conditions Failed!\n";
-				return ret;
-			}
+     if( ret != 0 && ret != NOT_INDEX_FIELD )
+  	{
+  		ERROR("end get_single_table_conditions，err is %d \n",ret);
+  		return ret;
+  	}
 																
 		mem_table_ptr_map[table_name] 								= mem_table_ptr;
+		qa->tables[i].mem_table                       = mem_table_ptr;
 		normal_single_condition_map[table_name] 			= normal_single_condition_list;
 		normal_double_condition_map[table_name] 			= normal_double_condition_list;
 		normal_index_double_condition_map[table_name] = normal_index_double_condition_list;
@@ -539,26 +609,65 @@ inline int get_table_conditions(
 }
 
 // 获得一个表需要的所有的字段（ 投影字段 + 条件字段 ）
-inline int get_talbe_scan_fields(
+inline int get_table_scan_fields(
 																/*in*/  QueryAnalyser * qa,										
 																/*in*/	std::map<std::string,std::set<std::string> >&  projection_fields, // 投影字段
 																/*in*/  std::map<std::string,std::set<std::string> >&  condition_fields,  // 条件字段
 																/*out*/ std::map<std::string,std::set<std::string> >&  scan_fields        // 需要扫描的字段
 )
 {
-	
+	DEBUG(" get_table_scan_fields enter \n");
 	int ret = 0;
 	for (size_t i = 0 ;i <qa->tables.size();++i )
 	{
 				std::string table_name = qa->tables[i].table_name_;
-				std::set<std::string> needed = condition_fields[table_name];
-				needed.insert(scan_fields[table_name].begin(), scan_fields[table_name].end() );
-	      scan_fields[table_name] = needed;
-	
-	
+					
+				/*
+				std::set<std::string> needed; = condition_fields[table_name];					
+				std::set<std::string> needed2  = projection_fields[table_name];
+					
+				needed.insert( needed2.begin(), needed2.end() );
+	      scan_fields[table_name] = needed2;	
+	      //scan_fields[table_name] = needed;	
+	      */
+	      
+	     
+	      scan_fields[table_name].insert( projection_fields[table_name].begin(), projection_fields[table_name].end() );
+	      scan_fields[table_name].insert( condition_fields[table_name].begin(),  condition_fields[table_name].end() );
+	      
 	}
+}
+	
+	// 获得一个表结果集的投影字段 
+inline int get_table_result_fields(
+																/*in*/  QueryAnalyser * qa,										
+																/*in*/	std::map<std::string,std::set<std::string> >&  projection_fields, // 投影字段
+																/*out*/ std::map<std::string,std::set<std::string> >&  result_fields        //结果集的投影字段 
+)
+{
+	DEBUG(" get_table_result_fields enter \n");
+	int ret = 0;
+	for (size_t i = 0 ;i <qa->tables.size();++i )
+	{
+				std::string table_name = qa->tables[i].table_name_;
+					
+				/*
+				std::set<std::string> needed; = condition_fields[table_name];					
+				std::set<std::string> needed2  = projection_fields[table_name];
+					
+				needed.insert( needed2.begin(), needed2.end() );
+	      scan_fields[table_name] = needed2;	
+	      //scan_fields[table_name] = needed;	
+	      */
+	      
+	      result_fields[table_name].insert( projection_fields[table_name].begin(), projection_fields[table_name].end() );
+	
+	DEBUG(" Leave get_table_result_fields \n");
 	return ret;
 }
+
+}
+
 
 
 
@@ -573,7 +682,7 @@ inline int order_join_condtions(
 														/*in*/QueryAnalyser * qa,	
 														/*out*/std::vector<join_eq_condition_struct> &join_eq_condition_origin)// 原始关联条件
 {	
-	
+	DEBUG("begin order_join_condtions() \n ");
 	if( NULL == qa ) return QueryAnalyserNullPtr;
 		
 	vector<rapidjson::Value *>& join_conditions	 = qa->join_conditions;
@@ -594,7 +703,7 @@ inline int order_join_condtions(
 std::sort (join_eq_condition_origin.begin(),join_eq_condition_origin.end() );
 // 先用最少的关联关系 去关联 剩下的能关联的最小关联关系  min(last.filter)
 for(std::vector<join_eq_condition_struct>::iterator iter= join_eq_condition_origin.begin();
-	iter != join_eq_condition_origin.end()-1 ;++iter
+	iter != join_eq_condition_origin.end() && iter+1 != join_eq_condition_origin.end() ;++iter
 )
 {
 	//交换次数
@@ -619,11 +728,15 @@ for(std::vector<join_eq_condition_struct>::iterator iter= join_eq_condition_orig
 			}
 		}
 		
-		if( 1 != iter->can_link_or_delete( *(iter+1)) )return ERR_NOT_FOUND_LINK;
+		if( 1 != iter->can_link_or_delete( *(iter+1)) )
+			{
+				ERROR("ERR_NOT_FOUND_LINK\n");
+				return ERR_NOT_FOUND_LINK;
+			}
 		iter += i;
 
 }
-
+	DEBUG("end order_join_condtions() \n ");
 return 0;
 }
 

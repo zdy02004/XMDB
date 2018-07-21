@@ -19,7 +19,7 @@
 #define  EMPTY_TABLE 			79001
 #define  FIELD_NAME_EMPTY 79002
 #define  NOT_FOUND_FIELD  79003
-
+#define  DO_NOT_HAS_FIELD 79004
 
 
 
@@ -55,22 +55,33 @@ else if(n == FIELD_TYPE_STR )return CAST_FIELD_PTR_7( __ptr );
 // 表中是否有该字段
 inline int has_field(mem_table_t *mem_table ,std::string field_name){  
    
-   if( NULL == mem_table        )   return EMPTY_TABLE;
-   if( field_name.empty()       )   return FIELD_NAME_EMPTY;
+   if( NULL == mem_table        ){ ERROR("has_field () ->EMPTY_TABLE\n");  return EMPTY_TABLE; }
+   if( field_name.empty()       ){ ERROR("FIELD_NAME_EMPTY\n");  return FIELD_NAME_EMPTY; }
    for(int i = 0;i < mem_table->config.field_used_num; ++i  )
    {
    		field_t& field = mem_table->config.fields_table[i];
    	  if (0 == strcmp(field.field_name,field_name.c_str()) ){
+   	  	DEBUG("%s HAS FIELD %s \n",mem_table->config.table_name,field_name.c_str());
    	  	return 1;
    	  }
    }
+   DEBUG("%s DO NOT HAS FIELD %s \n",mem_table->config.table_name,field_name.c_str());
    return 0;
 
 }
 // 表中是否有索引
 inline int field_has_index(mem_table_t *mem_table ,std::string field_name,long & index_no,int & index_type){  
+   if( NULL == mem_table)
+   	{
+   		ERROR("EMPTY_TABLE\n");
+   		return EMPTY_TABLE;
+   	}
    int err = has_field( mem_table , field_name);
-   if( err )return err;
+   if( !err )
+   	{
+   		DEBUG("DO_NOT_HAS_FIELD!\n");
+   		return DO_NOT_HAS_FIELD;
+   }
    	
    for(int i = 0;i < mem_table->config.field_used_num; ++i  )
    {
@@ -90,8 +101,13 @@ inline int field_has_index(mem_table_t *mem_table ,std::string field_name,long &
 
 // 从表中获得字段
 inline int get_field(mem_table_t *mem_table ,std::string field_name,field_t & field){  
+   if( NULL == mem_table)
+   	{
+   		ERROR("EMPTY_TABLE\n");
+   		return EMPTY_TABLE;
+   	}
    int err = has_field( mem_table , field_name);
-   if( err )return err;
+   if( !err )return DO_NOT_HAS_FIELD;
    	
    for(int i = 0;i < mem_table->config.field_used_num; ++i  )
    {
@@ -102,6 +118,7 @@ inline int get_field(mem_table_t *mem_table ,std::string field_name,field_t & fi
    	  	
    	  }
    }
+   ERROR("NOT_FOUND_FIELD!\n");
    return NOT_FOUND_FIELD;
 
 }
@@ -220,6 +237,7 @@ inline typename get_field_type<T>::value_type cast_condition( std::string& condi
 
 // 将条件常量转化为值指针
 // 需要free 值指针
+
 inline void * cast_ptr_by_field( std::string& condition , const field_t & field ){  
 	   switch( field.field_type )
     {
@@ -240,6 +258,23 @@ inline void * cast_ptr_by_field( std::string& condition , const field_t & field 
  			case FIELD_TYPE_DATE:    { std::shared_ptr<FIELD_DATE> ret(new FIELD_DATE);		 *ret =  (FIELD_DATE )atol(condition.c_str() ); return (void *)(ret.get()) ;    }
  			case FIELD_TYPE_STR:     { std::shared_ptr<std::string> str(new std::string);  *str = condition;                              return (void *)(str->c_str() ); }
     }	
+}
+ 
+
+inline std::string  cast_ptr_by_field_to_string( std::string& condition , const field_t & field ){ 
+	  DEBUG("cast_ptr_by_field_to_string() begin() \n"); 
+	   switch( field.field_type )
+    {
+    	case FIELD_TYPE_INT:     { DEBUG("CASE FIELD_TYPE_INT:\n");      int ret = (int)atoi(condition.c_str() );				  	      CPP_DEBUG<<"value is "<<ret<<std::endl;return std::string( (char *)(&ret) );    }
+			case FIELD_TYPE_SHORT:   { DEBUG("CASE FIELD_TYPE_SHORT:\n");    short ret = (short)atoi(condition.c_str() );			  	    CPP_DEBUG<<"value is "<<ret<<std::endl;return std::string( (char *)(&ret) );    }
+ 			case FIELD_TYPE_LONG:    { DEBUG("CASE FIELD_TYPE_LONG:\n");     long ret = (long )atol(condition.c_str() );		    	    CPP_DEBUG<<"value is "<<ret<<std::endl;return std::string( (char *)(&ret) );    }
+			case FIELD_TYPE_LONGLONG:{ DEBUG("CASE FIELD_TYPE_LONGLONG:\n"); long long ret = (long long)atoll(condition.c_str() );    CPP_DEBUG<<"value is "<<ret<<std::endl;return std::string( (char *)(&ret) );    }
+			case FIELD_TYPE_FLOAT:   { DEBUG("CASE FIELD_TYPE_FLOAT:\n");    float  ret = atof(condition.c_str() );		          	    CPP_DEBUG<<"value is "<<ret<<std::endl;return std::string( (char *)(&ret) );    }
+			case FIELD_TYPE_DOUBLE:  { DEBUG("CASE FIELD_TYPE_DOUBLE:\n");   double ret = (double)atof(condition.c_str() );		  	    CPP_DEBUG<<"value is "<<ret<<std::endl;return std::string( (char *)(&ret) );    }				
+ 			case FIELD_TYPE_DATE:    { DEBUG("CASE FIELD_TYPE_DATE:\n");     FIELD_INT ret =  (FIELD_DATE )atol(condition.c_str() ); 	CPP_DEBUG<<"value is "<<ret<<std::endl;return std::string( (char *)(&ret) );    }
+      case FIELD_TYPE_STR:     { DEBUG("case FIELD_TYPE_STR:\n");      CPP_DEBUG<<"value is "<<condition<<std::endl;                  return condition;                                                 }
+    }	
+    ERROR("cast_ptr_by_field end() \n"); 
 }
 
 
@@ -486,6 +521,7 @@ inline int get_projection_fields(
 												  /*out*/ std::map<std::string,std::set<std::string> >&  projection_fields  //(表名,非聚合函数字段名)
 												)
 {
+	DEBUG("enter get_projection_fields \n");
 	int ret = 0;
 	for (size_t i = 0 ;i <qa->tables.size() ;++i )
 	{
@@ -519,23 +555,25 @@ inline int get_projection_fields(
 		
 		//————————————————————————————————————————————————————————————————————————
 		// 开始析出字段
-		
+		DEBUG("get  qa-> raw_target_list \n");
 		for(auto &v : qa-> raw_target_list)	// 普通字段名
 		{
 			//没有表名，就到表中找是否有该字段
 			if(v.relation_name.empty() && has_field( mem_table , v.column_name ) ){
+				 DEBUG("relation_name is empty \n");
 				 raw_list.insert(v.column_name);
 				 projection_fields[table_name].insert(v.column_name);
 			}
 			//有表名且相等
 			else if ( ( v.relation_name == table_name || v.relation_name == alias_name )&& has_field( mem_table , v.column_name ) ) //暂时不考虑子查询
 			{
+			  CPP_DEBUG<<"relation_name is "<<v.relation_name <<std::endl;
 				raw_list.insert(v.column_name);
 				projection_fields[table_name].insert(v.column_name);
 
 			}
 		}
-		
+		DEBUG("get  qa-> agg_raw_target_list \n");
 		for(auto &v : agg_raw_target_list)	// 聚合函数字段名
 		{
 			//没有表名，就到表中找是否有该字段
@@ -552,7 +590,7 @@ inline int get_projection_fields(
 				
 			}
 		}
-		
+		DEBUG("get  qa-> oper_raw_target_list \n");
 		for(auto &v :  oper_raw_target_list)	// 普通操作字段名
 		{
 			//没有表名，就到表中找是否有该字段
@@ -569,7 +607,7 @@ inline int get_projection_fields(
 
 			}
 		}
-		
+		DEBUG("get  qa-> normal_raw_target_list \n");
 		for(auto &v : normal_raw_target_list)	// 非聚合函数字段名
 		{
 			//没有表名，就到表中找是否有该字段
@@ -597,6 +635,8 @@ inline int get_projection_fields(
 		
 	}
 	
+	DEBUG("end get_projection_fields \n");
+return ret;
 }
 
 

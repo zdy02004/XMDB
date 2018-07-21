@@ -261,6 +261,13 @@ int                index_type[MAX_FIELD_INDEX_NO];						 //索引类型 1 hash 2
 //填充 any 和 str 以外的各种类型的 field_size;
 inline void fill_field_info (struct field_t *field)  
 {
+	int i = 0;
+	for(;i<MAX_FIELD_INDEX_NO;++i)
+	{
+		field->relate_index[i] = 0 ;
+		field->index_type[i] = 0;
+	}
+	
 	switch ( field->field_type )   
 {                                 
 	case FIELD_TYPE_INT:            (field)->field_size = FIELD_INT_SIZE;              DEBUG("FIELD_TYPE_INT\n");					break; 

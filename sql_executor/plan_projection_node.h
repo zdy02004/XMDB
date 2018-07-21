@@ -35,6 +35,7 @@ do_projection_node(
 							record_meta&  _projection_meta , //投影元数据描述
 							std::vector<fun_oper *>&  _projection_fun_oper_lists, //投影算子结构vector
 							std::list<generic_result>*  _input_list ,							//结果集
+							shared_ptr<std::list<generic_result> > _ret_list,
 							rapidjson::Value& _json,
   						rapidjson::Document * _Doc
 ):plan_node(_json,_Doc),	
@@ -42,8 +43,9 @@ do_projection_node(
 		projection_meta (_projection_meta),
 		projection_fun_oper_lists(_projection_fun_oper_lists),
 		input_list(_input_list),
-		ret_list(new std::list<generic_result> )
+		ret_list( _ret_list )
 {
+	
 plan_type = PLAN_TYPE_DO_PROJECTION;		
 input_tuple.meta = &input_meta;
 output_tuple.meta = &projection_meta;
@@ -51,8 +53,11 @@ output_tuple.meta = &projection_meta;
 	
 virtual int execute( unsigned long long  trans_no  )
 {
+ DEBUG("do_projection_node execute begin ============={ \n");
  for(auto &row : *input_list ){			
 			generic_result result;
+			DEBUG("result.allocate( %ld ) \n", projection_meta.size );
+
 			result.allocate( projection_meta.size );
 			
 			input_tuple.result = &row ;
@@ -64,51 +69,55 @@ virtual int execute( unsigned long long  trans_no  )
 					switch(v->tag)
 					{
 					case FIELD_TYPE_LONGLONG: {
+					DEBUG("case FIELD_TYPE_LONGLONG \n");
 					output_tuple.set_field(  v->alias_name, (char *)(&(uv.longlong_value)) );
 					break;
 					}
 					
 					case FIELD_TYPE_FLOAT: {
+					DEBUG("case FIELD_TYPE_FLOAT \n");
 					output_tuple.set_field(  v->alias_name, (char *)(&(uv.float_value)) );
 					break;
 					}
 					
 					case FIELD_TYPE_DOUBLE: {
+					DEBUG("case FIELD_TYPE_DOUBLE \n");
 					output_tuple.set_field(  v->alias_name, (char *)(&(uv.double_value)) );
 					break;
 					}
 					
 					case FIELD_TYPE_DATE: {
+					DEBUG("case FIELD_TYPE_DATE \n");
 					output_tuple.set_field(  v->alias_name, (char *)(&(uv.long_value)) );
 					break;
 					}
 					
 					case FIELD_TYPE_SHORT: {
+					DEBUG("case FIELD_TYPE_SHORT \n");
 					output_tuple.set_field(  v->alias_name, (char *)(&(uv.short_value)) );
 					break;
 					}
 					
 					case FIELD_TYPE_STR: {
+					DEBUG("case FIELD_TYPE_STR \n");
 					output_tuple.set_field(  v->alias_name, (char *)(&(uv.str_value)) );
 					break;
 					}
 					
 					case FIELD_TYPE_INT: {
+					DEBUG("case FIELD_TYPE_INT \n");
 					output_tuple.set_field(  v->alias_name, (char *)(&(uv.int_value)) );
 					break;
 					}
-					
-					
-					
-					
 					}
 			}
 			
+			DEBUG("ret_list->push_back(result) \n");
 			ret_list->push_back(result);
 		}
+		
+ DEBUG("do_projection_node execute end =============} \n");
  return 0;
-
-
 }
 
 virtual std::list<generic_result>* get_ret_list()

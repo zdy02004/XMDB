@@ -53,7 +53,7 @@ int get_elemets()
 	rapidjson::Value    *elemets = NULL;
 	if( root->HasMember("OPT_INSERT_COLUMNS") )
 		{
-			elemets =  &(*root)["OPT_INSERT_COLUMNS"]["children"];
+			elemets =  &(*root)["OPT_INSERT_COLUMNS"]["children"][0];
 		}
 		else
 		{

@@ -939,7 +939,7 @@ inline int mem_rbtree_create(
       //allocate_index_no(&(mem_index_config->index_no));
       //(*mem_rbtree_index) -> config.index_no         = mem_index_config->index_no;
       allocate_index_no(&((*mem_rbtree_index) -> config.index_no ));
-      set_index_no_addr((*mem_rbtree_index) -> config.index_no,(void *)mem_rbtree_index);
+      set_index_no_addr((*mem_rbtree_index) -> config.index_no,(void *)(*mem_rbtree_index) );
       (*mem_rbtree_index) -> config.owner_table_no   = mem_index_config->owner_table_no;
       (*mem_rbtree_index) -> config.field_order      = mem_index_config->field_order;
       (*mem_rbtree_index) -> config.field_num        = mem_index_config->field_num;

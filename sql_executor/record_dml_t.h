@@ -23,19 +23,27 @@ struct index_selector_t
   std::vector< mem_skiplist_index_t *            > skiplist_index_vector;
   	
   int insert_index_dml(int index_type, void * addr,mem_table_t *mem_table, std::string& field_name )
-  {				
+  {	
+  	DEBUG("insert_index_dml() begin \n");			
 		switch(index_type)
 		{
 			case INDEX_TYPE_HASH :{
+			DEBUG("case INDEX_TYPE_HASH \n");		
 			hash_index_dml_vector.emplace_back(mem_table,field_name,index_type);
 			hash_index_vector.emplace_back( (mem_hash_index_t *)addr);
+			DEBUG("emplace_back INDEX_TYPE_HASH  config!\n");		
+			break;
 			}
 		  case INDEX_TYPE_SKIP :{
+		  DEBUG("INDEX_TYPE_SKIP \n");			
 			skiplist_index_dml_vector.emplace_back(mem_table,field_name,index_type);
 			skiplist_index_vector.emplace_back( (mem_skiplist_index_t *)addr);
+			DEBUG("emplace_back INDEX_TYPE_SKIP  config!\n");		
+			break;
 			}
 							
 		}
+		DEBUG("insert_index_dml() end \n");			
   	return 0;
   }
   
@@ -44,8 +52,11 @@ int insert_into_index(
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
 {
+	DEBUG("insert_into_index begin\n");
 	int ret = 0;
 	for(size_t i = 0 ; i< hash_index_dml_vector.size();++i){
+		
+		DEBUG("hash_index_dml_vector[%d].insert_into_index\n",i);
 		ret = hash_index_dml_vector[i].insert_into_index(
 																							hash_index_vector[i],
 																							record_ptr,
@@ -55,6 +66,7 @@ int insert_into_index(
 			if(ret)return ret;
 	}
 	for(size_t i = 0 ; i< skiplist_index_dml_vector.size();++i){
+		DEBUG("skiplist_index_dml_vector[%d].insert_into_index\n",i);
 		ret = skiplist_index_dml_vector[i].insert_into_index(
 																							skiplist_index_vector[i],
 																							record_ptr,
@@ -63,7 +75,9 @@ int insert_into_index(
 																							Tn);
 		if(ret)return ret;
 	}
-	
+		DEBUG("insert_into_index end\n");
+		return 0;
+
 }
 
 
@@ -181,10 +195,11 @@ record_dml_t( mem_table_t *_mem_table):mem_table(_mem_table)
 
 inline void init()
 {	
+	  DEBUG("init() begin\n");
 	  int ret = 0 ;
 	  if(  NULL != mem_table ){
-	  	
-	
+	  DEBUG(" if(  NULL != mem_table )\n");	
+	  DEBUG(" field_names.size() = %d \n",field_names.size() );	
 	  
 		meta.from_table( mem_table );
 		tuple_one.meta = &meta;
@@ -195,43 +210,69 @@ inline void init()
 		mem_table_lock( &( mem_table->table_locker ) );// 确保 create_index_online 不漏数据
 		for( size_t i = 0; i< field_names.size() ;  ++i )
 		{
+			DEBUG(" for( size_t i = %d )\n",i);	
 			tuple_one.get_field_desc( mem_table ,field_names[i], field );//获取字段描述
 			field_vector.emplace_back(field);
 			if( field.relate_index[0] != 0 ){	//有索引就建立索引操纵类
+			  DEBUG("has_index = true;	\n");
 				has_index = true;			                 
 				long relate_index = 0;           
 				int  index_type = 0;				
 				for( int j = 0 ; j< MAX_FIELD_INDEX_NO ; ++j )
 				{
 					relate_index = field.relate_index[j];
-					index_type   = field.index_type[j];
-					
-					void * addr = NULL;
-					ret = get_index_no_addr( relate_index , &addr );
-					
-					if( addr != NULL && ret == 0 ){
-						index_selector.insert_index_dml( index_type , addr,mem_table , field_names[i]  );
+					if( 0 !=relate_index )
+					{
+						  DEBUG("Find index %d and then insert into config!\n",relate_index);
+							index_type   = field.index_type[j];					
+							void * addr = NULL;
+							ret = get_index_no_addr( relate_index , &addr );
+							if(ret)
+								{
+									ERROR("get_index_no_addr err is %d\n",ret);
+									return ;
+								}
+								else DEBUG("index_addr is %0x \n",addr );
+							
+							if( addr != NULL && ret == 0 ){
+							  DEBUG("index_selector.insert_index_dml()	\n");
+								index_selector.insert_index_dml( index_type , addr,mem_table , field_names[i]  );
+							}
 					}
 				}
 			}
+			else  DEBUG("has_index = false;	\n");
 		}
 		mem_table_unlock( &( mem_table->table_locker ) );// 确保 create_index_online 不漏数据
   	
   	}
+DEBUG("init() end\n");
+
 }
 
 // 把值填充入 tuple 中
 inline int fill_record( )
 {
+	DEBUG("fill_record() begin\n");													
 	int ret = 0;
   char * addr = NULL;  
 	for( size_t i = 0; i< field_names.size() ;  ++i )
-  {
-  ret = tuple_one.set_field( field_names[i] , (char *)cast_ptr_by_field( field_values[i] , field_vector[i] ) );
-  if( ret )return ret;
+  { 
+  	int temp = 1;
+  	DEBUG(" field_values = %d \n",*((int *)cast_ptr_by_field( field_values[i] , field_vector[i] )) );
+  	//ret = tuple_one.set_field( mem_table,field_names[i] , (char *)cast_ptr_by_field( field_values[i] , field_vector[i] ) );
+  	ret = tuple_one.set_field( mem_table,field_names[i] , cast_ptr_by_field_to_string( field_values[i] , field_vector[i] ).c_str() );
+		
+		//ret = tuple_one.set_field( mem_table,field_names[i] , (char *)(&temp) );
+
+		if( ret )
+	  {
+	    ERROR("tuple_one.set_field err is %d \n",ret);
+		  return ret;
+	  }
   
   }
-  
+  DEBUG("fill_record() end\n");													
   return 0;
 }
 
@@ -241,6 +282,7 @@ inline int insert_one_into_table(
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
 {
+DEBUG("insert_one_into_table() begin\n");	
 fill_record();	
 long block_no;
 int ret  = 0;
@@ -248,17 +290,36 @@ int ret1 = 0;
 record_t * out_index_record_ptr = NULL;
 
 CPP_DEBUG<<"mem_table->record_size - RECORD_HEAD_SIZE is "<<mem_table->record_size - RECORD_HEAD_SIZE<<std::endl;
+
+
 ret = mem_mvcc_insert_record( mem_table ,
                           out_record_ptr,
                           &block_no, /* in */
                           return_record.get_data(),
                           Tn        //事务ID
                           );
-if(ret )return ret;
-if(has_index)ret = index_selector.insert_into_index(
+DEBUG("mem_mvcc_insert_record() ok\n");	                          
+if(ret )
+{
+	ERROR("mem_mvcc_insert_record err is %d \n",ret);
+	return ret;
+	
+}
+
+
+//DEBUG( "INSERT VALUE is %d \n" , *((int*)(*out_record_ptr)->data) );
+
+if(has_index)
+	{
+		DEBUG(" Has index! index_selector.insert_into_index()  \n");		 
+		ret = index_selector.insert_into_index(
 												*out_record_ptr,
 												&out_index_record_ptr,	
 												Tn  );
+	}
+	else DEBUG("Do not has index!  \n");	 	
+													
+DEBUG("insert_one_into_table() end\n");													
 return ret;
 
 
@@ -269,6 +330,8 @@ inline int delete_one_from_table(
 												record_t * in_record_ptr,	
 												unsigned long long Tn  )
 {
+DEBUG("delete_one_from_table() begin\n");													
+
 int ret = 0;
 int ret1 = 0;
 record_t * out_index_record_ptr = NULL;
@@ -276,11 +339,17 @@ ret =  mem_mvcc_delete_record( mem_table ,
 																				in_record_ptr,
 																				Tn               // 本事务ID
 																				);
-if(ret )return ret;
+if(ret )
+{
+	ERROR("mem_mvcc_delete_record err is %d \n",ret);
+	return ret;
+}
 if(has_index)ret = index_selector.delete_from_index(
 												in_record_ptr,
 												&out_index_record_ptr,	
 												Tn  );
+												
+DEBUG("delete_one_from_table() end\n");													
 return ret;
 }
 // 用于实时更新时更新索引
@@ -290,9 +359,15 @@ inline int update_one_from_table(
 												record_t ** out_record_ptr,	
 												unsigned long long Tn  )
 {
-fill_record( );	
+DEBUG("update_one_from_table() begin\n");													
 int ret = 0;
 int ret1 = 0;
+ret = fill_record( );	
+if(ret )
+{
+	ERROR("fill_record( ) err is %d \n",ret);
+	return ret;
+}
 record_t * out_index_record_ptr = NULL;
 ret =  mem_mvcc_update_record( mem_table ,
 															in_record_ptr,
@@ -300,11 +375,16 @@ ret =  mem_mvcc_update_record( mem_table ,
 															Tn,               // 本事务ID
 															out_record_ptr
 															);
-if(ret )return ret;
+if(ret )
+{
+	ERROR("update_one_from_table err is %d \n",ret);
+	return ret;
+}
 if(has_index)ret = index_selector.update_from_index(
 												*out_record_ptr,
 												&out_index_record_ptr,	
 												Tn  );
+DEBUG("update_one_from_table() end\n");													
 return ret;
 }
 

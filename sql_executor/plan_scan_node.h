@@ -835,10 +835,14 @@ scan_sfw_node(mem_table_t * _mem_table ,
   																					//const_value(_const_value),
   																					//const_type(_const_type),
   																					pro_list(_pro_list)
-  																					{plan_type = PLAN_TYPE_SCAN_SFW;}
+  																					{plan_type = PLAN_TYPE_SCAN_SFW;
+  																					DEBUG("construct pre->field_name is %s \n",pre->field_name);
+
+  																						}
   																					
 virtual int execute( unsigned long long  trans_no  )
 {
+	DEBUG("pre->field_name is %s \n",pre->field_name);
 	int ret = 0;
   ret = full_table_scan_with_prolist_and_conlist(
 														 mem_table,       //±í

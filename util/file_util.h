@@ -192,6 +192,7 @@ int dirent_array_search_min(struct dirent array[], long n, char * v,long * pos)
     return 0;  
 }  
 
+
 #ifdef __cplusplus
 
 }

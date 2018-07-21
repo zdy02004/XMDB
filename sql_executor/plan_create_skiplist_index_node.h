@@ -170,9 +170,10 @@ int check_field()
  							  	
  							  	for(int j = 0; j< MAX_FIELD_INDEX_NO; ++j )
  							  	{
- 							  		if(field.relate_index[j]!=0 ){
+ 							  		if(field.relate_index[j]==0 ){
  							  		field.index_type[j] = index_type;
- 							  		field.relate_index[j] = mem_skiplist_index->config.index_no;  
+ 							  		field.relate_index[j] = mem_skiplist_index->config.index_no; 
+ 							  		break; 
  							  	  }
  							    }
  							  }
