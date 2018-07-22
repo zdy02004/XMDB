@@ -1,0 +1,100 @@
+2016-12-03 02:40:15.244242,[../../mem_block_no_manager.h,init_mem_block_no_manager() Line:00081,tid:139844343682816]: in init_mem_block_no_manager()
+2016-12-03 02:40:15.244522,[mem_rbtree_meta.c,create_block() Line:00011,tid:139844343682816]: in create_block
+2016-12-03 02:40:15.244532,[mem_rbtree_meta.c,create_block() Line:00015,tid:139844343682816]: create_block ab0360
+2016-12-03 02:40:15.244542,[../../mem_block_t.h,mem_block_config() Line:00189,tid:139844343682816]: mb->file_name is ./rbtree_table.dat,mb->block_size is 1024
+2016-12-03 02:40:15.244646,[mem_rbtree_meta.c,create_block() Line:00022,tid:139844343682816]: fd = 3
+2016-12-03 02:40:15.244656,[mem_rbtree_meta.c,create_mem_table_config() Line:00029,tid:139844343682816]: in create_mem_table_config
+2016-12-03 02:40:15.244662,[mem_rbtree_meta.c,main() Line:00083,tid:139844343682816]: mem_config is 11182224
+2016-12-03 02:40:15.244669,[../../mem_table_ctl.h,mem_table_create() Line:01291,tid:139844343682816]: Begin to greate a mem_table.
+2016-12-03 02:40:15.244675,[../../mem_table_ctl.h,mem_table_create() Line:01293,tid:139844343682816]: mem_table_config->mem_blocks_table->file_name is ./rbtree_table.dat
+2016-12-03 02:40:15.244679,[../../mem_table_ctl.h,mem_table_create() Line:01298,tid:139844343682816]:>>>IMPORTANT_INFO Create table ,table's addr is ab0570 
+2016-12-03 02:40:15.244684,[../../mem_table_no_manager.h,allocate_table_no() Line:00186,tid:139844343682816]: mem_table_no_manager.cur_num is 1
+2016-12-03 02:40:15.244689,[../../mem_table_no_manager.h,set_table_no_addr() Line:00148,tid:139844343682816]: mem_table save addr is (1,ab0570)
+2016-12-03 02:40:15.244695,[../../../util/str_num_map.h,init_str_num_map_manager() Line:00116,tid:139844343682816]: in init_str_num_map_manager()
+2016-12-03 02:40:15.244710,[../../mem_table_ctl.h,mem_table_create() Line:01312,tid:139844343682816]: (*mem_table)->config.table_name1 is ./first_table_name
+2016-12-03 02:40:15.244718,[../../mem_table_ctl.h,fill_field_info() Line:00239,tid:139844343682816]: FIELD_TYPE_INT
+2016-12-03 02:40:15.244723,[../../mem_table_ctl.h,fill_field_info() Line:00239,tid:139844343682816]: FIELD_TYPE_INT
+2016-12-03 02:40:15.244726,[../../mem_table_ctl.h,fill_table_field_size() Line:00379,tid:139844343682816]: mem_table->record_size is 136 
+2016-12-03 02:40:15.244730,[../../mem_table_ctl.h,mem_table_create() Line:01317,tid:139844343682816]: mem_table_config->mem_blocks_table block_size is 1024
+2016-12-03 02:40:15.244734,[../../mem_table_ctl.h,mem_table_create() Line:01318,tid:139844343682816]: (*mem_table)->config.table_name2 is ./first_table_name
+2016-12-03 02:40:15.244738,[../../mem_table_ctl.h,mem_table_open() Line:01233,tid:139844343682816]: Begin to open a mem_table.
+2016-12-03 02:40:15.244742,[../../mem_table_ctl.h,mem_table_open() Line:01234,tid:139844343682816]: config.mem_block_used is 1.
+2016-12-03 02:40:15.244745,[../../mem_table_ctl.h,mem_table_open() Line:01238,tid:139844343682816]: mem_block_temp->block_size is 1024
+2016-12-03 02:40:15.244749,[../../mem_table_ctl.h,mem_table_open() Line:01239,tid:139844343682816]: (mem_table)->config.table_name1 is ./first_table_name
+2016-12-03 02:40:15.244753,[../../mem_table_ctl.h,mem_table_open() Line:01255,tid:139844343682816]: mem_block_temp is ab0360.
+2016-12-03 02:40:15.244757,[../../mem_table_ctl.h,mem_table_open() Line:01256,tid:139844343682816]: mem_block file_name is ./rbtree_table.dat
+2016-12-03 02:40:15.244761,[../../mem_table_ctl.h,mem_table_open() Line:01257,tid:139844343682816]: mem_block_temp->block_size is 1024
+2016-12-03 02:40:15.244765,[../../mem_block_no_manager.h,allocate_block_no() Line:00187,tid:139844343682816]: mem_block_no_manager.cur_num is 1
+2016-12-03 02:40:15.244769,[../../../util/str_num_map.h,init_str_num_map_manager() Line:00116,tid:139844343682816]: in init_str_num_map_manager()
+2016-12-03 02:40:15.244789,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00241,tid:139844343682816]: mb is ab0360,mb->block_size is: 1024
+2016-12-03 02:40:15.244857,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00250,tid:139844343682816]: Create shared-memory: 56754187
+2016-12-03 02:40:15.245405,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00256,tid:139844343682816]: block_share_mem_addr is : c6ee000
+2016-12-03 02:40:15.245417,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00262,tid:139844343682816]: mb->block_start_addr is : c6ee000
+2016-12-03 02:40:15.245421,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00267,tid:139844343682816]: mb->block_end_addr is : c6ee400
+2016-12-03 02:40:15.245427,[../../mem_table_ctl.h,mem_table_open() Line:01264,tid:139844343682816]: mem_block_get_mem_from_os() ok
+2016-12-03 02:40:15.246144,[../../mem_block_t.h,mem_block_mmap() Line:00334,tid:139844343682816]: p_addr = c6ee000,sb.st_size = 1024
+2016-12-03 02:40:15.246191,[../../mem_block_t.h,mem_block_mmap() Line:00337,tid:139844343682816]: space_start oraginal addr is : c6ed000
+2016-12-03 02:40:15.246207,[../../mem_block_t.h,mem_block_mmap() Line:00349,tid:139844343682816]: after copy,the mmap block_malloc_addr is ab0360
+2016-12-03 02:40:15.246213,[../../mem_block_t.h,mem_block_mmap() Line:00371,tid:139844343682816]: space_start_addr is : c6ed200,space_size IS 512
+2016-12-03 02:40:15.246219,[../../mem_block_t.h,mem_block_mmap() Line:00377,tid:139844343682816]: mem_block_mmap() end
+2016-12-03 02:40:15.246223,[../../mem_table_ctl.h,mem_table_open() Line:01268,tid:139844343682816]: mem_block_mmap() ok
+2016-12-03 02:40:15.246233,[../../mem_rbtree_index.h,mem_rbtree_create() Line:00875,tid:139844343682816]: Enter mem_rbtree_create() 
+2016-12-03 02:40:15.246238,[../../mem_rbtree_index.h,mem_rbtree_create() Line:00891,tid:139844343682816]: create mem_rbtree block 416b30
+2016-12-03 02:40:15.246243,[../../mem_rbtree_index.h,mem_rbtree_create() Line:00895,tid:139844343682816]: _block_size is 2048
+2016-12-03 02:40:15.246249,[../../mem_block_t.h,mem_block_config() Line:00189,tid:139844343682816]: mb->file_name is first_index_name_heap.dat,mb->block_size is 2048
+2016-12-03 02:40:15.246372,[../../mem_rbtree_index.h,mem_rbtree_create() Line:00919,tid:139844343682816]:  heap_space_config->table_name is first_index_name_heap 
+2016-12-03 02:40:15.246383,[../../mem_table_ctl.h,mem_table_create() Line:01291,tid:139844343682816]: Begin to greate a mem_table.
+2016-12-03 02:40:15.246388,[../../mem_table_ctl.h,mem_table_create() Line:01293,tid:139844343682816]: mem_table_config->mem_blocks_table->file_name is first_index_name_heap.dat
+2016-12-03 02:40:15.246392,[../../mem_table_ctl.h,mem_table_create() Line:01298,tid:139844343682816]:>>>IMPORTANT_INFO Create table ,table's addr is ad0d80 
+2016-12-03 02:40:15.246397,[../../mem_table_no_manager.h,allocate_table_no() Line:00186,tid:139844343682816]: mem_table_no_manager.cur_num is 2
+2016-12-03 02:40:15.246409,[../../mem_table_no_manager.h,set_table_no_addr() Line:00148,tid:139844343682816]: mem_table save addr is (2,ad0d80)
+2016-12-03 02:40:15.246422,[../../mem_table_ctl.h,mem_table_create() Line:01312,tid:139844343682816]: (*mem_table)->config.table_name1 is first_index_name_heap
+2016-12-03 02:40:15.246428,[../../mem_table_ctl.h,fill_field_info() Line:00247,tid:139844343682816]: FIELD_TYPE_RBTREE_ENTRY
+2016-12-03 02:40:15.246432,[../../mem_table_ctl.h,fill_table_field_size() Line:00379,tid:139844343682816]: mem_table->record_size is 256 
+2016-12-03 02:40:15.246436,[../../mem_table_ctl.h,mem_table_create() Line:01317,tid:139844343682816]: mem_table_config->mem_blocks_table block_size is 2048
+2016-12-03 02:40:15.246440,[../../mem_table_ctl.h,mem_table_create() Line:01318,tid:139844343682816]: (*mem_table)->config.table_name2 is first_index_name_heap
+2016-12-03 02:40:15.246444,[../../mem_table_ctl.h,mem_table_open() Line:01233,tid:139844343682816]: Begin to open a mem_table.
+2016-12-03 02:40:15.246448,[../../mem_table_ctl.h,mem_table_open() Line:01234,tid:139844343682816]: config.mem_block_used is 1.
+2016-12-03 02:40:15.246451,[../../mem_table_ctl.h,mem_table_open() Line:01238,tid:139844343682816]: mem_block_temp->block_size is 2048
+2016-12-03 02:40:15.246455,[../../mem_table_ctl.h,mem_table_open() Line:01239,tid:139844343682816]: (mem_table)->config.table_name1 is first_index_name_heap
+2016-12-03 02:40:15.246482,[../../mem_table_ctl.h,mem_table_open() Line:01255,tid:139844343682816]: mem_block_temp is ad0a10.
+2016-12-03 02:40:15.246489,[../../mem_table_ctl.h,mem_table_open() Line:01256,tid:139844343682816]: mem_block file_name is first_index_name_heap.dat
+2016-12-03 02:40:15.246493,[../../mem_table_ctl.h,mem_table_open() Line:01257,tid:139844343682816]: mem_block_temp->block_size is 2048
+2016-12-03 02:40:15.246497,[../../mem_block_no_manager.h,allocate_block_no() Line:00187,tid:139844343682816]: mem_block_no_manager.cur_num is 2
+2016-12-03 02:40:15.246504,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00241,tid:139844343682816]: mb is ad0a10,mb->block_size is: 2048
+2016-12-03 02:40:15.246552,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00250,tid:139844343682816]: Create shared-memory: 56786956
+2016-12-03 02:40:15.246569,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00256,tid:139844343682816]: block_share_mem_addr is : c6ec000
+2016-12-03 02:40:15.246574,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00262,tid:139844343682816]: mb->block_start_addr is : c6ec000
+2016-12-03 02:40:15.246578,[../../mem_block_t.h,mem_block_get_mem_from_os() Line:00267,tid:139844343682816]: mb->block_end_addr is : c6ec800
+2016-12-03 02:40:15.246583,[../../mem_table_ctl.h,mem_table_open() Line:01264,tid:139844343682816]: mem_block_get_mem_from_os() ok
+2016-12-03 02:40:15.246911,[../../mem_block_t.h,mem_block_mmap() Line:00334,tid:139844343682816]: p_addr = c6ec000,sb.st_size = 2048
+2016-12-03 02:40:15.246932,[../../mem_block_t.h,mem_block_mmap() Line:00337,tid:139844343682816]: space_start oraginal addr is : c6eb000
+2016-12-03 02:40:15.246944,[../../mem_block_t.h,mem_block_mmap() Line:00349,tid:139844343682816]: after copy,the mmap block_malloc_addr is ad0a10
+2016-12-03 02:40:15.246949,[../../mem_block_t.h,mem_block_mmap() Line:00371,tid:139844343682816]: space_start_addr is : c6eb200,space_size IS 1536
+2016-12-03 02:40:15.246954,[../../mem_block_t.h,mem_block_mmap() Line:00377,tid:139844343682816]: mem_block_mmap() end
+2016-12-03 02:40:15.246958,[../../mem_table_ctl.h,mem_table_open() Line:01268,tid:139844343682816]: mem_block_mmap() ok
+2016-12-03 02:40:15.246962,[../../mem_rbtree_index.h,mem_rbtree_create() Line:00930,tid:139844343682816]:  heap_space_temp is ad0d80 
+2016-12-03 02:40:15.246970,[../../mem_index_no_manager.h,allocate_index_no() Line:00196,tid:139844343682816]: mem_index_no_manager.cur_num is 1
+2016-12-03 02:40:15.246977,[mem_rbtree_meta.c,main() Line:00098,tid:139844343682816]: mem_rbtree_index is ad11b0
+2016-12-03 02:40:15.247013,[../../table_meta.h,table_meta_check_path() Line:00043,tid:139844343682816]: mkdir /home/xmdb/zdy/xmdb_20161128/mem_date_index_ctl/test/test_mem_meta/first_index_name/
+2016-12-03 02:40:15.247263,[../../table_meta.h,table_meta_save() Line:00051,tid:139844343682816]: table_meta_save 
+2016-12-03 02:40:15.247289,[../../table_meta.h,table_meta_save() Line:00069,tid:139844343682816]: path is /home/xmdb/zdy/xmdb_20161128/mem_date_index_ctl/test/test_mem_meta/first_index_name_heap 
+2016-12-03 02:40:15.247308,[../../table_meta.h,table_meta_check_path() Line:00043,tid:139844343682816]: mkdir /home/xmdb/zdy/xmdb_20161128/mem_date_index_ctl/test/test_mem_meta/first_index_name_heap
+2016-12-03 02:40:15.247412,[../../table_meta.h,table_meta_save() Line:00091,tid:139844343682816]: table_info_path is /home/xmdb/zdy/xmdb_20161128/mem_date_index_ctl/test/test_mem_meta/first_index_name_heap/first_index_name_heap_table_info 
+2016-12-03 02:40:15.247422,[../../table_meta.h,table_meta_save() Line:00092,tid:139844343682816]: field_info_path is /home/xmdb/zdy/xmdb_20161128/mem_date_index_ctl/test/test_mem_meta/first_index_name_heap/first_index_name_heap_field_info 
+2016-12-03 02:40:15.247427,[../../table_meta.h,table_meta_save() Line:00093,tid:139844343682816]: block_info_path is /home/xmdb/zdy/xmdb_20161128/mem_date_index_ctl/test/test_mem_meta/first_index_name_heap/first_index_name_heap_block_info 
+2016-12-03 02:40:15.247813,[../../table_meta.h,table_meta_load() Line:00160,tid:139844343682816]: path is /home/xmdb/zdy/xmdb_20161128/mem_date_index_ctl/test/test_mem_meta/first_index_name_heap/first_index_name_heap 
+2016-12-03 02:40:15.247920,[mem_rbtree_meta.c,main() Line:00111,tid:139844343682816]: mem_rbtree2->config.index_name is first_index_name
+2016-12-03 02:40:15.247932,[../../mem_rbtree_index.h,mem_rbtree_index_close() Line:00974,tid:139844343682816]: Begin to close a mem_index£ºfirst_index_name, addr is 1 .
+2016-12-03 02:40:15.247938,[../../mem_rbtree_index.h,mem_rbtree_index_close() Line:00975,tid:139844343682816]:  RBTREE_LOCK() 
+2016-12-03 02:40:15.247942,[../../mem_table_ctl.h,mem_table_close() Line:01351,tid:139844343682816]: Begin to close a mem_table£ºfirst_index_name_heap.
+2016-12-03 02:40:15.247950,[../../mem_table_ctl.h,mem_table_close() Line:01357,tid:139844343682816]: mem_block_temp is ad0a10.
+2016-12-03 02:40:15.247955,[../../mem_block_t.h,mem_block_munmap() Line:00386,tid:139844343682816]: Begin to mem_block_munmap() 
+2016-12-03 02:40:15.247971,[../../mem_block_t.h,mem_block_munmap() Line:00400,tid:139844343682816]: mem_block_munmap() ok!
+2016-12-03 02:40:15.247978,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00281,tid:139844343682816]: Enter mem_block_put_mem_to_os() 
+2016-12-03 02:40:15.247986,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00293,tid:139844343682816]: mb->shmid = 56786956 have deleted!
+2016-12-03 02:40:15.247998,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00300,tid:139844343682816]: del_block_no_addr ok!
+2016-12-03 02:40:15.248003,[../../mem_block_t.h,mem_block_put_mem_to_os() Line:00302,tid:139844343682816]: mem_block_put_mem_to_os() ok!
+2016-12-03 02:40:15.248009,[../../mem_table_ctl.h,mem_table_close() Line:01368,tid:139844343682816]: Free mem_table_ptr.
+2016-12-03 02:40:15.248015,[../../mem_table_ctl.h,mem_table_close() Line:01380,tid:139844343682816]: free (mem_table->config.fields_table)
+2016-12-03 02:40:15.248020,[../../mem_table_ctl.h,mem_table_close() Line:01388,tid:139844343682816]: free(mem_table->config.mem_blocks_table)
