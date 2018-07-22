@@ -359,14 +359,14 @@ compare_list cmp1;
 compare_list cmp2;
 
 cmp1.mem_table       			= mem_table;
-cmp1.field_name      			= field_name;
-cmp1.cmp_field_value 			= &com_value;
+strcpy(field_name,field_name);
+cmp1.cmp_field_value 			= std::string( (char *)(&com_value) );
 cmp1.next 					 			= &cmp2;
 cmp1.fun 								  = (void *)cmp_int ;
 
 cmp2.mem_table       			= mem_table;
-cmp2.field_name      			= field_name2;
-cmp2.cmp_field_value 			= &try_value;
+strcpy(cmp2.field_name,field_name2);
+cmp2.cmp_field_value 			= std::string( (char *)(&try_value) );
 cmp2.next 					 			= NULL;
 cmp2.fun                  = (void *)cmp_int ;
  

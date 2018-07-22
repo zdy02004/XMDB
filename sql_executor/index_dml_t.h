@@ -96,27 +96,39 @@ inline int set_index_entry_key( char * addr , const field_t & field ,mem_skiplis
     DEBUG("set_index_entry_key begin \n"); 
     switch( field.field_type )
     {
-    	case FIELD_TYPE_INT:              {DEBUG("case FIELD_TYPE_INT:\n"); out.lkey = (FIELD_INT)(*addr ); return 0;           }
-			case FIELD_TYPE_SHORT:            {DEBUG("case FIELD_TYPE_SHORT:\n"); out.lkey = (FIELD_SHORT)(*addr );return 0;          }
- 			case FIELD_TYPE_LONG:             {DEBUG("case FIELD_TYPE_LONG:\n"); out.lkey = (FIELD_LONG )(*addr );return 0;          }
-			case FIELD_TYPE_LONGLONG:         {DEBUG("case FIELD_TYPE_LONGLONG:\n"); out.lkey = (FIELD_LONGLONG)(*addr );return 0;       }
-			case FIELD_TYPE_DATE:             {DEBUG("case FIELD_TYPE_DATE:\n"); out.lkey = (FIELD_DATE )(*addr );return 0;          }
+    	case FIELD_TYPE_INT:              {DEBUG("case FIELD_TYPE_INT:\n"); out.lkey = (FIELD_INT)(*addr );    CPP_DEBUG<<"out.lkey="<<out.lkey<<std::endl;return 0;           }
+			case FIELD_TYPE_SHORT:            {DEBUG("case FIELD_TYPE_SHORT:\n"); out.lkey = (FIELD_SHORT)(*addr );CPP_DEBUG<<"out.lkey="<<out.lkey<<std::endl;return 0;          }
+ 			case FIELD_TYPE_LONG:             {DEBUG("case FIELD_TYPE_LONG:\n"); out.lkey = (FIELD_LONG )(*addr ); CPP_DEBUG<<"out.lkey="<<out.lkey<<std::endl;return 0;          }
+			case FIELD_TYPE_LONGLONG:         {DEBUG("case FIELD_TYPE_LONGLONG:\n");out.lkey = (FIELD_LONGLONG)(*addr );CPP_DEBUG<<"out.lkey="<<out.lkey<<std::endl;return 0;       }
+			case FIELD_TYPE_DATE:             {DEBUG("case FIELD_TYPE_DATE:\n"); out.lkey = (FIELD_DATE )(*addr ); CPP_DEBUG<<"out.lkey="<<out.lkey<<std::endl;return 0;          }
       case FIELD_TYPE_STR: 							{ 
       																	DEBUG("case FIELD_TYPE_STR:\n");
 																				std::string str = std::to_string( *((addr )) );  
-																				if( str.size() <=32 )strcpy(out.ckey  ,str.c_str()  ); 
+																				if( str.size() <=32 ){
+																					strcpy(out.ckey  ,str.c_str()  ); 
+																					CPP_DEBUG<<"out.ckey="<<out.ckey<<std::endl;
+																				}
 																				else return FIELD_OUT_OF_32;
 																			  } 
 			case FIELD_TYPE_FLOAT:            { 
 				                                DEBUG("case FIELD_TYPE_FLOAT:\n");
 																				std::string str = std::to_string( *((FIELD_FLOAT *)(addr )) );  
-																				if( str.size() <=32 )strcpy(out.ckey  ,str.c_str()  ); 
+																				if( str.size() <=32 ){
+																					
+																					strcpy(out.ckey  ,str.c_str()  ); 
+																				  CPP_DEBUG<<"out.ckey="<<out.ckey<<std::endl;
+	
+																				}
 																				else return FIELD_OUT_OF_32;
 																			  } 
 			case FIELD_TYPE_DOUBLE:           { 
 																				DEBUG("case FIELD_TYPE_DOUBLE:\n");
 																				std::string str = std::to_string( *((FIELD_DOUBLE *)(addr )) );  
-																				if( str.size() <=32 )strcpy(out.ckey  ,str.c_str()  ); 
+																				if( str.size() <=32 )
+																					{
+																						strcpy(out.ckey  ,str.c_str()  ); 
+																						CPP_DEBUG<<"out.ckey="<<out.ckey<<std::endl;
+}
 																				else return FIELD_OUT_OF_32;
 																			  } 		
     }  	

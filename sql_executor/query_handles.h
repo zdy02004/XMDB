@@ -222,6 +222,7 @@ int handl_double_con_index( /*in*/mem_table_t *mem_table , 																		//Ğ
 														/*in*/std::list<normal_double_condition_struct> & index_list,			//ĞèÒªÉ¨ÃèµÄË÷ÒıÌõ¼ş
 														/*in*/std::list<normal_double_condition_struct> & nomal_list,			//ĞèÒªÉ¨ÃèµÄ·ÇË÷ÒıÌõ¼ş
 														/*in*/std::set<std::string>  									  & pro_list,       //É¨Ãè³öµÄ×Ö¶ÎÁĞ±í
+														/*in*/finded_Addr_t         									  & finded_Addr,    //Ë÷ÒıÉ¨ÃèÔİ´æset
 														/*in&&out*/std::list<plan_node *>								& plan_node_list  //Êä³öµÄÖ´ĞĞ¼Æ»®
 													  )
 {
@@ -229,8 +230,10 @@ DEBUG("enter handl_double_con_index  ------------- {\n");
 
 int err = 0;
 int first = 1;
-std::shared_ptr<finded_Addr_t> finded_Addr (new finded_Addr_t );
-finded_Addr_t *pre_Addr = finded_Addr.get();
+//std::shared_ptr<finded_Addr_t> finded_Addr (new finded_Addr_t );
+//finded_Addr_t *pre_Addr = finded_Addr.get();
+
+finded_Addr_t *pre_Addr = &finded_Addr;
 
 for(auto& v : index_list)
 {
@@ -240,12 +243,17 @@ for(auto& v : index_list)
   void * addr;
   
   err = get_index_no_addr( index_no,&addr);
-  if(!err)return err;
+  if(err)return err;
   	
 	std::string relation_name = v.relation_name;
 	std::string column_name   = v.column_name;
 	std::string const_value   = v.const_value;
   std::string const_type    = v.const_type;
+  	
+  CPP_DEBUG<<"relation_name:"<<relation_name<<std::endl;
+  CPP_DEBUG<<"column_name:"<<column_name<<std::endl;
+  CPP_DEBUG<<"const_value:"<<const_value<<std::endl;
+  CPP_DEBUG<<"const_type:"<<const_type<<std::endl;
 
 	
 if( INDEX_TYPE_HASH == index_type)

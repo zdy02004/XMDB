@@ -71,6 +71,7 @@ inline int has_field(mem_table_t *mem_table ,std::string field_name){
 }
 // 表中是否有索引
 inline int field_has_index(mem_table_t *mem_table ,std::string field_name,long & index_no,int & index_type){  
+   DEBUG("field_has_index begin ------------ { \n");
    if( NULL == mem_table)
    	{
    		ERROR("EMPTY_TABLE\n");
@@ -95,6 +96,9 @@ inline int field_has_index(mem_table_t *mem_table ,std::string field_name,long &
    	  	
    	  }
    }
+      
+   DEBUG("field_has_index end ------------ { \n");
+
    return 0;
 
 }

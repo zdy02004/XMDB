@@ -65,13 +65,16 @@ const char *sql_str = ""
 "create table test_table ( id INT , name BIGINT ) TABLET_BLOCK_SIZE = 16 , EXTERN_SIZE = 4 ";     
 
 const char *sql_str2 = ""
-"create index test_table_inx on test_table USING hash ( id ) SKIP_LEVEL = 4 ";
+//"create index test_table_inx on test_table USING hash ( id ) SKIP_LEVEL = 4 ";
+"create index test_table_inx on test_table (id)  SKIP_LEVEL = 4 ";
 
 const char *sql_str3 = ""
 "insert into test_table  ( id , name )  values (1,2) ";
 
 const char *sql_str4 = ""
-"select id from  test_table  where name = 2 ";
+//"select id from  test_table  where name = 2 ";
+"select id from  test_table  where id = 1 ";
+
 
 //const char *sql_str2 = ""
 //"create index test_table_inx on test_table ( id ) SKIP_LEVEL = 4 ";

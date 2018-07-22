@@ -48,7 +48,9 @@ class physical_query_plan
   std::list<plan_node *>																					 plan_node_join_group_list;				// join_group µÄÖ´ĞĞ¼Æ»®£¬ÎŞ·¨´óÁ£¶È²¢ĞĞ
   //×îÖÕµÄÖ´ĞĞ¼Æ»®
   std::list<plan_node *>																					 *final_plan_node_list;	 	
-
+  
+  //Ë÷ÒıÉ¨ÃèÓÃµ½µÄµØÖ·¼¯ºÏset
+  finded_Addr_t 																					 			    finded_Addr;
 public:  
   physical_query_plan(QueryAnalyser * _qa) 	:qa(_qa){
   	if ( 
@@ -191,7 +193,8 @@ ret =  handl_double_con_index(/*in*/mem_table, 												              //ĞèÒªÉ
 															/*in*/normal_index_double_condition_map[table_name],	//ĞèÒªÉ¨ÃèµÄË÷ÒıÌõ¼ş
 															/*in*/normal_double_condition_map[table_name],   			//ĞèÒªÉ¨ÃèµÄ·ÇË÷ÒıÌõ¼ş
 															/*in*/condition_fields_map[table_name],               //Ìõ¼ş×Ö¶ÎÁĞ±í
-										     /*in&&out*/plan_node_scan_list                             //Êä³öµÄÖ´ĞĞ¼Æ»®
+															/*in*/finded_Addr,                                    //Ë÷ÒıÉ¨ÃèÔİ´æset    
+										          /*in&&out*/plan_node_scan_list                        //Êä³öµÄÖ´ĞĞ¼Æ»®
 													  );
 }
 else

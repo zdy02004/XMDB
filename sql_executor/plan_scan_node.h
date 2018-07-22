@@ -81,6 +81,7 @@ std::string const_type    ; //常数类型
 finded_Addr_t   ret_list;	//索引结果集
 finded_Addr_t * finded_Addr; //与结果求交集
 
+
 scan_skiplist_index_node(long _index_no,
   								int  _index_type,
   								mem_table_t *_mem_table,
@@ -133,6 +134,7 @@ scan_index_hash_node(long _index_no,
 
 virtual int execute(unsigned long long  trans_no  )
 {
+DEBUG("scan_index_hash_node execute(%ld）------------- { \n",trans_no);
 int ret = 0;
 if( const_type == "INTNUM" )
 {
@@ -161,7 +163,7 @@ if( const_type == "STRING" )
 														oper_type
 														 );
 }
-			
+  DEBUG("scan_index_hash_node execute(%ld）------------- } \n",trans_no);		
 	return ret;
 	
 }
@@ -210,17 +212,21 @@ scan_skiplist_eq_node(long _index_no,
 
 virtual int execute(unsigned long long  trans_no  )
 {
+DEBUG("scan_skiplist_eq_node execute(%ld）------------- { \n",trans_no);
 int ret = 0;
+mem_skiplist_entry_t *last_find_entry = NULL;
+
 if( const_type == "INTNUM" )
 {
 	mem_skiplist_entry_t in;
 	in.lkey  = atol(const_value.c_str());
 	
+	
 	ret = mem_skiplist_index_scanAddr_long(  
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
-                                NULL,
+                                (&last_find_entry),  //NULL,
                                 trans_no,
                           		*finded_Addr,
 																ret_list,	    //原始结果集
@@ -237,14 +243,15 @@ if( const_type == "STRING" )
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
-                                NULL,
+                        /* in */(&last_find_entry),  //NULL,
                                 trans_no,
                           		*finded_Addr,
 								               ret_list	,    //原始结果集
 								               oper_type
                         );
 }
-			
+  
+  DEBUG("scan_skiplist_eq_node execute(%ld）------------- } \n",trans_no);		
 	return ret;
 	
 }
@@ -294,7 +301,10 @@ scan_skiplist_ge_node(long _index_no,
 
 virtual int execute( unsigned long long  trans_no )
 {
+DEBUG("scan_skiplist_ge_node execute(%ld）------------- { \n",trans_no);
 int ret = 0;
+mem_skiplist_entry_t *last_find_entry = NULL;
+
 if( const_type == "INTNUM" )
 {
 	mem_skiplist_entry_t in;
@@ -304,7 +314,7 @@ if( const_type == "INTNUM" )
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
-                                NULL,
+                        /* in */(&last_find_entry),  //NULL,
                                 trans_no,
                           		*finded_Addr,
 								                ret_list,	    //原始结果集
@@ -321,14 +331,14 @@ if( const_type == "STRING" )
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
-                                NULL,
+                        /* in */(&last_find_entry),  //NULL,
                                 trans_no,
                           		*finded_Addr,
 								                ret_list,	    //原始结果集
 								                oper_type
                         );
 }
-			
+  DEBUG("scan_skiplist_ge_node execute(%ld）------------- } \n",trans_no);		
 	return ret;
 	
 }
@@ -378,6 +388,10 @@ scan_skiplist_gt_node(long _index_no,
 
 virtual int execute(unsigned long long  trans_no  )
 {
+DEBUG("scan_skiplist_gt_node execute(%ld）------------- { \n",trans_no);
+
+mem_skiplist_entry_t *last_find_entry = NULL;
+
 int ret = 0;
 if( const_type == "INTNUM" )
 {
@@ -388,7 +402,7 @@ if( const_type == "INTNUM" )
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
-                                NULL,
+                        /* in */(&last_find_entry),  //NULL,
                                 trans_no,
                           		*finded_Addr,
 															ret_list,	    //原始结果集
@@ -405,14 +419,14 @@ if( const_type == "STRING" )
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
-                                NULL,
+                        /* in */(&last_find_entry),  //NULL,
                                 trans_no,
                           		*finded_Addr,
 																ret_list,	    //原始结果集
 																oper_type
                         );
 }
-			
+  DEBUG("scan_skiplist_gt_node execute(%ld）------------- } \n",trans_no);		
 	return ret;
 	
 }
@@ -461,6 +475,10 @@ scan_skiplist_le_node(long _index_no,
 
 virtual int execute(unsigned long long  trans_no  )
 {
+DEBUG("scan_skiplist_le_node execute(%ld）------------- { \n",trans_no);
+	
+mem_skiplist_entry_t *last_find_entry = NULL;
+
 int ret = 0;
 if( const_type == "INTNUM" )
 {
@@ -471,8 +489,8 @@ if( const_type == "INTNUM" )
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
-                                NULL,
-                                 trans_no,
+                        /* in */(&last_find_entry),  //NULL,
+                                trans_no,
                           		*finded_Addr,
 							                	ret_list,	    //原始结果集
 							                	oper_type
@@ -488,14 +506,14 @@ if( const_type == "STRING" )
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
-                                NULL,
+                        /* in */(&last_find_entry),  //NULL,
                                trans_no,
                           		*finded_Addr,
 								               ret_list,    //原始结果集
 								               oper_type
                         );
 }
-			
+  DEBUG("scan_skiplist_le_node execute(%ld）------------- } \n",trans_no);		
 	return ret;
 	
 }
@@ -546,6 +564,10 @@ scan_skiplist_lt_node(long _index_no,
 
 virtual int execute(unsigned long long  trans_no  )
 {
+DEBUG("scan_skiplist_lt_node execute(%ld）------------- { \n",trans_no);
+	
+mem_skiplist_entry_t *last_find_entry = NULL;
+
 int ret = 0;
 if( const_type == "INTNUM" )
 {
@@ -556,7 +578,7 @@ if( const_type == "INTNUM" )
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
-                                NULL,
+                        /* in */(&last_find_entry),  //NULL,
                                 trans_no,
                           		  *finded_Addr,
 								                ret_list,	    //原始结果集
@@ -573,14 +595,14 @@ if( const_type == "STRING" )
                                 mem_table,
                         /* in */index,
                         /* in */&in             ,
-                                NULL,
+                        /* in */(&last_find_entry),  //NULL,
                                 trans_no,
                           		*finded_Addr,
 							                	ret_list,	    //原始结果集
 							                	oper_type
                         );
 }
-			
+  DEBUG("scan_skiplist_lt_node execute(%ld）------------- } \n",trans_no);		
 	return ret;
 	
 }
@@ -639,6 +661,10 @@ scan_skiplist_btw_node(long _index_no,
 
 virtual int execute(unsigned long long  trans_no  )
 {
+DEBUG("scan_skiplist_btw_node execute(%ld）------------- { \n",trans_no);
+	
+mem_skiplist_entry_t *last_find_entry = NULL;
+
 int ret = 0;
 if( const_type == "INTNUM" )
 {
@@ -650,7 +676,7 @@ if( const_type == "INTNUM" )
                                 mem_table,
                         /* in */index,
                         /* in */&min,&max,
-                                NULL,
+                        /* in */(&last_find_entry),  //NULL,
                                 trans_no,
                           		*finded_Addr,
 															 ret_list,	    //原始结果集
@@ -668,14 +694,14 @@ if( const_type == "STRING" )
                                 mem_table,
                         /* in */index,
                         /* in */&min,&max            ,
-                                NULL,
+                        /* in */(&last_find_entry),  //NULL,
                                 trans_no,
                           		*finded_Addr,
 																ret_list,	    //原始结果集
 																oper_type
                         );
 }
-			
+  DEBUG("scan_skiplist_btw_node execute(%ld）------------- } \n",trans_no);		
 	return ret;
 	
 }
@@ -713,6 +739,9 @@ merg_index_node(
 
 virtual int execute( unsigned long long trans_no  )
 {
+DEBUG("merg_index_node execute(%ld）------------- { \n",trans_no);
+	
+
 int ret = 0;
 ret =  merg_index_result(  
                                 mem_table,
@@ -721,7 +750,7 @@ ret =  merg_index_result(
 								&ret_list,		    //原始结果集
 								oper_type
                         );
-			
+  DEBUG("merg_index_node execute(%ld）------------- } \n",trans_no);		
 	return ret;
 	
 }
@@ -769,6 +798,8 @@ merg_index_sfw_node(
 
 virtual int execute( unsigned long long trans_no  )
 {
+DEBUG("merg_index_sfw_node execute(%ld）------------- { \n",trans_no);
+
 int ret = 0;
 ret =  merg_index_result_with_prolist_and_conlist(  
                 mem_table,
@@ -779,7 +810,7 @@ ret =  merg_index_result_with_prolist_and_conlist(
 								&ret_list,		     //原始结果集
 								oper_type
                         );
-			
+  DEBUG("merg_index_sfw_node execute(%ld）------------- } \n",trans_no);		
 	return ret;
 	
 }
@@ -842,6 +873,8 @@ scan_sfw_node(mem_table_t * _mem_table ,
   																					
 virtual int execute( unsigned long long  trans_no  )
 {
+DEBUG("scan_sfw_node execute(%ld）------------- { \n",trans_no);
+
 	DEBUG("pre->field_name is %s \n",pre->field_name);
 	int ret = 0;
   ret = full_table_scan_with_prolist_and_conlist(
@@ -852,7 +885,9 @@ virtual int execute( unsigned long long  trans_no  )
 													 	 &ret_list,  	    //原始结果集
 													 	 oper_type
 );
-	return ret;
+
+DEBUG("scan_sfw_node execute(%ld）------------- } \n",trans_no);		
+return ret;
 }
 
 virtual std::list<generic_result>* get_ret_list()
@@ -903,6 +938,8 @@ scan_normal_node(mem_table_t * _mem_table ,
   																					
 virtual int execute( unsigned long long  trans_no  )
 {
+DEBUG("scan_normal_node execute(%ld）------------- { \n",trans_no);
+
 	int ret = 0;
   ret = full_table_scan_with_conlist(
 														 mem_table,       //表
@@ -911,6 +948,8 @@ virtual int execute( unsigned long long  trans_no  )
 													 	 &ret_list , 	  //原始结果集
 													 	 oper_type
 );
+
+DEBUG("scan_normal_node execute(%ld）------------- } \n",trans_no);		
 	return ret;
 }
 
@@ -945,12 +984,16 @@ full_scan_node(mem_table_t * _mem_table ,
   																					
 virtual int execute( unsigned long long  trans_no  )
 {
+DEBUG("full_scan_node execute(%ld）------------- { \n",trans_no);
+
 	int ret = 0;
   ret = full_table_scan( mem_table,       //表
 												 trans_no,//get_trans_no()                 //当前事务ID
 												 &ret_list , 	  //原始结果集
 												 oper_type
 );
+
+DEBUG("full_scan_node execute(%ld）------------- } \n",trans_no);		
 	return ret;
 }
 

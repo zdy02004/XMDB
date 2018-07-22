@@ -173,6 +173,8 @@ int check_field()
  							  		if(field.relate_index[j]==0 ){
  							  		field.index_type[j] = index_type;
  							  		field.relate_index[j] = mem_skiplist_index->config.index_no; 
+ 							  		++field.index_nr;
+ 							  		DEBUG("field.relate_index[%d] = %ld\n",j,mem_skiplist_index->config.index_no);
  							  		break; 
  							  	  }
  							    }
@@ -192,9 +194,15 @@ int check_field()
 	
 virtual int execute( unsigned long long  trans_no  )
 {
+
+DEBUG(" create_skiplist_index_node-> execute( %d ) begin ------------ { \n",trans_no);
 //  获得表指针
 int err = get_table_ptr();
-if( err )return err;
+if( err )
+	{
+		ERROR("get_table_ptr() err is %d\n",err);
+		return err;
+	}
 	
 if( path !="./")index_name = path + index_name;
 
@@ -219,12 +227,14 @@ if( check_field() )
 {
 	if(0!=(err=mem_skiplist_index_close(mem_skiplist_index)))
 		{
-			DEBUG("mem_skiplist_index_close err is %d\n",err);
+			ERROR("mem_skiplist_index_close err is %d\n",err);
 			return err;
 		}
   
 }	
 
+// 初始化跳表 
+if(0!=(err=mem_skiplist_init( mem_skiplist_index)))ERROR("mem_table_create err is %d\n",err);
 
 //  目前只支持单读建索引
 if( 0 < field_vector.size() ){
@@ -245,7 +255,7 @@ if(err)
 		return err;
 		
 	}
-
+DEBUG(" create_skiplist_index_node-> execute( %d ) end ------------ } \n",trans_no);
 return 0;
 
 }

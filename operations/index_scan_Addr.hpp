@@ -79,6 +79,7 @@ inline int mem_skiplist_index_scanAddr_long(
 		if ( !ret )
 		{
 			DEBUG( "Find one skiplist record in skiplist_space!\n" );
+			DEBUG( "finded_Addr.size() is %ld!\n", finded_Addr.size() );
 			if ( (!finded_Addr.empty() && find_Addr( finded_Addr, finded_entry->block_no, finded_entry->record_num ) ) || (finded_Addr.empty() ) )
 			{
 				ret_list.insert( index_Addr( finded_entry->block_no, finded_entry->record_num ) );
@@ -1649,7 +1650,7 @@ inline int mem_hash_index_scanAddr_long(
 {
 	if ( NULL == hash_fun )
 		return(INSERT_MEM_HASH_INDEX_ERR_HASH_FUN_IS_NULL);
-	DEBUG( "Enter mem_hash_index_scan_long(),key = %ld\n", key );
+	DEBUG( "Enter mem_hash_index_scan_long(),key = %ld,finded_Addr.size()= %ld ------------ { \n", key,finded_Addr.size() );
 
 	/*
 	 * 1 array_space 不存在数据，则存入数据
@@ -1702,8 +1703,10 @@ inline int mem_hash_index_scanAddr_long(
 		if ( !ret2 )
 		{
 			DEBUG( "Find one hash record in array_space!\n" );
+			if( finded_Addr.empty() )CPP_DEBUG<<"finded_Addr is empty"<<std::endl;
 			if ( (!finded_Addr.empty() && find_Addr( finded_Addr, finded_entry->block_no, finded_entry->record_num ) ) || (finded_Addr.empty() ) )
 			{
+				DEBUG( "ret_list.insert( index_Addr(%ld,%ld) );!\n", finded_entry->block_no, finded_entry->record_num  );
 				ret_list.insert( index_Addr( finded_entry->block_no, finded_entry->record_num ) );
 				if ( BASIC_OPS_DELETE == oper_type )
 				{
@@ -1724,7 +1727,7 @@ inline int mem_hash_index_scanAddr_long(
 						);
 					if ( 0 != err )
 					{
-						ERROR( "__mem_hash_index_mvcc_del_l err is %d\n", err );
+						ERROR( "__mem_hash_index_mvcc_del_l err is %d\n  ------------ }{  ", err );
 						return(err);
 					}
 				}
@@ -1758,7 +1761,7 @@ inline int mem_hash_index_scanAddr_long(
 						);
 					if ( 0 != err )
 					{
-						ERROR( "__mem_hash_index_mvcc_del_l err is %d\n", err );
+						ERROR( "__mem_hash_index_mvcc_del_l err is %d  ------------ } \n", err );
 						return(err);
 					}
 				}
@@ -1810,7 +1813,7 @@ inline int mem_hash_index_scanAddr_long(
 								);
 							if ( 0 != err )
 							{
-								ERROR( "__mem_hash_index_mvcc_del_l err is %d\n", err );
+								ERROR( "__mem_hash_index_mvcc_del_l err is %d  ------------ } \n", err );
 								return(err);
 							}
 						}
@@ -1833,7 +1836,7 @@ inline int mem_hash_index_scanAddr_long(
 	default:
 		return(ret);
 	}
-	DEBUG( "mem_hash_index_scan_long() END\n" );
+	DEBUG( "mem_hash_index_scan_long() END  ------------ } \n" );
 
 	return(0);
 }
@@ -2098,7 +2101,7 @@ inline int merg_index_result_with_prolist_and_conlist(
 	int oper_type = BASIC_OPS_SCAN                  /* 操作类型默认是扫描 */
 	)
 {
-	DEBUG( "merg_index_result() start!\n" );
+	DEBUG( "merg_index_result() start! ----------------- { \n" );
 	int			ret			= 0;
 	struct    record_t	* return_record_ptr	= 0;
 
@@ -2118,9 +2121,14 @@ inline int merg_index_result_with_prolist_and_conlist(
 	/* 抽取字段总长度 */
 	size_t	pro_size = 0;
 	int	k;
+	
+	DEBUG( "field_list.size() is %d \n",field_list.size() );
+
 	for ( auto &one : field_list )
 	{
 		k = get_field_index( const_cast<char *>(one.c_str() ), mem_table );
+		DEBUG( "get_field_index()= %d \n",k );
+
 		if ( k >= 0 && k < field_used_num )
 		{
 			/* field = ( field_type * )( (char *)(record_ptr) + RECORD_HEAD_SIZE + fields_table[k].field_dis ); */
@@ -2136,6 +2144,7 @@ inline int merg_index_result_with_prolist_and_conlist(
 	return_record.set_row_size( pro_size );
 	return_record.allocate( pro_size );
 
+	DEBUG( "finded_Addr.size() = %d \n",finded_Addr.size() );
 
 	for ( auto &v : finded_Addr )
 	{
@@ -2209,6 +2218,9 @@ inline int merg_index_result_with_prolist_and_conlist(
 			}
 		}
 	}
+	
+  DEBUG( "merg_index_result() end!  ----------------- } \n" );
+  return 0;
 }
 
 

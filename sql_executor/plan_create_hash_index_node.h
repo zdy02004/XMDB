@@ -131,6 +131,7 @@ int get_table_ptr()
 //检查该表中是否存在某个字段,并在表的字段上标记索引id
 int check_field()
 {
+	CPP_DEBUG<<"check_field() ---------- { "<<" \n";
 	if(!field_vector.empty() && mem_table != NULL && mem_hash_index != NULL ){
 		CPP_DEBUG<<"mem_table_lock "<<" \n";
 		mem_table_lock( &( mem_table->table_locker ) );
@@ -154,6 +155,8 @@ int check_field()
  							  		if(field.relate_index[j]==0 ){
  							  		field.index_type[j] = index_type;
  							  		field.relate_index[j] = mem_hash_index->config.index_no; 
+ 							  		++field.index_nr;
+ 							  		DEBUG("field.relate_index[%d] = %ld\n",j,mem_hash_index->config.index_no);
  							  		break; 
  							  	  }
  							    }
@@ -175,10 +178,14 @@ int check_field()
 				return CREATE_HASH_INDEX_NO_FIELD;
 			}
 	return 0;
+	CPP_DEBUG<<"check_field() ---------- { "<<" \n";
+	
 }
 	
 virtual int execute( unsigned long long  trans_no  )
 {
+CPP_DEBUG<<"execute() ---------- { "<<" \n";
+
 //  获得表指针
 int err = get_table_ptr();
 if( err )return err;
@@ -194,12 +201,15 @@ if(0!=(err=create_mem_hash_config(&hash_config, block_size ,extend_block_size , 
 	return err;
 }
 	
+	
 //建 hash 索引
 if(0!=(err=mem_hash_index_create(&mem_hash_index,mem_table,hash_config)))
 	{
 		ERROR("mem_hash_index_create err is %d\n",err);
 		return err;
 	}
+	
+DEBUG("mem_hash_index->config.index_no = %ld\n",mem_hash_index->config.index_no);
 
 //检查失败，回滚元数据
 if( check_field() )
@@ -231,7 +241,7 @@ if(err)
 		return err;
 		
 	}
-
+CPP_DEBUG<<"execute() ---------- } "<<" \n";
 return 0;
 
 }

@@ -202,7 +202,7 @@ inline	int mem_skiplist_index_close(mem_skiplist_index_t *  mem_skiplist_index)
 /*初始化*/
 inline int  mem_skiplist_init(mem_skiplist_index_t *mem_skiplist_index)
 {
-	DEBUG("Enter mem_skiplist_inint() \n");
+	DEBUG("Enter mem_skiplist_init() ------------------- {\n");
 	 if(NULL == mem_skiplist_index  )  return SKIPLIST_INDEX_ERR_NULL_INDEX_PRT;   
    
    // 初始化随机数
@@ -231,6 +231,11 @@ inline int  mem_skiplist_init(mem_skiplist_index_t *mem_skiplist_index)
 			 // 第一行为 nil
 			 err = mem_table_insert_record(mem_skiplist_index->heap_space ,&record_ptr,&block_no,buf);
        mem_skiplist_index->nil = (mem_skiplist_entry_t *)((char *)(record_ptr) + RECORD_HEAD_SIZE);
+       // nil 指向数据的 record_num，block_no 是 nil自己的
+       mem_skiplist_index->nil->record_num = record_ptr->record_num;
+       mem_skiplist_index->nil->block_no   = block_no;
+       
+       
 			 // 后 max_level 行为 各level 头节点
 			 int i = 1;
 			 //struct  record_t* prev_record_ptr;
@@ -247,7 +252,13 @@ inline int  mem_skiplist_init(mem_skiplist_index_t *mem_skiplist_index)
         	        		
         mem_skiplist_entry_t * cur_entry = (mem_skiplist_entry_t *)(((char *)(record_ptr) + RECORD_HEAD_SIZE) );
 				cur_entry->right_record_num      =  mem_skiplist_index->nil->record_num;
-				cur_entry->right_block_no        =  block_no;
+				cur_entry->right_block_no        =  mem_skiplist_index->nil->block_no;
+				//cur_entry->right_block_no      =  block_no;
+
+				
+       DEBUG("cur_entry is %0x ,cur_entry->right_record_num is %ld, cur_entry->right_block_no is %ld\n ",cur_entry->down_record_num,cur_entry->down_block_no);
+
+				
         if( 1 != i)
         	{
         	  //mem_skiplist_entry_t * prev_record_ptr = (mem_skiplist_entry_t *)(((char *)(prev_record_ptr) + RECORD_HEAD_SIZE));
@@ -260,7 +271,7 @@ inline int  mem_skiplist_init(mem_skiplist_index_t *mem_skiplist_index)
         //prev_record_ptr = 	record_ptr;
         	
         }
-        DEBUG("mem_skiplist_inint end \n");
+        DEBUG("mem_skiplist_inint end ------------------------- } \n");
         return 0;
 }
 
@@ -598,7 +609,7 @@ inline int mem_skiplist_find_GE(mem_skiplist_index_t *mem_skiplist_index,
 	 //IMPORTANT_INFO("Enter mem_skiplist_find_GE(),prev_entry is %0x,input_key is %ld 	\n ",prev_entry,in->lkey);
 	 do{
 	 			//	do{
-	 					  if( right_record &&right_record->is_used == 0)printf("right_record->is_used == 0 \n");
+	 					  if( right_record &&right_record->is_used == 0)DEBUG("right_record->is_used == 0 \n");
 	 						prev_record = (record_t *)((char *)prev_entry - RECORD_HEAD_SIZE);
 	 						
 	 						SKIPLIST_RLOCK( &(prev_record->row_lock) );
@@ -607,9 +618,16 @@ inline int mem_skiplist_find_GE(mem_skiplist_index_t *mem_skiplist_index,
 	 												prev_entry->right_record_num,
 	 												&right_record                   );
 	 						SKIPLIST_RUNLOCK( &(prev_record->row_lock) );
-	 						if( right_record->is_used == 0 )return SKIPLIST_INDEX_ERR_GETGE_FAILED;
-
-	 						if(err)return err;
+	 						if( right_record->is_used == 0 )
+	 							{
+	 								ERROR("SKIPLIST_INDEX_ERR_GETGE_FAILED\n");
+	 								return SKIPLIST_INDEX_ERR_GETGE_FAILED;
+								}
+	 						if(err)
+	 							{
+	 								ERROR("get_record() err is %ld\n",err);
+	 								return err;
+	 							}
 	 			//	}while( right_record->is_used == 0 );
    
 	 right_entry = (mem_skiplist_entry_t *)((char *)(right_record) + RECORD_HEAD_SIZE);

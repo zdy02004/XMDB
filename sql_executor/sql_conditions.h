@@ -398,7 +398,7 @@ inline int get_single_table_conditions(
 											/*out*/ std::list<const_condition_struct>        & const_condition_list
 										)
 {
-	DEBUG("begin get_single_table_conditions \n");
+	DEBUG("begin get_single_table_conditions ---------- { \n");
 	if( mem_table == NULL) return GET_SINGLE_TABLE_EMPTY_TABLE;
 	if(qa == NULL) return GET_SINGLE_TABLE_EMPTY_QA;
   /*in*/  vector<TableItem> 				& tables 									= qa->tables;                    	// ±Ì–≈œ¢
@@ -442,7 +442,7 @@ inline int get_single_table_conditions(
   				}
   				if(err)
   				{
-  					ERROR("end get_single_table_conditions£¨err is %d \n",err);
+  					ERROR("end get_single_table_conditions£¨err is %d ---------- } \n",err);
   					return err;
   					
   				}
@@ -489,7 +489,7 @@ inline int get_single_table_conditions(
   				}
   				if( err != 0 && err != NOT_INDEX_FIELD )
   				{
-  					ERROR("end get_single_table_conditions£¨err is %d \n",err);
+  					ERROR("end get_single_table_conditions£¨err is %d  ---------- } \n",err);
   					return err;
   					
   				}
@@ -509,7 +509,7 @@ inline int get_single_table_conditions(
   				
   				if( err != 0 && err != NOT_INDEX_FIELD )
   				{
-  					ERROR("end get_single_table_conditions£¨err is %d \n",err);
+  					ERROR("end get_single_table_conditions£¨err is %d  ---------- } \n",err);
   					return err;
   					
   				}
@@ -530,13 +530,13 @@ inline int get_single_table_conditions(
   				}
   				if( err != 0 && err != NOT_INDEX_FIELD )
   				{
-  					ERROR("end get_single_table_conditions£¨err is %d \n",err);
+  					ERROR("end get_single_table_conditions£¨err is %d  ---------- } \n",err);
   					return err;
   					
   				}
   			}
   		}
-  DEBUG("end get_single_table_conditions \n");
+  DEBUG("end get_single_table_conditions   ---------- } \n");
 	return err;
   }
 
