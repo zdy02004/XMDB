@@ -21,7 +21,14 @@ QueryOptimiser(QueryAnalyser &qa ):QueryAnalyser( *(qa.root),*(qa.doc),NULL)
 
 }
 
- void optimiser_template( rapidjson::Value  * vx ,rapidjson::Value  *  father, std::function<void(rapidjson::Value  * vx ,rapidjson::Value  *  father)> func ){
+void optimiser_template( rapidjson::Value  * vx ,rapidjson::Value  *  father, std::function<void(rapidjson::Value  * vx ,rapidjson::Value  *  father)> func ){
+
+if( NULL == vx)
+{
+	DEBUG("NO Need to optimiser!\n");
+	return ;
+}
+
 if( vx->IsArray()  ){
 			 	DEBUG("vx->IsArray()\n");
   		for (auto& v : (*vx).GetArray()  ){  				
@@ -65,8 +72,12 @@ if(vx->IsObject()){
 }
 }
 //将 btw 转化为 and
- void optimiser_btw( rapidjson::Value  * vx ,rapidjson::Value  *  father){
-
+void optimiser_btw( rapidjson::Value  * vx ,rapidjson::Value  *  father){
+if( NULL == vx)
+{
+	DEBUG("NO Need to optimiser_btw!\n");
+	return ;
+}
 //if( vx->IsArray()  ){
 //			 	DEBUG("vx->IsArray()\n");
 //  		for (auto& v : (*vx).GetArray()  ){  				
@@ -137,7 +148,11 @@ if(vx->IsObject()){
 
 //将 in 转化为 or
 void optimiser_in( rapidjson::Value  * vx ,rapidjson::Value  *  father){
- 	
+if( NULL == vx)
+{
+	DEBUG("NO Need to optimiser_in!\n");
+	return ;
+} 	
  	  if ( (*vx)["tag"] == T_OP_IN  ){
  	  	 	 
  	  	  rapidjson::Value  * outter;
@@ -194,7 +209,11 @@ void optimiser_in( rapidjson::Value  * vx ,rapidjson::Value  *  father){
 
 
 void optimiser_not( rapidjson::Value  * vx ,rapidjson::Value  *  father){
- 	
+if( NULL == vx)
+{
+	DEBUG("NO Need to optimiser_not!\n");
+	return ;
+}  	
  	  if ( (*vx)["tag"] == T_OP_NOT  ){
  	  	 DEBUG(" optimiser_not \n");
  	  	  rapidjson::Value  * outter;
@@ -293,6 +312,11 @@ void optimiser_not( rapidjson::Value  * vx ,rapidjson::Value  *  father){
 }
 
 void optimiser_const( rapidjson::Value  * vx ,rapidjson::Value  *  father){
+if( NULL == vx)
+{
+	DEBUG("NO Need to optimiser_const!\n");
+	return ;
+} 	
 	      rapidjson::Value  * outter;
 	    	
 	    	rapidjson::Value d;
@@ -402,6 +426,11 @@ void optimiser_const( rapidjson::Value  * vx ,rapidjson::Value  *  father){
 
 // optimiser project_list 
 void optimiser_project_template( rapidjson::Value  * projectlist,int level , std::function<void(rapidjson::Value *  ,int  )> func ){
+if( NULL == projectlist)
+{
+	DEBUG("NO Need to optimiser_project_template( projectlist )!\n");
+	return ;
+} 
    //遍历 projectlist 将数据表填入 table_names, 将子查询 填入 sub_querys
    	
   	if( projectlist->IsArray() ) {
@@ -415,7 +444,14 @@ void optimiser_project_template( rapidjson::Value  * projectlist,int level , std
 } // end 
 
  
- void optimiser_project_const( rapidjson::Value  * v,int level = 0 ){ 
+void optimiser_project_const( rapidjson::Value  * v , int level = 0 ){ 
+
+if( NULL == v )
+{
+	DEBUG("NO Need to optimiser_project_template( projectlist )!\n");
+	return ;
+} 
+
  	  rapidjson::Value  * vv ;
 		if ( v->HasMember("PROJECT") )
 			vv = &(*v)["PROJECT"];

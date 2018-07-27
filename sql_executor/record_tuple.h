@@ -91,6 +91,7 @@ struct record_meta
 {
 	std::vector<table_field_t>  				    table_fields;
 	std::unordered_map<std::string,int>			field_index_map; //根据字段名到vector的索引
+ 	//std::map<std::string,int>			field_index_map; //根据字段名到vector的索引
  	off_t										size;	
 	
 	record_meta():size(0){}
@@ -112,14 +113,14 @@ struct record_meta
   			ERROR("RECORD_META_EMPTY_TABLE\n");
   			return RECORD_META_EMPTY_TABLE;
   		}
-  	DEBUG("push_field() begin ------- { \n");	
+  	DEBUG("push_field2() begin ------- { \n");	
   	std::string total_name 		=  std::string( _mem_table->config.table_name ) + std::string(".")+_field_name;	
   	CPP_DEBUG<<"field_index_map["<< total_name<<"]= "<<table_fields.size()<<std::endl;	
   	field_index_map[total_name] =  table_fields.size() ;
     CPP_DEBUG<<"table_fields.emplace_back ("<< _field_name<<") pos = "<<size<<std::endl;	   
   	table_fields.emplace_back(_mem_table,_field_name,table_fields.size(),size );
   	size += table_fields.rbegin()->field.field_size; 
-  DEBUG("push_field() end ------- } \n");	
+  DEBUG("push_field2() end ------- } \n");	
 	return 0;
   }
   
@@ -132,7 +133,7 @@ struct record_meta
   			ERROR("RECORD_META_EMPTY_TABLE\n");
   			return RECORD_META_EMPTY_TABLE;
   		}
-  	DEBUG("push_field() begin \n");	
+  	DEBUG("push_field3() begin \n");	
   	std::string total_name 		=  _alias_name;	
   	CPP_DEBUG<<"field_index_map["<< total_name<<"]= "<<table_fields.size()<<std::endl;	
   	field_index_map[total_name] =  table_fields.size() ;
@@ -140,14 +141,14 @@ struct record_meta
   	table_fields.emplace_back(_mem_table,_field_name,table_fields.size(),size );
   	size += table_fields.rbegin()->field.field_size; 
   	
-   DEBUG("push_field() end \n");		
+   DEBUG("push_field3() end \n");		
 	return 0;
   }
   
   //插入投影无表名字段
   int add_field(mem_table_t *_mem_table ,field_t& field)
   {  
-    DEBUG("add_field() begin \n");	
+    DEBUG("add_field() begin ------ { \n");	
       if( NULL == _mem_table )
   		{
   			ERROR("RECORD_META_EMPTY_TABLE\n");
@@ -155,13 +156,17 @@ struct record_meta
   		}
   	std::string total_name 		=  std::string(field.field_name);	
   	field_index_map[total_name] =  table_fields.size() ;
-    CPP_DEBUG<<"table_fields.emplace_back "<< total_name<<" pos is "<<size<<std::endl;	
+    CPP_DEBUG<<"table_fields.emplace_back("<< total_name<<") and pos is "<<size<<std::endl;	
   	//table_fields.emplace_back(total_name,table_fields.size(),size );
   	table_fields.emplace_back(_mem_table,total_name,table_fields.size(),size );
 
   	size += table_fields.rbegin()->field.field_size; 
     DEBUG("size = %d \n",size );
-    DEBUG("add_field() end \n");
+    
+    for(auto iter=field_index_map.begin(); iter!=field_index_map.end(); iter++)
+     CPP_DEBUG<<iter->first <<"->"<<iter->second<<std::endl;	
+    
+    DEBUG("add_field() end ------ }\n");
 	return 0;
   }
   
@@ -203,7 +208,15 @@ struct record_meta
   
     int append_by_meta(record_meta & meta2 )
   {  
-		for(auto &v : meta2.table_fields )push_field(v.mem_table ,std::string(v.field.field_name) );
+  	DEBUG("Enter append_by_meta ----- {\n");
+
+		for(auto &v : meta2.table_fields )
+			{
+		    DEBUG("append_by_meta.append_by_meta() \n");
+				push_field(v.mem_table ,std::string(v.field.field_name) );
+				}
+				
+  	DEBUG("Leave append_by_meta ----- } \n");
 		return 0;
   }
   
@@ -358,13 +371,16 @@ allocate();
     
     CPP_DEBUG<<"total_name is "<<total_name<<std::endl;
     		
+    for(auto iter=meta->field_index_map.begin(); iter!=meta->field_index_map.end(); iter++)
+         CPP_DEBUG<<iter->first <<"->"<<iter->second<<std::endl;		
+    		
     if( meta->field_index_map.find(total_name) != meta->field_index_map.end() ){
     	  int n = meta->field_index_map[total_name];
     	  field = meta->table_fields[n].field;
     	  DEBUG("Leave get_field_desc  ---------------}\n");
     		return 0;
     	}
-    	ERROR("total_name is not found,\n");
+    	ERROR("TOTAL_NAME_NOT_FOUND\n");
     	DEBUG("Leave get_field_desc  ---------------}\n");
 
     	return TOTAL_NAME_NOT_FOUND;

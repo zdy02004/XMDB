@@ -128,8 +128,16 @@ inline int extend_mem_table_no_manager()
 //获取块号对应的地址
 inline int get_table_no_addr(long table_no,void ** addr)
 {
-	if(table_no<0) return ERR_TABLE_NO_LESS_ZERO;
-	if(table_no> mem_table_no_manager.cur_num )  return ERR_TABLE_NOT_EXIST;
+	DEBUG( "get_table_no_addr(%ld)\n",table_no );
+	if(table_no<0)
+		{
+			ERROR("ERR_TABLE_NO_LESS_ZERO\n");
+			return ERR_TABLE_NO_LESS_ZERO;
+		} 
+	if(table_no> mem_table_no_manager.cur_num ){
+		ERROR("ERR_TABLE_NO_LESS_ZERO\n");
+		return ERR_TABLE_NOT_EXIST;
+	}  
 	
 	 MEM_TABLE_NO_RLOCK  (&(mem_table_no_manager.locker));  //上锁
 	 *addr = (mem_table_no_manager.mem_table_no_table[table_no]);
@@ -138,6 +146,8 @@ inline int get_table_no_addr(long table_no,void ** addr)
 		ERROR("ERR_BLOCK_BAD_ADDR\n");
 		return ERR_BLOCK_BAD_ADDR;
 	}  
+	
+	DEBUG( "Leave get_table_no_addr()\n" );
 	return 0;
 	
 }
@@ -145,7 +155,10 @@ inline int get_table_no_addr(long table_no,void ** addr)
 //设置块号对应的地址
 inline int set_table_no_addr(long table_no,void * addr)
 {
-	if(table_no<0) return ERR_TABLE_NO_LESS_ZERO;
+	if(table_no<0){
+		ERROR("ERR_TABLE_NO_LESS_ZERO\n");
+		return ERR_TABLE_NO_LESS_ZERO;
+	} 
 	if(table_no> mem_table_no_manager.cur_num )
 		{
 			ERROR("ERR_TABLE_NOT_EXIST\n");
@@ -162,8 +175,14 @@ inline int set_table_no_addr(long table_no,void * addr)
 //删除块号对应的地址
 inline int del_table_no_addr(long table_no)
 {
-	if(table_no<0) return ERR_TABLE_NO_LESS_ZERO;
-	if(table_no> mem_table_no_manager.cur_num )  return ERR_TABLE_NOT_EXIST;
+	if(table_no<0){
+		ERROR("ERR_TABLE_NO_LESS_ZERO\n");
+		return ERR_TABLE_NO_LESS_ZERO;
+	} 
+	if(table_no> mem_table_no_manager.cur_num ){
+		 ERROR("ERR_TABLE_NOT_EXIST\n");
+		 return ERR_TABLE_NOT_EXIST;
+	} 
 	
 	 MEM_TABLE_NO_LOCK  (&(mem_table_no_manager.locker));  //上锁
 	  mem_table_no_manager.mem_table_no_table[table_no]  = 0;
@@ -184,8 +203,10 @@ inline int allocate_table_no(long * table_no)
 	 		 MEM_TABLE_NO_UNLOCK(&(mem_table_no_manager.locker));  //解锁
 	 		 int err;
 	 		 err = extend_mem_table_no_manager();
-	 		 if( 0!= err )return err;
-	 		
+	 		 if( 0!= err ){
+		    ERROR("extend_mem_table_no_manager err is %ld\n",err );
+	 		 	return err;
+	 		}
 	 	}
 	 	   *table_no =  mem_table_no_manager.cur_num;	 
 	   MEM_TABLE_NO_UNLOCK(&(mem_table_no_manager.locker));  //解锁

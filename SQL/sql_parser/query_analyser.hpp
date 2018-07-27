@@ -3,6 +3,7 @@
 #include "parser.hh"
 #include<vector>
 #include<string>
+#include<set>
 #include "../../util/log/log_util.h"
 
 // 生成1个常数1
@@ -211,12 +212,12 @@ vector<QueryAnalyser> sub_links; 	   					// where 中的子链接
 rapidjson::Value  * sub_link_father;          // 当自己就是自连接中的 子查询时，sub_link_father  指向 SUB_LINK_BODY 的上一层
 QueryAnalyser  *   up_stmt; 									//如果是子连接 则还要存一个上层 where
 
-vector<rapidjson::Value *> join_conditions;   				// 关联条件
-vector<rapidjson::Value *> const_conditions;         	// 常数不可再分条件
-vector<rapidjson::Value *> nomal_single_conditions;  	// 单操作数不可再分条件
-vector<rapidjson::Value *> nomal_double_conditions;  	// 双操作数不可再分条件
-vector<rapidjson::Value *> complex_double_conditions; // 可再分双操作数条件
-vector<rapidjson::Value *> nomal_btw_conditions;      // between and 
+std::vector<rapidjson::Value *> join_conditions;   				// 关联条件
+std::vector<rapidjson::Value *> const_conditions;       // 常数不可再分条件
+std::vector<rapidjson::Value *> nomal_single_conditions;  	// 单操作数不可再分条件
+std::vector<rapidjson::Value *> nomal_double_conditions;  	// 双操作数不可再分条件
+std::vector<rapidjson::Value *> complex_double_conditions; // 可再分双操作数条件
+std::vector<rapidjson::Value *> nomal_btw_conditions;      // between and 
 	
 // Group 条件要素	
 vector< GroupTarget > group_target;      
@@ -285,10 +286,14 @@ vector< rapidjson::Value * > having_conditions;      // between and
       // 是否是关联连接 
      int check_if_obvious_join(int tag)
     {
-    	if( tag >= T_JOIN_INNER  && tag <= T_JOIN_RIGHT )
+    	if( tag >= T_JOINED_TABLE  && tag <= T_JOIN_RIGHT ) 
     	{
     	  return 1;
     	}
+    	//if( tag == T_JOIN_CONDITION ){
+    	//	
+    	//	return 1;
+    	//}
     	return 0;
     }	
   
@@ -413,7 +418,7 @@ void set_sub_query_father(rapidjson::Value  * v){
 int mark_special_join(rapidjson::Value  * v0,int tag,int level){
 int tmp[2] = {0};
 int i = 0;
-CPP_DEBUG<< " mark_special_join in" <<endl;
+CPP_DEBUG<< " mark_special_join in" <<std::endl;
 rapidjson::Value  * v = v0;
 if ( v0->HasMember("JOIN_CONDITION") ) v = &(*v0)["JOIN_CONDITION"];
 rapidjson_log( v );
@@ -421,13 +426,13 @@ if ( v->HasMember("children") && (*v)["children"].GetArray().Size()== 2 ){
 for (auto& vv : (*v)["children"].GetArray()) 
 {
 	tmp[i++] = vv["tag"].GetInt() ;
-	cout<<vv["tag"].GetInt()<<endl;
+	CPP_DEBUG<<vv["tag"].GetInt()<<std::endl;
 }
-CPP_DEBUG<< " Resolve_Two_Oper_condition " <<endl;
+CPP_DEBUG<< " Resolve_Two_Oper_condition " <<std::endl;
 
 // 关联条件
 if( check_if_join_condition(tmp[0]) && check_if_join_condition(tmp[1]) && (*v)["tag"].GetInt() == T_OP_EQ ){
-	 CPP_DEBUG<< "特殊关联条件 " <<endl;
+	 CPP_DEBUG<< "special join conditions " <<std::endl;
 	 if(tag == T_SEMI_JOIN_LIST)v->AddMember("SEMI_JOIN_LEVEL",level,doc->GetAllocator());
 	 if(tag == T_ANTI_JOIN_LIST)v->AddMember("ANTI_JOIN_LEVEL",level,doc->GetAllocator());
 
@@ -668,14 +673,16 @@ void   pull_up_sublinks(QueryAnalyser *qa,int level = 0 ){
 }
 
 void resolve_from_list_help( rapidjson::Value  * v,int level = 0 ){
-	
+DEBUG("resolve_from_list_help -------- { \n");
 					int is_alias = 0;
 					int is_obvious_join = 0;
 
-//rapidjson_log(v);
+rapidjson_log(v);
 
   				if( (*v).HasMember("RELATION_ALIAS") )is_alias = 1;
-  				if( check_if_obvious_join((*v)["tag"].GetInt()) )is_obvious_join = 1;
+  				if( (*v).HasMember("tag") && check_if_obvious_join((*v)["tag"].GetInt()) ){
+  					is_obvious_join = 1;
+  				}
   				
   				string table_name;  // 表名
   				string alias_name;  // 表别名
@@ -683,20 +690,27 @@ void resolve_from_list_help( rapidjson::Value  * v,int level = 0 ){
   				
   				// 显式的 联接写法
   				if(is_obvious_join){
-  				   
+  			  		DEBUG("is_obvious_join\n");
+  			  		is_join = 1;
   			  		for (int i = 1; i < 4; i++){ // 使用 SizeType 而不是 size_t
-  			  		 if(i <3 )resolve_from_list( (&((*v)["children"][i])) , 0 );
+  			  		 if(i <3 ){
+  			  	  	DEBUG("if(i <3 )resolve_from_list( (&((*v)[children][i])) , 0 )\n");
+  			  		 	resolve_from_list( (&((*v)["children"][i])) , 0 );
+  			  		}
   			  			if(3 == i){
-  			  				join_conditions.emplace_back(&((*v)["children"][i]["JOIN_CONDITION"]));
+  			  	    	DEBUG("if(i == 3 )\n");
+  			  				rapidjson_log(&((*v)["children"][i]["JOIN_CONDITION"]));
+  			  				//join_conditions.emplace_back(&((*v)["children"][i]["JOIN_CONDITION"]));
+  			  				DEBUG("before join_conditions.emplace_back(&((*v)[children][i][JOIN_CONDITION]))\n");
   			  				resolve_where_list(  &((*v)["children"][i]["JOIN_CONDITION"]),v );
   			  			}
   			  	}
-  			  }
-  				
+  				}
   				  if( (*v).HasMember("RELATION") && (*v)["RELATION"].HasMember("str_value_") ) table_name=string((*v)["RELATION"]["str_value_"].GetString()); 	// 表名				
   					if( (*v).HasMember("RELATION_ALIAS") ) alias_name=string((*v)["RELATION_ALIAS"]["str_value_"].GetString()); 		//表别名
   				  if( (*v).HasMember("SUB_SELECT_ALIAS") ) sub_select_alias_name=string((*v)["SUB_SELECT_ALIAS"]["str_value_"].GetString()); //子查询别名
-  						
+    			  
+						
   				// 隐式的 内联写法
   				if(is_alias){
   				 //alias_name=string((*v)["RELATION_ALIAS"]["str_value_"].GetString()); 					
@@ -712,9 +726,19 @@ void resolve_from_list_help( rapidjson::Value  * v,int level = 0 ){
   								//if( (*v)["SUB_SELECT"].HasMember("FROM_CLAUSE") )resolve_from_list( &((*v)["SUB_SELECT"]["FROM_CLAUSE"]), level+1 );
             	}
       		}	
+      		if( !table_name.empty() ){
 							 // 插入解析后的表
+							 DEBUG(" tables.emplace_back( TableItem(%s,%s,%s) );\n", table_name.c_str(),alias_name.c_str(),sub_select_alias_name.c_str() );
   			 			 tables.emplace_back( TableItem(table_name,alias_name,sub_select_alias_name) );
   			 			 single_fromlists.emplace_back( v );
+  			 			}
+  			 			else
+  			 				{ 
+  			 				DEBUG("table_name is empty \n");
+  			 			}
+  			 			 
+ DEBUG("resolve_from_list_help -------- } \n");
+
 }
 
 //解析 from_list
@@ -723,6 +747,7 @@ void resolve_from_list( rapidjson::Value  * fromlist,int level = 0 ){
    //if( fromlist->HasMember("children")  &&  (*fromlist)["children"].GetArray().Size() != 1 )is_join = 1 ;else is_join = 0;
    //遍历 from_list 将数据表填入 table_names, 将子查询 填入 sub_querys
   	if( fromlist->IsArray() ) {
+  		is_join = 1 ;
   		for (auto& v : ( (*fromlist).GetArray() )  ){  				
   				resolve_from_list( &(v),level);
          }//end for
@@ -769,9 +794,9 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 				for (auto& vv : (*v)["children"].GetArray()) 
 					{
 						tmp[i++] = vv["tag"].GetInt() ;
-						cout<<vv["tag"].GetInt()<<endl;
+						CPP_DEBUG<<vv["tag"].GetInt()<<std::endl;
 					}
-						CPP_DEBUG<< " Resolve_One_Oper_condition " <<endl;
+						CPP_DEBUG<< " Resolve_One_Oper_condition " <<std::endl;
 			  				 		  				 
 				// 是常数条件
 				if( check_if_const_value(tmp[0])   ){
@@ -789,17 +814,21 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 			
 			// 3. 其他 两操作数条件打标签
 			if ( v->HasMember("children") && (*v)["children"].GetArray().Size()== 2 ){
+				  
+				  rapidjson_log(v);
+				
 					for (auto& vv : (*v)["children"].GetArray()) 
 						{
 							tmp[i++] = vv["tag"].GetInt() ;
-							cout<<vv["tag"].GetInt()<<endl;
+							CPP_DEBUG<<vv["tag"].GetInt()<<std::endl;
 						}
-				 	CPP_DEBUG<< " Resolve_Two_Oper_condition " <<endl;
+				 	CPP_DEBUG<< " Resolve_Two_Oper_condition " <<std::endl;
 
 				 	// 关联条件
 				 	if( check_if_join_condition(tmp[0]) && check_if_join_condition(tmp[1]) && (*v)["tag"].GetInt() == T_OP_EQ ){
-						 CPP_DEBUG<< "关联条件 " <<endl;
+						 CPP_DEBUG<< "This is join condition " <<std::endl;
 				 		 swap_father( father,v, T_JOIN_CONDITION, "JOIN_CONDITION"  );
+				 		 
 				 		 join_conditions.emplace_back( &(*father)["JOIN_CONDITION"] );
 				 		 return ;
 				 	}
@@ -839,10 +868,10 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 				 	{
 				 		 	  swap_father( father,v, T_COMPLEX_DOUBLE_CONDITION, "COMPLEX_DOUBLE_CONDITION"  );
 				 				complex_double_conditions.emplace_back( &( (*father)["COMPLEX_DOUBLE_CONDITION"] ) );
-				 				CPP_DEBUG<< "递归细分 " <<endl;
+				 				CPP_DEBUG<< "递归细分 " <<std::endl;
 				 				// 递归细分
 				 			   resolve_where_list( &((*father)["COMPLEX_DOUBLE_CONDITION"]["children"][0]), &((*father)["COMPLEX_DOUBLE_CONDITION"]["children"][0]) );
-				 			 	CPP_DEBUG<< "递归细分2 " <<endl; 
+				 			 	 CPP_DEBUG<< "递归细分2 " <<std::endl; 
 				 			 	 resolve_where_list( &((*father)["COMPLEX_DOUBLE_CONDITION"]["children"][1]), &((*father)["COMPLEX_DOUBLE_CONDITION"]["children"][1]) );
 
 				 				return ;
@@ -857,7 +886,7 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 					for (auto& vv : (*v)["children"].GetArray()) 
 						{
 							tmp[i++] = vv["tag"].GetInt() ;
-							cout<<vv["tag"].GetInt()<<endl;
+							CPP_DEBUG<<vv["tag"].GetInt()<<std::endl;
 						}
 					if( (*v)["tag"].GetInt() == T_OP_BTW && check_if_const_value(tmp[1])  &&  check_if_const_value(tmp[2]) )
 					{
@@ -917,7 +946,7 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 		  }
 		  
 		  if ( (*vv)["tag"] == T_STAR  ){
-		  	CPP_DEBUG<<"******************"<<endl;
+		  	CPP_DEBUG<<"******************"<<std::endl;
 				vv->AddMember("SELECT_ALL",1,doc->GetAllocator());
 				is_select_all = 1;
 			return;
@@ -1032,7 +1061,7 @@ int select_prepared()
    // if( project_lists->HasMember("SUB_SELECT") )project_lists =  &(*project_lists)["SUB_SELECT"];
 		resolve_project_list( &(*project_lists)["children"] );
     if(NULL != from_list){
-    		resolve_from_list ( &(*from_list)["children"] );
+    	  	if( NULL != from_list )resolve_from_list ( &(*from_list)["children"] );
     			if( NULL != where_list )resolve_where_list( where_list , where_list );
     }
     

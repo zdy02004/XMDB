@@ -98,6 +98,12 @@ struct normal_single_condition_struct{
 		return has_index < a.has_index;	
 	}	
 	
+		bool operator == (const normal_single_condition_struct &a) const
+	{
+		if( tag == a.tag && relation_name == a.relation_name && column_name == a.column_name )return true;
+		return false;	
+	}	
+	
 int get_name(){	
 		if( 0 == column_name.size() ) 
 			{
@@ -160,6 +166,15 @@ struct normal_double_condition_struct:public normal_single_condition_struct{
 	{
 		return has_index <= a.has_index;	
 	}	
+	
+	bool operator == (const normal_double_condition_struct &a) const
+	{
+		if(
+			  const_value == a.const_value && const_type == a.const_type &&
+			  normal_single_condition_struct:: operator ==( (normal_single_condition_struct)a )
+			 )return true;
+		return false;	
+	}	
 	  
 int get_name(){	  
 	  DEBUG("get_name()\n");
@@ -216,6 +231,14 @@ struct normal_btw_condition_struct:public normal_single_condition_struct{
 	{
 		return has_index < a.has_index;	
 	}	
+	 	bool operator == (const normal_btw_condition_struct &a) const
+	{
+		if(
+			  const_type == a.const_type && const_value[0] == a.const_value[0] && const_value[1] == a.const_value[1] &&
+			  normal_single_condition_struct:: operator ==( (normal_single_condition_struct)a )
+			 )return true;
+		return false;	
+	} 
 	  
 int get_name(){	  
 		
@@ -263,7 +286,75 @@ struct join_eq_condition_struct{
 	long index_no[2];
 	
 	
+//void operator = ( const join_eq_condition_struct &a) 
+//{
+//	tag = a.tag;
+//	context_ = a.context_;
+//	query_plan_ = a.query_plan_;
+//	
+//	for(int i = 0 ;i<2;++i)
+//	{
+//		relation_name[i] = a.relation_name[i];
+//		column_name[i]   = a.column_name[i];
+//		alias_name[i]    = a.alias_name[i];
+//		field[i]         = a.field[i];
+//		mem_table[i]     = mem_table[i];
+//		has_index[i]     = has_index[i];
+//		index_type[i]    = index_type[i];
+//		index_no[i]      = index_no[i];
+//  }
+//   
+//}	
+//
+//join_eq_condition_struct(const join_eq_condition_struct &a )
+//{
+//	tag = a.tag;
+//	context_ = a.context_;
+//	query_plan_ = a.query_plan_;
+//	
+//	for(int i = 0 ;i<2;++i)
+//	{
+//		relation_name[i] = a.relation_name[i];
+//		column_name[i]   = a.column_name[i];
+//		alias_name[i]    = a.alias_name[i];
+//		field[i]         = a.field[i];
+//		mem_table[i]     = a.mem_table[i];
+//		has_index[i]     = a.has_index[i];
+//		index_type[i]    = a.index_type[i];
+//		index_no[i]      = a.index_no[i];
+//  }
+//}
+
+bool operator == ( const join_eq_condition_struct &a) 
+{
+	if(
+	tag              == a.tag &&
+	relation_name[0] == a.relation_name[0] && 
+	column_name[0]   == a.column_name[0] && 
+	//alias_name[0]    == a.alias_name[0] && 
+	//field[0]         == a.field[0] && 
+	mem_table[0]     == mem_table[0] && 
+	//has_index[0]     == has_index[0] && 
+	//index_type[0]    == index_type[0] && 
+	relation_name[1] == a.relation_name[1] && 
+	column_name[1]   == a.column_name[1] && 
+	//alias_name[1]    == a.alias_name[1] && 
+	//field[1]         == a.field[1] && 
+	mem_table[1]     == mem_table[1] 
+	//has_index[1]     == has_index[1] && 
+	//index_type[1]    == index_type[1] 
+	)return true;
+	else return false;
+
+   
+}	
+	
+	
 	join_eq_condition_struct(rapidjson::Value *  context, QueryAnalyser * query_plan ):context_(context),query_plan_(query_plan){
+		
+		rapidjson_log(context);
+
+		
 		tag = (*context_)["tag"].GetInt();
 		
 		//直接获得表名
@@ -288,10 +379,12 @@ struct join_eq_condition_struct{
 	// 无关系返回 0
 	inline int can_link_or_delete( join_eq_condition_struct & linker )
 	{
-		DEBUG("begin can_link_or_delete() \n");
+		DEBUG("begin can_link_or_delete()\n");
 		int i = 0;
 		for(int i = 0; i<2; ++i){
 			for(int j = 0; j<2 ; ++j){
+				CPP_DEBUG<<"relation_name:"<<relation_name[i]<<" ==? "<<"linker.relation_name:"<< linker.relation_name[j]<<std::endl;
+				CPP_DEBUG<<"column_name:"  <<column_name[i]  <<" ==? "<<"linker.column_name:"<< linker.column_name[j]<<std::endl;
 				if( relation_name[i] == linker.relation_name[j] && column_name[i] == linker.column_name[j] )++i;
 			}
 		}
@@ -330,34 +423,48 @@ struct join_eq_condition_struct{
 	}	
 	
 int get_name(){	
+DEBUG("begin get_name() ----------- { \n");
+
 		if( 0 == column_name[0].size() || 0 == column_name[1].size() || 0 == relation_name[0].size() || 0 == relation_name[1].size() ) 
 			{
 				// 未获取正常的列
+				ERROR("ERR_COLUMN_NULL\n");
 				return ERR_COLUMN_NULL;
 			}
 			
 			mem_table[0] = NULL;
 			mem_table[1] = NULL;
 
-		//直接获得表名失败,从tables 里找对应的relation_name，找不到或找到多个报错
-	
+		//直接获得表名失败,从 tables 里找对应的 relation_name，找不到或找到多个报错
+DEBUG("find relation_name from tables \n");
 			int field_num = 0;
 			int finded = 0;
 			for(auto & table : query_plan_->tables )
 			{
 				
 				for(int i = 0; i<2; ++i){
-					if( relation_name[i] == table.alias_name_ ){relation_name[i] = table.table_name_;}
-					if( relation_name[i] == table.table_name_ ) ++finded;
+					//DEBUG("relation_name[%d] == %s \n" , i,relation_name[i].c_str() );
+					if( relation_name[i] == table.alias_name_ ){
+					DEBUG("relation_name[%d] == table.alias_name_:%s \n" ,i,table.alias_name_.c_str() );
+						relation_name[i] = table.table_name_;
+						}
+					if( relation_name[i] == table.table_name_ ) {
+					DEBUG("relation_name[%d] == table.table_name_:%s \n" ,i,relation_name[i].c_str() );
+						++finded;
+					}
 					alias_name[i] = table.alias_name_;
 				}
 				
 			 }
-			 if(finded<1)return ERR_NOT_FOUND_TABLE;
-		
+			 if(finded<1){
+				ERROR("ERR_NOT_FOUND_TABLE\n");
+			 	return ERR_NOT_FOUND_TABLE;
+		  }
 		  long long table_no;
 			int err = 0;
-			
+
+DEBUG("Check column_name is exists! \n");
+
 		// 检查表中的字段是否存在
 				for(int i = 0; i<2; ++i){
 					 err = search_table_name(const_cast<char *>(relation_name[i].c_str()),&table_no);
@@ -374,7 +481,13 @@ int get_name(){
 					 }
 					}
 					
-		if( field[0].field_type != field[1].field_type )return ERR_JOIN_FIELD_TYPE_NOT_EQ;		
+		if( field[0].field_type != field[1].field_type )
+			{
+				ERROR("ERR_JOIN_FIELD_TYPE_NOT_EQ\n");
+				return ERR_JOIN_FIELD_TYPE_NOT_EQ;		
+			}
+		
+		DEBUG("begin get_name() ----------- } \n");
 		return 0;
 		
 		}
@@ -399,8 +512,14 @@ inline int get_single_table_conditions(
 										)
 {
 	DEBUG("begin get_single_table_conditions ---------- { \n");
-	if( mem_table == NULL) return GET_SINGLE_TABLE_EMPTY_TABLE;
-	if(qa == NULL) return GET_SINGLE_TABLE_EMPTY_QA;
+	if( mem_table == NULL){
+	  ERROR(" GET_SINGLE_TABLE_EMPTY_TABLE \n");	
+		return GET_SINGLE_TABLE_EMPTY_TABLE;
+	} 
+	if(qa == NULL){
+	   ERROR(" GET_SINGLE_TABLE_EMPTY_QA \n");	
+		 return GET_SINGLE_TABLE_EMPTY_QA;
+	} 
   /*in*/  vector<TableItem> 				& tables 									= qa->tables;                    	// 表信息
 	/*in*/  vector<rapidjson::Value *>& const_conditions 				= qa->const_conditions;   				// 常数不可再分条件
 	/*in*/	vector<rapidjson::Value *>& nomal_single_conditions = qa->nomal_single_conditions ;  	// 单操作数不可再分条件
@@ -414,9 +533,14 @@ inline int get_single_table_conditions(
   
   long long table_no;
   int err = 0;
+  
+  DEBUG("table_name.size(): %d\n",table_name.size());
 
   // 对于原始表检查该表是否存在
   if(!table_name.empty()){
+  	
+  	 DEBUG("search_table_name: %s\n",table_name.c_str());
+
   	 err = search_table_name(const_cast<char *>(table_name.c_str()),&table_no);
   	 if(err){
   	 	CPP_ERROR<<"Table < "<<table_name.c_str()<<" > NOT FOUND!\n";
@@ -442,7 +566,7 @@ inline int get_single_table_conditions(
   				}
   				if(err)
   				{
-  					ERROR("end get_single_table_conditions，err is %d ---------- } \n",err);
+  					ERROR("end1 get_single_table_conditions，err is %d ---------- } \n",err);
   					return err;
   					
   				}
@@ -482,14 +606,14 @@ inline int get_single_table_conditions(
   						 		}
   						 		else //其他错误
   						 			{
-  						 			ERROR(" field_has_index err is %d ,and try next!\n",ret );
+  						 			ERROR("end2 field_has_index err is %d ,and try next!\n",ret );
   						 			err = ret;
   						 			}
   					}
   				}
   				if( err != 0 && err != NOT_INDEX_FIELD )
   				{
-  					ERROR("end get_single_table_conditions，err is %d  ---------- } \n",err);
+  					ERROR("end3 get_single_table_conditions，err is %d  ---------- } \n",err);
   					return err;
   					
   				}
@@ -498,6 +622,7 @@ inline int get_single_table_conditions(
   				normal_double_condition_list.sort();
   				
   				//
+  				DEBUG("join_conditions.size() is %d \n",join_conditions.size() );
   				for(auto &join_condition : join_conditions ){//查找关联条件列表中
   					join_eq_condition_struct jecs(join_condition,qa);
   					err = jecs.get_name();
@@ -509,7 +634,7 @@ inline int get_single_table_conditions(
   				
   				if( err != 0 && err != NOT_INDEX_FIELD )
   				{
-  					ERROR("end get_single_table_conditions，err is %d  ---------- } \n",err);
+  					ERROR("end4 get_single_table_conditions，err is %d  ---------- } \n",err);
   					return err;
   					
   				}
@@ -524,13 +649,14 @@ inline int get_single_table_conditions(
   					}
   					else if(err == INFO_BROCKEN ){
   					//	qa->is_broken = 1;
+  					ERROR("end5 INFO_BROCKEN \n",err);
   					return INFO_BROCKEN;
   					
   					}
   				}
   				if( err != 0 && err != NOT_INDEX_FIELD )
   				{
-  					ERROR("end get_single_table_conditions，err is %d  ---------- } \n",err);
+  					ERROR("end6 get_single_table_conditions，err is %d  ---------- } \n",err);
   					return err;
   					
   				}
@@ -553,6 +679,8 @@ inline int get_table_conditions(
 
 )
 {
+	DEBUG("ENTER get_single_table_conditions ----------------- { \n");
+
 	int ret = 0;
 	for (size_t i = 0 ;i <qa->tables.size();++i )
 	{
@@ -604,6 +732,8 @@ inline int get_table_conditions(
 		}
 		
 	}
+	DEBUG("leave get_single_table_conditions，ret is %d ----------------- { \n",ret);
+
 	return ret;
 	
 }
@@ -682,11 +812,14 @@ inline int order_join_condtions(
 														/*in*/QueryAnalyser * qa,	
 														/*out*/std::vector<join_eq_condition_struct> &join_eq_condition_origin)// 原始关联条件
 {	
-	DEBUG("begin order_join_condtions() \n ");
-	if( NULL == qa ) return QueryAnalyserNullPtr;
+	DEBUG("begin order_join_condtions() --------- { \n ");
+	if( NULL == qa ){
+		ERROR("QueryAnalyserNullPtr\n");
+		return QueryAnalyserNullPtr;
+	} 
 		
 	vector<rapidjson::Value *>& join_conditions	 = qa->join_conditions;
-	
+	DEBUG("join_conditions.size() is %d\n ",join_conditions.size());
 	// 构造 原始关联条件
 	for( auto& v : join_conditions )
 	{
@@ -694,10 +827,13 @@ inline int order_join_condtions(
 		
 			if( (*v)["tag"].GetInt() == T_OP_EQ )
 			{
+				DEBUG(" if( (*v)[tag].GetInt() == T_OP_EQ ) \n");
 				join_eq_condition.get_name();
 				join_eq_condition_origin.push_back(join_eq_condition);
 			}
 	}
+
+DEBUG("join_eq_condition_origin.size() is %d\n ",join_eq_condition_origin.size());
 
 // 先按高水位线排序
 std::sort (join_eq_condition_origin.begin(),join_eq_condition_origin.end() );
@@ -736,7 +872,7 @@ for(std::vector<join_eq_condition_struct>::iterator iter= join_eq_condition_orig
 		iter += i;
 
 }
-	DEBUG("end order_join_condtions() \n ");
+	DEBUG("end order_join_condtions() --------- }\n ");
 return 0;
 }
 

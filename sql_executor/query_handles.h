@@ -461,13 +461,19 @@ int handl_double_con_normal(
 rapidjson::Value normal_json;
 // 合并index 结果集
  DEBUG("mem_table is %0x \n",mem_table);
+if(com_list)
+{
  DEBUG("com_list is %0x\n ",com_list);
  DEBUG("com_list->field_name is %s \n",com_list->field_name);
+}
  DEBUG("pro_list.size() %ld \n",pro_list.size());
 // DEBUG("normal_json %ld \n",normal_json );
 // DEBUG("nomal_list.begin()->query_plan_->doc %ld \n ",nomal_list.begin()->query_plan_->doc );
 
 DEBUG("new scan_sfw_node() \n");	 
+
+
+if(!nomal_list.empty()){
 scan_sfw_node *node = new scan_sfw_node( mem_table,
 																		com_list,															//过滤列表
 																		pro_list,       											//投影列表
@@ -475,6 +481,19 @@ scan_sfw_node *node = new scan_sfw_node( mem_table,
 	  								              	nomal_list.begin()->query_plan_->doc
 	  								              	);
 plan_node_list.push_back(node);
+}
+else
+	{
+		rapidjson::Document  doc;
+		scan_sfw_node *node = new scan_sfw_node( mem_table,
+																		com_list,															//过滤列表
+																		pro_list,       											//投影列表
+	  								              	normal_json,
+	  								              	&doc
+	  								              	);
+    plan_node_list.push_back(node);
+	}
+
 CPP_DEBUG<<"end handl_double_con_normal() ------------- } \n "<<std::endl;
 return err;
 }
@@ -497,17 +516,25 @@ int handl_join_condtions(
 {
 DEBUG("Enter handl_join_condtions ------------- {\n");
 	
-if( NULL == qa ) return QueryAnalyserNullPtr;
+if( NULL == qa ){
+	 ERROR("QueryAnalyserNullPtr\n");
+	 return QueryAnalyserNullPtr;
+}
 std::vector<rapidjson::Value *>& join_conditions = qa->join_conditions;
-
+DEBUG("handl_join_condtions::join_conditions.size() is %d\n ",join_conditions.size());
 // 用于排序关联关系的副本
 std::vector<join_eq_condition_struct>  join_eq_condition_struct_list ;
 // 备份副本
-for(auto v : join_conditions )join_eq_condition_struct_list.emplace_back( v, qa );
+//for(auto v : join_conditions )join_eq_condition_struct_list.emplace_back( v, qa );
+DEBUG("handl_join_condtions::join_eq_condition_struct_list.size() is %d\n ",join_eq_condition_struct_list.size());
+
 // 对副本关联条件排序
 int ret = order_join_condtions(qa, join_eq_condition_struct_list );
-if(!ret)return ret;
-
+if(ret)
+	{
+		ERROR("order_join_condtions er is %d\n",ret);
+		return ret;
+   }
 // 按顺序生成关联物理节点
 int is_first = 1;
 
@@ -788,8 +815,9 @@ int handl_projection(
 									/*in*/  record_meta   &input_meta,														//结果集的元数据描述
 									/*out*/ std::vector<fun_oper *> &  projection_fun_oper_lists ,//投影 oper 列表 
 									/*out*/	record_meta							&  projection_meta,  					//投影元数据描述 
-									/*out*/	std::list<plan_node *>	&  plan_node_list						 
-								  )
+									/*out*/	std::list<plan_node *>	&  plan_node_list	
+                 //,/*out*/	std::list<generic_result> &  ret_list	
+       								  )
 {
 	 DEBUG("Enter handl_projection() ------------- {\n");
 

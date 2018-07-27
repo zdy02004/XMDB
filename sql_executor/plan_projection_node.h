@@ -53,7 +53,19 @@ output_tuple.meta = &projection_meta;
 	
 virtual int execute( unsigned long long  trans_no  )
 {
- DEBUG("do_projection_node execute begin ============={ \n");
+ DEBUG(" ============ do_projection_node execute begin ============= \n");
+
+ DEBUG("============ input_tuple.meta ============ \n");
+
+     for(auto iter=input_tuple.meta->field_index_map.begin(); iter!=input_tuple.meta->field_index_map.end(); iter++)
+         CPP_DEBUG<<iter->first <<"->"<<iter->second<<std::endl;		
+
+ DEBUG(" ============ output_tuple.meta ============= \n");
+
+      for(auto iter=output_tuple.meta->field_index_map.begin(); iter!=output_tuple.meta->field_index_map.end(); iter++)
+         CPP_DEBUG<<iter->first <<"->"<<iter->second<<std::endl;	
+ 
+ 
  for(auto &row : *input_list ){			
 			generic_result result;
 			DEBUG("result.allocate( %ld ) \n", projection_meta.size );
