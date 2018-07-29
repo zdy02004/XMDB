@@ -26,9 +26,9 @@ const char *sql_str = ""
 //"create index test_table_inx on  test_table ( id ) TABLET_BLOCK_SIZE = 512 , EXTERN_SIZE = 512";
 //"create unique index test_table_inx on test_table USING hash ( id ,name ) SKIP_LEVEL = 4 ";
 //"drop table test_table";
-"insert into test_table  ( field_1 ) values (A)";
+//"insert into test_table  ( field_1 ) values (A)";
 //"insert into test_table select a from b";
-//"delete from  test_table where a = b ";
+"delete from  test_table where a = b ";
 //"update test_table set k = 1 where a = b ";
 //"explain select * from test_table ";
 //"show tables ";  IDENTIFIED by test_pwd

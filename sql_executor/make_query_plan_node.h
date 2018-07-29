@@ -1,5 +1,5 @@
 /*
- g++ -C -w -std=c++11 make_plan_node.h   
+ g++ -C -w -std=c++11 make_query_plan_node.h   
 */
 
 #ifndef MAKE_QUERY_PLAN  
@@ -90,9 +90,12 @@ public:
   				DEBUG("order_target.size() = 0 \n");
   		}
   		if(err)ERROR("make_orderby_plan() err is %d\n",err);    	
-  			
+  		 		
+  		if(qa->oper_type != BASIC_OPS_DELETE && qa->oper_type != BASIC_OPS_UPDATE  )
+  		{	
   		err = make_projection_plan();
   		if(err)ERROR("make_projection_plan() err is %d\n",err); 	
+  		}
   		}
   		
   		
@@ -418,6 +421,7 @@ int execute( unsigned long long  trans_no  )
   int i = 0;
 	for (auto &v : *final_plan_node_list )
 	{
+	 if( BASIC_OPS_DELETE == qa->oper_type )v->oper_type = BASIC_OPS_DELETE;
 	 DEBUG(" physical_query_plan_node: %d; \n", i );
 		ret = v->execute(trans_no);
 		if(ret)

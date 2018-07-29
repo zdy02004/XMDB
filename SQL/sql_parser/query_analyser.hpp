@@ -183,6 +183,7 @@ int is_distinct;
 int is_join;
 int sub_links_count;
 int is_select_all;
+int oper_type;
 
 int cur_index; //projection 当前解析位置
 // 原始要素
@@ -706,7 +707,9 @@ rapidjson_log(v);
   			  			}
   			  	}
   				}
-  				  if( (*v).HasMember("RELATION") && (*v)["RELATION"].HasMember("str_value_") ) table_name=string((*v)["RELATION"]["str_value_"].GetString()); 	// 表名				
+  				  if( (*v).HasMember("RELATION") && (*v)["RELATION"].HasMember("str_value_") ) table_name=string((*v)["RELATION"]["str_value_"].GetString()); 	// 表名	
+  				  else if(  (*v).HasMember("str_value_") ) table_name=string((*v)["str_value_"].GetString()); 	// delete from的情况表名				
+			
   					if( (*v).HasMember("RELATION_ALIAS") ) alias_name=string((*v)["RELATION_ALIAS"]["str_value_"].GetString()); 		//表别名
   				  if( (*v).HasMember("SUB_SELECT_ALIAS") ) sub_select_alias_name=string((*v)["SUB_SELECT_ALIAS"]["str_value_"].GetString()); //子查询别名
     			  
@@ -747,7 +750,6 @@ void resolve_from_list( rapidjson::Value  * fromlist,int level = 0 ){
    //if( fromlist->HasMember("children")  &&  (*fromlist)["children"].GetArray().Size() != 1 )is_join = 1 ;else is_join = 0;
    //遍历 from_list 将数据表填入 table_names, 将子查询 填入 sub_querys
   	if( fromlist->IsArray() ) {
-  		is_join = 1 ;
   		for (auto& v : ( (*fromlist).GetArray() )  ){  				
   				resolve_from_list( &(v),level);
          }//end for
@@ -1048,7 +1050,11 @@ int select_prepared()
 	 //检查是否有 select_clause                                     
 	  check_and_assign_member(project_lists,"SELECT_CLAUSE");        
 	  //检查是否有 from_list                                         
-	  check_and_assign_member(from_list,"FROM_CLAUSE");              
+	  check_and_assign_member(from_list,"FROM_CLAUSE"); 
+	  //可能是delete 语句    
+	  if( from_list == NULL ) check_and_assign_member(from_list,"TABLE_NAME");     
+
+	           
 	  //检查是否有 where_list                                        
 	  check_and_assign_member(where_list,"WHERE_CLAUSE");                   
 	   //检查是否有 group_list                                       
@@ -1059,9 +1065,12 @@ int select_prepared()
 	  check_and_assign_member(order_list,"ORDER_BY_CLAUSE");                
 
    // if( project_lists->HasMember("SUB_SELECT") )project_lists =  &(*project_lists)["SUB_SELECT"];
-		resolve_project_list( &(*project_lists)["children"] );
+		if(NULL != project_lists)resolve_project_list( &(*project_lists)["children"] );
     if(NULL != from_list){
-    	  	if( NULL != from_list )resolve_from_list ( &(*from_list)["children"] );
+    	  	if( NULL != from_list ){
+    	  		if(from_list->HasMember("children"))resolve_from_list ( &(*from_list)["children"] );
+    	  		else resolve_from_list ( &(*from_list) );
+    	  	}
     			if( NULL != where_list )resolve_where_list( where_list , where_list );
     }
     
@@ -1071,6 +1080,9 @@ int select_prepared()
  		 // order 处理 orderby_list 处理
  		  if( order_list  )	resolve_orderby_list( order_list );
  		  
+ 		  
+ 		  
+ 		 if( !join_conditions.empty()  )	 is_join = 1 ; 
  	//  CPP_DEBUG<<"<< 1 >>"<<endl;
   //  for(auto &a : aggregat_funs ){
   //  	rapidjson_log( a );

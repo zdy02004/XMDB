@@ -1,6 +1,6 @@
 #ifndef QOPT_TAB_HPP  
 #define QOPT_TAB_HPP  
-#include "query_analyser.hpp"
+#include "delete_analyser.hpp"
 #include <functional>
 #include <stdlib.h>
 #include <algorithm>
