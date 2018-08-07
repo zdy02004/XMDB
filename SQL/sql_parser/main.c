@@ -15,7 +15,7 @@ const char *sql_str = ""
  //  "select  user_name,  qty  as quantity from  table_2 t where t.user_name = 'c' and  t.ff is null and t.ee like '%cc'";
  //    "select  t.user_name,3 pp,  qty  as quantity,sum(e+f+1),f*2,t3.user_id + t4.user_id,max(1,2) from  table_2 t,table_3 t3 where t.user_name = t3.user_name ";
  //     " and exists (select 1 from table_4 t4 where t3.user_id = t4.user_id)";
-
+"select * from table_name where a+b > 5 ";
     
  //   " select  sum(c1) c1 , 2 - 4 * 3  t2  "
 //    " from  table_name table1 where  a = 1 and a = b and not true "; //and ( t2.c = 3 or t2.d = 4 )";,(select k3.t4 from  table_name2  k3 where k3.aa>1 ) t1,(select k5.t5 from  table_name4  t4 where t4.a4>1 ) t4 "
@@ -28,7 +28,7 @@ const char *sql_str = ""
 //"drop table test_table";
 //"insert into test_table  ( field_1 ) values (A)";
 //"insert into test_table select a from b";
-"delete from  test_table where a = b ";
+//"delete from  test_table where a = b ";
 //"update test_table set k = 1 where a = b ";
 //"explain select * from test_table ";
 //"show tables ";  IDENTIFIED by test_pwd

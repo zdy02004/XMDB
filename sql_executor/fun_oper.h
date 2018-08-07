@@ -66,6 +66,7 @@ FIELD_LONGLONG  longlong_value;
 FIELD_DOUBLE    double_value;
 FIELD_FLOAT     float_value;
 FIELD_STR       str_value;
+bool            bool_value;
 
 union_value(FIELD_LONGLONG in):longlong_value(in){}
 union_value(FIELD_INT in):int_value(in){}
@@ -74,6 +75,8 @@ union_value(FIELD_LONG in):long_value(in){}
 union_value(FIELD_FLOAT in):float_value(in){}
 union_value(FIELD_DOUBLE in):double_value(in){}
 union_value(FIELD_STR in):str_value(in){}
+union_value(bool in):bool_value(in){}
+
 
 
 FIELD_DOUBLE operator + (union_value other)
@@ -104,6 +107,31 @@ FIELD_DOUBLE operator ^ (union_value other)
 FIELD_DOUBLE operator % (union_value other)
 {
 		return long_value % other.long_value;
+}
+
+bool operator < (union_value other)
+{
+		return double_value < other.double_value;
+}
+
+bool operator <= (union_value other)
+{
+		return double_value <= other.double_value;
+}
+
+bool operator > (union_value other)
+{
+		return double_value > other.double_value;
+}
+
+bool operator >= (union_value other)
+{
+		return double_value >= other.double_value;
+}
+
+bool operator == (union_value other)
+{
+		return double_value == other.double_value;
 }
 
 
@@ -432,6 +460,107 @@ struct oper_min:public oper_element
 		 	
 		 	 }
 };
+
+// oper <
+struct oper_lt:public oper_element
+{
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter oper_lt eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		 return left->eval(_meta,result) < right->eval(_meta,result); 
+		 }
+};
+
+// oper <=
+struct oper_le:public oper_element
+{
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter oper_le eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		 return left->eval(_meta,result) <= right->eval(_meta,result); 
+		 }
+};
+
+// oper >
+struct oper_gt:public oper_element
+{
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter oper_gt eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		 return left->eval(_meta,result) > right->eval(_meta,result); 
+		 }
+};
+
+// oper >=
+struct oper_ge:public oper_element
+{
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter oper_ge eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		 return left->eval(_meta,result) >= right->eval(_meta,result); 
+		 }
+};
+
+// oper ==
+struct oper_eq:public oper_element
+{
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter oper_eq eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		 return left->eval(_meta,result) == right->eval(_meta,result); 
+		 }
+};
+
 
 // sum
 struct fun_sum:public fun_element
