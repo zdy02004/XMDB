@@ -288,10 +288,15 @@ int get_name( )
 		ERROR("left->get_name() ERR!\n");
 		return ret;
 	}
-	return right->get_name();
+	ret = right->get_name();
+	if(ret){
+		ERROR("left->get_name() ERR!\n");
+		return ret;
+	}
 	
   }
-
+  
+  return normal_double_condition_struct::get_name();
 }	
 	  
   ~normal_oper_condition_struct()
@@ -600,6 +605,7 @@ inline int get_single_table_conditions(
   										/*out*/ std::list<normal_single_condition_struct>& normal_single_condition_list,
   										/*out*/ std::list<normal_double_condition_struct>& normal_double_condition_list,
   										/*out*/ std::list<normal_double_condition_struct>& normal_index_double_condition_list,			
+  										/*out*/ std::list<normal_oper_condition_struct>  & normal_oper_condition_list,			
   										/*out*/ std::list<join_eq_condition_struct      >& join_eq_condition_list,											
 											/*out*/ std::list<const_condition_struct>        & const_condition_list
 										)
@@ -617,6 +623,7 @@ inline int get_single_table_conditions(
 	/*in*/  vector<rapidjson::Value *>& const_conditions 				= qa->const_conditions;   				// 常数不可再分条件
 	/*in*/	vector<rapidjson::Value *>& nomal_single_conditions = qa->nomal_single_conditions ;  	// 单操作数不可再分条件
 	/*in*/	vector<rapidjson::Value *>& nomal_double_conditions = qa->nomal_double_conditions ;  	// 双操作数不可再分条件
+	/*in*/	vector<rapidjson::Value *>& normal_oper_conditions  = qa->oper_conditions;  	     	  // 关联条件
 	/*in*/	vector<rapidjson::Value *>& join_conditions				  = qa->join_conditions;  	     	  // 关联条件
   
   
@@ -714,6 +721,22 @@ inline int get_single_table_conditions(
   				DEBUG("normal_double_condition_list.sort() \n");
   				normal_double_condition_list.sort();
   				
+				  //查找运算条件列表
+  				for(auto &normal_oper_condition : normal_oper_conditions ){
+  					normal_oper_condition_struct nocs(normal_oper_condition,qa);
+  					err = nocs.get_name();
+  					if( err == 0 && 0 == strcmp( nocs.relation_name.c_str(),(*mem_table)->config.table_name ) ){
+  						  normal_oper_condition_list.push_back(nocs);
+  					}
+  				}
+  				if(err)
+  				{
+  					ERROR("end1 get_normal_oper_conditions，err is %d ---------- } \n",err);
+  					return err;
+  					
+  				}
+
+
   				//
   				DEBUG("join_conditions.size() is %d \n",join_conditions.size() );
   				for(auto &join_condition : join_conditions ){//查找关联条件列表中
@@ -766,6 +789,7 @@ inline int get_table_conditions(
   												/*out*/ std::map<std::string,std::list<normal_single_condition_struct> >& normal_single_condition_map,				//(表名,单条件列表)
   												/*out*/ std::map<std::string,std::list<normal_double_condition_struct> >& normal_double_condition_map,				//(表名,双条件列表)
   												/*out*/ std::map<std::string,std::list<normal_double_condition_struct> >& normal_index_double_condition_map,	//(表名,索引双条件列表)										
+													/*out*/	std::map<std::string,std::list<normal_oper_condition_struct  > >& normal_oper_condition_map,  				    // 关联条件
 													/*out*/	std::map<std::string,std::list<join_eq_condition_struct      > >& join_eq_condition_map,  				    // 关联条件
 													/*out*/ std::map<std::string,std::list<const_condition_struct> >        & const_condition_map,							  //(表名,常数条件列表)	
 													/*out*/ std::map<std::string,std::set<std::string> >                    & condition_fields                    //(表名,条件字段列表)	
@@ -781,7 +805,8 @@ inline int get_table_conditions(
 		mem_table_t * mem_table_ptr = NULL;
 		std::list<normal_single_condition_struct>  normal_single_condition_list;
   	std::list<normal_double_condition_struct>  normal_double_condition_list;
-  	std::list<normal_double_condition_struct>  normal_index_double_condition_list;		
+  	std::list<normal_double_condition_struct>  normal_index_double_condition_list;
+  	std::list<normal_oper_condition_struct>    normal_oper_condition_list;
   	std::list<join_eq_condition_struct> 			 join_eq_condition_list;									
 		std::list<const_condition_struct> 				 const_condition_list;
 			
@@ -791,6 +816,7 @@ inline int get_table_conditions(
 																normal_single_condition_list,
 																normal_double_condition_list,
 																normal_index_double_condition_list,
+																normal_oper_condition_list,
 																join_eq_condition_list,
 																const_condition_list
 																);
@@ -805,6 +831,7 @@ inline int get_table_conditions(
 		normal_single_condition_map[table_name] 			= normal_single_condition_list;
 		normal_double_condition_map[table_name] 			= normal_double_condition_list;
 		normal_index_double_condition_map[table_name] = normal_index_double_condition_list;
+		normal_oper_condition_map[table_name] 				= normal_oper_condition_list;
 		join_eq_condition_map[table_name] 					  = join_eq_condition_list;
 		const_condition_map[table_name] 							= const_condition_list;
 		//_________________________________________________________________________
@@ -816,6 +843,8 @@ inline int get_table_conditions(
 		for(auto &v : normal_double_condition_list ){
 			condition_fields[table_name].insert(v.column_name);
 		}
+		//for(auto &v : normal_oper_condition_list ){}
+		
 		for(auto &v : normal_index_double_condition_list ){
 			condition_fields[table_name].insert(v.column_name);
 		}

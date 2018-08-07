@@ -23,8 +23,9 @@ class physical_query_plan
   std::map<std::string,std::list<normal_single_condition_struct> > normal_single_condition_map;				//(表名,单条件列表)
   std::map<std::string,std::list<normal_double_condition_struct> > normal_double_condition_map;				//(表名,双条件列表)
   std::map<std::string,std::list<normal_double_condition_struct> > normal_index_double_condition_map;	//(表名,索引双条件列表)										
-	std::map<std::string,std::list<join_eq_condition_struct      > > join_eq_condition_map;  				    // 关联条件
+	std::map<std::string,std::list<normal_oper_condition_struct  > > normal_oper_condition_map;  		    //(表名,运算条件列表)
 	std::map<std::string,std::list<const_condition_struct        > > const_condition_map;							  //(表名,常数条件列表)	
+	std::map<std::string,std::list<join_eq_condition_struct      > > join_eq_condition_map;						  //(表名,关联条件列表)	
 	std::map<std::string,std::set<std::string                    > > condition_fields_map;              //(表名,条件字段列表)	
 	// 字段汇总															
 	std::map<std::string,std::set<std::string                    > > scan_fields_map;                   // 需要扫描的字段  
@@ -112,7 +113,7 @@ int init()
 			return MAKE_QUERY_PLAN_NULL_QA_PTR;
 		}
 	CPP_DEBUG<<"begin init() \n "<<std::endl;
-	
+	// normal_oper_condition_map
 	//找出单表中条件用到的字段												
 	int ret = get_table_conditions(
 														/*in*/  qa,										
@@ -120,6 +121,7 @@ int init()
 	  												/*out*/ normal_single_condition_map,				//(表名,单条件列表)
 	  												/*out*/ normal_double_condition_map,				//(表名,双条件列表)
 	  												/*out*/ normal_index_double_condition_map,	//(表名,索引双条件列表)										
+	  												/*out*/ normal_oper_condition_map,					//(表名,运算条件列表)										
 														/*out*/ join_eq_condition_map,  				    // 关联条件
 														/*out*/ const_condition_map,							  //(表名,常数条件列表)	
 														/*out*/ condition_fields_map	              //(表名,条件字段列表)	
