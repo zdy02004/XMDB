@@ -6,6 +6,9 @@
 #include<set>
 #include "../../util/log/log_util.h"
 
+/*
+g++ -C -w -std=c++11 query_analyser.hpp
+*/
 // 生成1个常数1
 rapidjson::Value  * create_const_value(rapidjson::Document::AllocatorType& Allocator){
 rapidjson::Value  * v = new rapidjson::Value;
@@ -219,7 +222,8 @@ std::vector<rapidjson::Value *> nomal_single_conditions;  	// 单操作数不可
 std::vector<rapidjson::Value *> nomal_double_conditions;  	// 双操作数不可再分条件
 std::vector<rapidjson::Value *> complex_double_conditions; // 可再分双操作数条件
 std::vector<rapidjson::Value *> nomal_btw_conditions;      // between and 
-	
+std::vector<rapidjson::Value *> oper_conditions;           // 含运算符的条件 
+		
 // Group 条件要素	
 vector< GroupTarget > group_target;      
 
@@ -272,6 +276,28 @@ vector< rapidjson::Value * > having_conditions;      // between and
     	}
     	return 0;
     }	
+     // 是否是逻辑连接 
+    int check_if_logic_condition(int tag)
+    {
+    	switch(tag)
+    	{
+    		case  T_OP_AND  :
+    	  case  T_OP_OR   :   
+    	  return 1;
+    	}
+    	return 0;
+    }	
+    
+   // 是否是逻辑比较 
+    int check_if_oper(int tag)
+    {
+    	if( tag>= T_OP_NEG  && tag <= T_OP_CNN )
+    	{
+    	  return 1;
+    	}
+    	return 0;
+    }	
+
     
         // 是否是字段引用
      int check_if_name_filed(int tag)
@@ -398,7 +424,7 @@ nomal_single_conditions   = qa.nomal_single_conditions;  	// 单操作数不可�
 nomal_double_conditions   = qa.nomal_double_conditions;  	// 双操作数不可再分条件
 complex_double_conditions = qa.complex_double_conditions; // 可再分双操作数条件
 nomal_btw_conditions      = qa.nomal_btw_conditions;      // between and 
-	
+oper_conditions           = qa.oper_conditions;           // 带运算的条件
 // Group 条件要素	
 group_target = qa.group_target;      
 
@@ -875,6 +901,16 @@ void resolve_where_list( rapidjson::Value  * where_list,rapidjson::Value  * wher
 				 			   resolve_where_list( &((*father)["COMPLEX_DOUBLE_CONDITION"]["children"][0]), &((*father)["COMPLEX_DOUBLE_CONDITION"]["children"][0]) );
 				 			 	 CPP_DEBUG<< "递归细分2 " <<std::endl; 
 				 			 	 resolve_where_list( &((*father)["COMPLEX_DOUBLE_CONDITION"]["children"][1]), &((*father)["COMPLEX_DOUBLE_CONDITION"]["children"][1]) );
+
+				 				return ;
+				 }
+				 
+				 	// 运算相连的两个条件 --> 可继续细分
+				 if(  check_if_oper( (*v)["tag"].GetInt() ) )
+				 	{
+				 		 	 CPP_DEBUG<< "logic_oper " <<std::endl;
+				 				// 递归细分
+				 		   oper_conditions.emplace_back( father );
 
 				 				return ;
 				 }

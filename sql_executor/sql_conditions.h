@@ -218,6 +218,99 @@ int get_name(){
 
 };
 
+
+//二元运算条件解析结构体
+//主要解析表名、列名，操作类型
+struct normal_oper_condition_struct:public normal_double_condition_struct{
+   normal_oper_condition_struct * left;
+   normal_oper_condition_struct * right;
+
+		normal_oper_condition_struct(rapidjson::Value *  context, QueryAnalyser * query_plan ):normal_double_condition_struct(context,query_plan),left(NULL),right(NULL){
+	  }
+	  
+	/* bool operator < (const normal_double_condition_struct &a) const
+	{
+		return has_index <= a.has_index;	
+	}	*/
+	
+	bool operator == (const normal_oper_condition_struct &a) const
+	{
+		if( left == NULL || right == NULL || a.left == NULL || a.right == NULL  )return false;	
+		if(
+			  left->operator ==( *(a.left) ) && right->operator ==( *(a.right) ) &&
+			  normal_double_condition_struct:: operator ==( (normal_double_condition_struct)a )
+			 )return true;
+		return false;	
+	}	
+	
+int get_name( )
+{
+  DEBUG("get_name()\n");
+  rapidjson::Value *  half = context_;
+	if(context_ == NULL) {
+		ERROR("context_ == NULL\n");
+		return -1;
+	}
+		if(half == NULL) {
+		ERROR("half == NULL\n");
+		return -2;
+	}
+	tag = (*context_)["tag"].GetInt();
+	//字段值
+	if( half->HasMember("COLUMN_NAME") ){
+		//直接获得表名
+		DEBUG("Get RELATION_NAME and COLUMN_NAME \n");
+		if( half->HasMember("RELATION_NAME") ){
+			relation_name = (*half)["RELATION_NAME"]["str_value_"].GetString();
+		}
+		column_name = (*half)["COLUMN_NAME"]["str_value_"].GetString();
+		return 0;
+	}
+	//常量
+	if( half->HasMember("CONST_TYPE") ){
+		//直接获得常量
+		DEBUG("Get const_value \n");
+		if( (*half).HasMember("str_value_") ){
+			DEBUG("HasMember(str_value_) \n");
+			const_value = (*half)["str_value_"].GetString();
+		}
+		
+		const_type = (*half)["CONST_TYPE"].GetString();
+
+		return 0;
+	}
+	
+	if( half->HasMember("children") ){
+	left = new normal_oper_condition_struct(&(*half)["children"][0],query_plan_);
+	right = new normal_oper_condition_struct(&(*half)["children"][1],query_plan_);
+	int ret = left->get_name();
+	if(ret){
+		ERROR("left->get_name() ERR!\n");
+		return ret;
+	}
+	return right->get_name();
+	
+  }
+
+}	
+	  
+  ~normal_oper_condition_struct()
+  {
+  	if(left){
+  	delete left;
+  	left = NULL;  		
+  	}
+  	if(right){
+  	delete right;
+  	right = NULL;
+  }
+}
+
+
+};
+
+
+
 //二元条件解析结构体
 //主要解析表名、列名，操作类型
 struct normal_btw_condition_struct:public normal_single_condition_struct{
