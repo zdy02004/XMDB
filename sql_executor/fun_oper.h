@@ -134,6 +134,11 @@ bool operator == (union_value other)
 		return double_value == other.double_value;
 }
 
+bool operator != (union_value other)
+{
+		return double_value != other.double_value;
+}
+
 
 };
 // 函数和运算的父类
@@ -558,6 +563,27 @@ struct oper_eq:public oper_element
 			}
 			
 		 return left->eval(_meta,result) == right->eval(_meta,result); 
+		 }
+};
+
+
+// oper !=
+struct oper_uneq:public oper_element
+{
+	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
+		 DEBUG("enter oper_uneq eval \n");
+		 if( NULL == _meta )
+			{
+				ERROR("META_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			if( NULL == result )
+			{
+				ERROR("RESULT_PTR_IS_NULL \n");
+				return META_PTR_IS_NULL;
+			}
+			
+		 return left->eval(_meta,result) != right->eval(_meta,result); 
 		 }
 };
 
