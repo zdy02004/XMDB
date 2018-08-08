@@ -227,8 +227,8 @@ if( ret!= 0 )
 		ERROR("handl_const_con err is %d \n",ret);
 		return ret;
 	}
-
-if( !normal_index_double_condition_map[table_name].empty() )
+// 条件上有表达式就不走索引
+if( !normal_index_double_condition_map[table_name].empty() && normal_oper_condition_map[table_name].empty()  )
 {
 CPP_DEBUG<<"handl_double_con_index() \n "<<std::endl;												
 // 双条件索引扫描
@@ -247,6 +247,7 @@ CPP_DEBUG<<"handl_double_con_normal() \n "<<std::endl;
 ret =  handl_double_con_normal(
 														/*in*/mem_table , 
 														/*in*/normal_double_condition_map[table_name],   				//需要扫描的非索引条件
+														/*in*/normal_oper_condition_map[table_name],   					//需要运算的非索引条件
 														/*in*/condition_fields_map[table_name],                 //条件字段列表
 											/*in&&out*/plan_node_scan_list											       	  //输出的执行计划
 													);

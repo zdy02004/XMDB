@@ -568,10 +568,10 @@ struct oper_eq:public oper_element
 
 
 // oper !=
-struct oper_uneq:public oper_element
+struct oper_ne:public oper_element
 {
 	virtual union_value eval(  record_meta * _meta , generic_result * result )  {
-		 DEBUG("enter oper_uneq eval \n");
+		 DEBUG("enter oper_ne eval \n");
 		 if( NULL == _meta )
 			{
 				ERROR("META_PTR_IS_NULL \n");
@@ -1044,6 +1044,150 @@ struct fun_avg:public fun_element
 				  //返回自己
 			    return ptr;
 				}
+				
+					case T_OP_EQ:{
+					CPP_DEBUG<< " T_OP_EQ " <<endl;
+
+					oper_eq * node  = new oper_eq;
+					node->node_type = T_OP_EQ;
+					oper_eq * ptr = node;
+				  //分别向左右节点继续构造				  
+				  node->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index  ) );
+				  node->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );	
+				  if( 0 == child_ptr )return child_ptr; 
+				  child_ptr->father = node ;
+					if( 0 == child_ptr2 )return child_ptr2;
+					child_ptr2->father = node ;	
+			    node->tag =FIELD_TYPE_INT;
+				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
+			  	else
+			  	{
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
+			  		
+			  	}		  
+			    return node;
+				}
+				
+	case T_OP_LE:{
+					CPP_DEBUG<< " T_OP_LE " <<endl;
+
+					oper_le * node  = new oper_le;
+					node->node_type = T_OP_LE;
+					oper_le * ptr = node;
+				  //分别向左右节点继续构造				  
+				  node->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index  ) );
+				  node->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );	
+				  if( 0 == child_ptr )return child_ptr; 
+				  child_ptr->father = node ;
+					if( 0 == child_ptr2 )return child_ptr2;
+					child_ptr2->father = node ;	
+			    node->tag =FIELD_TYPE_INT;
+				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
+			  	else
+			  	{
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
+			  		
+			  	}		  
+			    return node;
+				}				
+				
+	case T_OP_LT:{
+					CPP_DEBUG<< " T_OP_LT " <<endl;
+
+					oper_lt * node  = new oper_lt;
+					node->node_type = T_OP_LT;
+					oper_lt * ptr = node;
+				  //分别向左右节点继续构造				  
+				  node->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index  ) );
+				  node->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );	
+				  if( 0 == child_ptr )return child_ptr; 
+				  child_ptr->father = node ;
+					if( 0 == child_ptr2 )return child_ptr2;
+					child_ptr2->father = node ;	
+			    node->tag =FIELD_TYPE_INT;
+				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
+			  	else
+			  	{
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
+			  		
+			  	}		  
+			    return node;
+				}		
+				
+	case T_OP_GE:{
+					CPP_DEBUG<< " T_OP_GE " <<endl;
+
+					oper_ge * node  = new oper_ge;
+					node->node_type = T_OP_GE;
+					oper_ge * ptr = node;
+				  //分别向左右节点继续构造				  
+				  node->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index  ) );
+				  node->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );	
+				  if( 0 == child_ptr )return child_ptr; 
+				  child_ptr->father = node ;
+					if( 0 == child_ptr2 )return child_ptr2;
+					child_ptr2->father = node ;	
+			    node->tag =FIELD_TYPE_INT;
+				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
+			  	else
+			  	{
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
+			  		
+			  	}		  
+			    return node;
+				}			
+				
+	case T_OP_GT:{
+					CPP_DEBUG<< " T_OP_GT " <<endl;
+
+					oper_gt * node  = new oper_gt;
+					node->node_type = T_OP_GT;
+					oper_gt * ptr = node;
+				  //分别向左右节点继续构造				  
+				  node->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index  ) );
+				  node->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );	
+				  if( 0 == child_ptr )return child_ptr; 
+				  child_ptr->father = node ;
+					if( 0 == child_ptr2 )return child_ptr2;
+					child_ptr2->father = node ;	
+			    node->tag =FIELD_TYPE_INT;
+				  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
+			  	else
+			  	{
+			  	auto temp_name =to_string(index);
+			  	ptr->set_alias_name( temp_name );
+			  		
+			  	}		  
+			    return node;
+				}				
+				
+case T_OP_NE:{
+	CPP_DEBUG<< " T_OP_NE " <<endl;
+
+	oper_ne * node  = new oper_ne;
+	node->node_type = T_OP_NE;
+	oper_ne * ptr = node;
+  //分别向左右节点继续构造				  
+  node->set_left ( child_ptr = resolve_project_to_opper_node(qa, &(*vv)["children"][0],index  ) );
+  node->set_right( child_ptr2 = resolve_project_to_opper_node(qa, &(*vv)["children"][1],index ) );	
+  if( 0 == child_ptr )return child_ptr; 
+  child_ptr->father = node ;
+	if( 0 == child_ptr2 )return child_ptr2;
+	child_ptr2->father = node ;	
+  node->tag =FIELD_TYPE_INT;
+  if( v->HasMember("PROJECT_ALIAS") ){ptr->set_alias_name( std::string(const_cast<char*>((*v)["PROJECT_ALIAS"]["str_value_"].GetString()))  ); }
+	else
+	{
+	auto temp_name =to_string(index);
+	ptr->set_alias_name( temp_name );
+		
+	}		  
+}		
+				
 				case T_OP_POS:{
 					break;
 				}
@@ -1316,6 +1460,20 @@ inline void resolve_to_opper_node(  QueryAnalyser * qa ,
 		
 	}
   CPP_DEBUG<< "  resolve_to_opper_node ended " <<endl;
+
+}
+
+// 解析 QueryAnalyser 并把 条件上的运算解析成 oper 算子
+// T = normal_oper_condition_struct
+template<class T>
+inline void resolve_to_opper_condition(  QueryAnalyser * qa ,
+														   /* in */  std::list<T>& lists,
+														   /* out */ std::vector<fun_oper *> & fun_oper_condition_lists //条件上的 oper 算子	
+														   	)													   				
+{
+	CPP_DEBUG<< "  resolve_to_opper_condition started " <<endl;
+	for(auto &v :lists )resolve_projectlist_to_opper_node(qa,v.context_,fun_oper_condition_lists );
+  CPP_DEBUG<< "  resolve_to_opper_condition ended " <<endl;
 
 }
 

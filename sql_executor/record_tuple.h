@@ -35,6 +35,7 @@ struct generic_result
 	inline int allocate(){data =(char*)malloc(row_size); }
 	inline int deallocate(){free(data);}
 	inline char * get_data(){return data;};
+	inline void set_data(char * addr ){ data = addr;};
 	inline void set_row_size( size_t s){row_size =s; }
 	inline size_t get_row_size()const {return row_size; }
 }	;	

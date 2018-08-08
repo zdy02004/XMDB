@@ -845,12 +845,14 @@ struct scan_sfw_node:public plan_node
   //std::string const_type;
  	mem_table_t * mem_table;
  	compare_list * pre;
+ 	std::vector<fun_oper*>    oper_list;//运算条件
  	std::set<std::string>     pro_list;//投影集
   std::list<generic_result> ret_list;//结果集
 									
 scan_sfw_node(mem_table_t * _mem_table , 
 									//field_t&  _field,
 									compare_list * _pre,
+									std::vector<fun_oper*>&  _oper_list,//运算列表
 									std::set<std::string>&  _pro_list,//投影集
 									rapidjson::Value& _json,
   								rapidjson::Document * _Doc //,
@@ -861,6 +863,7 @@ scan_sfw_node(mem_table_t * _mem_table ,
   								):plan_node(_json,_Doc),
   																					mem_table(_mem_table),
   																					pre(_pre),
+  																					oper_list(_oper_list),
   																					//relation_name(_relation_name),
   																					//column_name(_column_name),
   																					//const_value(_const_value),
@@ -887,6 +890,7 @@ DEBUG("scan_sfw_node execute(%ld）------------- { \n",trans_no);
 														 mem_table,       //表
 														 pre,             //比较函数链
 														 pro_list,				//原始投影字段
+														 oper_list,			//运算列表
 														 trans_no,//get_trans_no()                 //当前事务ID
 													 	 &ret_list,  	    //原始结果集
 													 	 oper_type

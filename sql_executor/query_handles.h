@@ -438,12 +438,20 @@ return 0;
 int handl_double_con_normal(
 														/*in*/mem_table_t * mem_table , 
 														/*in*/std::list<normal_double_condition_struct>& nomal_list,		 //需要扫描的非索引条件
+														/*in*/std::list<normal_oper_condition_struct>&   oper_list,			//需要运算的非索引条件
 														/*in*/std::set<std::string>  									 & pro_list,       //扫描出的字段列表
 														/*in&&out*/std::list<plan_node *>							 & plan_node_list  //输出的执行计划
 													)
 {
  CPP_DEBUG<<"begin handl_double_con_normal() ------------- { \n "<<std::endl;
  int err  = 0 ;
+	
+  std::vector<fun_oper *>  fun_oper_condition_lists ;//条件上的 oper 算子	
+  if( !oper_list.empty() ){
+	resolve_to_opper_condition( oper_list.begin()->query_plan_ , oper_list ,fun_oper_condition_lists	);
+	DEBUG(" resolve_to_opper_condition( qa , projection_fun_oper_lists	); \n" );
+  }
+ 
 // 获得过滤列表
  DEBUG("get_complist_from_double_con() \n");	 
  compare_list *com_list = NULL;
@@ -476,6 +484,7 @@ DEBUG("new scan_sfw_node() \n");
 if(!nomal_list.empty()){
 scan_sfw_node *node = new scan_sfw_node( mem_table,
 																		com_list,															//过滤列表
+																		fun_oper_condition_lists,							//运算列表
 																		pro_list,       											//投影列表
 	  								              	normal_json,
 	  								              	nomal_list.begin()->query_plan_->doc
@@ -487,6 +496,7 @@ else
 		rapidjson::Document  doc;
 		scan_sfw_node *node = new scan_sfw_node( mem_table,
 																		com_list,															//过滤列表
+																		fun_oper_condition_lists,							//运算列表
 																		pro_list,       											//投影列表
 	  								              	normal_json,
 	  								              	&doc
