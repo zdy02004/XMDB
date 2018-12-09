@@ -308,11 +308,13 @@ cmp2.fun                  = (void *)cmp_int ;
 std::list<std::string> prolist;
 	prolist.push_back("id");
 	prolist.push_back("try_num");
+	std::list<std::string>  oper_condition_lists;
 	
 int ret =full_table_scan_with_prolist_and_conlist(
 														 mem_table,       //表
 														 &cmp1,           //比较函数链
 														 prolist,					//投影列表
+														 oper_condition_lists,//运算列表
 														 trans_no,			  //事务ID
 													 	 &ret_vector  	  //原始结果集
 );

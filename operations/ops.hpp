@@ -1,4 +1,5 @@
 //g++ -w -C   ops.hpp   -g   -lpthread -std=c++11 
+/*修改了部分代码支持    条件下推*/
 
 #ifndef BASIC_OPS
 #define BASIC_OPS
@@ -8,11 +9,12 @@
 #define BASIC_OPS_UPDATE  2
 
 #include"../mem_date_index_ctl/mem_table_mvcc_op.h"
+#include"../sql_executor/record_tuple.h"
 #include<vector>
 #include<list>
-#include <functional>
-#include <cstdlib>
-#include <iostream>
+#include<functional>
+#include<cstdlib>
+#include<iostream>
 
 template<int size>
 struct selection_obj
@@ -397,7 +399,13 @@ inline int full_table_scan_with_prolist_and_conlist(
     int __i = 0;									 
     struct record_t     * record_ptr = NULL;
     struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;	
-     
+
+	struct record_meta  one_meta;
+	one_meta.from_table(mem_table);
+    struct generic_result result_temp;
+	result_temp.set_data(buf);
+	result_temp.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);
+	
 	for(;__i<mem_table->config.mem_block_used;++__i)//遍历所有块																
 	{
 		  DEBUG(" Scan mem_table block[%ld] \n",__i);
@@ -451,6 +459,15 @@ inline int full_table_scan_with_prolist_and_conlist(
 					 if( is_ok && !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn )/*!mem_table_read_record(mem_table , record_ptr, (char *)buf )*/ )
 						{
 							 DEBUG("if( is_ok && !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn )! \n");
+							 for( auto &one_oper_condition : oper_condition_lists )
+							 {
+								 if( 0 == one_oper_condition.eval(&one_meta , &result_temp ).int_value )
+								 {
+									 continue;
+								 }
+							 }
+
+
 							 if( BASIC_OPS_SCAN == oper_type )
 							 {
 								 size_t pos = 0;
