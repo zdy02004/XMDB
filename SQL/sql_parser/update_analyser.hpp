@@ -14,11 +14,11 @@ g++ -C -w -std=c++11 update_analyser.hpp
 
 typedef struct set_value
 {
-char ibuf[sizeof(int)];
-char lbuf[sizeof(long)];
-char fbuf[sizeof(float)];
-std::string const_value;
-std::string const_type;
+		char ibuf[sizeof(int)];
+  	char lbuf[sizeof(long)];
+  	char fbuf[sizeof(float)];
+  	std::string const_value;
+	  std::string const_type;
 }set_value;
 
 class UpdateAnalyser:public QueryAnalyser
@@ -41,9 +41,9 @@ UpdateAnalyser(rapidjson::Value & value ,rapidjson::Document & doc_  ):QueryAnal
 		{
 			  table_name=string((*from_list)["TABLE_NAME"]["str_value_"].GetString()); 	// 表名   
 			  // 插入解析后的表
-			 DEBUG(" tables.emplace_back( TableItem(%s,%s,%s) );\n", table_name.c_str(),table_name.c_str(),table_name.c_str() );
-  			 tables.emplace_back( TableItem(table_name,table_name,table_name) );
-			 resolve_update_list(set_lists);
+				DEBUG(" tables.emplace_back( TableItem(%s,%s,%s) );\n", table_name.c_str(),table_name.c_str(),table_name.c_str() );
+  			tables.emplace_back( TableItem(table_name,table_name,table_name) );
+			  resolve_update_list(set_lists);
 		}
 }
 
@@ -51,8 +51,8 @@ void resolve_update_list_help( rapidjson::Value  * v,int level = 0 ){
 
 DEBUG("resolve_update_list_help -------- { \n");
 					
-				std::string column_name;
-				rapidjson_log(v);
+					std::string column_name;
+					rapidjson_log(v);
   				if( (*v).HasMember("COLUNM_NAME") && (*v)["COLUNM_NAME"].HasMember("str_value_")    )  
   				{
   					column_name=string( (*from_list)["COLUNM_NAME"]["str_value_"].GetString() ); 	// 表名   
@@ -78,8 +78,9 @@ DEBUG("resolve_update_list_help -------- { \n");
   						int  ival ;
   						if( lval>-65535 && lval<=65535 )
   						{
-  							ival =  std::stoi(const_value);
-  							strncpy( const_cast<char *>( sv.ibuf ), (char *)(&ival) , sizeof(int)  );
+  								ival =  std::stoi(const_value);
+  								strncpy( const_cast<char *>( sv.ibuf ), (char *)(&ival) , sizeof(int)  );
+  								const_type="LONGNUM";
   						}
   						strncpy( const_cast<char *>( sv.lbuf ) ,  (char *)(&lval) , sizeof(long)  );
   					}
@@ -95,11 +96,13 @@ DEBUG("resolve_update_list_help -------- { \n");
   				{
   					sv.const_value = const_value;
   				}
- 					
+  					
  //放入列表  					
  set_map[column_name] = sv;
  DEBUG("resolve_update_list_help -------- } \n");
+
 }
+
 
 //解析 update_list
 void resolve_update_list( rapidjson::Value  * updatelist ,int level = 0 ){
