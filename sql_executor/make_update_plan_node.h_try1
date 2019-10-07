@@ -5,19 +5,51 @@
 #ifndef MAKE_UPDATE_PLAN  
 #define MAKE_UPDATE_PLAN
 #define MAKE_UPDATE_PLAN_NULL_QA_PTR  590
-#define MAKE_UPDATE_PLAN_NULL_RECORD_META_PTR  591
+#define MAKE_UPDATE_PLAN_NULL_RECORD_MEM_TABLE_PTR  591
 #define MAKE_UPDATE_PLAN_NULL_RECORD_RESULT_PTR  592
 
 #include "make_query_plan_node.h" 
 
+
+//æ›¿æ¢ä¸€è¡Œçš„å€¼
+// record_meta       meta;
+// meta.from_table(tables[0].mem_table );
+// generic_result * result
+inline int update_value_one_row( struct mem_table_t *mem_table, generic_result * result	, UpdateAnalyser * qa  )
+{
+   if( NULL == mem_table ){ ERROR("MAKE_UPDATE_PLAN_NULL_RECORD_MEM_TABLE_PTR"\n); return MAKE_UPDATE_PLAN_NULL_RECORD_META_PTR   ; }
+   if( NULL == result    ){ ERROR("MAKE_UPDATE_PLAN_NULL_RECORD_RESULT_PTR"   \n); return MAKE_UPDATE_PLAN_NULL_RECORD_RESULT_PTR ; }
+   
+   record_meta       meta;
+   meta.from_table( mem_table );
+   
+   record_tuple one( &meta , result );
+   for( auto &iter = qa->set_map.begin(); iter != qa->set_map.end(); ++iter )
+   {
+      int ret ;
+      switch( iter->second.const_type )
+     {
+      case "INTNUM"      :   ret = one.set_field(tables[0].mem_table,iter->first, (char *)iter->second.ibuf );        break;
+      case "LONGNUM"     :   ret = one.set_field(tables[0].mem_table,iter->first, (char *)iter->second.lbuf );        break;
+      case "APPROXNUM"   :   ret = one.set_field(tables[0].mem_table,iter->first, (char *)iter->second.fbuf );        break;
+      case "STRING"      :   ret = one.set_field(tables[0].mem_table,iter->first, (char *)iter->second.const_value ); break;
+     }
+     if(ret)ERROR("UPDATE FIELD :  iter->first.c_str() FAILED\n",%s);
+   }	
+ 	
+ return 0;
+ }
+ 
+
+
 template<typename record_type >
 inline int full_table_update_with_conlist(
-														struct mem_table_t *mem_table,       //±í
-														compare_list*com_list,               //±È½Ïº¯ÊıÁ´
-														unsigned long long  Tn,              //µ±Ç°ÊÂÎñID
-														std::list<record_type>* ret	,  	     //Ô­Ê¼½á¹û¼¯
-														
-														int oper_type = BASIC_OPS_SCAN    //²Ù×÷ÀàĞÍÄ¬ÈÏÊÇÉ¨Ãè
+														struct mem_table_t *mem_table,       //è¡¨
+														compare_list*com_list,               //æ¯”è¾ƒå‡½æ•°é“¾
+														unsigned long long  Tn,              //å½“å‰äº‹åŠ¡ID
+														std::list<record_type>* ret	,  	     //åŸå§‹ç»“æœé›†
+														UpdateAnalyser * qa                   //update æ“ä½œ
+														int oper_type = BASIC_OPS_UPDATE    //æ“ä½œç±»å‹é»˜è®¤æ˜¯æ‰«æ
 														
 ) 
 {
@@ -36,33 +68,34 @@ inline int full_table_update_with_conlist(
     
     int __i = 0;									 
     struct record_t     * record_ptr = NULL;
+    struct record_t     * record_ptr2 = NULL;
     struct mem_block_t  * __mem_block_temp = mem_table->config.mem_blocks_table;	
      
-	for(;__i<mem_table->config.mem_block_used;++__i)//±éÀúËùÓĞ¿é																
+	for(;__i<mem_table->config.mem_block_used;++__i)//éå†æ‰€æœ‰å—																
 	{
 			unsigned  long  __high_level_temp = 0;
 
-				for(; //±éÀúËùÓĞĞĞ
+				for(; //éå†æ‰€æœ‰è¡Œ
 				__mem_block_temp->space_start_addr + (__high_level_temp)* (mem_table->record_size) < __mem_block_temp->space_end_addr - mem_table->record_size ;
 				++__high_level_temp
 				   )		 															
 				{
 					//DEBUG("__high_level_temp = %ld\n",__high_level_temp);
-						// ÕÒµ½¿ÉÓÃµÄ¼ÇÂ¼Î»ÖÃ
+						// æ‰¾åˆ°å¯ç”¨çš„è®°å½•ä½ç½®
 						record_ptr = (struct record_t *) ( (char *)__mem_block_temp->space_start_addr + (__high_level_temp) * (mem_table->record_size) );
-						// ÒÑ¾­É¾³ıµÄĞĞ²»´¦Àí
+						// å·²ç»åˆ é™¤çš„è¡Œä¸å¤„ç†
 						if(record_ptr->is_used != 1)continue;
 					  DEBUG("record_ptr addr is %0x,record_ptr->is_used = %d\n",record_ptr,record_ptr->is_used);
 
 						is_ok = 1;	
 						while(com_list_iter)
 						{
-						//»ñµÃ×Ö¶ÎÔÚ×Ö¶Î±íÖĞµÄÅÅĞòÎ»ÖÃ
+						//è·å¾—å­—æ®µåœ¨å­—æ®µè¡¨ä¸­çš„æ’åºä½ç½®
 						j = -1;
 	          j = get_field_index(com_list_iter->field_name,mem_table/*,field*/ );
 						DEBUG("get_field_index is %d \n",j);
-						//´¦ÀíÃ¿Ò»ĞĞ¼ÇÂ¼
-						if( -1 != j && field_used_num != j )//Ìõ¼şÅĞ¶Ï
+						//å¤„ç†æ¯ä¸€è¡Œè®°å½•
+						if( -1 != j && field_used_num != j )//æ¡ä»¶åˆ¤æ–­
 						{		
 							  int field_type_nr = fields_table[j].field_type;
 							  //int const field_type_const_nr = const_cast<int >(field_type_nr);
@@ -83,31 +116,43 @@ inline int full_table_update_with_conlist(
 					
 					 if( is_ok && !mem_mvcc_read_record(mem_table , record_ptr, (char *)buf,Tn )/*!mem_table_read_record(mem_table , record_ptr, (char *)buf )*/ )
 						{
-							 if( BASIC_OPS_SCAN == oper_type )
+							 if( BASIC_OPS_UPDATE == oper_type )
 							 {
 							  //int size = mem_table->record_size ;
 							  memcpy(return_record.get_data(),buf,mem_table->record_size - RECORD_HEAD_SIZE);
 								DEBUG("Find one record!\n");
 								ret->emplace_back( return_record );
 							 }
+							 //æ›´æ–°å€¼
+							 generic_result  resultï¼›
+							 result.set_data(buf);
+							 result.set_row_size(mem_table->record_size - RECORD_HEAD_SIZE);
 							 
-							 if( BASIC_OPS_DELETE == oper_type )
+							 int err = update_value_one_row( mem_table, &result	, qa  );
+							 if( 0 != err)	{
+									ERROR("update_value_one_row err is %d\n",err);
+									return err;
+								}	
+               //æ›´æ–°
+							 if( BASIC_OPS_UPDATE == oper_type )
 							 {
-							 	int err = 0;
-							 	err = mem_mvcc_delete_record(mem_table ,
-																				record_ptr,
-																				Tn               // ±¾ÊÂÎñID
+								err = mem_mvcc_update_record( mem_table ,
+																			record_ptr,
+																			resul.get_data,
+																			Tn,               // æœ¬äº‹åŠ¡ID
+																			record_ptr2
 																				);
+				       }
 								if( 0 != err)	{
-									ERROR("mem_mvcc_delete_record err is %d\n",err);
+									ERROR("mem_mvcc_update_record err is %d\n",err);
 									return err;
 								}		
-							}
+							
 							
 						
 						}
 				}
-			__mem_block_temp = __mem_block_temp->next;      //ÏÂÒ»¸ö¿é
+			__mem_block_temp = __mem_block_temp->next;      //ä¸‹ä¸€ä¸ªå—
 	}
 	return 0;
 }
@@ -118,7 +163,7 @@ class physical_update_plan:public physical_query_plan
 {
 UpdateAnalyser * qa;	
 public:  
-	// ³õÊ¼»¯Ê±»á¹¹½¨ scan_plan
+	// åˆå§‹åŒ–æ—¶ä¼šæ„å»º scan_plan
   physical_update_plan(UpdateAnalyser * _qa) 	:physical_query_plan(_qa),qa(_qa){}
  
   int make_update_plan_node()
@@ -136,14 +181,14 @@ inline int  update_process( unsigned long long  Tn )
   result.set_row_size(tables[0].mem_table->record_size - RECORD_HEAD_SIZE);	
   result.allocate    (tables[0].mem_table->record_size - RECORD_HEAD_SIZE);
   
-  int ret = update_value_per_row( &meta , &result	, qa  );
-  if( !ret ) return ret; 
+  //int ret = update_value_per_row( &meta , &result	, qa  );
+  //if( !ret ) return ret; 
      
-	// ×ßË÷ÒıÉ¨Ãè
+	// èµ°ç´¢å¼•æ‰«æ
   if( plan_type != PLAN_TYPE_FULL_SCAN && plan_type != PLAN_TYPE_SCAN_NORMAL && plan_type != PLAN_TYPE_SCAN_SFW  )	
  	{
  		
- 		// »ñÈ¡ finded_Addr
+ 		// è·å– finded_Addr
  		// finded_Addr_t * finded_Addr;
  		for( auto &v : *(qa->finded_Addr) ){
  			long			block_no = v.block_no;
@@ -156,47 +201,31 @@ inline int  update_process( unsigned long long  Tn )
 	    	ret = mem_mvcc_update_record( tables[0].mem_table ,
 																				record_ptr,
 																				result.get_data,
-																				Tn,               // ±¾ÊÂÎñID
+																				Tn,               // æœ¬äº‹åŠ¡ID
 																				record_ptr2
 																				);
 	     if(ret)return ret;
 	    }
  		}
  	}
- 	else //×ßÈ«±íÉ¨
+ 	else //èµ°å…¨è¡¨æ‰«
  	{
- 			
+ 		ret	= full_table_update_with_conlist(
+														tables[0].mem_table ,       //è¡¨
+														compare_list*com_list,               //æ¯”è¾ƒå‡½æ•°é“¾
+														Tn,              //å½“å‰äº‹åŠ¡ID
+														std::list<record_type>* ret	,  	     //åŸå§‹ç»“æœé›†
+														qa,                   //update æ“ä½œ
+														BASIC_OPS_UPDATE    //æ“ä½œç±»å‹é»˜è®¤æ˜¯æ‰«æ										
+) ;
+    if(ret)return ret;
  	}
 	
 	return 0;
 }
 
 
-//Ìæ»»Ò»ĞĞµÄÖµ
-// record_meta       meta;
-// meta.from_table(tables[0].mem_table );
-// generic_result * result
-inline int update_value_per_row( record_meta * meta , generic_result * result	, UpdateAnalyser * qa  )
-{
-   if( NULL == meta   ){ ERROR("MAKE_UPDATE_PLAN_NULL_RECORD_META_PTR"\n);   return MAKE_UPDATE_PLAN_NULL_RECORD_META_PTR   ; }
-   if( NULL == result ){ ERROR("MAKE_UPDATE_PLAN_NULL_RECORD_RESULT_PTR"\n); return MAKE_UPDATE_PLAN_NULL_RECORD_RESULT_PTR ; }
-   record_tuple one( meta , result );
-   for( auto &iter = qa->set_map.begin(); iter != qa->set_map.end(); ++iter )
-   {
-      int ret ;
-      switch( iter->second.const_type )
-     {
-      case "INTNUM"      :   ret = one.set_field(tables[0].mem_table,iter->first, (char *)iter->second.ibuf );        break;
-      case "LONGNUM"     :   ret = one.set_field(tables[0].mem_table,iter->first, (char *)iter->second.lbuf );        break;
-      case "APPROXNUM"   :   ret = one.set_field(tables[0].mem_table,iter->first, (char *)iter->second.fbuf );        break;
-      case "STRING"      :   ret = one.set_field(tables[0].mem_table,iter->first, (char *)iter->second.const_value ); break;
-     }
-     if(ret)ERROR("UPDATE FIELD :  iter->first.c_str() FAILED\n",%s);
-   }	
- 	
- return 0;
- }
- 
+
 };
 
 
